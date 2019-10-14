@@ -20,9 +20,6 @@ import io.netty.buffer.ByteBuf;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -40,12 +37,14 @@ import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
  * This entity's only purpose is to use the functionality of sending itself to nearby players, as
  * well as the functionality of automatically loading with the world; all other operations are
  * handled by the PhysicsObject class.
+ *
+ * This is scheduled for deletion
+ * @deprecated
  */
 @ParametersAreNonnullByDefault
+@Deprecated
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
-    public static final DataParameter<Boolean> IS_NAME_CUSTOM = EntityDataManager
-        .createKey(PhysicsWrapperEntity.class, DataSerializers.BOOLEAN);
     private final PhysicsObject physicsObject;
     // TODO: Replace these raw types with something safer.
     private double pitch;
@@ -55,7 +54,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     public PhysicsWrapperEntity(World worldIn) {
         super(worldIn);
         this.physicsObject = new PhysicsObject(this);
-        dataManager.register(IS_NAME_CUSTOM, false);
     }
 
     public static TickSyncCompletableFuture<PhysicsWrapperEntity> createWrapperEntity(
@@ -93,11 +91,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     }
 
     @Override
-    public void updatePassenger(Entity passenger) {
-
-    }
-
-
+    public void updatePassenger(Entity passenger) { }
 
     @Override
     public void setCustomNameTag(String name) {

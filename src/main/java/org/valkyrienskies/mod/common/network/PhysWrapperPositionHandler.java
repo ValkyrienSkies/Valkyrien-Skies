@@ -25,10 +25,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 
 public class PhysWrapperPositionHandler implements
-    IMessageHandler<PhysWrapperPositionMessage, IMessage> {
+    IMessageHandler<WrapperPositionMessage, IMessage> {
 
     @Override
-    public IMessage onMessage(final PhysWrapperPositionMessage message, MessageContext ctx) {
+    public IMessage onMessage(final WrapperPositionMessage message, MessageContext ctx) {
         if (Minecraft.getMinecraft().player == null) {
             return null;
         }

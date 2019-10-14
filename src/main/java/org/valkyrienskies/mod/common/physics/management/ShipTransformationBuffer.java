@@ -17,8 +17,7 @@
 package org.valkyrienskies.mod.common.physics.management;
 
 import java.util.LinkedList;
-import org.valkyrienskies.mod.common.coordinates.ShipTransformationPacketHolder;
-import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
+import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 
 /**
  * Ideally this would smooth out data coming from the sever, but for now it mostly does nothing
@@ -31,22 +30,22 @@ public class ShipTransformationBuffer {
     public static final int PACKET_BUFFER_SIZE = 50;
     public static final int TRANSFORMS_SMOOTHED = 5;
     public static final double TRANFORMATION_DELAY = .5D;
-    private final LinkedList<ShipTransformationPacketHolder> transformations;
+    private final LinkedList<WrapperPositionMessage> transformations;
     private final BezierWeightGenerator weightGenerator;
 
     public ShipTransformationBuffer() {
-        this.transformations = new LinkedList<ShipTransformationPacketHolder>();
+        this.transformations = new LinkedList<WrapperPositionMessage>();
         this.weightGenerator = new BezierWeightGenerator(TRANSFORMS_SMOOTHED);
     }
 
-    public void pushMessage(PhysWrapperPositionMessage toPush) {
-        transformations.push(new ShipTransformationPacketHolder(toPush));
+    public void pushMessage(WrapperPositionMessage toPush) {
+        transformations.push(new WrapperPositionMessage(toPush));
         if (transformations.size() > PACKET_BUFFER_SIZE) {
             transformations.removeLast();
         }
     }
 
-    public ShipTransformationPacketHolder pollForClientTransform() {
+    public WrapperPositionMessage pollForClientTransform() {
         if (isSmoothTransformReady()) {
             return generateSmoothTransform();
         } else {
@@ -59,7 +58,7 @@ public class ShipTransformationBuffer {
     }
 
     // Doesn't really do anything yet.
-    private ShipTransformationPacketHolder generateSmoothTransform() {
+    private WrapperPositionMessage generateSmoothTransform() {
         return transformations.pollFirst();
     	/*
     	double[] weights = new double[TRANSFORMS_SMOOTHED];

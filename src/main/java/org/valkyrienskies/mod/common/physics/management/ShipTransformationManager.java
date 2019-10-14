@@ -26,7 +26,7 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
-import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
+import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.api.TransformType;
@@ -136,13 +136,13 @@ public class ShipTransformationManager {
     }
 
     public void sendPositionToPlayers(int positionTickID) {
-        PhysWrapperPositionMessage posMessage = null;
+        WrapperPositionMessage posMessage = null;
         if (getCurrentPhysicsTransform() != ZERO_TRANSFORM) {
-            posMessage = new PhysWrapperPositionMessage(
+            posMessage = new WrapperPositionMessage(
                 (PhysicsShipTransform) getCurrentPhysicsTransform(),
                 parent.wrapperEntity().getEntityId(), positionTickID);
         } else {
-            posMessage = new PhysWrapperPositionMessage(parent.wrapperEntity(), positionTickID);
+            posMessage = new WrapperPositionMessage(parent.wrapperEntity(), positionTickID);
         }
 
         // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.

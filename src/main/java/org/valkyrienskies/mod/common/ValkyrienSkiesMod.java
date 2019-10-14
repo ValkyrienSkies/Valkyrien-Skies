@@ -86,11 +86,11 @@ import org.valkyrienskies.mod.common.command.framework.VSModCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
-import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
 import org.valkyrienskies.mod.common.network.SubspacedEntityRecordHandler;
 import org.valkyrienskies.mod.common.network.SubspacedEntityRecordMessage;
 import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManager;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
@@ -222,7 +222,7 @@ public class ValkyrienSkiesMod {
     private void registerNetworks(FMLStateEvent event) {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
         physWrapperNetwork
-            .registerMessage(PhysWrapperPositionHandler.class, PhysWrapperPositionMessage.class, 0,
+            .registerMessage(PhysWrapperPositionHandler.class, WrapperPositionMessage.class, 0,
                 Side.CLIENT);
         physWrapperNetwork
             .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,

@@ -61,12 +61,11 @@ import org.valkyrienskies.mod.common.coordinates.ISubspace;
 import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
 import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.coordinates.ShipTransformationPacketHolder;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
-import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
+import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
@@ -501,7 +500,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      * server.
      */
     public void onPostTickClient() {
-        ShipTransformationPacketHolder toUse = shipTransformationManager().serverBuffer
+        WrapperPositionMessage toUse = shipTransformationManager().serverBuffer
             .pollForClientTransform();
         if (toUse != null) {
             toUse.applySmoothLerp(this, .6D);
@@ -678,7 +677,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         shipRenderer().updateOffsetPos(referenceBlockPos());
 
         shipTransformationManager().serverBuffer
-            .pushMessage(new PhysWrapperPositionMessage(this));
+            .pushMessage(new WrapperPositionMessage(this));
 
         if (modifiedBuffer.readBoolean()) {
             physicsInfuserPos(modifiedBuffer.readBlockPos());

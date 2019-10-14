@@ -46,10 +46,11 @@ public class TickSyncCompletableFuture<T> {
     private Map<TickSyncCompletableFuture, Function<? super T, ?>> applyFunctions =
         new ConcurrentHashMap<>();
     private static Queue<CompletableSupplier> toRunOnNextTick = new ConcurrentLinkedQueue<>();
+    private boolean isRegistered = false;
 
+    // region Internal Methods
     private TickSyncCompletableFuture(CompletableFuture<T> future) {
         base = future;
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public TickSyncCompletableFuture() {
@@ -58,6 +59,20 @@ public class TickSyncCompletableFuture<T> {
 
     public static <U> TickSyncCompletableFuture<U> from(CompletableFuture<U> future) {
         return new TickSyncCompletableFuture<>(future);
+    }
+
+    private synchronized void registerWithEventBus() {
+        if (!isRegistered) {
+            MinecraftForge.EVENT_BUS.register(this);
+            isRegistered = true;
+        }
+    }
+
+    private synchronized void unregisterWithEventBus() {
+        if (isRegistered) {
+            MinecraftForge.EVENT_BUS.unregister(this);
+            isRegistered = false;
+        }
     }
 
     @SneakyThrows
@@ -73,6 +88,7 @@ public class TickSyncCompletableFuture<T> {
                 }
             });
             applyFunctions.clear();
+            unregisterWithEventBus();
         }
     }
 
@@ -81,33 +97,6 @@ public class TickSyncCompletableFuture<T> {
         toRunOnNextTick.forEach(CompletableSupplier::complete);
         toRunOnNextTick.clear();
     }
-
-    public static <K> TickSyncCompletableFuture<K> supplyTickSync(Supplier<K> supplier) {
-        TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
-        toRunOnNextTick.add(new CompletableSupplier<K>(supplier, toReturn.base));
-        return toReturn;
-    }
-
-    public static TickSyncCompletableFuture<Void> runTickSync(Runnable runnable) {
-        return supplyTickSync(runnableToSupplier(runnable));
-    }
-
-    public <K> TickSyncCompletableFuture<K> thenApplyTickSync(
-        Function<? super T, ? extends K> action) {
-        TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
-        applyFunctions.put(toReturn, action);
-        return toReturn;
-    }
-
-    public TickSyncCompletableFuture<Void> thenAcceptTickSync(Consumer<? super T> action) {
-        return thenApplyTickSync(consumerToFunction(action));
-    }
-
-    public TickSyncCompletableFuture<Void> thenRunTickSync(Runnable action) {
-        return thenApplyTickSync(runnableToFunction(action));
-    }
-
-    // region Utility Methods
 
     private static Supplier<Void> runnableToSupplier(Runnable runnable) {
         return () -> {
@@ -135,6 +124,36 @@ public class TickSyncCompletableFuture<T> {
             consumer.accept(k);
             return null;
         };
+    }
+
+    // endregion
+
+    // region API methods
+
+    public static <K> TickSyncCompletableFuture<K> supplyTickSync(Supplier<K> supplier) {
+        TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
+        toRunOnNextTick.add(new CompletableSupplier<>(supplier, toReturn.base));
+        return toReturn;
+    }
+
+    public static TickSyncCompletableFuture<Void> runTickSync(Runnable runnable) {
+        return supplyTickSync(runnableToSupplier(runnable));
+    }
+
+    public <K> TickSyncCompletableFuture<K> thenApplyTickSync(
+        Function<? super T, ? extends K> action) {
+        registerWithEventBus();
+        TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
+        applyFunctions.put(toReturn, action);
+        return toReturn;
+    }
+
+    public TickSyncCompletableFuture<Void> thenAcceptTickSync(Consumer<? super T> action) {
+        return thenApplyTickSync(consumerToFunction(action));
+    }
+
+    public TickSyncCompletableFuture<Void> thenRunTickSync(Runnable action) {
+        return thenApplyTickSync(runnableToFunction(action));
     }
 
     // endregion

@@ -23,8 +23,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 /**
- * An extension of CompletableFuture with thenAcceptTickSync to execute thenAccept on the tick
- * thread
+ * <p>An extension of CompletableFuture with some 'TickSync' suffixed methods like
+ * {@link TickSyncCompletableFuture#supplyTickSync(Supplier)}.</p>
+ *
+ * <p>Any method written like this will have its results executed on the <strong>server tick
+ * thread</strong>. This allows for easily multithreading things that produce results that are
+ * required on the tick thread.<p>
+ *
+ * <p>For example, if you want to calculate digits of PI in another thread and then send them to
+ * the player in chat, you might write:</p>
+ *
+ * <pre>{@code
+ * TickSyncCompletableFuture
+ *      .supplyAsync(() -> generatePi())
+ *      .thenAcceptTickSync(pi -> player.sendMessage(pi));
+ * }</pre>
  */
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class TickSyncCompletableFuture<T> {
@@ -69,10 +82,6 @@ public class TickSyncCompletableFuture<T> {
         toRunOnNextTick.clear();
     }
 
-    public boolean complete(T value) {
-        return base.complete(value);
-    }
-
     public static <K> TickSyncCompletableFuture<K> supplyTickSync(Supplier<K> supplier) {
         TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
         toRunOnNextTick.add(new CompletableSupplier<K>(supplier, toReturn.base));
@@ -83,7 +92,8 @@ public class TickSyncCompletableFuture<T> {
         return supplyTickSync(runnableToSupplier(runnable));
     }
 
-    public <K> TickSyncCompletableFuture<K> thenApplyTickSync(Function<? super T, K> action) {
+    public <K> TickSyncCompletableFuture<K> thenApplyTickSync(
+        Function<? super T, ? extends K> action) {
         TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
         applyFunctions.put(toReturn, action);
         return toReturn;
@@ -91,6 +101,10 @@ public class TickSyncCompletableFuture<T> {
 
     public TickSyncCompletableFuture<Void> thenAcceptTickSync(Consumer<? super T> action) {
         return thenApplyTickSync(consumerToFunction(action));
+    }
+
+    public TickSyncCompletableFuture<Void> thenRunTickSync(Runnable action) {
+        return thenApplyTickSync(runnableToFunction(action));
     }
 
     // region Utility Methods
@@ -102,7 +116,7 @@ public class TickSyncCompletableFuture<T> {
         };
     }
 
-    private static Function<Void, Void> runnableToFunction(Runnable runnable) {
+    private static <K> Function<K, Void> runnableToFunction(Runnable runnable) {
         return k -> {
             runnable.run();
             return null;
@@ -389,6 +403,10 @@ public class TickSyncCompletableFuture<T> {
 
     public boolean cancel(boolean mayInterruptIfRunning) {
         return base.cancel(mayInterruptIfRunning);
+    }
+
+    public boolean complete(T value) {
+        return base.complete(value);
     }
 
     public boolean isCancelled() {

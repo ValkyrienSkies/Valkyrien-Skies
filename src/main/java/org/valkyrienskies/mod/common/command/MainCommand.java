@@ -33,6 +33,7 @@ import picocli.CommandLine.Spec;
         HelpCommand.class,
         MainCommand.ListShips.class,
         MainCommand.DisableShip.class,
+        MainCommand.GC.class,
         MainCommand.TPS.class})
 public class MainCommand implements Runnable {
 
@@ -47,6 +48,19 @@ public class MainCommand implements Runnable {
         String usageMessage = spec.commandLine().getUsageMessage().replace("\r", "");
 
         sender.sendMessage(new TextComponentString(usageMessage));
+    }
+
+    @Command(name = "gc")
+    static class GC implements Runnable {
+
+        @Inject
+        ICommandSender sender;
+
+        public void run() {
+            System.gc();
+            sender.sendMessage(new TextComponentString("Successfully garbage collected"));
+        }
+
     }
 
     @Command(name = "tps")

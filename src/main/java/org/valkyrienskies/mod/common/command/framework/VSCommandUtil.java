@@ -1,16 +1,31 @@
 package org.valkyrienskies.mod.common.command.framework;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class VSCommandUtil {
+
+    /**
+     * The only difference between tab-complete args and proper args is that tab-complete args
+     * retain an empty string element at the end if the tab complete was requesting a new arg.
+     */
+    public static String[] toTabCompleteArgs(String[] args) {
+        List<String> properArgs = translateCommandline(String.join(" ", args));
+
+        if (args[args.length - 1].equals("")) {
+            properArgs.add("");
+        }
+
+        return properArgs.toArray(new String[0]);
+    }
 
     public static String[] toProperArgs(String[] args) {
         return toProperArgs(String.join(" ", args));
     }
 
     public static String[] toProperArgs(String args) {
-        return translateCommandline(args);
+        return translateCommandline(args).toArray(new String[0]);
     }
 
     /**
@@ -18,10 +33,10 @@ public class VSCommandUtil {
      *
      * @see <a href="https://bit.ly/2YYbczE">CommandLine.java</a>
      */
-    private static String[] translateCommandline(String toProcess) {
+    private static ArrayList<String> translateCommandline(String toProcess) {
         if (toProcess == null || toProcess.length() == 0) {
             //no command? no string
-            return new String[0];
+            return new ArrayList<>();
         }
 
         final int normal = 0;
@@ -75,8 +90,7 @@ public class VSCommandUtil {
         if (state == inQuote || state == inDoubleQuote) {
             throw new RuntimeException("unbalanced quotes in " + toProcess);
         }
-        return result.toArray(new String[0]);
+        return result;
     }
-
 
 }

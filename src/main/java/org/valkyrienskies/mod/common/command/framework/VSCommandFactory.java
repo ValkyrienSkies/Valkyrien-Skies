@@ -16,16 +16,23 @@ public class VSCommandFactory implements CommandLine.IFactory {
 
     @Override
     public <K> K create(Class<K> aClass) {
-        //this is very ugly and i'd much rather use porklib unsafe here...
         try {
-            Constructor<K> constructor = aClass.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            K instance = constructor.newInstance();
+            K instance;
+
+            // Instantiate constructor with ICommandSender if applicable
+            try {
+                Constructor<K> constructor = aClass.getDeclaredConstructor(ICommandSender.class);
+                constructor.setAccessible(true);
+                instance = constructor.newInstance(sender);
+            } catch (NoSuchMethodException ex) {
+                Constructor<K> constructor = aClass.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                instance = constructor.newInstance();
+            }
 
             for (Field field : aClass.getDeclaredFields())  {
                 if (ICommandSender.class.isAssignableFrom(field.getType()) &&
                     field.getAnnotation(Inject.class) != null) {
-
                     field.setAccessible(true);
                     field.set(instance, this.sender);
                 }

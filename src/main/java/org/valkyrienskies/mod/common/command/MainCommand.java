@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocompleter;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -100,7 +101,7 @@ public class MainCommand implements Runnable {
         @Spec
         CommandSpec spec;
 
-        @Parameters(index = "0")
+        @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
         String shipName;
 
         @Parameters(index = "1", arity = "0..1")

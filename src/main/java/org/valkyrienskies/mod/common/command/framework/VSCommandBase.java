@@ -67,21 +67,19 @@ public class VSCommandBase<K> extends CommandBase {
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
         final String[] splitArgs, @Nullable BlockPos targetPos) {
 
-        CommandSpec spec = CommandSpec.forAnnotatedObject(cmdClass.newInstance());
-        String[] args = VSCommandUtil.toProperArgs(splitArgs);
+        VSCommandFactory factory = new VSCommandFactory(sender);
+        CommandSpec spec = CommandSpec.forAnnotatedObject(factory.create(cmdClass), factory);
+
+        String[] args = VSCommandUtil.toTabCompleteArgs(splitArgs);
         List<CharSequence> candidates = new ArrayList<>();
 
-        if (args.length == 0) {
-            AutoComplete.complete(spec, args, 0, 0, 500, candidates);
-        } else {
-            AutoComplete.complete(spec, args, args.length - 1,
-                args[args.length - 1].length(), 500, candidates);
-        }
+        AutoComplete.complete(spec, args, args.length - 1,
+            args[args.length - 1].length(), 500, candidates);
 
         return candidates.stream()
             .distinct()
             .map(CharSequence::toString)
-            .map(s -> args.length > 0 ? args[args.length - 1] + s : s)
+            .map(s -> args[args.length - 1] + s)
             .collect(Collectors.toList());
     }
 

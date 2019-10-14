@@ -44,7 +44,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.ChunkCache;
@@ -70,6 +69,8 @@ import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
+import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
+import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
@@ -107,13 +108,17 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      * Just a random block position in the ship. Used to correct floating point errors and keep
      * track of the ship.
      */
-    @Getter @Setter(AccessLevel.PRIVATE)
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
     private BlockPos referenceBlockPos;
-    @Getter @Setter
+    @Getter
+    @Setter
     private Vector centerCoord;
-    @Getter @Setter(AccessLevel.PRIVATE)
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
     private ShipTransformationManager shipTransformationManager;
-    @Getter @Setter
+    @Getter
+    @Setter
     private PhysicsCalculations physicsProcessor;
     /**
      * Has to be concurrent, only exists properly on the server. Do not use this for anything client
@@ -122,16 +127,20 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      */
     @Getter
     private Set<BlockPos> blockPositions;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean isPhysicsEnabled = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private String creator;
-    @Getter @Setter
+    @Getter
+    @Setter
     private DetectorIDs detectorID;
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
     // TODO: Make for re-organizing these to make Ship sizes Dynamic
-    @Getter @Setter
+    @Getter
+    @Setter
     private VSChunkClaim ownedChunks;
     /**
      * Used for faster memory access to the Chunks this object 'owns'
@@ -139,19 +148,24 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     @Getter
     private ClaimedChunkCacheController claimedChunkCache;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private AxisAlignedBB shipBoundingBox;
 
     /**
      * If this PhysicsObject needs to update the collision cache immediately
      */
-    @Getter @Setter(AccessLevel.PRIVATE)
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
     private boolean needsCollisionCacheUpdate = true;
-    @Getter @Setter
+    @Getter
+    @Setter
     private BlockPos physicsInfuserPos = null;
     private boolean shipAligningToGrid = false;
     @Getter
     private boolean isFullyLoaded = false;
+    @Getter
+    private IVoxelFieldAABBMaker voxelFieldAABBMaker; // Used to quickly make aabb's
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         this.wrapperEntity = host;
@@ -167,6 +181,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.blockPositionsGameTick = new TIntArrayList();
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
+        this.voxelFieldAABBMaker = null;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -191,6 +206,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         if (isNewAir) {
             boolean removed = blockPositions().remove(posAt);
+            voxelFieldAABBMaker.removeVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
             if (removed) {
                 this.blockPositionsGameTick.remove(this.getBlockPosToIntRelToShip(posAt));
             }
@@ -198,13 +214,13 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         if (isOldAir && !isNewAir) {
             boolean isAdded = blockPositions().add(posAt);
+            voxelFieldAABBMaker.addVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
             if (isAdded) {
                 this.blockPositionsGameTick.add(this.getBlockPosToIntRelToShip(posAt));
             }
 
             int chunkRelativeX = (posAt.getX() >> 4) - ownedChunks().minX();
             int chunkRelativeZ = (posAt.getZ() >> 4) - ownedChunks().minZ();
-            claimedChunkCache.setChunkOccupiedRelative(chunkRelativeX, chunkRelativeZ, true);
         }
 
         if (blockPositions().isEmpty()) {
@@ -214,13 +230,11 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         if (physicsProcessor() != null) {
             physicsProcessor().onSetBlockState(oldState, newState, posAt);
         }
-
-        // System.out.println(blockPositions.size() + ":" + wrapper.isDead);
     }
 
     public void destroy() {
         wrapperEntity().setDead();
-        List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(watchingPlayers());
+        List<EntityPlayerMP> watchersCopy = new ArrayList<>(watchingPlayers());
         for (int x = ownedChunks().minX(); x <= ownedChunks().maxX(); x++) {
             for (int z = ownedChunks().minZ(); z <= ownedChunks().maxZ(); z++) {
                 SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
@@ -286,6 +300,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     private void assembleShip(EntityPlayer player, SpatialDetector detector,
         BlockPos centerInWorld) {
+
         this.isPhysicsEnabled(true);
         MutableBlockPos pos = new MutableBlockPos();
         TIntIterator iter = detector.foundSet.iterator();
@@ -311,6 +326,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         assignChunkPhysicObject();
 
         referenceBlockPos(ownedChunks().regionCenter());
+        voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
+            referenceBlockPos.getZ());
 
         centerCoord(new Vector(referenceBlockPos().getX() + .5,
             referenceBlockPos().getY() + .5,
@@ -334,6 +351,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 newPos.getZ() + centerDifference.getZ());
 
             MoveBlocks.copyBlockToPos(world(), oldPos, newPos, Optional.of(this));
+            voxelFieldAABBMaker.addVoxel(newPos.getX(), newPos.getY(), newPos.getZ());
         }
         this.physicsInfuserPos = this.physicsInfuserPos.add(centerDifference);
 
@@ -382,28 +400,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         physicsProcessor().updateParentCenterOfMass();
     }
 
-    // Experimental, could fix issues with random shit generating inside of Ships
-    private void replaceOuterChunksWithAir() {
-        for (int x = ownedChunks().minX() - 1; x <= ownedChunks().maxX() + 1; x++) {
-            for (int z = ownedChunks().minZ() - 1; z <= ownedChunks().maxZ() + 1; z++) {
-                if (x == ownedChunks().minX() - 1 || x == ownedChunks().maxX() + 1
-                    || z == ownedChunks().minZ() - 1
-                    || z == ownedChunks().maxZ() + 1) {
-                    // This is satisfied for the chunks surrounding a Ship, do fill it with empty
-                    // space
-                    Chunk chunk = new Chunk(world(), x, z);
-                    ChunkProviderServer provider = (ChunkProviderServer) world()
-                        .getChunkProvider();
-                    chunk.dirty = true;
-                    provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
-                }
-            }
-        }
-    }
-
-    /**
-     * TODO: Add the methods that send the tileEntities in each given chunk
-     */
     public void preloadNewPlayers() {
         Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
         for (Chunk[] chunkArray : claimedChunkCache.getCacheArray()) {
@@ -525,6 +521,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         assignChunkPhysicObject();
         referenceBlockPos(ownedChunks().regionCenter());
+        voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
+            referenceBlockPos.getZ());
         shipTransformationManager(new ShipTransformationManager(this));
         if (!world().isRemote) {
             createPhysicsCalculations();
@@ -550,7 +548,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         for (chunkX = claimedChunks.length - 1; chunkX > -1; chunkX--) {
             for (chunkZ = claimedChunks[0].length - 1; chunkZ > -1; chunkZ--) {
                 chunk = claimedChunks[chunkX][chunkZ];
-                if (chunk != null && claimedChunkCache.isChunkOccupiedRelative(chunkX, chunkZ)) {
+                if (chunk != null) {
                     for (index = 0; index < 16; index++) {
                         storage = chunk.getBlockStorageArray()[index];
                         if (storage != null) {
@@ -566,6 +564,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                                             blockPositions().add(pos);
                                             blockPositionsGameTick
                                                 .add(this.getBlockPosToIntRelToShip(pos));
+                                            voxelFieldAABBMaker
+                                                .addVoxel(pos.getX(), pos.getY(), pos.getZ());
                                             if (BlockPhysicsDetails.isBlockProvidingForce(
                                                 world().getBlockState(pos), pos, world())) {
                                                 physicsProcessor()
@@ -593,12 +593,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         shipTransformationManager().getCurrentTickTransform()
             .writeToNBT(compound, "current_tick_transform");
         compound.setBoolean("doPhysics", isPhysicsEnabled/* isPhysicsEnabled() */);
-        for (int row = 0; row < ownedChunks().dimension(); row++) {
-            boolean[] curArray = claimedChunkCache.chunkOccupiedInLocal()[row];
-            for (int column = 0; column < curArray.length; column++) {
-                compound.setBoolean("CC:" + row + ":" + column, curArray[column]);
-            }
-        }
+
         physicsProcessor().writeToNBTTag(compound);
 
         // TODO: This is occasionally crashing the Ship save
@@ -646,13 +641,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                     compound.getDouble("roll"));
         }
 
-        for (int row = 0; row < ownedChunks().dimension(); row++) {
-            boolean[] curArray = claimedChunkCache.chunkOccupiedInLocal()[row];
-            for (int column = 0; column < curArray.length; column++) {
-                curArray[column] = compound.getBoolean("CC:" + row + ":" + column);
-            }
-        }
-
         loadClaimedChunks();
 
         // After we have loaded which positions are stored in the ship; we load the physics calculations object.
@@ -685,12 +673,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         wrapperEntity().physicsUpdateLastTickPositions();
 
         centerCoord(new Vector(modifiedBuffer));
-        for (boolean[] array : claimedChunkCache.chunkOccupiedInLocal()) {
-            for (int i = 0; i < array.length; i++) {
-                array[i] = modifiedBuffer.readBoolean();
-            }
-        }
         loadClaimedChunks();
+
         shipRenderer().updateOffsetPos(referenceBlockPos());
 
         shipTransformationManager().serverBuffer
@@ -719,11 +703,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         modifiedBuffer.writeDouble(wrapperEntity().getRoll());
 
         centerCoord().writeToByteBuf(modifiedBuffer);
-        for (boolean[] array : claimedChunkCache.chunkOccupiedInLocal()) {
-            for (boolean b : array) {
-                modifiedBuffer.writeBoolean(b);
-            }
-        }
+
         // Make a local copy to avoid potential data races
         BlockPos physicsInfuserPosLocal = physicsInfuserPos();
         modifiedBuffer.writeBoolean(physicsInfuserPosLocal != null);

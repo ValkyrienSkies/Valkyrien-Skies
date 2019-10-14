@@ -19,7 +19,6 @@ package org.valkyrienskies.mod.common.physics.management;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.border.WorldBorder;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
@@ -28,6 +27,8 @@ import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionMessage;
+import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
+import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -222,50 +223,21 @@ public class ShipTransformationManager {
     }
 
     // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
-    public void updateParentAABB() {
-        // Don't run otherwise make the game freeze
-        if (parent.blockPositionsGameTick().isEmpty()) {
+    private void updateParentAABB() {
+        IVoxelFieldAABBMaker aabbMaker = parent.voxelFieldAABBMaker();
+        AxisAlignedBB subspaceBB = aabbMaker.makeVoxelFieldAABB();
+        if (subspaceBB == null) {
+            // The aabbMaker didn't know what the aabb was, just don't update the aabb for now.
             return;
         }
-        final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        // TODO: This is bad, but its fast. Actually this whole algorithm for calculating an AABB
-        //  for a ship is already bad, so we're not really making it much worse.
-        final float[] rawMatrix = getCurrentPhysicsTransform()
-            .generateFastRawTransformMatrix(TransformType.SUBSPACE_TO_GLOBAL);
-
-        float minX, minY, minZ, maxX, maxY, maxZ;
-        minX = minY = minZ = Float.MAX_VALUE;
-        maxX = maxY = maxZ = -Float.MAX_VALUE;
-
-        // We loop through this int list instead of a blockpos list because they fit much better in
-        // the cache,
-        for (int i = parent.blockPositionsGameTick().size() - 1; i >= 0; i--) {
-            // Don't bother doing any bounds checking.
-            int blockPos = parent.blockPositionsGameTick().getQuick(i);
-            parent.setBlockPosFromIntRelToShop(blockPos, pos);
-
-            float x = pos.getX() + .5f;
-            float y = pos.getY() + .5f;
-            float z = pos.getZ() + .5f;
-
-            float newX = x * rawMatrix[0] + y * rawMatrix[1] + z * rawMatrix[2] + rawMatrix[3];
-            float newY = x * rawMatrix[4] + y * rawMatrix[5] + z * rawMatrix[6] + rawMatrix[7];
-            float newZ = x * rawMatrix[8] + y * rawMatrix[9] + z * rawMatrix[10] + rawMatrix[11];
-
-            minX = Math.min(newX, minX);
-            maxX = Math.max(newX, maxX);
-            minY = Math.min(newY, minY);
-            maxY = Math.max(newY, maxY);
-            minZ = Math.min(newZ, minZ);
-            maxZ = Math.max(newZ, maxZ);
-        }
-        AxisAlignedBB newBB = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).grow(3D);
-        // Just a quick sanity check
-        if (newBB.getAverageEdgeLength() < 1000000D) {
-            parent.shipBoundingBox(newBB);
-        } else {
-            throw new IllegalStateException("Unexpectedly large ship bounding box!\n" + newBB);
-        }
+        // Expand subspaceBB by 1 to fit the block grid.
+        subspaceBB = subspaceBB.expand(1, 1, 1);
+        // Now transform the subspaceBB to world coordinates
+        Polygon largerPoly = new Polygon(subspaceBB, getCurrentTickTransform(),
+            TransformType.SUBSPACE_TO_GLOBAL);
+        // Set the ship AABB to that of the polygon.
+        AxisAlignedBB worldBB = largerPoly.getEnclosedAABB();
+        parent.shipBoundingBox(worldBB);
     }
 
     /**

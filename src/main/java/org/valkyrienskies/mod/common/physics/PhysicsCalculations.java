@@ -198,6 +198,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                 .getCurrentTickTransform());
         getParent().shipTransformationManager()
             .setCurrentPhysicsTransform(physicsTransform);
+        // We're doing this afterwards to prevent from prevPhysicsTransform being null.
         getParent().shipTransformationManager()
             .updatePreviousPhysicsTransform();
     }

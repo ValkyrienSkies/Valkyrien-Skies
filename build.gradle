@@ -129,6 +129,10 @@ dependencies {
     shade "gigaherz.graph:GraphLib:$graphlibVersion"
     shade "com.github.ValkyrienSkies:Valkyrien-Skies-API:$vsApiVersion"
 
+    // ODE4j physics engine (https://mvnrepository.com/artifact/org.ode4j/core)
+    // shade group: 'org.ode4j', name: 'core', version: '0.4.0' // 800KB
+    // shade group: 'org.ode4j', name: 'demo', version: '0.4.0'
+
     // javax inject annotation
     shade group: 'javax.inject', name: 'javax.inject', version: '1' // 2KB
 
@@ -146,6 +150,10 @@ dependencies {
     // lombok
     compileOnly "org.projectlombok:lombok:$lombokVersion"
     annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    // junit tests
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
 
 processResources {
@@ -244,7 +252,7 @@ publishing {
 
 import java.util.concurrent.atomic.AtomicReference
 
-AtomicReference<String> mixinPath = new AtomicReference<>(null);
+AtomicReference<String> mixinPath = new AtomicReference<>(null)
 configurations.compile.each {
     String absolutePath = it.absolutePath
     if (absolutePath.contains("mixin")) {
@@ -263,4 +271,9 @@ if (mixinPath != null) {
     )
 } else {
     throw new IllegalStateException("Unable to find mixin path!")
+}
+
+// Junit testing
+test {
+    useJUnitPlatform()
 }

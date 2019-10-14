@@ -484,13 +484,11 @@ public class WorldPhysicsCollider {
         PhysicsShipTransform currentPhysicsTransform = (PhysicsShipTransform) parent
             .shipTransformationManager()
             .getCurrentPhysicsTransform();
-        // final AxisAlignedBB collisionBB = parent.getCollisionBoundingBox()
-        // .expand(calculator.linearMomentum.X * calculator.getInvMass(),
-        // calculator.linearMomentum.Y * calculator.getInvMass(),
-        // calculator.linearMomentum.Z * calculator.getInvMass())
-        // .grow(AABB_EXPANSION);
+
         // Use the physics tick collision box instead of the game tick collision box.
-        final AxisAlignedBB collisionBB = currentPhysicsTransform.getShipBoundingBox()
+        // We are using grow(3) on both because for some reason if we don't then ships start
+        // jiggling through the ground. God I can't wait for a new physics engine.
+        final AxisAlignedBB collisionBB = currentPhysicsTransform.getShipBoundingBox().grow(3)
             .grow(AABB_EXPANSION).expand(
                 calculator.linearMomentum.X * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick() * 5,
@@ -499,7 +497,7 @@ public class WorldPhysicsCollider {
                 calculator.linearMomentum.Z * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick()
                     * 5);
-        final AxisAlignedBB shipBB = currentPhysicsTransform.getShipBoundingBox();
+        final AxisAlignedBB shipBB = currentPhysicsTransform.getShipBoundingBox().grow(3);
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the
         // hopes this will prevent multiple ships from all updating

@@ -2,6 +2,8 @@ package org.valkyrienskies.mod.common.coordinates;
 
 import io.netty.buffer.ByteBuf;
 import javax.annotation.concurrent.Immutable;
+import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.util.math.Vec3d;
 import org.valkyrienskies.mod.common.math.Vector;
 
 /**
@@ -12,17 +14,13 @@ import org.valkyrienskies.mod.common.math.Vector;
  * @author thebest108
  */
 @Immutable
-public class VectorImmutable {
+@MethodsReturnNonnullByDefault
+public class VectorImmutable extends Vec3d {
 
     public static final VectorImmutable ZERO_VECTOR = new VectorImmutable(0, 0, 0);
-    private final double x;
-    private final double y;
-    private final double z;
 
     public VectorImmutable(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        super(x, y, z);
     }
 
     public VectorImmutable(Vector vectorData) {

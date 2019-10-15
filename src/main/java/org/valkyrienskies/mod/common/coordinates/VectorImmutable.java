@@ -24,7 +24,7 @@ public class VectorImmutable extends Vec3d {
     }
 
     public VectorImmutable(Vector vectorData) {
-        this(vectorData.X, vectorData.Y, vectorData.Z);
+        this(vectorData.x, vectorData.y, vectorData.z);
     }
 
     public static VectorImmutable readFromByteBuf(ByteBuf bufToRead) {

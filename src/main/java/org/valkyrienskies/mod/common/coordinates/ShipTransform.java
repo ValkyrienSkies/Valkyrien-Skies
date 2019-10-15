@@ -124,8 +124,8 @@ public class ShipTransform {
     public BlockPos transform(BlockPos pos, TransformType transformType) {
         Vector blockPosAsVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
         transform(blockPosAsVector, transformType);
-        return new BlockPos(blockPosAsVector.X - .5D, blockPosAsVector.Y - .5D,
-            blockPosAsVector.Z - .5D);
+        return new BlockPos(blockPosAsVector.x - .5D, blockPosAsVector.y - .5D,
+            blockPosAsVector.z - .5D);
     }
 
     public Quaternion createRotationQuaternion(TransformType transformType) {

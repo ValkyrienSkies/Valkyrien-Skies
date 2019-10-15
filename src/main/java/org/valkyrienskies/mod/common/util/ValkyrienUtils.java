@@ -15,7 +15,7 @@ import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import valkyrienwarfare.api.TransformType;

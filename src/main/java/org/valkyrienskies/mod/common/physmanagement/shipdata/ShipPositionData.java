@@ -10,6 +10,7 @@ import org.valkyrienskies.mod.common.math.Vector;
 public class ShipPositionData {
 
     private final Vector shipPosition;
+
     @Getter
     private ShipTransform transform;
 
@@ -22,23 +23,23 @@ public class ShipPositionData {
     }
 
     void updateData(PhysicsWrapperEntity wrapper) {
-        shipPosition.X = wrapper.posX;
-        shipPosition.Y = wrapper.posY;
-        shipPosition.Z = wrapper.posZ;
+        shipPosition.x = wrapper.posX;
+        shipPosition.y = wrapper.posY;
+        shipPosition.z = wrapper.posZ;
         transform =
             wrapper.getPhysicsObject().shipTransformationManager().getCurrentTickTransform();
     }
 
     public double getPosX() {
-        return shipPosition.X;
+        return shipPosition.x;
     }
 
     public double getPosY() {
-        return shipPosition.Y;
+        return shipPosition.y;
     }
 
     public double getPosZ() {
-        return shipPosition.Z;
+        return shipPosition.z;
     }
 
 }

@@ -70,8 +70,8 @@ import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VSWorldEventListener;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
@@ -339,9 +339,9 @@ public class EventsCommon {
             }
             // Explosion radius
             float radius = explosion.size;
-            AxisAlignedBB toCheck = new AxisAlignedBB(center.X - radius, center.Y - radius,
-                center.Z - radius,
-                center.X + radius, center.Y + radius, center.Z + radius);
+            AxisAlignedBB toCheck = new AxisAlignedBB(center.x - radius, center.y - radius,
+                center.z - radius,
+                center.x + radius, center.y + radius, center.z + radius);
             // Find nearby ships, we will check if the explosion effects them
             List<PhysicsWrapperEntity> shipsNear = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                 .getManagerForWorld(event.getWorld())
@@ -353,8 +353,8 @@ public class EventsCommon {
                 ship.getPhysicsObject().shipTransformationManager().getCurrentTickTransform()
                     .transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
 
-                Explosion expl = new Explosion(event.getWorld(), null, inLocal.X, inLocal.Y,
-                    inLocal.Z, radius, explosion.causesFire, true);
+                Explosion expl = new Explosion(event.getWorld(), null, inLocal.x, inLocal.y,
+                    inLocal.z, radius, explosion.causesFire, true);
 
                 double waterRange = .6D;
 

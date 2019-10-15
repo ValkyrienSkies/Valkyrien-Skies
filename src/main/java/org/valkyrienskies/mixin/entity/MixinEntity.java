@@ -37,7 +37,7 @@ import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
@@ -264,9 +264,9 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
                 physicsObject.get()
                     .shipTransformationManager()
                     .fromLocalToGlobal(posVec);
-                posVec.X -= this.posX;
-                posVec.Y -= this.posY;
-                posVec.Z -= this.posZ;
+                posVec.x -= this.posX;
+                posVec.y -= this.posY;
+                posVec.z -= this.posZ;
                 if (vanilla > posVec.lengthSq()) {
                     return posVec.lengthSq();
                 }
@@ -292,9 +292,9 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
                 physicsObject.get()
                     .shipTransformationManager()
                     .fromLocalToGlobal(posVec);
-                posVec.X -= this.posX;
-                posVec.Y -= this.posY;
-                posVec.Z -= this.posZ;
+                posVec.x -= this.posX;
+                posVec.y -= this.posY;
+                posVec.z -= this.posZ;
                 if (vanilla > posVec.lengthSq()) {
                     return posVec.lengthSq();
                 }
@@ -315,7 +315,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
 //            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
             worldBelow.getPhysicsObject().shipTransformationManager().getCurrentTickTransform()
                 .transform(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
-            return MathHelper.floor(searchVector.X);
+            return MathHelper.floor(searchVector.x);
         }
     }
 
@@ -324,7 +324,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (searchVector == null) {
             return MathHelper.floor(d);
         } else {
-            return MathHelper.floor(searchVector.Y);
+            return MathHelper.floor(searchVector.y);
         }
     }
 
@@ -333,7 +333,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (searchVector == null) {
             return MathHelper.floor(d);
         } else {
-            return MathHelper.floor(searchVector.Z);
+            return MathHelper.floor(searchVector.z);
         }
     }
 

@@ -112,9 +112,9 @@ public abstract class MixinEntityLivingBase extends Entity implements ISubspaced
             Vector playerPos = new Vector(EntityLivingBase.class.cast(this));
             physWrapper.getPhysicsObject().shipTransformationManager()
                 .fromGlobalToLocal(playerPos);
-            int i = MathHelper.floor(playerPos.X);
-            int j = MathHelper.floor(playerPos.Y);
-            int k = MathHelper.floor(playerPos.Z);
+            int i = MathHelper.floor(playerPos.x);
+            int j = MathHelper.floor(playerPos.y);
+            int k = MathHelper.floor(playerPos.z);
 
             BlockPos blockpos = new BlockPos(i, j, k);
             IBlockState iblockstate = this.world.getBlockState(blockpos);

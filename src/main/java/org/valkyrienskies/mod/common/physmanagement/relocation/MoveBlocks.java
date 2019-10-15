@@ -11,7 +11,7 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class MoveBlocks {
 

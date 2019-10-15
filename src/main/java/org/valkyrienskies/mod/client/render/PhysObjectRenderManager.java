@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.proxy.ClientProxy;
 import valkyrienwarfare.api.TransformType;
 
@@ -181,9 +181,9 @@ public class PhysObjectRenderManager {
         Vector renderPos = new Vector(centerOfRotation);
         renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
 
-        double moddedX = renderPos.X;
-        double moddedY = renderPos.Y;
-        double moddedZ = renderPos.Z;
+        double moddedX = renderPos.x;
+        double moddedY = renderPos.y;
+        double moddedZ = renderPos.z;
 
         double[] radians = renderTransform
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL).toRadians();
@@ -193,9 +193,9 @@ public class PhysObjectRenderManager {
         double moddedRoll = Math.toDegrees(radians[2]);
         // Offset pos is used to prevent floating point errors when rendering stuff thats very far away.
         if (offsetPos != null) {
-            double offsetX = offsetPos.getX() - centerOfRotation.X;
-            double offsetY = offsetPos.getY() - centerOfRotation.Y;
-            double offsetZ = offsetPos.getZ() - centerOfRotation.Z;
+            double offsetX = offsetPos.getX() - centerOfRotation.x;
+            double offsetY = offsetPos.getY() - centerOfRotation.y;
+            double offsetZ = offsetPos.getZ() - centerOfRotation.z;
 
             GlStateManager.translate(-p0 + moddedX, -p1 + moddedY, -p2 + moddedZ);
             GL11.glRotated(moddedPitch, 1D, 0, 0);
@@ -232,9 +232,9 @@ public class PhysObjectRenderManager {
         Vector renderPos = new Vector(centerOfRotation);
         renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
 
-        double moddedX = renderPos.X;
-        double moddedY = renderPos.Y;
-        double moddedZ = renderPos.Z;
+        double moddedX = renderPos.x;
+        double moddedY = renderPos.y;
+        double moddedZ = renderPos.z;
 
         double[] radians = renderTransform
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL).toRadians();
@@ -244,9 +244,9 @@ public class PhysObjectRenderManager {
         double moddedRoll = Math.toDegrees(radians[2]);
 
         if (offsetPos != null) {
-            double offsetX = offsetPos.getX() - centerOfRotation.X;
-            double offsetY = offsetPos.getY() - centerOfRotation.Y;
-            double offsetZ = offsetPos.getZ() - centerOfRotation.Z;
+            double offsetX = offsetPos.getX() - centerOfRotation.x;
+            double offsetY = offsetPos.getY() - centerOfRotation.y;
+            double offsetZ = offsetPos.getZ() - centerOfRotation.z;
 
             GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
             GL11.glRotated(-moddedRoll, 0, 0, 1D);

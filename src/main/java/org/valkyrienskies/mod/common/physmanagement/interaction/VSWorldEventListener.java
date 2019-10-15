@@ -38,7 +38,7 @@ import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -150,9 +150,9 @@ public class VSWorldEventListener implements IWorldEventListener {
                         .transform(posVector,
                             TransformType.SUBSPACE_TO_GLOBAL));
 
-                    double d0 = posVector.X - entityplayermp.posX;
-                    double d1 = posVector.Y - entityplayermp.posY;
-                    double d2 = posVector.Z - entityplayermp.posZ;
+                    double d0 = posVector.x - entityplayermp.posX;
+                    double d1 = posVector.y - entityplayermp.posY;
+                    double d2 = posVector.z - entityplayermp.posZ;
 
                     if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
                         ((EntityPlayerMP) entityplayermp).connection

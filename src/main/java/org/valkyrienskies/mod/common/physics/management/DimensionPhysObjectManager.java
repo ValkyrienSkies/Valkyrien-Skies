@@ -32,7 +32,7 @@ public class DimensionPhysObjectManager {
     /**
      * Kinda like a preorder, order one now!
      */
-    void onShipPreload(PhysicsWrapperEntity toPreload) {
+    public void onShipPreload(PhysicsWrapperEntity toPreload) {
         getManagerForWorld(toPreload.world).preloadPhysicsWrapperEntityMappings(toPreload);
     }
 

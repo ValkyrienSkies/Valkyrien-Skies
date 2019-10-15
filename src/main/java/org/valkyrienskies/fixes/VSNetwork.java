@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
@@ -52,14 +52,14 @@ public class VSNetwork {
             if (packetIn instanceof SPacketSoundEffect) {
                 SPacketSoundEffect soundEffect = (SPacketSoundEffect) packetIn;
                 packetIn = new SPacketSoundEffect(soundEffect.sound, soundEffect.category,
-                    packetPosition.X, packetPosition.Y, packetPosition.Z, soundEffect.soundVolume,
+                    packetPosition.x, packetPosition.y, packetPosition.z, soundEffect.soundVolume,
                     soundEffect.soundPitch);
             }
 
             if (packetIn instanceof SPacketEffect) {
                 SPacketEffect effect = (SPacketEffect) packetIn;
-                BlockPos blockpos = new BlockPos(packetPosition.X, packetPosition.Y,
-                    packetPosition.Z);
+                BlockPos blockpos = new BlockPos(packetPosition.x, packetPosition.y,
+                    packetPosition.z);
                 packetIn = new SPacketEffect(effect.soundType, blockpos, effect.soundData,
                     effect.serverWide);
             }
@@ -76,9 +76,9 @@ public class VSNetwork {
                 double d1 = y - entityplayermp.posY;
                 double d2 = z - entityplayermp.posZ;
 
-                double d3 = packetPosition.X - entityplayermp.posX;
-                double d4 = packetPosition.Y - entityplayermp.posY;
-                double d5 = packetPosition.Z - entityplayermp.posZ;
+                double d3 = packetPosition.x - entityplayermp.posX;
+                double d4 = packetPosition.y - entityplayermp.posY;
+                double d5 = packetPosition.z - entityplayermp.posZ;
 
                 // Cover both cases; if player is in ship space or if player is in world space.
                 if ((d0 * d0 + d1 * d1 + d2 * d2 < radius * radius) || (d3 * d3 + d4 * d4 + d5 * d5

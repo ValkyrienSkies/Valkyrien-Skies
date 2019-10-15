@@ -14,7 +14,7 @@
  *
  */
 
-package org.valkyrienskies.mod.common.physics.management;
+package org.valkyrienskies.mod.common.physics.management.physo;
 
 import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
@@ -64,6 +64,7 @@ import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
+import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
@@ -90,6 +91,10 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     @Getter
     private final PhysicsWrapperEntity wrapperEntity;
+
+    //private final PhysoPositionData posdata;
+    //private final PhysoMetadata metadata;
+
     @Getter
     private final List<EntityPlayerMP> watchingPlayers;
     private final ISubspace shipSubspace;
@@ -128,9 +133,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     private boolean isPhysicsEnabled = false;
     @Getter
     @Setter
-    private String creator;
-    @Getter
-    @Setter
     private DetectorIDs detectorID;
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
@@ -143,11 +145,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      */
     @Getter
     private ClaimedChunkCacheController claimedChunkCache;
-
     @Getter
     @Setter
     private AxisAlignedBB shipBoundingBox;
-
     /**
      * If this PhysicsObject needs to update the collision cache immediately
      */
@@ -609,12 +609,14 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         // });
         // compound.setString("allowedUsers", result.substring(0, result.length() - 1));
 
-        compound.setString("owner", this.creator());
         // Write and read AABB from NBT to speed things up.
         ValkyrienNBTUtils.writeAABBToNBT("collision_aabb", shipBoundingBox(), compound);
         ValkyrienNBTUtils.writeBlockPosToNBT("physics_infuser_pos", physicsInfuserPos, compound);
     }
 
+    /**
+     * Begins to load the ship
+     */
     public void readFromNBTTag(NBTTagCompound compound) {
         // This first
         centerCoord(ValkyrienNBTUtils.readVectorFromNBT("c", compound));
@@ -625,13 +627,14 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         ownedChunks(new VSChunkClaim(compound));
         ShipTransform savedTransform = ShipTransform
             .readFromNBT(compound, "current_tick_transform");
+
         if (savedTransform != null) {
             Vector centerOfMassInGlobal = new Vector(centerCoord());
             savedTransform.transform(centerOfMassInGlobal, TransformType.SUBSPACE_TO_GLOBAL);
 
-            wrapperEntity().posX = centerOfMassInGlobal.X;
-            wrapperEntity().posY = centerOfMassInGlobal.Y;
-            wrapperEntity().posZ = centerOfMassInGlobal.Z;
+            wrapperEntity().posX = centerOfMassInGlobal.x;
+            wrapperEntity().posY = centerOfMassInGlobal.y;
+            wrapperEntity().posZ = centerOfMassInGlobal.z;
 
             Quaternion rotationQuaternion = savedTransform
                 .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
@@ -639,19 +642,12 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             wrapperEntity()
                 .setPhysicsEntityRotation(Math.toDegrees(angles[0]), Math.toDegrees(angles[1]),
                     Math.toDegrees(angles[2]));
-        } else {
-            // Old code here for compatibility reasons. Should be removed by MC 1.13
-            wrapperEntity()
-                .setPhysicsEntityRotation(compound.getDouble("pitch"), compound.getDouble("yaw"),
-                    compound.getDouble("roll"));
         }
 
         loadClaimedChunks();
 
         // After we have loaded which positions are stored in the ship; we load the physics calculations object.
         physicsProcessor().readFromNBTTag(compound);
-
-        creator(compound.getString("owner"));
 
         this.shipBoundingBox(ValkyrienNBTUtils.readAABBFromNBT("collision_aabb", compound));
 
@@ -809,9 +805,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         // We're pretty close to the grid; time 2 go.
         MutableBlockPos newPos = new MutableBlockPos();
         BlockPos centerDifference = new BlockPos(
-            Math.round(centerCoord.X - wrapperEntity().posX),
-            Math.round(centerCoord.Y - wrapperEntity().posY),
-            Math.round(centerCoord.Z - wrapperEntity().posZ));
+            Math.round(centerCoord.x - wrapperEntity().posX),
+            Math.round(centerCoord.y - wrapperEntity().posY),
+            Math.round(centerCoord.z - wrapperEntity().posZ));
         // First copy all the blocks from ship to world.
 
         for (BlockPos oldPos : this.blockPositions) {

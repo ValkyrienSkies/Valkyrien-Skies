@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager.DetectorIDs;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
@@ -67,7 +67,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         w.posZ = te.getPos()
             .getZ();
 
-        w.getPhysicsObject().creator("unknown");
         w.superSetCustomName(NounListNameGenerator.instance().generateName());
 
         w.getPhysicsObject().detectorID(DetectorIDs.ShipSpawnerGeneral);

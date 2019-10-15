@@ -58,8 +58,8 @@ import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.IWorldShipManager;
@@ -151,9 +151,9 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
                 .getCurrentTickTransform()
                 .transform(newPosVec,
                     TransformType.SUBSPACE_TO_GLOBAL);
-            x = newPosVec.X;
-            y = newPosVec.Y;
-            z = newPosVec.Z;
+            x = newPosVec.x;
+            y = newPosVec.y;
+            z = newPosVec.z;
         }
         for (int i = 0; i < this.eventListeners.size(); ++i) {
             this.eventListeners.get(i)

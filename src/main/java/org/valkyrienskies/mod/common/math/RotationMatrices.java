@@ -50,7 +50,7 @@ public class RotationMatrices {
         input = RotationMatrices.getMatrixProduct(input,
             RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
         input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getTranslationMatrix(-localOrigin.X, -localOrigin.Y, -localOrigin.Z));
+            RotationMatrices.getTranslationMatrix(-localOrigin.x, -localOrigin.y, -localOrigin.z));
         return input;
     }
 
@@ -135,12 +135,12 @@ public class RotationMatrices {
     }
 
     public static void applyTransform(double[] M, Vector vec) {
-        double x = vec.X;
-        double y = vec.Y;
-        double z = vec.Z;
-        vec.X = x * M[0] + y * M[1] + z * M[2] + M[3];
-        vec.Y = x * M[4] + y * M[5] + z * M[6] + M[7];
-        vec.Z = x * M[8] + y * M[9] + z * M[10] + M[11];
+        double x = vec.x;
+        double y = vec.y;
+        double z = vec.z;
+        vec.x = x * M[0] + y * M[1] + z * M[2] + M[3];
+        vec.y = x * M[4] + y * M[5] + z * M[6] + M[7];
+        vec.z = x * M[8] + y * M[9] + z * M[10] + M[11];
     }
 
     /**
@@ -185,9 +185,9 @@ public class RotationMatrices {
 
         if (entity instanceof EntityFireball) {
             EntityFireball ball = (EntityFireball) entity;
-            entityMotion.X = ball.accelerationX;
-            entityMotion.Y = ball.accelerationY;
-            entityMotion.Z = ball.accelerationZ;
+            entityMotion.x = ball.accelerationX;
+            entityMotion.y = ball.accelerationY;
+            entityMotion.z = ball.accelerationZ;
         }
 
         shipTransform.transform(entityPos, transformType);
@@ -212,34 +212,34 @@ public class RotationMatrices {
 
         if (entity instanceof EntityFireball) {
             EntityFireball ball = (EntityFireball) entity;
-            ball.accelerationX = entityMotion.X;
-            ball.accelerationY = entityMotion.Y;
-            ball.accelerationZ = entityMotion.Z;
+            ball.accelerationX = entityMotion.x;
+            ball.accelerationY = entityMotion.y;
+            ball.accelerationZ = entityMotion.z;
         }
 
-        entity.motionX = entityMotion.X;
-        entity.motionY = entityMotion.Y;
-        entity.motionZ = entityMotion.Z;
+        entity.motionX = entityMotion.x;
+        entity.motionY = entityMotion.y;
+        entity.motionZ = entityMotion.z;
 
-        entity.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
+        entity.setPosition(entityPos.x, entityPos.y, entityPos.z);
     }
 
     public static void applyTransform3by3(double[] M, Vector vec) {
-        double xx = vec.X;
-        double yy = vec.Y;
-        double zz = vec.Z;
-        vec.X = (xx * M[0] + yy * M[1] + zz * M[2]);
-        vec.Y = (xx * M[3] + yy * M[4] + zz * M[5]);
-        vec.Z = (xx * M[6] + yy * M[7] + zz * M[8]);
+        double xx = vec.x;
+        double yy = vec.y;
+        double zz = vec.z;
+        vec.x = (xx * M[0] + yy * M[1] + zz * M[2]);
+        vec.y = (xx * M[3] + yy * M[4] + zz * M[5]);
+        vec.z = (xx * M[6] + yy * M[7] + zz * M[8]);
     }
 
     public static void doRotationOnly(double[] M, Vector vec) {
-        double x = vec.X;
-        double y = vec.Y;
-        double z = vec.Z;
-        vec.X = x * M[0] + y * M[1] + z * M[2];
-        vec.Y = x * M[4] + y * M[5] + z * M[6];
-        vec.Z = x * M[8] + y * M[9] + z * M[10];
+        double x = vec.x;
+        double y = vec.y;
+        double z = vec.z;
+        vec.x = x * M[0] + y * M[1] + z * M[2];
+        vec.y = x * M[4] + y * M[5] + z * M[6];
+        vec.z = x * M[8] + y * M[9] + z * M[10];
     }
 
     public static Vector get3by3TransformedVec(double[] M, Vector v) {

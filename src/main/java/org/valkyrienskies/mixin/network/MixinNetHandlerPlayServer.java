@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -72,7 +72,7 @@ public abstract class MixinNetHandlerPlayServer {
                     // player.sendMessage(new TextComponentString("Transformed the player tp from <"
                     // + x + ":" + y + ":" + z + "> to" + tpPos));
                     thisAsNetHandler
-                        .setPlayerLocation(tpPos.X, tpPos.Y, tpPos.Z, yaw, pitch, relativeSet);
+                        .setPlayerLocation(tpPos.x, tpPos.y, tpPos.z, yaw, pitch, relativeSet);
                 } else {
                     player.sendMessage(new TextComponentString(
                         "Tried teleporting you to an unloaded ship; teleportation canceled."));

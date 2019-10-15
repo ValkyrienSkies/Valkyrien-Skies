@@ -108,7 +108,7 @@ public class PhysicsParticleManager {
                 physicsSource.getParent().shipTransformationManager()
                     .getCurrentPhysicsTransform()
                     .transform(bufferVector, TransformType.GLOBAL_TO_SUBSPACE);
-                bufferBlockPos.setPos(bufferVector.X, bufferVector.Y, bufferVector.Z);
+                bufferBlockPos.setPos(bufferVector.x, bufferVector.y, bufferVector.z);
                 if (!canParticlePassThrough(physicsSource.getParent().world(), bufferBlockPos)) {
                     this.isParticleDead = true;
                     addMomentumToShip = true;

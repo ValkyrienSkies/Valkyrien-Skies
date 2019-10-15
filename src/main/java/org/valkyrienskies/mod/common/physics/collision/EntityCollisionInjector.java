@@ -99,13 +99,13 @@ public class EntityCollisionInjector {
                         // TODO: Add more potential yResponses
                         double stepSquared = entity.stepHeight * entity.stepHeight;
                         boolean isStep = isLiving && entity.onGround;
-                        if (response.Y >= 0
+                        if (response.y >= 0
                             && VSMath.canStandOnNormal(
                             fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
                             Vector slowButStopped = new Vector(0,
                                 -fast.getCollisions()[fast.getMinDistanceIndex()]
                                     .getCollisionPenetrationDistance() / fast
-                                    .getCollisionAxes()[fast.getMinDistanceIndex()].Y, 0);
+                                    .getCollisionAxes()[fast.getMinDistanceIndex()].y, 0);
 
                             response = slowButStopped;
                         }
@@ -115,7 +115,7 @@ public class EntityCollisionInjector {
                                 || Math.abs(living.moveStrafing) > .01D) {
                                 for (int i = 3; i < 6; i++) {
                                     Vector tempResponse = fast.getCollisions()[i].getResponse();
-                                    if (tempResponse.Y > 0
+                                    if (tempResponse.y > 0
                                         && VSMath.canStandOnNormal(
                                         fast.getCollisions()[i].getCollisionNormal())
                                         && tempResponse.lengthSq() < stepSquared) {
@@ -126,8 +126,8 @@ public class EntityCollisionInjector {
                                             // System.out.println("Try Stepping!");
                                             AxisAlignedBB axisalignedbb = entity
                                                 .getEntityBoundingBox()
-                                                .offset(tempResponse.X, tempResponse.Y,
-                                                    tempResponse.Z);
+                                                .offset(tempResponse.x, tempResponse.y,
+                                                    tempResponse.z);
                                             entity.setEntityBoundingBox(axisalignedbb);
                                             // I think this correct, but it may create more problems than it solves
                                             response.zero();
@@ -140,27 +140,27 @@ public class EntityCollisionInjector {
                             }
                         }
                         // total.add(response);
-                        if (Math.abs(response.X) > .01D) {
-                            total.X += response.X;
+                        if (Math.abs(response.x) > .01D) {
+                            total.x += response.x;
                         }
-                        if (Math.abs(response.Y) > .01D) {
-                            total.Y += response.Y;
+                        if (Math.abs(response.y) > .01D) {
+                            total.y += response.y;
                         }
-                        if (Math.abs(response.Z) > .01D) {
-                            total.Z += response.Z;
+                        if (Math.abs(response.z) > .01D) {
+                            total.z += response.z;
                         }
 
-                        entity.posX += response.X;
-                        entity.posY += response.Y;
-                        entity.posZ += response.Z;
+                        entity.posX += response.x;
+                        entity.posY += response.y;
+                        entity.posZ += response.z;
 
-                        posOffestX += response.X;
-                        posOffestY += response.Y;
-                        posOffestZ += response.Z;
+                        posOffestX += response.x;
+                        posOffestY += response.y;
+                        posOffestZ += response.z;
 
                         AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox()
-                            .offset(response.X, response.Y,
-                                response.Z);
+                            .offset(response.x, response.y,
+                                response.z);
                         entity.setEntityBoundingBox(axisalignedbb);
                         entity.resetPositionToBB();
 
@@ -183,9 +183,9 @@ public class EntityCollisionInjector {
             return null;
         }
 
-        dx += total.X;
-        dy += total.Y;
-        dz += total.Z;
+        dx += total.x;
+        dy += total.y;
+        dz += total.z;
 
         boolean alreadyOnGround = entity.onGround && (dy == origDy) && origDy < 0;
         Vector original = new Vector(origDx, origDy, origDz);
@@ -257,17 +257,17 @@ public class EntityCollisionInjector {
 
     public static void alterEntityMovementPost(Entity entity,
         IntermediateMovementVariableStorage storage) {
-        double dx = storage.dxyz.X;
-        double dy = storage.dxyz.Y;
-        double dz = storage.dxyz.Z;
+        double dx = storage.dxyz.x;
+        double dy = storage.dxyz.y;
+        double dz = storage.dxyz.z;
 
-        double origDx = storage.origDxyz.X;
-        double origDy = storage.origDxyz.Y;
-        double origDz = storage.origDxyz.Z;
+        double origDx = storage.origDxyz.x;
+        double origDy = storage.origDxyz.y;
+        double origDz = storage.origDxyz.z;
 
-        double origPosX = storage.origPosXyz.X;
-        double origPosY = storage.origPosXyz.Y;
-        double origPosZ = storage.origPosXyz.Z;
+        double origPosX = storage.origPosXyz.x;
+        double origPosY = storage.origPosXyz.y;
+        double origPosZ = storage.origPosXyz.z;
 
         boolean alreadyOnGround = storage.alreadyOnGround;
         double motionYBefore = storage.motionYBefore;
@@ -291,9 +291,9 @@ public class EntityCollisionInjector {
             .transform(entityPosInShip,
                 TransformType.GLOBAL_TO_SUBSPACE);
 
-        int j4 = MathHelper.floor(entityPosInShip.X);
-        int l4 = MathHelper.floor(entityPosInShip.Y);
-        int i5 = MathHelper.floor(entityPosInShip.Z);
+        int j4 = MathHelper.floor(entityPosInShip.x);
+        int l4 = MathHelper.floor(entityPosInShip.y);
+        int i5 = MathHelper.floor(entityPosInShip.z);
         BlockPos blockpos = new BlockPos(j4, l4, i5);
         IBlockState iblockstate = entity.world.getBlockState(blockpos);
 
@@ -471,7 +471,7 @@ public class EntityCollisionInjector {
                 // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
                 // entityPos);
 
-                setEntityPositionAndUpdateBB(entity, entityPos.X, entityPos.Y, entityPos.Z);
+                setEntityPositionAndUpdateBB(entity, entityPos.x, entityPos.y, entityPos.z);
 
                 int entityChunkX = MathHelper.floor(entity.posX / 16.0D);
                 int entityChunkZ = MathHelper.floor(entity.posZ / 16.0D);

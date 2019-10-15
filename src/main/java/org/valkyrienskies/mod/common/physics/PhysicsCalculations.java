@@ -44,8 +44,8 @@ import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -143,12 +143,12 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             gameTickCenterOfMass = new org.valkyrienskies.mod.common.math.Vector(x, y, z);
             gameMoITensor = RotationMatrices.getZeroMatrix(3);
         }
-        double cmShiftX = prevCenterOfMass.X - gameTickCenterOfMass.X;
-        double cmShiftY = prevCenterOfMass.Y - gameTickCenterOfMass.Y;
-        double cmShiftZ = prevCenterOfMass.Z - gameTickCenterOfMass.Z;
-        double rx = x - gameTickCenterOfMass.X;
-        double ry = y - gameTickCenterOfMass.Y;
-        double rz = z - gameTickCenterOfMass.Z;
+        double cmShiftX = prevCenterOfMass.x - gameTickCenterOfMass.x;
+        double cmShiftY = prevCenterOfMass.y - gameTickCenterOfMass.y;
+        double cmShiftZ = prevCenterOfMass.z - gameTickCenterOfMass.z;
+        double rx = x - gameTickCenterOfMass.x;
+        double ry = y - gameTickCenterOfMass.y;
+        double rz = z - gameTickCenterOfMass.z;
 
         gameMoITensor[0] =
             gameMoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * gameTickMass
@@ -277,9 +277,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                     .getCurrentPhysicsTransform()
                     .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
             }
-            getParent().wrapperEntity().posX -= CMDif.X;
-            getParent().wrapperEntity().posY -= CMDif.Y;
-            getParent().wrapperEntity().posZ -= CMDif.Z;
+            getParent().wrapperEntity().posX -= CMDif.x;
+            getParent().wrapperEntity().posY -= CMDif.y;
+            getParent().wrapperEntity().posZ -= CMDif.z;
 
             getParent().centerCoord().setValue(gameTickCenterOfMass);
         }
@@ -296,9 +296,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
             getParent().shipTransformationManager().getCurrentPhysicsTransform()
                 .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
-            physX += CMDif.X;
-            physY += CMDif.Y;
-            physZ += CMDif.Z;
+            physX += CMDif.x;
+            physY += CMDif.y;
+            physZ += CMDif.z;
 
             physCenterOfMass.setValue(gameTickCenterOfMass);
         }
@@ -403,13 +403,13 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                             parent.shipTransformationManager().getCurrentPhysicsTransform()
                                 .transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
                             // System.out.println(particlePos);
-                            float posX = (float) particlePos.X;
-                            float posY = (float) particlePos.Y;
-                            float posZ = (float) particlePos.Z;
+                            float posX = (float) particlePos.x;
+                            float posY = (float) particlePos.y;
+                            float posZ = (float) particlePos.z;
                             float particleMass = 5f;
-                            float velX = (float) -(blockForce.X / particleMass);
-                            float velY = (float) -(blockForce.Y / particleMass);
-                            float velZ = (float) -(blockForce.Z / particleMass);
+                            float velX = (float) -(blockForce.x / particleMass);
+                            float velY = (float) -(blockForce.y / particleMass);
+                            float velZ = (float) -(blockForce.z / particleMass);
                             // Half a second
                             float particleLife = .5f;
                             // System.out.println(blockForce);
@@ -534,8 +534,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         ShipTransformationManager coordTrans = getParent().shipTransformationManager();
 
         double[] rotationChange = RotationMatrices
-            .getRotationMatrix(angularVelocity.X, angularVelocity.Y,
-                angularVelocity.Z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
+            .getRotationMatrix(angularVelocity.x, angularVelocity.y,
+                angularVelocity.z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
 
         // Take the product of the current rotation with the change in rotation that results from
         // the angular velocity. Then change our pitch/yaw/roll based on the result.
@@ -557,9 +557,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private void integrateLinearVelocity() {
         double momentMod = getPhysicsTimeDeltaPerPhysTick() * getInvMass();
 
-        physX += (linearMomentum.X * momentMod);
-        physY += (linearMomentum.Y * momentMod);
-        physZ += (linearMomentum.Z * momentMod);
+        physX += (linearMomentum.x * momentMod);
+        physY += (linearMomentum.y * momentMod);
+        physZ += (linearMomentum.z * momentMod);
         physY = Math.min(Math.max(physY, VSConfig.shipLowerLimit), VSConfig.shipUpperLimit);
     }
 
@@ -567,9 +567,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         org.valkyrienskies.mod.common.math.Vector inBodyWO) {
         org.valkyrienskies.mod.common.math.Vector speed = angularVelocity.cross(inBodyWO);
         double invMass = getInvMass();
-        speed.X += (linearMomentum.X * invMass);
-        speed.Y += (linearMomentum.Y * invMass);
-        speed.Z += (linearMomentum.Z * invMass);
+        speed.x += (linearMomentum.x * invMass);
+        speed.y += (linearMomentum.y * invMass);
+        speed.z += (linearMomentum.z * invMass);
         return speed;
     }
 

@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.valkyrienskies.addon.control.fuel.IValkyriumEngine;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -72,7 +72,7 @@ public class TileEntityValkyriumCompressorPart extends
                 .shipTransformationManager()
                 .getCurrentPhysicsTransform()
                 .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
-            double yPos = tilePos.Y;
+            double yPos = tilePos.y;
             return IValkyriumEngine.getValkyriumEfficiencyFromHeight(yPos);
         } else {
             return 1;

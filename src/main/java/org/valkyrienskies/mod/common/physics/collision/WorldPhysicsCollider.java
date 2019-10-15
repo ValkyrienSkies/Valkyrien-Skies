@@ -48,7 +48,7 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PhysCollisionObj
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollisionPointFinder;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.api.TransformType;
 
@@ -184,22 +184,22 @@ public class WorldPhysicsCollider {
             SpatialDetector
                 .setPosWithRespectTo(cachedHitsIterator.next(), centerPotentialHit, mutablePos);
 
-            inWorld.X = mutablePos.getX() + .5;
-            inWorld.Y = mutablePos.getY() + .5;
-            inWorld.Z = mutablePos.getZ() + .5;
+            inWorld.x = mutablePos.getX() + .5;
+            inWorld.y = mutablePos.getY() + .5;
+            inWorld.z = mutablePos.getZ() + .5;
 
             parent.shipTransformationManager().getCurrentPhysicsTransform().transform(inWorld,
                 TransformType.GLOBAL_TO_SUBSPACE);
 
             // parent.coordTransform.fromGlobalToLocal(inWorld);
 
-            int minX = MathHelper.floor(inWorld.X - COLLISION_RANGE_CHECK);
-            int minY = MathHelper.floor(inWorld.Y - COLLISION_RANGE_CHECK);
-            int minZ = MathHelper.floor(inWorld.Z - COLLISION_RANGE_CHECK);
+            int minX = MathHelper.floor(inWorld.x - COLLISION_RANGE_CHECK);
+            int minY = MathHelper.floor(inWorld.y - COLLISION_RANGE_CHECK);
+            int minZ = MathHelper.floor(inWorld.z - COLLISION_RANGE_CHECK);
 
-            int maxX = MathHelper.floor(inWorld.X + COLLISION_RANGE_CHECK);
-            int maxY = MathHelper.floor(inWorld.Y + COLLISION_RANGE_CHECK);
-            int maxZ = MathHelper.floor(inWorld.Z + COLLISION_RANGE_CHECK);
+            int maxX = MathHelper.floor(inWorld.x + COLLISION_RANGE_CHECK);
+            int maxY = MathHelper.floor(inWorld.y + COLLISION_RANGE_CHECK);
+            int maxZ = MathHelper.floor(inWorld.z + COLLISION_RANGE_CHECK);
 
             /*
               Something here is causing the game to freeze :/
@@ -490,11 +490,11 @@ public class WorldPhysicsCollider {
         // jiggling through the ground. God I can't wait for a new physics engine.
         final AxisAlignedBB collisionBB = currentPhysicsTransform.getShipBoundingBox().grow(3)
             .grow(AABB_EXPANSION).expand(
-                calculator.linearMomentum.X * calculator.getInvMass() * calculator
+                calculator.linearMomentum.x * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.linearMomentum.Y * calculator.getInvMass() * calculator
+                calculator.linearMomentum.y * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.linearMomentum.Z * calculator.getInvMass() * calculator
+                calculator.linearMomentum.z * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick()
                     * 5);
         final AxisAlignedBB shipBB = currentPhysicsTransform.getShipBoundingBox().grow(3);
@@ -804,14 +804,14 @@ public class WorldPhysicsCollider {
         org.valkyrienskies.mod.common.math.Vector inBody,
         org.valkyrienskies.mod.common.math.Vector speedInBody, AxisAlignedBB shipBB) {
         if (octree.get(x & 15, y & 15, z & 15)) {
-            inLocal.X = x + .5D;
-            inLocal.Y = y + .5D;
-            inLocal.Z = z + .5D;
+            inLocal.x = x + .5D;
+            inLocal.y = y + .5D;
+            inLocal.z = z + .5D;
             // TODO: Something
             // parent.coordTransform.fromGlobalToLocal(inLocal);
-            if (inLocal.X > shipBB.minX && inLocal.X < shipBB.maxX && inLocal.Y > shipBB.minY
-                && inLocal.Y < shipBB.maxY
-                && inLocal.Z > shipBB.minZ && inLocal.Z < shipBB.maxZ) {
+            if (inLocal.x > shipBB.minX && inLocal.x < shipBB.maxX && inLocal.y > shipBB.minY
+                && inLocal.y < shipBB.maxY
+                && inLocal.z > shipBB.minZ && inLocal.z < shipBB.maxZ) {
                 parent.shipTransformationManager().getCurrentPhysicsTransform()
                     .transform(inLocal,
                         TransformType.GLOBAL_TO_SUBSPACE);
@@ -826,28 +826,28 @@ public class WorldPhysicsCollider {
                 // double RANGE_CHECK = 1;
 
                 int minX, minY, minZ, maxX, maxY, maxZ;
-                if (speedInBody.X > 0) {
-                    minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
-                    maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
+                if (speedInBody.x > 0) {
+                    minX = MathHelper.floor(inLocal.x - RANGE_CHECK);
+                    maxX = MathHelper.floor(inLocal.x + RANGE_CHECK + speedInBody.x);
                 } else {
-                    minX = MathHelper.floor(inLocal.X - RANGE_CHECK + speedInBody.X);
-                    maxX = MathHelper.floor(inLocal.X + RANGE_CHECK);
+                    minX = MathHelper.floor(inLocal.x - RANGE_CHECK + speedInBody.x);
+                    maxX = MathHelper.floor(inLocal.x + RANGE_CHECK);
                 }
 
-                if (speedInBody.Y > 0) {
-                    minY = MathHelper.floor(inLocal.Y - RANGE_CHECK);
-                    maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK + speedInBody.Y);
+                if (speedInBody.y > 0) {
+                    minY = MathHelper.floor(inLocal.y - RANGE_CHECK);
+                    maxY = MathHelper.floor(inLocal.y + RANGE_CHECK + speedInBody.y);
                 } else {
-                    minY = MathHelper.floor(inLocal.Y - RANGE_CHECK + speedInBody.Y);
-                    maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK);
+                    minY = MathHelper.floor(inLocal.y - RANGE_CHECK + speedInBody.y);
+                    maxY = MathHelper.floor(inLocal.y + RANGE_CHECK);
                 }
 
-                if (speedInBody.Z > 0) {
-                    minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK);
-                    maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK + speedInBody.Z);
+                if (speedInBody.z > 0) {
+                    minZ = MathHelper.floor(inLocal.z - RANGE_CHECK);
+                    maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK + speedInBody.z);
                 } else {
-                    minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
-                    maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
+                    minZ = MathHelper.floor(inLocal.z - RANGE_CHECK + speedInBody.z);
+                    maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK);
                 }
 
                 minY = Math.min(255, Math.max(minY, 0));
@@ -936,9 +936,9 @@ public class WorldPhysicsCollider {
         org.valkyrienskies.mod.common.math.Vector inBody, Vector speedInBody,
         Collection<Integer> collection) {
         if (octree.get(x & 15, y & 15, z & 15)) {
-            inLocal.X = x + .5D;
-            inLocal.Y = y + .5D;
-            inLocal.Z = z + .5D;
+            inLocal.x = x + .5D;
+            inLocal.y = y + .5D;
+            inLocal.z = z + .5D;
             // TODO: Something
             // parent.coordTransform.fromGlobalToLocal(inLocal);
             parent.shipTransformationManager().getCurrentPhysicsTransform().transform(inLocal,
@@ -954,28 +954,28 @@ public class WorldPhysicsCollider {
             double RANGE_CHECK = 1.8;
 
             int minX, minY, minZ, maxX, maxY, maxZ;
-            if (speedInBody.X > 0) {
-                minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
-                maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
+            if (speedInBody.x > 0) {
+                minX = MathHelper.floor(inLocal.x - RANGE_CHECK);
+                maxX = MathHelper.floor(inLocal.x + RANGE_CHECK + speedInBody.x);
             } else {
-                minX = MathHelper.floor(inLocal.X - RANGE_CHECK + speedInBody.X);
-                maxX = MathHelper.floor(inLocal.X + RANGE_CHECK);
+                minX = MathHelper.floor(inLocal.x - RANGE_CHECK + speedInBody.x);
+                maxX = MathHelper.floor(inLocal.x + RANGE_CHECK);
             }
 
-            if (speedInBody.Y > 0) {
-                minY = MathHelper.floor(inLocal.Y - RANGE_CHECK);
-                maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK + speedInBody.Y);
+            if (speedInBody.y > 0) {
+                minY = MathHelper.floor(inLocal.y - RANGE_CHECK);
+                maxY = MathHelper.floor(inLocal.y + RANGE_CHECK + speedInBody.y);
             } else {
-                minY = MathHelper.floor(inLocal.Y - RANGE_CHECK + speedInBody.Y);
-                maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK);
+                minY = MathHelper.floor(inLocal.y - RANGE_CHECK + speedInBody.y);
+                maxY = MathHelper.floor(inLocal.y + RANGE_CHECK);
             }
 
-            if (speedInBody.Z > 0) {
-                minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK);
-                maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK + speedInBody.Z);
+            if (speedInBody.z > 0) {
+                minZ = MathHelper.floor(inLocal.z - RANGE_CHECK);
+                maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK + speedInBody.z);
             } else {
-                minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
-                maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
+                minZ = MathHelper.floor(inLocal.z - RANGE_CHECK + speedInBody.z);
+                maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK);
             }
 
             minY = Math.min(255, Math.max(minY, 0));

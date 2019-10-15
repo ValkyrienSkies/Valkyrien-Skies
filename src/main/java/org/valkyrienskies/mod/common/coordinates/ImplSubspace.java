@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 /**

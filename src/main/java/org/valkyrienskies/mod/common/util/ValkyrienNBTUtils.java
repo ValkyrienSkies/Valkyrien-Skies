@@ -60,16 +60,16 @@ public class ValkyrienNBTUtils {
     }
 
     public static void writeVectorToNBT(String name, Vector vector, NBTTagCompound compound) {
-        compound.setDouble(name + "X", vector.X);
-        compound.setDouble(name + "Y", vector.Y);
-        compound.setDouble(name + "Z", vector.Z);
+        compound.setDouble(name + "X", vector.x);
+        compound.setDouble(name + "Y", vector.y);
+        compound.setDouble(name + "Z", vector.z);
     }
 
     public static Vector readVectorFromNBT(String name, NBTTagCompound compound) {
         Vector vector = new Vector();
-        vector.X = compound.getDouble(name + "X");
-        vector.Y = compound.getDouble(name + "Y");
-        vector.Z = compound.getDouble(name + "Z");
+        vector.x = compound.getDouble(name + "X");
+        vector.y = compound.getDouble(name + "Y");
+        vector.z = compound.getDouble(name + "Z");
         return vector;
     }
 

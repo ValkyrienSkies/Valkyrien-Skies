@@ -107,7 +107,7 @@ public class EntityDraggable {
 
             // Move the entity back to its old position, the added velocity will be used
             // afterwards
-            entity.setPosition(oldPos.X, oldPos.Y, oldPos.Z);
+            entity.setPosition(oldPos.x, oldPos.y, oldPos.z);
             Vector addedVel = oldPos.getSubtraction(newPos);
 
             draggable.setVelocityAddedToPlayer(addedVel);
@@ -122,9 +122,9 @@ public class EntityDraggable {
             //            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
             betweenTransform.rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
 
-            double newPitch = Math.asin(oldLookingPos.Y) * -180D / Math.PI;
+            double newPitch = Math.asin(oldLookingPos.y) * -180D / Math.PI;
             double f4 = -Math.cos(-newPitch * 0.017453292D);
-            double radianYaw = Math.atan2((oldLookingPos.X / f4), (oldLookingPos.Z / f4));
+            double radianYaw = Math.atan2((oldLookingPos.x / f4), (oldLookingPos.z / f4));
             radianYaw += Math.PI;
             radianYaw *= -180D / Math.PI;
 
@@ -166,9 +166,9 @@ public class EntityDraggable {
             entity.setEntityBoundingBox(originalBoundingBox);
 
             entity.setEntityBoundingBox(
-                entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().X,
-                    draggable.getVelocityAddedToPlayer().Y,
-                    draggable.getVelocityAddedToPlayer().Z));
+                entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().x,
+                    draggable.getVelocityAddedToPlayer().y,
+                    draggable.getVelocityAddedToPlayer().z));
             entity.resetPositionToBB();
 
             if (!mountData.isMounted()) {
@@ -200,9 +200,9 @@ public class EntityDraggable {
     }
 
     public static Vector getVelocityProper(Vector improperVelocity, Entity thisClassAsAnEntity) {
-        double x = improperVelocity.X;
-        double y = improperVelocity.Y;
-        double z = improperVelocity.Z;
+        double x = improperVelocity.x;
+        double y = improperVelocity.y;
+        double z = improperVelocity.z;
 
         if (thisClassAsAnEntity.isInWeb) {
             thisClassAsAnEntity.isInWeb = false;

@@ -98,17 +98,17 @@ public class ShipCollisionTask implements Callable<Void> {
         SpatialDetector.setPosWithRespectTo(integer, toTask.getCenterPotentialHit(), mutablePos);
         inWorldState = toTask.getParent().getCachedSurroundingChunks().getBlockState(mutablePos);
 
-        inWorld.X = mutablePos.getX() + .5;
-        inWorld.Y = mutablePos.getY() + .5;
-        inWorld.Z = mutablePos.getZ() + .5;
+        inWorld.x = mutablePos.getX() + .5;
+        inWorld.y = mutablePos.getY() + .5;
+        inWorld.z = mutablePos.getZ() + .5;
 
 //        toTask.getParent().coordTransform.fromGlobalToLocal(inWorld);
         toTask.getParent().shipTransformationManager().getCurrentPhysicsTransform()
             .transform(inWorld, TransformType.GLOBAL_TO_SUBSPACE);
 
-        int midX = MathHelper.floor(inWorld.X + .5D);
-        int midY = MathHelper.floor(inWorld.Y + .5D);
-        int midZ = MathHelper.floor(inWorld.Z + .5D);
+        int midX = MathHelper.floor(inWorld.x + .5D);
+        int midY = MathHelper.floor(inWorld.y + .5D);
+        int midZ = MathHelper.floor(inWorld.z + .5D);
 
         // Check the 27 possible positions
         checkPosition(midX - 1, midY - 1, midZ - 1, integer);

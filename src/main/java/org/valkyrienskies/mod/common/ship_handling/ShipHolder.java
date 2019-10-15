@@ -3,7 +3,7 @@ package org.valkyrienskies.mod.common.ship_handling;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.player.EntityPlayerMP;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class ShipHolder {
 

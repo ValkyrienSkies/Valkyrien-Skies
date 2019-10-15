@@ -39,7 +39,7 @@ import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -75,9 +75,9 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
                             .shipTransformationManager()
                             .fromLocalToGlobal(playerPos);
 
-                        playerIn.posX = playerPos.X;
-                        playerIn.posY = playerPos.Y;
-                        playerIn.posZ = playerPos.Z;
+                        playerIn.posX = playerPos.x;
+                        playerIn.posY = playerPos.y;
+                        playerIn.posZ = playerPos.z;
 
                         IDraggable entityDraggable = EntityDraggable
                             .getDraggableFromEntity(playerIn);
@@ -94,9 +94,9 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
                             .shipTransformationManager()
                             .fromGlobalToLocal(playerPos);
 
-                        playerIn.posX = playerPos.X;
-                        playerIn.posY = playerPos.Y;
-                        playerIn.posZ = playerPos.Z;
+                        playerIn.posX = playerPos.x;
+                        playerIn.posY = playerPos.y;
+                        playerIn.posZ = playerPos.z;
                     }
                 }
             }

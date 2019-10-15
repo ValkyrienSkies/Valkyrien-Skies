@@ -27,7 +27,7 @@ import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
@@ -137,8 +137,8 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
             .rotate(sidesRotationAxis, TransformType.SUBSPACE_TO_GLOBAL);
 
         double[] rotationSidesTransform = RotationMatrices
-            .getRotationMatrix(sidesRotationAxis.X, sidesRotationAxis.Y,
-                sidesRotationAxis.Z, Math.toRadians(sidePitch));
+            .getRotationMatrix(sidesRotationAxis.x, sidesRotationAxis.y,
+                sidesRotationAxis.z, Math.toRadians(sidePitch));
         shipUpPosIdeal.transform(rotationSidesTransform);
 
         idealAngularDirection.multiply(2);

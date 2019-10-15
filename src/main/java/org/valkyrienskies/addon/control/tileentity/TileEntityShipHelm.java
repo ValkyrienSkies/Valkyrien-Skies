@@ -39,7 +39,7 @@ import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
 import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -154,7 +154,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
         }
 
         compassDirection.normalize();
-        compassAngle = Math.toDegrees(Math.atan2(compassDirection.X, compassDirection.Z))
+        compassAngle = Math.toDegrees(Math.atan2(compassDirection.x, compassDirection.z))
             - wheelAndCompassStateRotation;
         compassAngle = (compassAngle + 360D) % 360D;
     }

@@ -27,7 +27,7 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -175,9 +175,9 @@ public class WrapperPositionMessage implements IMessage {
         buf.writeDouble(getYaw());
         buf.writeDouble(getRoll());
 
-        buf.writeDouble(getCenterOfMass().X);
-        buf.writeDouble(getCenterOfMass().Y);
-        buf.writeDouble(getCenterOfMass().Z);
+        buf.writeDouble(getCenterOfMass().x);
+        buf.writeDouble(getCenterOfMass().y);
+        buf.writeDouble(getCenterOfMass().z);
 
         buf.writeDouble(getShipBB().minX);
         buf.writeDouble(getShipBB().minY);
@@ -201,9 +201,9 @@ public class WrapperPositionMessage implements IMessage {
             .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
         // CMDif.multiply(lerpFactor);
 
-        physObj.wrapperEntity().posX -= CMDif.X;
-        physObj.wrapperEntity().posY -= CMDif.Y;
-        physObj.wrapperEntity().posZ -= CMDif.Z;
+        physObj.wrapperEntity().posX -= CMDif.x;
+        physObj.wrapperEntity().posY -= CMDif.y;
+        physObj.wrapperEntity().posZ -= CMDif.z;
 
         physObj.wrapperEntity().lastTickPosX = physObj.wrapperEntity().posX;
         physObj.wrapperEntity().lastTickPosY = physObj.wrapperEntity().posY;

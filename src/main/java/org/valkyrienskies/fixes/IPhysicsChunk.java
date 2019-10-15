@@ -1,7 +1,7 @@
 package org.valkyrienskies.fixes;
 
 import java.util.Optional;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 /**
  * Todo: Replace with a capability

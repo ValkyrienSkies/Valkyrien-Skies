@@ -12,7 +12,7 @@ import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 public class TileEntityRudderPart extends
@@ -44,8 +44,8 @@ public class TileEntityRudderPart extends
     public Vector getForcePositionInShipSpace() {
         Vector facingOffset = getForcePosRelativeToAxleInShipSpace();
         if (facingOffset != null) {
-            return new Vector(facingOffset.X + pos.getX() + .5, facingOffset.Y + pos.getY() + .5,
-                facingOffset.Z + pos.getZ() + .5);
+            return new Vector(facingOffset.x + pos.getX() + .5, facingOffset.y + pos.getY() + .5,
+                facingOffset.z + pos.getZ() + .5);
         } else {
             return null;
         }

@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
@@ -65,9 +65,9 @@ public abstract class MixinTileEntity {
                         .shipTransformationManager()
                         .fromLocalToGlobal(tilePos);
 
-                    tilePos.X -= x;
-                    tilePos.Y -= y;
-                    tilePos.Z -= z;
+                    tilePos.x -= x;
+                    tilePos.y -= y;
+                    tilePos.z -= z;
 
                     return tilePos.lengthSq();
                 }

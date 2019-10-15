@@ -29,6 +29,7 @@ import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -278,8 +279,6 @@ public class ShipTransformationManager {
 
     /**
      * Sets the physics transform to the given input.
-     *
-     * @param
      */
     public void setCurrentPhysicsTransform(ShipTransform currentPhysicsTransform) {
         this.currentPhysicsTransform = currentPhysicsTransform;
@@ -320,8 +319,8 @@ public class ShipTransformationManager {
         double[] partialAngles = partialRot
             .toRadians(); // Now partial angles {pitch, yaw, roll} are complete.
         // Put it all together to get the render transform.
-        renderTransform = new ShipTransform(partialPos.X, partialPos.Y,
-            partialPos.Z, Math.toDegrees(partialAngles[0]), Math.toDegrees(partialAngles[1]),
+        renderTransform = new ShipTransform(partialPos.x, partialPos.y,
+            partialPos.z, Math.toDegrees(partialAngles[0]), Math.toDegrees(partialAngles[1]),
             Math.toDegrees(partialAngles[2]),
             parent.centerCoord());
     }

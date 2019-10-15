@@ -137,7 +137,7 @@ public abstract class MixinEntityRenderer {
     private double offsetXIfMounted(double oldVal) {
         return (this.mountData != null
             && this.mountData.getMountedShip().shipRenderer().offsetPos != null
-            ? this.cachedPosition.X : oldVal) + this.eyeVector.X;
+            ? this.cachedPosition.x : oldVal) + this.eyeVector.x;
     }
 
     @ModifyVariable(
@@ -153,7 +153,7 @@ public abstract class MixinEntityRenderer {
     private double offsetYIfMounted(double oldVal) {
         return (this.mountData != null
             && this.mountData.getMountedShip().shipRenderer().offsetPos != null
-            ? this.cachedPosition.Y : oldVal) + this.eyeVector.Y;
+            ? this.cachedPosition.y : oldVal) + this.eyeVector.y;
     }
 
     @ModifyVariable(
@@ -169,7 +169,7 @@ public abstract class MixinEntityRenderer {
     private double offsetZIfMounted(double oldVal) {
         return (this.mountData != null
             && this.mountData.getMountedShip().shipRenderer().offsetPos != null
-            ? this.cachedPosition.Z : oldVal) + this.eyeVector.Z;
+            ? this.cachedPosition.z : oldVal) + this.eyeVector.z;
     }
 
     @ModifyConstant(
@@ -210,8 +210,8 @@ public abstract class MixinEntityRenderer {
                 playerPosInLocal.subtract(0.5d, 0.6875d, 0.5d);
                 playerPosInLocal.roundToWhole();
 
-                BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y,
-                    playerPosInLocal.Z);
+                BlockPos bedPos = new BlockPos(playerPosInLocal.x, playerPosInLocal.y,
+                    playerPosInLocal.z);
                 IBlockState state = this.mc.world.getBlockState(bedPos);
 
                 Block block = state.getBlock();
@@ -306,7 +306,7 @@ public abstract class MixinEntityRenderer {
         //reset
         this.mountData = null;
 
-        GlStateManager.translate(x - this.eyeVector.X, y - this.eyeVector.Y, z - this.eyeVector.Z);
+        GlStateManager.translate(x - this.eyeVector.x, y - this.eyeVector.y, z - this.eyeVector.z);
     }
 
 
@@ -319,7 +319,7 @@ public abstract class MixinEntityRenderer {
     private boolean fixHasCloudFogCoordinates(RenderGlobal renderGlobal, double x, double y,
         double z, float partialTicks) {
         return renderGlobal
-            .hasCloudFog(x + this.eyeVector.X, y + this.eyeVector.Y, z + this.eyeVector.Z,
+            .hasCloudFog(x + this.eyeVector.x, y + this.eyeVector.y, z + this.eyeVector.z,
                 partialTicks);
     }
 

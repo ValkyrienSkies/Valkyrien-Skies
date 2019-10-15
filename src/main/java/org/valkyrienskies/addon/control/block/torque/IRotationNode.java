@@ -9,7 +9,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public interface IRotationNode extends Comparable<IRotationNode> {
 

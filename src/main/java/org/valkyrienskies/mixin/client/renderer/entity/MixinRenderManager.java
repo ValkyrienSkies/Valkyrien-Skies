@@ -68,16 +68,16 @@ public abstract class MixinRenderManager {
                 if (localPosition != null) {
                     localPosition = new Vector(localPosition);
 
-                    localPosition.X -= mountData.getMountedShip()
+                    localPosition.x -= mountData.getMountedShip()
                         .shipRenderer().offsetPos.getX();
-                    localPosition.Y -= mountData.getMountedShip()
+                    localPosition.y -= mountData.getMountedShip()
                         .shipRenderer().offsetPos.getY();
-                    localPosition.Z -= mountData.getMountedShip()
+                    localPosition.z -= mountData.getMountedShip()
                         .shipRenderer().offsetPos.getZ();
 
-                    x = entityIn.posX = entityIn.lastTickPosX = localPosition.X;
-                    y = entityIn.posY = entityIn.lastTickPosY = localPosition.Y;
-                    z = entityIn.posZ = entityIn.lastTickPosZ = localPosition.Z;
+                    x = entityIn.posX = entityIn.lastTickPosX = localPosition.x;
+                    y = entityIn.posY = entityIn.lastTickPosY = localPosition.y;
+                    z = entityIn.posZ = entityIn.lastTickPosZ = localPosition.z;
 
                 }
 
@@ -102,8 +102,8 @@ public abstract class MixinRenderManager {
                             playerPosInLocal.subtract(.5D, .6875, .5);
                             playerPosInLocal.roundToWhole();
 
-                            BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y,
-                                playerPosInLocal.Z);
+                            BlockPos bedPos = new BlockPos(playerPosInLocal.x, playerPosInLocal.y,
+                                playerPosInLocal.z);
                             IBlockState state = entityIn.world.getBlockState(bedPos);
 
                             Block block = state.getBlock();

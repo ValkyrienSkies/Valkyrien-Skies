@@ -69,9 +69,9 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
                         bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
                 positionData.transform()
                         .transform(bedPositionInWorld, TransformType.SUBSPACE_TO_GLOBAL);
-                bedPositionInWorld.Y += 1D;
-                bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y,
-                        bedPositionInWorld.Z);
+                bedPositionInWorld.y += 1D;
+                bedLocation = new BlockPos(bedPositionInWorld.x, bedPositionInWorld.y,
+                        bedPositionInWorld.z);
 
                 callbackInfo.setReturnValue(bedLocation);
             } else {

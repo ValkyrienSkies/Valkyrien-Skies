@@ -29,7 +29,7 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockMassProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class BlockPhysicsDetails {
 
@@ -153,9 +153,9 @@ public class BlockPhysicsDetails {
             if (forceVector == null) {
                 toSet.zero();
             } else {
-                toSet.X = forceVector.X;
-                toSet.Y = forceVector.Y;
-                toSet.Z = forceVector.Z;
+                toSet.x = forceVector.x;
+                toSet.y = forceVector.y;
+                toSet.z = forceVector.z;
             }
         }
     }

@@ -70,7 +70,7 @@ public class VSMath {
      * @return true/false
      */
     public static boolean canStandOnNormal(Vector normal) {
-        double radius = normal.X * normal.X + normal.Z * normal.Z;
+        double radius = normal.x * normal.x + normal.z * normal.z;
         return radius < STANDING_TOLERANCE;
     }
 

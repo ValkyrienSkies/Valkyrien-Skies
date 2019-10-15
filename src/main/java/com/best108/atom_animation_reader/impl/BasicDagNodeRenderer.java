@@ -27,9 +27,9 @@ public class BasicDagNodeRenderer {
             for (int j = transformations.size() - 1; j > i; j--) {
                 transformations.get(j).changePivot(customPivot, keyframe);
             }
-            GlStateManager.translate(customPivot.X, customPivot.Y, customPivot.Z);
+            GlStateManager.translate(customPivot.x, customPivot.y, customPivot.z);
             transformations.get(i).transform(keyframe);
-            GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);
+            GlStateManager.translate(-customPivot.x, -customPivot.y, -customPivot.z);
         }
 //		Vector customPivot = pivot.createMutibleVectorCopy();
 //		GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);

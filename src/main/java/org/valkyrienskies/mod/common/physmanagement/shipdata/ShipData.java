@@ -19,7 +19,7 @@ public final class ShipData {
 
     // WARNING: Mutable! This field is NEVER indexed. DO NOT INDEX!
     @Nullable
-    public ShipPositionData positionData;
+    private ShipPositionData positionData;
     private String name;
     private UUID uuid;
     /**
@@ -116,9 +116,6 @@ public final class ShipData {
         return chunkClaim;
     }
 
-    /**
-     * Query by UUID most significant digits - do not use this, is only in place for legacy code
-     */
     static final Attribute<ShipData, String> NAME = attribute(ship -> ship.name);
     static final Attribute<ShipData, UUID> UUID = attribute(ship -> ship.uuid);
     static final Attribute<ShipData, Long> CHUNKS = new MultiValueAttribute<ShipData, Long>() {

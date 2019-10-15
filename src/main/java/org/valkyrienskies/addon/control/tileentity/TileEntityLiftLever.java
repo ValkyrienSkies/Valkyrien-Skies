@@ -18,7 +18,7 @@ import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -71,7 +71,7 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl {
                         .shipTransformationManager()
                         .getCurrentTickTransform()
                         .transform(currentPos, TransformType.SUBSPACE_TO_GLOBAL);
-                    targetYPosition = currentPos.Y;
+                    targetYPosition = currentPos.y;
                 } else {
                     targetYPosition = getPos().getY() + .5;
                 }
@@ -106,7 +106,7 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl {
                     .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
 
                 // Utilizing a proper PI controller for very smooth control.
-                double heightWithIntegral = tilePos.Y + linearVel.Y * .3D;
+                double heightWithIntegral = tilePos.y + linearVel.y * .3D;
                 double heightDelta = targetYPosition - heightWithIntegral;
                 double multiplier = heightDelta / 2D;
                 multiplier = Math.max(0, Math.min(1, multiplier));

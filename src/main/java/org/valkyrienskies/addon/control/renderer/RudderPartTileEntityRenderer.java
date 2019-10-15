@@ -81,8 +81,8 @@ public class RudderPartTileEntityRenderer extends
                 RotationMatrices.applyTransform(rotationMatrix, facingDirection);
 
                 EnumFacing facingDirectionNew = EnumFacing
-                    .getFacingFromVector((float) facingDirection.X, (float) facingDirection.Y,
-                        (float) facingDirection.Z);
+                    .getFacingFromVector((float) facingDirection.x, (float) facingDirection.y,
+                        (float) facingDirection.z);
 
                 // Pitch rotation
                 GL11.glTranslated(0, 0.5, 0.5);

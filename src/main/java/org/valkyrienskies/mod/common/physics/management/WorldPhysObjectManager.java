@@ -133,7 +133,7 @@ public class WorldPhysObjectManager {
     }
 
     public List<PhysicsWrapperEntity> getNearbyPhysObjects(AxisAlignedBB toCheck) {
-        ArrayList<PhysicsWrapperEntity> ships = new ArrayList<PhysicsWrapperEntity>();
+        ArrayList<PhysicsWrapperEntity> ships = new ArrayList<>();
         AxisAlignedBB expandedCheck = toCheck.expand(6, 6, 6);
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {

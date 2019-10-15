@@ -1,7 +1,5 @@
 package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
-import java.util.Map.Entry;
-import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -15,6 +13,9 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
+
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * The ClaimedChunkCacheController is a chunk cache controller used by the {@link PhysicsObject}. It
@@ -147,7 +148,8 @@ public class ClaimedChunkCacheController {
     }
 
     /**
-     * Loads chunks that haven't been generated before into the cache
+     * Loads chunks that haven't been generated before into the cache. At the moment make sure to only call this from
+     * the game thread. Running it on a separate thread will lead to data races.
      */
     private void loadNewChunks() {
         VSChunkClaim chunkClaim = parent.ownedChunks();
@@ -187,7 +189,6 @@ public class ClaimedChunkCacheController {
 
         PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z);
 
-        // TODO: This is causing concurrency crashes
         long i = PlayerChunkMap.getIndex(x, z);
 
         map.entryMap.put(i, entry);

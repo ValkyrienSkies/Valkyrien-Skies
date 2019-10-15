@@ -20,13 +20,6 @@ import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,6 +34,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -82,6 +76,9 @@ import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod. The physics object does everything from custom collision, block
@@ -262,8 +259,18 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      * Generates the new chunks
      */
     public TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(EntityPlayer player) {
+        if (world().isRemote) {
+            throw new IllegalStateException("This method cannot be invoked on client side!");
+        }
+        if (!(world() instanceof WorldServer)) {
+            throw new IllegalStateException("The world " + world() + " wasn't an instance of WorldServer");
+        }
+
         BlockPos centerInWorld = new BlockPos(wrapperEntity().posX,
             wrapperEntity().posY, wrapperEntity().posZ);
+
+        // The thread the tick sync will execute on.
+        IThreadListener worldServerThread = (WorldServer) world();
 
         return TickSyncCompletableFuture
             .supplyAsync(() -> DetectorManager.getDetectorFor(detectorID(), centerInWorld, world(),
@@ -284,7 +291,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 assembleShip(player, detector, centerInWorld);
 
                 markFullyLoaded();
-            });
+            }, worldServerThread);
     }
 
     /**

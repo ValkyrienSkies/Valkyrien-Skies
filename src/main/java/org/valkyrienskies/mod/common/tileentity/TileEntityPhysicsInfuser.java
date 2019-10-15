@@ -1,9 +1,5 @@
 package org.valkyrienskies.mod.common.tileentity;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import mcp.MethodsReturnNonnullByDefault;
@@ -16,10 +12,12 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.relauncher.Side;
@@ -36,6 +34,11 @@ import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
     IVSTileGui {
@@ -108,11 +111,12 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 if (!PhysicsChunkManager
                     .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
+                        IThreadListener gameTickThread = (WorldServer) world;
                         PhysicsWrapperEntity.createWrapperEntity(this)
                             .thenAcceptTickSync(ship -> {
                                 System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
                                 getWorld().spawnEntity(ship);
-                            });
+                            }, gameTickThread);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

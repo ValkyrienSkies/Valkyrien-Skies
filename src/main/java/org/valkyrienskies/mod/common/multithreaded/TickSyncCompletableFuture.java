@@ -3,28 +3,19 @@ package org.valkyrienskies.mod.common.multithreaded;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import net.minecraft.client.Minecraft;
+import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
+import javax.annotation.Nonnull;
+import java.util.concurrent.*;
+import java.util.function.*;
+
 /**
  * <p>An extension of CompletableFuture with some 'TickSync' suffixed methods like
- * {@link TickSyncCompletableFuture#supplyTickSync(Supplier)}.</p>
+ * {@link TickSyncCompletableFuture#supplyTickSync(Supplier, IThreadListener)}.</p>
  *
- * <p>Any method written like this will have its results executed on the <strong>server tick
+ * <p>Any method written like this will have its results executed on the <strong>provided game
  * thread</strong>. This allows for easily multithreading things that produce results that are
  * required on the tick thread.<p>
  *
@@ -121,20 +112,20 @@ public class TickSyncCompletableFuture<T> {
 
     // region API methods
 
-    public static <K> TickSyncCompletableFuture<K> supplyTickSync(Supplier<K> supplier) {
-        return toCompletableFuture(Minecraft.getMinecraft().addScheduledTask(supplier::get));
+    public static <K> TickSyncCompletableFuture<Object> supplyTickSync(Supplier<K> supplier, IThreadListener gameThread) {
+        return toCompletableFuture(gameThread.addScheduledTask(supplier::get));
     }
 
-    public static TickSyncCompletableFuture<Void> runTickSync(Runnable runnable) {
-        return supplyTickSync(runnableToSupplier(runnable));
+    public static TickSyncCompletableFuture<Object> runTickSync(Runnable runnable, IThreadListener gameThread) {
+        return supplyTickSync(runnableToSupplier(runnable), gameThread);
     }
 
     public <K> TickSyncCompletableFuture<K> thenApplyTickSync(
-        Function<? super T, ? extends K> action) {
+        Function<? super T, ? extends K> action, IThreadListener gameThread) {
 
         TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
         base.thenAccept(result -> // Consumer<T> --> ListenableFuture<Void>
-            Minecraft.getMinecraft().addScheduledTask( // Callable<K> --> ListenableFuture<K>
+            gameThread.addScheduledTask( // Callable<K> --> ListenableFuture<K>
                 // (callback) 3. Apply the function
                 () -> toReturn.complete(action.apply(result)) // Function<T, K> --> Callable<K>
             ));
@@ -142,12 +133,12 @@ public class TickSyncCompletableFuture<T> {
         return toReturn;
     }
 
-    public TickSyncCompletableFuture<Void> thenAcceptTickSync(Consumer<? super T> action) {
-        return thenApplyTickSync(consumerToFunction(action));
+    public TickSyncCompletableFuture<Void> thenAcceptTickSync(Consumer<? super T> action, IThreadListener gameThread) {
+        return thenApplyTickSync(consumerToFunction(action), gameThread);
     }
 
-    public TickSyncCompletableFuture<Void> thenRunTickSync(Runnable action) {
-        return thenApplyTickSync(runnableToFunction(action));
+    public TickSyncCompletableFuture<Void> thenRunTickSync(Runnable action, IThreadListener gameThread) {
+        return thenApplyTickSync(runnableToFunction(action), gameThread);
     }
 
     // endregion

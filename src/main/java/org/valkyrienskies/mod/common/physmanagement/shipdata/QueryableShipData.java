@@ -1,8 +1,5 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import static com.googlecode.cqengine.query.QueryFactory.equal;
-import static com.googlecode.cqengine.query.QueryFactory.startsWith;
-
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -12,11 +9,6 @@ import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Stream;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
@@ -24,6 +16,15 @@ import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import static com.googlecode.cqengine.query.QueryFactory.equal;
+import static com.googlecode.cqengine.query.QueryFactory.startsWith;
 
 /**
  * A class that keeps track of ship data
@@ -84,18 +85,22 @@ public class QueryableShipData implements Iterable<ShipData> {
         return ImmutableList.copyOf(allShips);
     }
 
-    public UUID getShipUUIDFromPos(int chunkX, int chunkZ) {
-        return getShipUUIDFromPos(ChunkPos.asLong(chunkX, chunkZ));
+    public Optional<ShipData> getShipFromChunk(int chunkX, int chunkZ) {
+        return getShipFromChunk(ChunkPos.asLong(chunkX, chunkZ));
     }
 
-    public UUID getShipUUIDFromPos(long chunkLong) {
-        return getShipFromChunk(chunkLong).getUUID();
-    }
-
-    public ShipData getShipFromChunk(long chunkLong) {
+    public Optional<ShipData> getShipFromChunk(long chunkLong) {
         Query<ShipData> query = equal(ShipData.CHUNKS, chunkLong);
+        ResultSet<ShipData> resultSet = allShips.retrieve(query);
 
-        return allShips.retrieve(query).uniqueResult();
+        if (resultSet.size() > 1) {
+            throw new IllegalStateException("How the heck did we get 2 or more ships both managing the chunk at " + chunkLong);
+        }
+        if (resultSet.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(resultSet.uniqueResult());
+        }
     }
 
     public Optional<ShipData> getShip(UUID uuid) {

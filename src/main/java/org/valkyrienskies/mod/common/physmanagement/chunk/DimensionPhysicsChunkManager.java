@@ -16,13 +16,12 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DimensionPhysicsChunkManager {
 
@@ -53,14 +52,6 @@ public class DimensionPhysicsChunkManager {
 
     public void removeRegisteredChunksForShip(PhysicsWrapperEntity wrapper) {
         ValkyrienUtils.getQueryableData(wrapper.world).removeShip(wrapper);
-    }
-
-    public UUID getShipIDManagingPos_Persistent(World worldFor, int chunkX, int chunkZ) {
-        return ValkyrienUtils.getQueryableData(worldFor).getShipUUIDFromPos(chunkX, chunkZ);
-    }
-
-    public ShipPositionData getShipPosition_Persistent(World worldFor, UUID shipID) {
-        return ValkyrienUtils.getQueryableData(worldFor).getShip(shipID).get().positionData;
     }
 
     public void updateShipPosition(PhysicsWrapperEntity wrapper) {

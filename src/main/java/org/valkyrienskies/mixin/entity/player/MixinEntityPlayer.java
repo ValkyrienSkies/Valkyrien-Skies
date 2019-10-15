@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mixin.entity.player;
 
-import java.util.UUID;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -27,11 +26,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 /**
  * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.
@@ -53,29 +55,28 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     @Inject(method = "getBedSpawnLocation", at = @At("HEAD"), cancellable = true)
     private static void preGetBedSpawnLocation(World worldIn, BlockPos bedLocation,
         boolean forceSpawn,
-        CallbackInfoReturnable<BlockPos> callbackInfo) {
+        CallbackInfoReturnable<BlockPos> callbackInfo){
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
 
-        UUID shipManagingID = ValkyrienSkiesMod.VS_CHUNK_MANAGER
-            .getShipIDManagingPos_Persistent(worldIn, chunkX, chunkZ);
-        if (shipManagingID != null) {
-            ShipPositionData positionData = ValkyrienSkiesMod.VS_CHUNK_MANAGER
-                .getShipPosition_Persistent(worldIn, shipManagingID);
+        Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn).getShipFromChunk(chunkX, chunkZ);
+
+        if (shipData.isPresent()) {
+            ShipPositionData positionData = shipData.get().getPositionData();
 
             if (positionData != null) {
                 Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D,
-                    bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
+                        bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
                 positionData.transform()
-                    .transform(bedPositionInWorld, TransformType.SUBSPACE_TO_GLOBAL);
+                        .transform(bedPositionInWorld, TransformType.SUBSPACE_TO_GLOBAL);
                 bedPositionInWorld.Y += 1D;
                 bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y,
-                    bedPositionInWorld.Z);
+                        bedPositionInWorld.Z);
 
                 callbackInfo.setReturnValue(bedLocation);
             } else {
                 System.err.println(
-                    "A ship just had chunks claimed persistent, but not any position data persistent");
+                        "A ship just had chunks claimed persistent, but not any position data persistent");
             }
         }
     }

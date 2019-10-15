@@ -154,11 +154,12 @@ public class ShipTransformationManager {
         }
     }
 
-    public void updateParentNormals() {
-        normals = new Vector[15];
+    private void updateParentNormals() {
+        // We edit a local array instead of normals to avoid data races.
+        final Vector[] newNormals = new Vector[15];
         // Used to generate Normals for the Axis Aligned World
-        Vector[] alignedNorms = Vector.generateAxisAlignedNorms();
-        Vector[] rotatedNorms = generateRotationNormals();
+        final Vector[] alignedNorms = Vector.generateAxisAlignedNorms();
+        final Vector[] rotatedNorms = generateRotationNormals();
         for (int i = 0; i < 6; i++) {
             Vector currentNorm;
             if (i < 3) {
@@ -166,60 +167,34 @@ public class ShipTransformationManager {
             } else {
                 currentNorm = rotatedNorms[i - 3];
             }
-            normals[i] = currentNorm;
+            newNormals[i] = currentNorm;
         }
         int cont = 6;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                Vector norm = normals[i].crossAndUnit(normals[j + 3]);
-                normals[cont] = norm;
+                Vector norm = newNormals[i].crossAndUnit(newNormals[j + 3]);
+                newNormals[cont] = norm;
                 cont++;
             }
         }
-        for (int i = 0; i < normals.length; i++) {
-            if (normals[i].isZero()) {
-                normals[i] = new Vector(0.0D, 1.0D, 0.0D);
+        for (int i = 0; i < newNormals.length; i++) {
+            if (newNormals[i].isZero()) {
+                newNormals[i] = new Vector(0.0D, 1.0D, 0.0D);
             }
         }
-        normals[0] = new Vector(1.0D, 0.0D, 0.0D);
-        normals[1] = new Vector(0.0D, 1.0D, 0.0D);
-        normals[2] = new Vector(0.0D, 0.0D, 1.0D);
+        newNormals[0] = new Vector(1.0D, 0.0D, 0.0D);
+        newNormals[1] = new Vector(0.0D, 1.0D, 0.0D);
+        newNormals[2] = new Vector(0.0D, 0.0D, 1.0D);
+
+        this.normals = newNormals;
     }
 
-    public Vector[] generateRotationNormals() {
+    private Vector[] generateRotationNormals() {
         Vector[] norms = Vector.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
             getCurrentTickTransform().rotate(norms[i], TransformType.SUBSPACE_TO_GLOBAL);
         }
         return norms;
-    }
-
-    public Vector[] getSeperatingAxisWithShip(PhysicsObject other) {
-        // Note: This Vector array still contains potential 0 vectors, those are removed
-        // later
-        Vector[] normals = new Vector[15];
-        Vector[] otherNorms = other.shipTransformationManager().normals;
-        Vector[] rotatedNorms = normals;
-        for (int i = 0; i < 6; i++) {
-            if (i < 3) {
-                normals[i] = otherNorms[i];
-            } else {
-                normals[i] = rotatedNorms[i - 3];
-            }
-        }
-        int cont = 6;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                Vector norm = normals[i].crossAndUnit(normals[j + 3]);
-                if (!norm.isZero()) {
-                    normals[cont] = norm;
-                } else {
-                    normals[cont] = normals[1];
-                }
-                cont++;
-            }
-        }
-        return normals;
     }
 
     // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.

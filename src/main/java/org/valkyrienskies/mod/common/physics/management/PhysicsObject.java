@@ -326,9 +326,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         claimedChunkCache = new ClaimedChunkCacheController(this, false);
 
-        // Prevents weird shit from spawning at the edges of a ship
-        //replaceOuterChunksWithAir();
-
         assignChunkPhysicObject();
 
         referenceBlockPos(ownedChunks().regionCenter());
@@ -389,9 +386,11 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             world().setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
         }
 
+        // We NEED this to fix ship lighting. If this code was removed then ships would have lighting artifacts all
+        // over them.
         for (int x = ownedChunks().minX(); x <= ownedChunks().maxX(); x++) {
             for (int z = ownedChunks().minZ(); z <= ownedChunks().maxZ(); z++) {
-                claimedChunkCache.getChunkAt(x, z).generateSkylightMap();
+                claimedChunkCache.getChunkAt(x, z).checkLight();
             }
         }
 

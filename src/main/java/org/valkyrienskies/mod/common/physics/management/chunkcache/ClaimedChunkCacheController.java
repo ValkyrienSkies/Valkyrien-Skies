@@ -168,6 +168,8 @@ public class ClaimedChunkCacheController {
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
         VSChunkClaim chunkClaim = parent.ownedChunks();
+        chunk.generateSkylightMap();
+        chunk.checkLight();
 
         // Make sure this chunk knows we own it.
         ((IPhysicsChunk) chunk).setParentPhysicsObject(Optional.of(this.parent));

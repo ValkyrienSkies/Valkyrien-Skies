@@ -20,6 +20,13 @@ import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -77,9 +84,6 @@ import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod. The physics object does everything from custom collision, block
@@ -328,7 +332,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         assignChunkPhysicObject();
 
-        referenceBlockPos(ownedChunks().regionCenter());
+        referenceBlockPos(ownedChunks().getRegionCenter());
         voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
             referenceBlockPos.getZ());
 
@@ -525,7 +529,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         claimedChunkCache = new ClaimedChunkCacheController(this, true);
 
         assignChunkPhysicObject();
-        referenceBlockPos(ownedChunks().regionCenter());
+        referenceBlockPos(ownedChunks().getRegionCenter());
         voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
             referenceBlockPos.getZ());
         shipTransformationManager(new ShipTransformationManager(this));
@@ -691,9 +695,9 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     public void writeSpawnData(ByteBuf buffer) {
         PacketBuffer modifiedBuffer = new PacketBuffer(buffer);
 
-        modifiedBuffer.writeInt(ownedChunks().centerX());
-        modifiedBuffer.writeInt(ownedChunks().centerZ());
-        modifiedBuffer.writeInt(ownedChunks().radius());
+        modifiedBuffer.writeInt(ownedChunks().getCenterX());
+        modifiedBuffer.writeInt(ownedChunks().getCenterZ());
+        modifiedBuffer.writeInt(ownedChunks().getRadius());
 
         modifiedBuffer.writeDouble(wrapperEntity().posX);
         modifiedBuffer.writeDouble(wrapperEntity().posY);

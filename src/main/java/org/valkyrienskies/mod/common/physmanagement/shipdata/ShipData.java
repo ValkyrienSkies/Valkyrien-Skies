@@ -11,15 +11,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import net.minecraft.util.math.ChunkPos;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public final class ShipData {
 
     // WARNING: Mutable! This field is NEVER indexed. DO NOT INDEX!
     @Nullable
-    private ShipPositionData positionData;
+    public ShipPositionData positionData;
     private String name;
     private UUID uuid;
     /**
@@ -80,9 +84,9 @@ public final class ShipData {
             Set<Long> chunkLongs = new HashSet<>();
             VSChunkClaim ownedChunks = entity.getPhysicsObject().ownedChunks();
 
-            int centerX = ownedChunks.centerX();
-            int centerZ = ownedChunks.centerZ();
-            int radius = ownedChunks.radius();
+            int centerX = ownedChunks.getCenterX();
+            int centerZ = ownedChunks.getCenterZ();
+            int radius = ownedChunks.getRadius();
 
             for (int x = centerX - radius; x <= centerX + radius; x++) {
                 for (int z = centerZ - radius; z <= centerZ + radius; z++) {

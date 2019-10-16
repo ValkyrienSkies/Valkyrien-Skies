@@ -32,8 +32,6 @@ import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -43,8 +41,6 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
@@ -55,6 +51,7 @@ import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -66,6 +63,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.fixes.IPhysicsChunk;
+import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityProvider;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
@@ -73,21 +71,21 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VSWorldEventListener;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
+@EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class EventsCommon {
 
     @Deprecated
     private static final Map<EntityPlayer, double[]> lastPositions = new HashMap<>();
     private static final Logger logger = LogManager.getLogger(EventsCommon.class);
 
-    @SubscribeEvent()
-    public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event) {
+    @SubscribeEvent
+    public static void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event) {
         EntityPlayer player = event.getEntityPlayer();
         BlockPos pos = event.getPos();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
@@ -103,8 +101,8 @@ public class EventsCommon {
         }
     }
 
-    @SubscribeEvent()
-    public void onRightClickBlock(RightClickBlock event) {
+    @SubscribeEvent
+    public static void onRightClickBlock(RightClickBlock event) {
         if (!event.getWorld().isRemote) {
             ItemStack stack = event.getItemStack();
             if (stack.getItem() instanceof ItemNameTag) {
@@ -126,7 +124,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
+    public static void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
 
         World world = entity.world;
@@ -153,7 +151,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onWorldTickEvent(WorldTickEvent event) {
+    public static void onWorldTickEvent(WorldTickEvent event) {
         // This only gets called server side, because forge wants it that way. But in case they
         // change their mind, this exception will crash the game to notify us of the change.
         if (event.side == Side.CLIENT) {
@@ -173,7 +171,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerTickEvent(PlayerTickEvent event) {
+    public static void onPlayerTickEvent(PlayerTickEvent event) {
         if (!event.player.world.isRemote) {
             EntityPlayerMP p = (EntityPlayerMP) event.player;
 
@@ -199,7 +197,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onWorldLoad(WorldEvent.Load event) {
+    public static void onWorldLoad(WorldEvent.Load event) {
         World world = event.getWorld();
         event.getWorld().addEventListener(new VSWorldEventListener(world));
         IHasShipManager shipManager = (IHasShipManager) world;
@@ -212,7 +210,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onWorldUnload(WorldEvent.Unload event) {
+    public static void onWorldUnload(WorldEvent.Unload event) {
         if (!event.getWorld().isRemote) {
             ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeWorld(event.getWorld());
         } else {
@@ -225,7 +223,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onEntityUntrack(PlayerEvent.StopTracking event) {
+    public static void onEntityUntrack(PlayerEvent.StopTracking event) {
         if (!event.getEntityPlayer().world.isRemote) {
             Entity ent = event.getTarget();
             if (ent instanceof PhysicsWrapperEntity) {
@@ -236,7 +234,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPlayerInteractEvent(PlayerInteractEvent event) {
+    public static void onPlayerInteractEvent(PlayerInteractEvent event) {
         BlockPos pos = event.getPos();
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
@@ -247,42 +245,18 @@ public class EventsCommon {
     }
 
     @SubscribeEvent
-    public void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
+    public static void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
+        event.addCapability(
+            new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "queryable_ship_data"),
+            new VSDefaultCapabilityProvider<>(ValkyrienSkiesMod.VS_SHIP_DATA()));
+
         event.addCapability(
             new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "world_data_capability"),
-            new ICapabilitySerializable<NBTBase>() {
-                IValkyrienSkiesWorldData inst = ValkyrienSkiesMod.VS_WORLD_DATA
-                    .getDefaultInstance();
-
-                @Override
-                public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-                    return capability == ValkyrienSkiesMod.VS_WORLD_DATA;
-                }
-
-                @Override
-                public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-                    return capability == ValkyrienSkiesMod.VS_WORLD_DATA
-                        ? ValkyrienSkiesMod.VS_WORLD_DATA.<T>cast(inst)
-                        : null;
-                }
-
-                @Override
-                public NBTBase serializeNBT() {
-                    return ValkyrienSkiesMod.VS_WORLD_DATA.getStorage()
-                        .writeNBT(ValkyrienSkiesMod.VS_WORLD_DATA, inst, null);
-                }
-
-                @Override
-                public void deserializeNBT(NBTBase nbt) {
-                    // Otherwise its old, then ignore it
-                    ValkyrienSkiesMod.VS_WORLD_DATA.getStorage()
-                        .readNBT(ValkyrienSkiesMod.VS_WORLD_DATA, inst, null, nbt);
-                }
-            });
+            new VSDefaultCapabilityProvider<>(ValkyrienSkiesMod.VS_WORLD_DATA()));
     }
 
     @SubscribeEvent
-    public void onJoin(PlayerLoggedInEvent event) {
+    public static void onJoin(PlayerLoggedInEvent event) {
         if (!event.player.world.isRemote) {
             EntityPlayerMP player = (EntityPlayerMP) event.player;
             lastPositions.put(player, new double[]{0D, 256D, 0D});
@@ -307,14 +281,14 @@ public class EventsCommon {
     }
 
     @SubscribeEvent
-    public void onLeave(PlayerLoggedOutEvent event) {
+    public static void onLeave(PlayerLoggedOutEvent event) {
         if (!event.player.world.isRemote) {
             lastPositions.remove(event.player);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onBlockBreakFirst(BlockEvent event) {
+    public static void onBlockBreakFirst(BlockEvent event) {
         BlockPos pos = event.getPos();
         Chunk chunk = event.getWorld()
             .getChunk(pos);
@@ -326,7 +300,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onExplosionStart(ExplosionEvent.Start event) {
+    public static void onExplosionStart(ExplosionEvent.Start event) {
         // Only run on server side
         if (!event.getWorld().isRemote) {
             Explosion explosion = event.getExplosion();
@@ -380,7 +354,7 @@ public class EventsCommon {
     }
 
     @SubscribeEvent
-    public void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
+    public static void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
         if (event.getEntity() instanceof PhysicsWrapperEntity) {
             //prevent ships from changing dimensions, because it can and will break everything very badly
             event.setCanceled(true);

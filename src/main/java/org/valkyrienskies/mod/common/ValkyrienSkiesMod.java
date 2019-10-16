@@ -82,6 +82,8 @@ import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
+import org.valkyrienskies.mod.common.capability.QueryableShipDataCapability;
+import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityStorage;
 import org.valkyrienskies.mod.common.command.framework.VSModCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
@@ -95,8 +97,8 @@ import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManag
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ImplValkyrienSkiesWorldData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienWorldDataCapability;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ImplValkyrienWorldDataCapability;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.StorageValkyrienSkiesWorldData;
@@ -128,8 +130,13 @@ public class ValkyrienSkiesMod {
     /**
      * This capability provides data attached to the world.
      */
-    @CapabilityInject(IValkyrienSkiesWorldData.class)
-    public static final Capability<IValkyrienSkiesWorldData> VS_WORLD_DATA = null;
+    @Getter
+    @CapabilityInject(IValkyrienWorldDataCapability.class)
+    public static final Capability<IValkyrienWorldDataCapability> VS_WORLD_DATA = null;
+
+    @Getter
+    @CapabilityInject(QueryableShipDataCapability.class)
+    public static final Capability<QueryableShipDataCapability> VS_SHIP_DATA = null;
 
     @SidedProxy(
         clientSide = "org.valkyrienskies.mod.proxy.ClientProxy",
@@ -268,7 +275,6 @@ public class ValkyrienSkiesMod {
 
             // region More serializers
 
-            //noinspection ArraysAsListWithZeroOrOneArgument
             UnmodifiableCollectionsSerializer.registerSerializers(kryo);
             SynchronizedCollectionsSerializer.registerSerializers(kryo);
 
@@ -356,9 +362,15 @@ public class ValkyrienSkiesMod {
     }
 
     private void registerCapabilities() {
-        CapabilityManager.INSTANCE.register(IValkyrienSkiesWorldData.class,
+        CapabilityManager.INSTANCE.register(IValkyrienWorldDataCapability.class,
             new StorageValkyrienSkiesWorldData(),
-            ImplValkyrienSkiesWorldData::new);
+            ImplValkyrienWorldDataCapability::new);
+
+        CapabilityManager.INSTANCE.register(
+            QueryableShipDataCapability.class,
+            new VSDefaultCapabilityStorage<>(),
+            QueryableShipDataCapability::new
+        );
     }
 
     private void registerTileEntities() {

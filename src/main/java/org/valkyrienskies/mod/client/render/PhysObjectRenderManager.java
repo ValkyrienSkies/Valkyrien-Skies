@@ -63,11 +63,11 @@ public class PhysObjectRenderManager {
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
         if (renderChunks == null) {
-            renderChunks = new PhysRenderChunk[parent.ownedChunks().chunkLengthX()][parent
+            renderChunks = new PhysRenderChunk[parent.ownedChunks().getChunkLengthX()][parent
                 .ownedChunks()
-                .chunkLengthZ()];
-            for (int xChunk = 0; xChunk < parent.ownedChunks().chunkLengthX(); xChunk++) {
-                for (int zChunk = 0; zChunk < parent.ownedChunks().chunkLengthZ(); zChunk++) {
+                .getChunkLengthZ()];
+            for (int xChunk = 0; xChunk < parent.ownedChunks().getChunkLengthX(); xChunk++) {
+                for (int zChunk = 0; zChunk < parent.ownedChunks().getChunkLengthZ(); zChunk++) {
                     renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
                         .getChunkAt(xChunk + parent.ownedChunks().minX(),
                             zChunk + parent.ownedChunks().minZ()));

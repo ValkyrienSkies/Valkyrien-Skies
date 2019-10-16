@@ -105,6 +105,7 @@ ext {
     opencomputersVersion = "MC1.12.1-1.7.1.+"
     spongeVersion = "1.12.2-2825-7.1.6"
     vsApiVersion = "master-SNAPSHOT"
+    jacksonVersion = "2.10.0"
 }
 
 dependencies {
@@ -144,6 +145,12 @@ dependencies {
         exclude module: "javassist" //1.5 MB
         //exclude module: "typetools" //23.5 KB
     }
+
+    // Jackson
+    shade "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    shade "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$jacksonVersion"
+    shade "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion"
+    shade "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
 
     // Include all dependencies in the /dependencies folder
     shade fileTree(include: ["*.jar"], dir: "dependencies")

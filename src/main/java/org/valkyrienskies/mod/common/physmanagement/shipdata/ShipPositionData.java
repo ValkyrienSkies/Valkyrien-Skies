@@ -2,11 +2,13 @@ package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 
-@NoArgsConstructor(force = true) // For Kryo
+@Accessors(fluent = false)
+@NoArgsConstructor(force = true)
 public class ShipPositionData {
 
     private final Vector shipPosition;

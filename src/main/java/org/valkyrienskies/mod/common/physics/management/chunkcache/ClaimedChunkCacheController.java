@@ -1,5 +1,7 @@
 package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
+import java.util.Map.Entry;
+import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -13,9 +15,6 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-
-import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * The ClaimedChunkCacheController is a chunk cache controller used by the {@link PhysicsObject}. It
@@ -124,8 +123,8 @@ public class ClaimedChunkCacheController {
     private void loadLoadedChunks() {
         VSChunkClaim chunkClaim = parent.ownedChunks();
 
-        claimedChunks = new Chunk[(chunkClaim.radius() * 2) + 1][
-            (chunkClaim.radius() * 2) + 1];
+        claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
+            (chunkClaim.getRadius() * 2) + 1];
         for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
             for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
                 // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
@@ -154,8 +153,8 @@ public class ClaimedChunkCacheController {
     private void loadNewChunks() {
         VSChunkClaim chunkClaim = parent.ownedChunks();
 
-        claimedChunks = new Chunk[(chunkClaim.radius() * 2) + 1][
-            (chunkClaim.radius() * 2) + 1];
+        claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
+            (chunkClaim.getRadius() * 2) + 1];
 
         for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
             for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {

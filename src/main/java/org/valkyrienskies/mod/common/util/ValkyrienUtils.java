@@ -11,12 +11,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.capability.QueryableShipDataCapability;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import valkyrienwarfare.api.TransformType;
 
@@ -98,22 +98,22 @@ public class ValkyrienUtils {
     }
 
     /**
-     * This method basically grabs the {@link IValkyrienSkiesWorldData} capability from the world
+     * This method basically grabs the {@link QueryableShipData} capability from the world
      * and then returns the QueryableShipData associated with it
      *
      * @param world The world we are getting the QueryableShipData from
      * @return The QueryableShipData corresponding to the given world
      */
     public static QueryableShipData getQueryableData(World world) {
-        IValkyrienSkiesWorldData worldData = world
-            .getCapability(ValkyrienSkiesMod.VS_WORLD_DATA, null);
+        QueryableShipDataCapability worldData = world
+            .getCapability(ValkyrienSkiesMod.VS_SHIP_DATA, null);
         if (worldData == null) {
             // I hate it when other mods add their custom worlds without calling the forge world
             // load events, so I don't feel bad crashing the game here. Although we could also get
             // away with just adding the capability to world instead of crashing.
             throw new IllegalStateException(
-                "World " + world + " doesn't have an IVSWorldDataCapability. This is wrong!");
+                "World " + world + " doesn't have an QueryableShipDataCapability. This is wrong!");
         }
-        return worldData.getQueryableShipData();
+        return worldData.get();
     }
 }

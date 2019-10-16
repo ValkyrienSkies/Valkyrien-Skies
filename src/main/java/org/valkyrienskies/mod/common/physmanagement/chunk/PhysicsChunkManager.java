@@ -19,7 +19,7 @@ package org.valkyrienskies.mod.common.physmanagement.chunk;
 import java.util.Objects;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienWorldDataCapability;
 
 /**
  * This class is responsible for finding/allocating the Chunks for PhysicsObjects; also ensures the
@@ -46,7 +46,7 @@ public class PhysicsChunkManager {
      * positions
      */
     public VSChunkClaim getNextAvailableChunkSet(int radius) {
-        IValkyrienSkiesWorldData worldDataCapability =
+        IValkyrienWorldDataCapability worldDataCapability =
             worldObj.getCapability(ValkyrienSkiesMod.VS_WORLD_DATA, null);
 
         // TODO: Add the ship id to the allocation eventually.

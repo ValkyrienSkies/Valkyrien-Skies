@@ -1,14 +1,23 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import static com.googlecode.cqengine.query.QueryFactory.equal;
+import static com.googlecode.cqengine.query.QueryFactory.startsWith;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
+import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
@@ -17,24 +26,24 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Stream;
-
-import static com.googlecode.cqengine.query.QueryFactory.equal;
-import static com.googlecode.cqengine.query.QueryFactory.startsWith;
-
 /**
  * A class that keeps track of ship data
  */
 @MethodsReturnNonnullByDefault
+@Log4j2
 @SuppressWarnings("WeakerAccess")
 public class QueryableShipData implements Iterable<ShipData> {
 
-    // The key used to store/read the allShips collection from nbt.
-    private static final String NBT_STORAGE_KEY = ValkyrienSkiesMod.MOD_ID + "QueryableShipDataNBT";
+    /**
+     * The key used to store/read the allShips collection from Kryo
+     */
+    private static final String NBT_KEY_KRYO = ValkyrienSkiesMod.MOD_ID + "QueryableShipDataNBT";
+    /**
+     * The key used to store/read allShips from jackson protobuf
+     */
+    private static final String NBT_KEY_JACKSON_PROTOBUF = ValkyrienSkiesMod.MOD_ID +
+        "QueryableShipDataNBT-JacksonProtobuf";
+
     // Where every ship data instance is stored, regardless if the corresponding PhysicsObject is
     // loaded in the World or not.
     private ConcurrentIndexedCollection<ShipData> allShips = new ConcurrentIndexedCollection<>();
@@ -46,14 +55,14 @@ public class QueryableShipData implements Iterable<ShipData> {
     }
 
     /**
-     * {@link ValkyrienUtils#getQueryableData(World)}
+     * @see ValkyrienUtils#getQueryableData(World)
      */
     public static QueryableShipData get(World world) {
         return ValkyrienUtils.getQueryableData(world);
     }
-    
+
     /**
-     * @param data The ship to be renamed
+     * @param data    The ship to be renamed
      * @param newName The new name of the ship
      * @return True of the rename was successful, false if it wasn't.
      */
@@ -94,7 +103,8 @@ public class QueryableShipData implements Iterable<ShipData> {
         ResultSet<ShipData> resultSet = allShips.retrieve(query);
 
         if (resultSet.size() > 1) {
-            throw new IllegalStateException("How the heck did we get 2 or more ships both managing the chunk at " + chunkLong);
+            throw new IllegalStateException(
+                "How the heck did we get 2 or more ships both managing the chunk at " + chunkLong);
         }
         if (resultSet.isEmpty()) {
             return Optional.empty();
@@ -169,19 +179,32 @@ public class QueryableShipData implements Iterable<ShipData> {
         shipData.positionData.updateData(wrapper);
     }
 
-    @SuppressWarnings("unchecked")
     public void readFromNBT(NBTTagCompound nbt) {
         long start = System.currentTimeMillis();
 
-        Kryo kryo = ValkyrienSkiesMod.INSTANCE.getKryo();
-        Input input = new Input(nbt.getByteArray(NBT_STORAGE_KEY));
         try {
-            allShips = kryo.readObject(input, ConcurrentIndexedCollection.class);
+            ObjectMapper mapper = new ObjectMapper();
+
+            mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+                .withFieldVisibility(Visibility.ANY)
+                .withGetterVisibility(Visibility.NONE)
+                .withIsGetterVisibility(Visibility.NONE)
+                .withSetterVisibility(Visibility.NONE));
+
+            byte[] value = nbt.getByteArray(NBT_KEY_JACKSON_PROTOBUF);
+            if (value.length != 0) {
+                this.allShips.clear();
+                this.allShips.addAll(mapper.readValue(
+                    value, ShipDataCollectionWrapper.class).collection);
+            } else {
+                allShips = new ConcurrentIndexedCollection<>();
+            }
         } catch (Exception e) {
             // Error reading allShips from memory, just make a new empty one.
             e.printStackTrace();
             allShips = new ConcurrentIndexedCollection<>();
         }
+
         if (allShips == null) {
             // This should NEVER EVER happen! So I don't feel bad crashing the game, for now.
             throw new IllegalStateException(
@@ -194,10 +217,20 @@ public class QueryableShipData implements Iterable<ShipData> {
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         long start = System.currentTimeMillis();
 
-        Kryo kryo = ValkyrienSkiesMod.INSTANCE.getKryo();
-        Output output = new Output(1024, -1);
-        kryo.writeObject(output, allShips);
-        compound.setByteArray(NBT_STORAGE_KEY, output.getBuffer());
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+                .withFieldVisibility(Visibility.ANY)
+                .withGetterVisibility(Visibility.NONE)
+                .withIsGetterVisibility(Visibility.NONE)
+                .withSetterVisibility(Visibility.NONE));
+
+            byte[] value = mapper.writeValueAsBytes(
+                new ShipDataCollectionWrapper(allShips));
+            compound.setByteArray(NBT_KEY_JACKSON_PROTOBUF, value);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("Price of write: " + (System.currentTimeMillis() - start) + "ms");
 

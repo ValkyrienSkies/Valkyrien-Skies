@@ -15,9 +15,11 @@ import lombok.SneakyThrows;
  */
 public class NounListNameGenerator implements NameGenerator {
 
+    private static final int NOUN_LIST_LENGTH = 6801;
+
     @Getter
     private static NounListNameGenerator instance = new NounListNameGenerator();
-    private List<String> nouns = new ArrayList<>(6801);
+    private List<String> nouns = new ArrayList<>(NOUN_LIST_LENGTH);
 
     @SneakyThrows
     private NounListNameGenerator() {

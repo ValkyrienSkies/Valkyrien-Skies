@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,13 +49,17 @@ public abstract class VSDefaultCapability<K> {
     @Nonnull
     private K instance;
 
+    private Supplier<K> factory;
+
     public VSDefaultCapability(Class<K> kClass, Supplier<K> factory) {
         this(kClass, factory, createMapper());
     }
 
     public VSDefaultCapability(Class<K> kClass, Supplier<K> factory, ObjectMapper mapper) {
         this.kClass = kClass;
+        this.factory = factory;
         this.instance = factory.get();
+        System.out.println("CONSTRUCTED INSTANCE: " + instance);
         this.mapper = mapper;
     }
 
@@ -87,11 +90,17 @@ public abstract class VSDefaultCapability<K> {
 
     public K readNBT(NBTBase base, EnumFacing side) {
         byte[] value = ((NBTTagByteArray) base).getByteArray();
-        System.out.println(Arrays.toString(value));
         try {
             this.instance = mapper.readValue(value, kClass);
         } catch (IOException ex) {
             log.fatal("Failed to read your ship data? Ships will probably be missing", ex);
+            this.instance = factory.get();
+        }
+
+        // Possibly redundant null check. TODO: remove
+        if (this.instance == null) {
+            log.fatal("Failed to read your ship data? Ships will probably be missing");
+            this.instance = factory.get();
         }
 
         return this.instance;

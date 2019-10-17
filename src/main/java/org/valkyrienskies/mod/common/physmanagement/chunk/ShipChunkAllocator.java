@@ -13,13 +13,28 @@ public class ShipChunkAllocator {
     public static final int SHIP_CHUNK_X_START = 320000;
     public static final int SHIP_CHUNK_Z_START = 0;
 
-    public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
-        return chunkX >= SHIP_CHUNK_X_START && chunkZ >= SHIP_CHUNK_Z_START;
-    }
-
     private int nextChunkX = SHIP_CHUNK_X_START;
     private int nextChunkZ = SHIP_CHUNK_Z_START;
 
+    // The +50 is used to make sure chunks too close to ships dont interfere
+    public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
+        boolean likelyLegacy = chunkZ < -1870000 + 12 + 50;
+        return likelyLegacy || ShipChunkAllocator.isLikelyShipChunk(chunkX, chunkZ);
+    }
+
+    /**
+     * This finds the next empty chunkSet for use, currently only increases the xPos to get new
+     * positions
+     */
+    public VSChunkClaim getNextAvailableChunkSet(int radius) {
+
+        // TODO: Add the ship id to the allocation eventually.
+        ChunkAllocation allocatedChunks = this.allocateChunks("insert ship id here", radius);
+
+        return new VSChunkClaim(
+            allocatedChunks.lowerChunkX + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS,
+            allocatedChunks.lowerChunkZ + ShipChunkAllocator.MAX_SHIP_CHUNK_RADIUS, radius);
+    }
 
     public ChunkAllocation allocateChunks(String shipId, int chunkRadius) {
         // Don't go over the maximum

@@ -54,11 +54,7 @@ public class DimensionPhysicsChunkManager {
     }
 
     public void updateShipPosition(PhysicsWrapperEntity wrapper) {
-        try {
-            ValkyrienUtils.getQueryableData(wrapper.world).updateShipPosition(wrapper);
-        } catch (NullPointerException e) {
-            // do nothing
-        }
+        ValkyrienUtils.getQueryableData(wrapper.world).updateShipPosition(wrapper);
     }
 
     public void removeShipPosition(PhysicsWrapperEntity wrapper) {

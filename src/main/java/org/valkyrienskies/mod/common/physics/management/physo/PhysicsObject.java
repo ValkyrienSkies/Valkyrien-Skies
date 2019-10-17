@@ -279,7 +279,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         return TickSyncCompletableFuture
             .supplyAsync(() -> DetectorManager.getDetectorFor(detectorID(), centerInWorld, world(),
                 VSConfig.maxShipSize + 1, true))
-            .thenAcceptTickSync(detector -> {
+            .thenAcceptSync(detector -> {
                 if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
                     System.err.println("Ship too big or bedrock detected!");
                     if (player != null) {

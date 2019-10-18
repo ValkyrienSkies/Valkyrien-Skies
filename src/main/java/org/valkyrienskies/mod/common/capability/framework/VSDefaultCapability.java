@@ -78,6 +78,8 @@ public abstract class VSDefaultCapability<K> {
         byte[] value;
         try {
             value = getMapper().writeValueAsBytes(instance);
+            log.debug(String.format("Writing data of size %f MB. (%s)",
+                value.length / Math.pow(2, 20), instance.getClass().getSimpleName()));
         } catch (Exception ex) {
             log.fatal("Something just broke horrifically. Be wary of your data. "
                 + "This will crash the game in future releases", ex);

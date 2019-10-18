@@ -26,16 +26,16 @@ public class ShipChunkAllocator {
     /**
      * The size of the square of chunks (default 256 x 256) that are allocated to a ship.
      */
-    public static final int MAX_CHUNK_LENGTH = 256;
+    public static final int MAX_CHUNK_LENGTH = 32;
     public static final int MAX_CHUNK_RADIUS = (MAX_CHUNK_LENGTH / 2) - 1;
 
     public static final int CHUNK_X_START = 320000;
     public static final int CHUNK_Z_START = 0;
 
     @Getter
-    private int nextChunkX = CHUNK_X_START;
+    private int lastChunkX = CHUNK_X_START;
     @Getter
-    private int nextChunkZ = CHUNK_Z_START;
+    private int lastChunkZ = CHUNK_Z_START;
 
     public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
         return chunkX >= CHUNK_X_START && chunkZ >= CHUNK_Z_START;
@@ -46,9 +46,8 @@ public class ShipChunkAllocator {
      * positions
      */
     public VSChunkClaim allocateNextChunkClaim() {
-        VSChunkClaim claim = new VSChunkClaim(nextChunkX, nextChunkZ, 16);
-        nextChunkZ += MAX_CHUNK_LENGTH;
-        return claim;
+        return new VSChunkClaim(lastChunkX ,
+            lastChunkZ += MAX_CHUNK_LENGTH, MAX_CHUNK_RADIUS);
     }
 
 }

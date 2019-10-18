@@ -17,8 +17,8 @@
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
 import net.minecraft.entity.MoverType;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 /**
  * This interface is really quite bad, and will be removed once subspaces are complete.
@@ -28,9 +28,9 @@ import org.valkyrienskies.mod.common.math.Vector;
 @Deprecated
 public interface IDraggable {
 
-    PhysicsWrapperEntity getWorldBelowFeet();
+    PhysicsObject getWorldBelowFeet();
 
-    void setWorldBelowFeet(PhysicsWrapperEntity toSet);
+    void setWorldBelowFeet(PhysicsObject toSet);
 
     Vector getVelocityAddedToPlayer();
 
@@ -44,8 +44,8 @@ public interface IDraggable {
 
     void move(MoverType type, double dx, double dy, double dz);
 
-    void setForcedRelativeSubspace(PhysicsWrapperEntity toSet);
+    void setForcedRelativeSubspace(PhysicsObject toSet);
 
-    PhysicsWrapperEntity getForcedSubspaceBelowFeet();
+    PhysicsObject getForcedSubspaceBelowFeet();
 
 }

@@ -16,22 +16,19 @@
 
 package org.valkyrienskies.fixes;
 
-import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 /**
  * This class used to do more (We made Entity.java extend this class in the past); but after tons of
@@ -80,11 +77,4 @@ public class EntityMoveInjectionMethods {
         return alteredMovement;
     }
 
-    public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32,
-        boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,
-        boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
-        return ((IWorldVS) world)
-            .rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox,
-                returnLastUncollidableBlock, toIgnore);
-    }
 }

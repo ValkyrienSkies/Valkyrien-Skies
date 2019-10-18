@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.addon.control.network;
 
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -27,6 +26,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.piloting.IShipPilotClient;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 public class MessageStartPilotingHandler implements
     IMessageHandler<MessageStartPiloting, IMessage> {
@@ -45,8 +46,7 @@ public class MessageStartPilotingHandler implements
                 Optional<PhysicsObject> physicsObject = ValkyrienUtils
                     .getPhysicsObject(Minecraft.getMinecraft().world, message.posToStartPiloting);
                 if (physicsObject.isPresent()) {
-                    pilot.setPilotedShip(physicsObject.get()
-                        .getWrapperEntity());
+                    pilot.setPilotedShip(physicsObject.get());
                 } else {
                     new IllegalStateException("Received incorrect piloting message!")
                         .printStackTrace();

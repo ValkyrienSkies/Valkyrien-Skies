@@ -18,31 +18,16 @@ package org.valkyrienskies.mixin.world;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.Interface.Remap;
-import org.spongepowered.asm.mixin.Intrinsic;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -62,9 +47,16 @@ import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-import org.valkyrienskies.mod.common.ship_handling.IWorldShipManager;
+import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
@@ -78,12 +70,12 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     // I made this threadlocal to prevent disaster for now, but its still really bad code.
     private final ThreadLocal<Boolean> dontIntercept = ThreadLocal.withInitial(() -> false);
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
-    private final ThreadLocal<PhysicsWrapperEntity> dontInterceptShip = ThreadLocal
+    private final ThreadLocal<PhysicsObject> dontInterceptShip = ThreadLocal
         .withInitial(() -> null);
     private final ISubspace worldSubspace = new ImplSubspace(null);
     private final World world = World.class.cast(this);
     // The IWorldShipManager
-    private IWorldShipManager manager = null;
+    private IPhysObjectWorld manager = null;
     // Rotation Node World fields. Note this is only used in multiplayer, but making a MixinWorldServer
     // just for one field would be wasteful.
     private ImplRotationNodeWorld rotationNodeWorld = new ImplRotationNodeWorld(null);
@@ -353,7 +345,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     @Override
-    public void excludeShipFromRayTracer(PhysicsWrapperEntity entity) {
+    public void excludeShipFromRayTracer(PhysicsObject entity) {
         if (this.dontInterceptShip.get() != null) {
             throw new IllegalStateException("excluded ship is already set!");
         }
@@ -361,7 +353,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     @Override
-    public void unexcludeShipFromRayTracer(PhysicsWrapperEntity entity) {
+    public void unexcludeShipFromRayTracer(PhysicsObject entity) {
         if (this.dontInterceptShip.get() != entity) {
             throw new IllegalStateException("must exclude the same ship!");
         }
@@ -381,8 +373,8 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
     @Override
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
-        boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
-        PhysicsWrapperEntity toIgnore) {
+                                                   boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
+                                                   PhysicsObject toIgnore) {
         this.dontIntercept.set(true);
         RayTraceResult vanillaTrace = world
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
@@ -443,7 +435,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     @Override
-    public IWorldShipManager getManager() {
+    public IPhysObjectWorld getManager() {
         if (manager == null) {
             throw new IllegalStateException(
                 "We can't be accessing this manager since WorldEvent.load() was never called!");
@@ -452,7 +444,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     @Override
-    public void setManager(Function<World, IWorldShipManager> managerSupplier) {
+    public void setManager(Function<World, IPhysObjectWorld> managerSupplier) {
         manager = managerSupplier.apply(world);
     }
 

@@ -14,8 +14,8 @@ import org.valkyrienskies.mod.common.coordinates.ISubspace;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.VSMath;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 
 @Mixin(CPacketPlayer.class)
@@ -25,21 +25,21 @@ public class MixinCPacketPlayer implements ITransformablePacket {
     private GameType cachedPlayerGameType = null;
 
     @Inject(method = "processPacket", at = @At(value = "HEAD"))
-    public void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+    private void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
         this.doPreProcessing(server, false);
     }
 
     @Inject(method = "processPacket", at = @At(value = "RETURN"))
-    public void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+    private void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
         this.doPostProcessing(server, false);
     }
 
     @Override
     public void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
         if (isPacketOnMainThread(server, callingFromSponge)) {
-            PhysicsWrapperEntity parent = getPacketParent((NetHandlerPlayServer) server);
+            PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
             if (parent != null) {
-                ISubspace parentSubspace = parent.getPhysicsObject().getSubspace();
+                ISubspace parentSubspace = parent.getSubspace();
                 ISubspacedEntityRecord entityRecord = parentSubspace
                     .getRecordForSubspacedEntity((ISubspacedEntity) getPacketPlayer(server));
                 VectorImmutable positionGlobal = entityRecord.getPositionInGlobalCoordinates();
@@ -75,9 +75,9 @@ public class MixinCPacketPlayer implements ITransformablePacket {
             if (cachedPlayerGameType != null) {
                 getPacketPlayer(server).interactionManager.gameType = cachedPlayerGameType;
             }
-            PhysicsWrapperEntity parent = getPacketParent((NetHandlerPlayServer) server);
+            PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
             if (parent != null) {
-                parent.getPhysicsObject().getSubspace()
+                parent.getSubspace()
                     .forceSubspaceRecord((ISubspacedEntity) getPacketPlayer(server), null);
             }
             IDraggable draggable = (IDraggable) getPacketPlayer(server);
@@ -86,7 +86,7 @@ public class MixinCPacketPlayer implements ITransformablePacket {
     }
 
     @Override
-    public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
+    public PhysicsObject getPacketParent(NetHandlerPlayServer server) {
         EntityPlayerMP player = server.player;
         IDraggable draggable = (IDraggable) player;
         return draggable.getForcedSubspaceBelowFeet();

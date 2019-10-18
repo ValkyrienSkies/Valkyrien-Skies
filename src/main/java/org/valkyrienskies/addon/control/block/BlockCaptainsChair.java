@@ -16,9 +16,6 @@
 
 package org.valkyrienskies.addon.control.block;
 
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -37,12 +34,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
 
 public class BlockCaptainsChair extends BlockPilotableBasic {
 
@@ -64,14 +64,11 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
         if (!worldIn.isRemote) {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
             if (physicsObject.isPresent()) {
-                PhysicsWrapperEntity wrapperEntity = physicsObject.get()
-                    .getWrapperEntity();
-                if (playerIn.getLowestRidingEntity() != wrapperEntity.getLowestRidingEntity()) {
                     TileEntity tileEntity = worldIn.getTileEntity(pos);
                     if (tileEntity instanceof TileEntityCaptainsChair) {
                         Vector playerPos = new Vector(playerIn);
 
-                        wrapperEntity.getPhysicsObject()
+                        physicsObject.get()
                             .getShipTransformationManager()
                             .fromLocalToGlobal(playerPos);
 
@@ -82,15 +79,14 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
                         IDraggable entityDraggable = EntityDraggable
                             .getDraggableFromEntity(playerIn);
                         // Only mount the player if they're standing on the ship.
-                        if (entityDraggable.getWorldBelowFeet() == wrapperEntity) {
-                            playerIn.startRiding(wrapperEntity);
+                        if (entityDraggable.getWorldBelowFeet() == physicsObject.get()) {
                             Vector localMountPos = getPlayerMountOffset(state, pos);
                             ValkyrienUtils.fixEntityToShip(playerIn, localMountPos,
-                                wrapperEntity.getPhysicsObject());
+                                    physicsObject.get());
                         }
 
                         ((TileEntityCaptainsChair) tileEntity).setPilotEntity(playerIn);
-                        wrapperEntity.getPhysicsObject()
+                        physicsObject.get()
                             .getShipTransformationManager()
                             .fromGlobalToLocal(playerPos);
 
@@ -98,7 +94,7 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
                         playerIn.posY = playerPos.y;
                         playerIn.posZ = playerPos.z;
                     }
-                }
+
             }
         }
 

@@ -163,9 +163,12 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     private boolean isFullyLoaded = false;
     @Getter
     private IVoxelFieldAABBMaker voxelFieldAABBMaker; // Used to quickly make aabb's
+    @Getter
+    private final World world;
 
     public PhysicsObject(PhysicsWrapperEntity host) {
         this.wrapperEntity = host;
+        this.world = host.world;
         if (host.world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this);
         }
@@ -702,13 +705,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     /*
      * Encapsulation code past here.
      */
-
-    /**
-     * @return The World this PhysicsObject exists in.
-     */
-    public World getWorld() {
-        return getWrapperEntity().getEntityWorld();
-    }
 
     /**
      * Sets the consecutive tick counter to 0.

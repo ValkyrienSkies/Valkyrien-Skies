@@ -24,7 +24,6 @@ import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockCaptainsChair;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
@@ -36,9 +35,9 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         IBlockState blockState = getWorld().getBlockState(getPos());
         if (blockState.getBlock() == ValkyrienSkiesControl.INSTANCE.vsControlBlocks.captainsChair) {
-            PhysicsWrapperEntity wrapper = getParentPhysicsEntity();
-            if (wrapper != null) {
-                processCalculationsForControlMessageAndApplyCalculations(wrapper, message,
+            PhysicsObject physicsObject = getParentPhysicsEntity();
+            if (physicsObject != null) {
+                processCalculationsForControlMessageAndApplyCalculations(physicsObject, message,
                     blockState);
             }
         } else {
@@ -58,22 +57,21 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
 
     @Override
     public final void onStartTileUsage(EntityPlayer player) {
-        getParentPhysicsEntity().getPhysicsObject().getPhysicsProcessor().actAsArchimedes = true;
+        getParentPhysicsEntity().getPhysicsProcessor().actAsArchimedes = true;
     }
 
     @Override
     public final void onStopTileUsage() {
         // Sanity check, sometimes we can be piloting something that's been destroyed so there's nothing to change physics on.
         if (getParentPhysicsEntity() != null) {
-            getParentPhysicsEntity().getPhysicsObject()
+            getParentPhysicsEntity()
                 .getPhysicsProcessor().actAsArchimedes = false;
         }
     }
 
     private final void processCalculationsForControlMessageAndApplyCalculations(
-        PhysicsWrapperEntity wrapper, PilotControlsMessage message, IBlockState state) {
+            PhysicsObject controlledShip, PilotControlsMessage message, IBlockState state) {
         BlockPos chairPosition = getPos();
-        PhysicsObject controlledShip = wrapper.getPhysicsObject();
 
         if (controlledShip.getShipAligningToGrid()) {
             return;

@@ -17,12 +17,13 @@
 package org.valkyrienskies.addon.control.piloting;
 
 import io.netty.buffer.ByteBuf;
-import java.util.UUID;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.valkyrienskies.mod.client.VSKeyHandler;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+
+import java.util.UUID;
 
 public class PilotControlsMessage implements IMessage {
 
@@ -127,7 +128,7 @@ public class PilotControlsMessage implements IMessage {
         packetBuf.writeBlockPos(controlBlockPos);
     }
 
-    public void assignKeyBooleans(PhysicsWrapperEntity shipPiloting, Enum inputType) {
+    public void assignKeyBooleans(PhysicsObject shipPiloting, Enum inputType) {
         airshipUp_KeyDown = VSKeyHandler.airshipUp.isKeyDown();
         airshipDown_KeyDown = VSKeyHandler.airshipDown.isKeyDown();
         airshipForward_KeyDown = VSKeyHandler.airshipForward.isKeyDown();
@@ -146,7 +147,7 @@ public class PilotControlsMessage implements IMessage {
         airshipStop_KeyPressed = airshipStop_KeyDown && !airshipStop_KeyPressedLast;
 
         if (shipPiloting != null) {
-            shipFor = shipPiloting.getUniqueID();
+            shipFor = shipPiloting.getWrapperEntity().getUniqueID();
         }
         this.inputType = inputType;
         if (inputType == ControllerInputType.Zepplin) {

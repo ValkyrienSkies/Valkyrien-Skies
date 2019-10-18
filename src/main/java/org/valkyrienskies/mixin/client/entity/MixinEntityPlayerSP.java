@@ -52,9 +52,9 @@ public class MixinEntityPlayerSP {
 
         IDraggable draggable = (IDraggable) this;
         if (draggable.getWorldBelowFeet() != null) {
-            draggable.getWorldBelowFeet().getPhysicsObject().getSubspace()
+            draggable.getWorldBelowFeet().getSubspace()
                 .snapshotSubspacedEntity(thisAsSubspaced);
-            ISubspacedEntityRecord entityRecord = draggable.getWorldBelowFeet().getPhysicsObject()
+            ISubspacedEntityRecord entityRecord = draggable.getWorldBelowFeet()
                 .getSubspace()
                 .getRecordForSubspacedEntity(thisAsSubspaced);
             SubspacedEntityRecordMessage recordMessage = new SubspacedEntityRecordMessage(

@@ -40,7 +40,7 @@ public class SubspacedEntityRecordHandler implements
                     (ISubspacedEntity) subspacedEntity, wrapperEntity.getPhysicsObject()
                         .getSubspace());
                 IDraggable draggable = (IDraggable) subspacedEntity;
-                draggable.setForcedRelativeSubspace(wrapperEntity);
+                draggable.setForcedRelativeSubspace(wrapperEntity.getPhysicsObject());
                 wrapperEntity.getPhysicsObject().getSubspace()
                     .forceSubspaceRecord(record.getParentEntity(), record);
                 // Now just synchronize the player to the data sent by the client.

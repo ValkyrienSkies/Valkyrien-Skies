@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mixin.entity;
 
-import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +33,6 @@ import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
@@ -43,6 +41,8 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
@@ -65,8 +65,8 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     public double posY;
     @Shadow
     public double posZ;
-    private PhysicsWrapperEntity worldBelowFeet;
-    private PhysicsWrapperEntity forcedRelativeWorldBelowFeet;
+    private PhysicsObject worldBelowFeet;
+    private PhysicsObject forcedRelativeWorldBelowFeet;
     private Vector velocityAddedToPlayer = new Vector();
     private double yawDifVelocity;
     private boolean cancelNextMove = false;
@@ -134,12 +134,12 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     }
 
     @Override
-    public PhysicsWrapperEntity getWorldBelowFeet() {
+    public PhysicsObject getWorldBelowFeet() {
         return worldBelowFeet;
     }
 
     @Override
-    public void setWorldBelowFeet(PhysicsWrapperEntity toSet) {
+    public void setWorldBelowFeet(PhysicsObject toSet) {
         worldBelowFeet = toSet;
     }
 
@@ -169,12 +169,12 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     }
 
     @Override
-    public void setForcedRelativeSubspace(PhysicsWrapperEntity toSet) {
+    public void setForcedRelativeSubspace(PhysicsObject toSet) {
         forcedRelativeWorldBelowFeet = toSet;
     }
 
     @Override
-    public PhysicsWrapperEntity getForcedSubspaceBelowFeet() {
+    public PhysicsObject getForcedSubspaceBelowFeet() {
         return forcedRelativeWorldBelowFeet;
     }
 
@@ -305,7 +305,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
 
     @Redirect(method = "createRunningParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I", ordinal = 0))
     public int runningParticlesFirstFloor(double d) {
-        PhysicsWrapperEntity worldBelow = thisAsDraggable.getWorldBelowFeet();
+        PhysicsObject worldBelow = thisAsDraggable.getWorldBelowFeet();
 
         if (worldBelow == null) {
             searchVector = null;
@@ -313,7 +313,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         } else {
             searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
 //            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
-            worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+            worldBelow.getShipTransformationManager().getCurrentTickTransform()
                 .transform(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
             return MathHelper.floor(searchVector.x);
         }

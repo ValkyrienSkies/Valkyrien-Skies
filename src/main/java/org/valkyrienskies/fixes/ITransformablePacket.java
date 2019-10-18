@@ -4,12 +4,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import org.valkyrienskies.mod.common.MixinLoadManager;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
-import org.valkyrienskies.mod.common.coordinates.ISubspace;
-import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.coordinates.*;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -39,13 +35,13 @@ public interface ITransformablePacket {
             // System.out.println("Pre packet process");
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
-            PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
-            if (wrapper != null
-                && wrapper.getPhysicsObject().getShipTransformationManager() != null) {
+            PhysicsObject physicsObject = getPacketParent(serverHandler);
+            if (physicsObject != null
+                    && physicsObject.getShipTransformationManager() != null) {
                 ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
                 ISubspace worldSubspace = worldProvider.getSubspace();
                 worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
-                wrapper.getPhysicsObject().getShipTransformationManager()
+                physicsObject.getShipTransformationManager()
                     .getCurrentTickTransform().transform(player,
                     TransformType.GLOBAL_TO_SUBSPACE);
             }
@@ -60,7 +56,6 @@ public interface ITransformablePacket {
         if (isPacketOnMainThread(server, callingFromSponge)) {
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
-            PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
             // I don't care what happened to that ship in the time between, we must restore
             // the player to their proper coordinates.
             ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
@@ -79,5 +74,5 @@ public interface ITransformablePacket {
         }
     }
 
-    PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server);
+    PhysicsObject getPacketParent(NetHandlerPlayServer server);
 }

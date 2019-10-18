@@ -1,23 +1,26 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.multithreaded.VSThread;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
+
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.multithreaded.VSThread;
 
-public class WorldServerShipManager implements IWorldShipManager {
+public class WorldServerShipManager implements IPhysObjectWorld {
 
     private transient World world;
-    private IQuickShipAccess shipAccess;
-    private transient Map<EntityPlayer, List<ShipHolder>> playerToWatchingShips;
+    private transient Map<EntityPlayer, List<ShipData>> playerToWatchingShips;
     private transient VSThread physicsThread;
 
     public WorldServerShipManager(World world) {
         this.world = world;
         this.playerToWatchingShips = new HashMap<>();
-        this.shipAccess = new SimpleQuickShipAccess();
         this.physicsThread = new VSThread(this.world);
         this.physicsThread.start();
     }
@@ -28,7 +31,27 @@ public class WorldServerShipManager implements IWorldShipManager {
         this.playerToWatchingShips.clear();
         this.playerToWatchingShips = null;
         this.physicsThread.kill();
-        // TODO: Save into PorkDB
+    }
+
+    @Override
+    public PhysicsObject createPhysObjectFromData(ShipData data) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removePhysObject(ShipData data) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PhysicsObject getPhysObjectFromData(ShipData data) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nonnull
+    @Override
+    public List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck) {
+        throw new UnsupportedOperationException();
     }
 
     public void tick() {

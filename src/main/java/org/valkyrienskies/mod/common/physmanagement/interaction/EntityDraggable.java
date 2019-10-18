@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
-import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -29,6 +28,8 @@ import org.valkyrienskies.mod.common.physics.management.ShipTransformationManage
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.List;
 
 /**
  * Bad class, delete soon!
@@ -86,7 +87,7 @@ public class EntityDraggable {
 
         if (draggable.getWorldBelowFeet() != null) {
             ShipTransformationManager coordTransform = draggable.getWorldBelowFeet()
-                .getPhysicsObject().getShipTransformationManager();
+                    .getShipTransformationManager();
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
                 // EventsClient.updatePlayerMouseOver(entity);

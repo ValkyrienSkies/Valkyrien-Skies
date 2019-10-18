@@ -42,6 +42,7 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygonCol
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.ShipPolygon;
 import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.api.TransformType;
@@ -72,7 +73,7 @@ public class EntityCollisionInjector {
         EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
         List<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
 
-        PhysicsWrapperEntity worldBelow = null;
+        PhysicsObject worldBelow = null;
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
 
         Vector total = new Vector();
@@ -93,7 +94,7 @@ public class EntityCollisionInjector {
                         velVec.getAddition(total));
                     if (!fast.arePolygonsSeperated()) {
                         // fastCollisions.add(fast);
-                        worldBelow = shipPoly.shipFrom.getWrapperEntity();
+                        worldBelow = shipPoly.shipFrom;
 
                         Vector response = fast.getCollisions()[fast.getMinDistanceIndex()]
                             .getResponse();
@@ -276,7 +277,7 @@ public class EntityCollisionInjector {
 
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
 
-        PhysicsWrapperEntity worldBelow = draggable.getWorldBelowFeet();
+        PhysicsObject worldBelow = draggable.getWorldBelowFeet();
 
         entity.collidedHorizontally =
             (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
@@ -288,7 +289,7 @@ public class EntityCollisionInjector {
         Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D,
             entity.posZ);
 
-        worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
+        worldBelow.getShipTransformationManager().getCurrentTickTransform()
             .transform(entityPosInShip,
                 TransformType.GLOBAL_TO_SUBSPACE);
 

@@ -20,13 +20,6 @@ import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -84,6 +77,9 @@ import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod. The physics object does everything from custom collision, block
@@ -248,15 +244,13 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             // onPlayerUntracking(wachingPlayer);
         }
         getWatchingPlayers().clear();
-        ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeRegisteredChunksForShip(getWrapperEntity());
-        ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeShipPosition(getWrapperEntity());
-        ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeShipNameRegistry(getWrapperEntity());
+        ValkyrienUtils.getQueryableData(getWorld()).removeShip(this.getWrapperEntity());
         ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipUnload(getWrapperEntity());
     }
 
     public void claimNewChunks() {
         setOwnedChunks(ValkyrienUtils.getShipChunkAllocator(getWorld()).allocateNextChunkClaim());
-        ValkyrienSkiesMod.VS_CHUNK_MANAGER.registerChunksForShip(getWrapperEntity());
+        ValkyrienUtils.getQueryableData(getWorld()).addShip(getWrapperEntity());
     }
 
     /**
@@ -317,7 +311,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         MutableBlockPos pos = new MutableBlockPos();
 
         claimNewChunks();
-        ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
 
         claimedChunkCache = new ClaimedChunkCacheController(this, false);
 
@@ -492,7 +485,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     public void onPostTick() {
         if (!getWrapperEntity().isDead && !getWrapperEntity().world.isRemote) {
-            ValkyrienSkiesMod.VS_CHUNK_MANAGER.updateShipPosition(getWrapperEntity());
+            ValkyrienUtils.getQueryableData(getWorld()).updateShipPosition(this.getWrapperEntity());
         }
     }
 
@@ -515,8 +508,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     }
 
     public void loadClaimedChunks() {
-        ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipPreload(getWrapperEntity());
-
         claimedChunkCache = new ClaimedChunkCacheController(this, true);
 
         assignChunkPhysicObject();

@@ -16,10 +16,6 @@
 
 package org.valkyrienskies.mod.common;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -76,6 +72,11 @@ import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class EventsCommon {
@@ -202,7 +203,6 @@ public class EventsCommon {
         event.getWorld().addEventListener(new VSWorldEventListener(world));
         IHasShipManager shipManager = (IHasShipManager) world;
         if (!event.getWorld().isRemote) {
-            ValkyrienSkiesMod.VS_CHUNK_MANAGER.initWorld(world);
             shipManager.setManager(WorldServerShipManager::new);
         } else {
             shipManager.setManager(WorldClientShipManager::new);
@@ -211,12 +211,8 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onWorldUnload(WorldEvent.Unload event) {
-        if (!event.getWorld().isRemote) {
-            ValkyrienSkiesMod.VS_CHUNK_MANAGER.removeWorld(event.getWorld());
-        } else {
-            // Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
-            lastPositions.clear();
-        }
+        // Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
+        lastPositions.clear();
         ValkyrienSkiesMod.VS_PHYSICS_MANAGER.removeWorld(event.getWorld());
         IHasShipManager shipManager = (IHasShipManager) event.getWorld();
         shipManager.getManager().onWorldUnload();

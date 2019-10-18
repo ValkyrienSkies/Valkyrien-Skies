@@ -16,10 +16,11 @@
 
 package org.valkyrienskies.mod.common.physics.management;
 
-import java.util.HashMap;
-import java.util.Map;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DimensionPhysObjectManager {
 
@@ -27,13 +28,6 @@ public class DimensionPhysObjectManager {
 
     public DimensionPhysObjectManager() {
         managerPerWorld = new HashMap<>();
-    }
-
-    /**
-     * Kinda like a preorder, order one now!
-     */
-    public void onShipPreload(PhysicsWrapperEntity toPreload) {
-        getManagerForWorld(toPreload.world).preloadPhysicsWrapperEntityMappings(toPreload);
     }
 
     // Put the ship in the manager queues

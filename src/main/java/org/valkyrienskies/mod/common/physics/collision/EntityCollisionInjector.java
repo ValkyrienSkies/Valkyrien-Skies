@@ -16,9 +16,6 @@
 
 package org.valkyrienskies.mod.common.physics.collision;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
@@ -48,6 +45,10 @@ import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityCollisionInjector {
 

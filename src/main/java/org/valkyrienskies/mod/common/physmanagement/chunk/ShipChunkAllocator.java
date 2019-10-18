@@ -46,7 +46,7 @@ public class ShipChunkAllocator {
      * positions
      */
     public VSChunkClaim allocateNextChunkClaim() {
-        VSChunkClaim claim = new VSChunkClaim(nextChunkX, nextChunkZ, MAX_CHUNK_RADIUS);
+        VSChunkClaim claim = new VSChunkClaim(nextChunkX, nextChunkZ, 16);
         nextChunkZ += MAX_CHUNK_LENGTH;
         return claim;
     }

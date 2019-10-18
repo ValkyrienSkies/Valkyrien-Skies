@@ -69,10 +69,10 @@ public class ShipTransformationManager {
      * made from this data.
      */
     public void updateCurrentTickTransform() {
-        PhysicsWrapperEntity wrapperEntity = parent.wrapperEntity();
+        PhysicsWrapperEntity wrapperEntity = parent.getWrapperEntity();
         ShipTransform newTickTransform = new ShipTransform(wrapperEntity.posX, wrapperEntity.posY,
             wrapperEntity.posZ, wrapperEntity.getPitch(), wrapperEntity.getYaw(),
-            wrapperEntity.getRoll(), parent.centerCoord());
+            wrapperEntity.getRoll(), parent.getCenterCoord());
         setCurrentTickTransform(newTickTransform);
     }
 
@@ -86,7 +86,7 @@ public class ShipTransformationManager {
         boolean updatePassengers) {
         prevTickTransform = currentTickTransform;
         // The client should never be updating the AABB on its own.
-        if (parent.world().isRemote) {
+        if (parent.getWorld().isRemote) {
             updateParentAABB = false;
         }
         forceShipIntoWorldBorder();
@@ -96,7 +96,7 @@ public class ShipTransformationManager {
         }
         if (updatePhysicsTransform) {
             // This should only be called once when the ship finally loads from nbt.
-            parent.physicsProcessor()
+            parent.getPhysicsProcessor()
                 .generatePhysicsTransform();
             prevPhysicsTransform = currentPhysicsTransform;
         }
@@ -113,26 +113,26 @@ public class ShipTransformationManager {
      * Keeps the Ship in the world border
      */
     private void forceShipIntoWorldBorder() {
-        WorldBorder border = parent.world().getWorldBorder();
-        AxisAlignedBB shipBB = parent.shipBoundingBox();
+        WorldBorder border = parent.getWorld().getWorldBorder();
+        AxisAlignedBB shipBB = parent.getShipBoundingBox();
 
         if (shipBB.maxX > border.maxX()) {
-            parent.wrapperEntity().posX += border.maxX() - shipBB.maxX;
+            parent.getWrapperEntity().posX += border.maxX() - shipBB.maxX;
         }
         if (shipBB.minX < border.minX()) {
-            parent.wrapperEntity().posX += border.minX() - shipBB.minX;
+            parent.getWrapperEntity().posX += border.minX() - shipBB.minX;
         }
         if (shipBB.maxZ > border.maxZ()) {
-            parent.wrapperEntity().posZ += border.maxZ() - shipBB.maxZ;
+            parent.getWrapperEntity().posZ += border.maxZ() - shipBB.maxZ;
         }
         if (shipBB.minZ < border.minZ()) {
-            parent.wrapperEntity().posZ += border.minZ() - shipBB.minZ;
+            parent.getWrapperEntity().posZ += border.minZ() - shipBB.minZ;
         }
     }
 
     public void updatePassengerPositions() {
-        for (Entity entity : parent.wrapperEntity().riddenByEntities) {
-            parent.wrapperEntity().updatePassenger(entity);
+        for (Entity entity : parent.getWrapperEntity().riddenByEntities) {
+            parent.getWrapperEntity().updatePassenger(entity);
         }
     }
 
@@ -141,14 +141,14 @@ public class ShipTransformationManager {
         if (getCurrentPhysicsTransform() != ZERO_TRANSFORM) {
             posMessage = new WrapperPositionMessage(
                 (PhysicsShipTransform) getCurrentPhysicsTransform(),
-                parent.wrapperEntity().getEntityId(), positionTickID);
+                parent.getWrapperEntity().getEntityId(), positionTickID);
         } else {
-            posMessage = new WrapperPositionMessage(parent.wrapperEntity(), positionTickID);
+            posMessage = new WrapperPositionMessage(parent.getWrapperEntity(), positionTickID);
         }
 
         // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.
-        for (int i = 0; i < parent.watchingPlayers().size(); i++) {
-            EntityPlayerMP player = parent.watchingPlayers().get(i);
+        for (int i = 0; i < parent.getWatchingPlayers().size(); i++) {
+            EntityPlayerMP player = parent.getWatchingPlayers().get(i);
             if (player != null) {
                 ValkyrienSkiesMod.physWrapperNetwork.sendTo(posMessage, player);
             }
@@ -200,7 +200,7 @@ public class ShipTransformationManager {
 
     // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
     private void updateParentAABB() {
-        IVoxelFieldAABBMaker aabbMaker = parent.voxelFieldAABBMaker();
+        IVoxelFieldAABBMaker aabbMaker = parent.getVoxelFieldAABBMaker();
         AxisAlignedBB subspaceBB = aabbMaker.makeVoxelFieldAABB();
         if (subspaceBB == null) {
             // The aabbMaker didn't know what the aabb was, just don't update the aabb for now.
@@ -213,7 +213,7 @@ public class ShipTransformationManager {
             TransformType.SUBSPACE_TO_GLOBAL);
         // Set the ship AABB to that of the polygon.
         AxisAlignedBB worldBB = largerPoly.getEnclosedAABB();
-        parent.shipBoundingBox(worldBB);
+        parent.setShipBoundingBox(worldBB);
     }
 
     /**
@@ -255,7 +255,7 @@ public class ShipTransformationManager {
      * @return the renderTransform
      */
     public ShipTransform getRenderTransform() {
-        if (!this.parent.world().isRemote || renderTransform == null) {
+        if (!this.parent.getWorld().isRemote || renderTransform == null) {
             return currentTickTransform;
         }
         return renderTransform;
@@ -302,7 +302,7 @@ public class ShipTransformationManager {
         }
         ShipTransform prev = prevTickTransform;
         ShipTransform cur = currentTickTransform;
-        Vector shipCenter = parent.centerCoord();
+        Vector shipCenter = parent.getCenterCoord();
 
         Vector prevPos = new Vector(shipCenter);
         Vector curPos = new Vector(shipCenter);
@@ -322,7 +322,7 @@ public class ShipTransformationManager {
         renderTransform = new ShipTransform(partialPos.x, partialPos.y,
             partialPos.z, Math.toDegrees(partialAngles[0]), Math.toDegrees(partialAngles[1]),
             Math.toDegrees(partialAngles[2]),
-            parent.centerCoord());
+            parent.getCenterCoord());
     }
 
 }

@@ -93,7 +93,7 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
                     .getPhysicsObject(getWorld(), getPos());
                 IRotationNodeWorld nodeWorld;
                 if (physicsObjectOptional.isPresent()) {
-                    nodeWorld = physicsObjectOptional.get().physicsProcessor()
+                    nodeWorld = physicsObjectOptional.get().getPhysicsProcessor()
                         .getPhysicsRotationNodeWorld();
                 } else {
                     IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();

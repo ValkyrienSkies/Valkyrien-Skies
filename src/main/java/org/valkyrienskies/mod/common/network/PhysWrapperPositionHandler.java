@@ -42,7 +42,7 @@ public class PhysWrapperPositionHandler implements
                         .getEntityByID(message.getEntityID());
                     if (ent instanceof PhysicsWrapperEntity) {
                         PhysicsWrapperEntity wrapper = (PhysicsWrapperEntity) ent;
-                        wrapper.getPhysicsObject().shipTransformationManager().serverBuffer
+                        wrapper.getPhysicsObject().getShipTransformationManager().serverBuffer
                             .pushMessage(message);
                     }
                 }

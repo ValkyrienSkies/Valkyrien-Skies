@@ -46,7 +46,7 @@ public class VSNetwork {
         Vector packetPosition = new Vector(x, y, z);
         if (physicsObject.isPresent()) {
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .fromLocalToGlobal(packetPosition);
             // Special treatment for certain packets.
             if (packetIn instanceof SPacketSoundEffect) {

@@ -10,6 +10,7 @@ public class VSWorldData {
     @Getter
     private final QueryableShipData queryableShipData = new QueryableShipData();
 
+    @Getter
     private final ShipChunkAllocator shipChunkAllocator = new ShipChunkAllocator();
 
 }

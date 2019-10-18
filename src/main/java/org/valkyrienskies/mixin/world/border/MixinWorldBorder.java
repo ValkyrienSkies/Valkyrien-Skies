@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 
 /**
  * We need this otherwise players can't interact with ships in worlds with a world border.
@@ -34,7 +34,7 @@ public abstract class MixinWorldBorder {
         at = @At("HEAD"),
         cancellable = true)
     public void preContains(BlockPos pos, CallbackInfoReturnable<Boolean> callbackInfo) {
-        if (PhysicsChunkManager.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
+        if (ShipChunkAllocator.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
             callbackInfo.setReturnValue(true);
         }
     }

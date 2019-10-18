@@ -166,12 +166,12 @@ public class VSThread extends Thread {
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {
                 // Update the physics simulation
-                wrapper.getPhysicsObject().physicsProcessor().rawPhysTickPreCol(newPhysSpeed);
+                wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
-                wrapper.getPhysicsObject().physicsProcessor().getWorldCollision()
+                wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
                     .tickUpdatingTheCollisionCache();
                 // Take the big collision and split into tiny ones
-                wrapper.getPhysicsObject().physicsProcessor().getWorldCollision()
+                wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
                     .splitIntoCollisionTasks(collisionTasks);
             }
         }
@@ -191,7 +191,7 @@ public class VSThread extends Thread {
         // Then those collision points have to be processed sequentially afterwards, all in
         // this thread. Thankfully this step is not cpu intensive.
         for (ShipCollisionTask task : collisionTasks) {
-            PhysicsWrapperEntity wrapper = task.getToTask().getParent().wrapperEntity();
+            PhysicsWrapperEntity wrapper = task.getToTask().getParent().getWrapperEntity();
             if (!wrapper.firstUpdate) {
                 task.getToTask().processCollisionTask(task);
             }
@@ -200,13 +200,13 @@ public class VSThread extends Thread {
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {
                 try {
-                    wrapper.getPhysicsObject().physicsProcessor().rawPhysTickPostCol();
+                    wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPostCol();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
                 wrapper.getPhysicsObject()
-                    .shipTransformationManager()
+                    .getShipTransformationManager()
                     .updateAllTransforms(false, false, false);
             }
         }
@@ -214,7 +214,7 @@ public class VSThread extends Thread {
 
     private void tickSendUpdatesToPlayers(List<PhysicsWrapperEntity> ships) {
         for (PhysicsWrapperEntity wrapper : ships) {
-            wrapper.getPhysicsObject().shipTransformationManager()
+            wrapper.getPhysicsObject().getShipTransformationManager()
                 .sendPositionToPlayers(physicsTicksCount);
         }
         physicsTicksCount++;

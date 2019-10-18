@@ -86,7 +86,7 @@ public class EventsClient {
                     // event to determine what the player is looking at for interaction purposes.
                     // That raytrace will use the render transform, so we must have the render
                     // transform set to a partialTick of 1.0.
-                    wrapper.getPhysicsObject().shipTransformationManager()
+                    wrapper.getPhysicsObject().getShipTransformationManager()
                         .updateRenderTransform(1.0);
                 }
                 break;
@@ -110,7 +110,7 @@ public class EventsClient {
                 Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(),
                     sound.getZPosF());
                 physicsObject.get()
-                    .shipTransformationManager()
+                    .getShipTransformationManager()
                     .getCurrentTickTransform()
                     .transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
 
@@ -154,11 +154,11 @@ public class EventsClient {
                 oldZOff = buffer.zOffset;
 
                 buffer.setTranslation(-physicsObject.get()
-                    .shipRenderer().offsetPos.getX(), -physicsObject.get()
-                    .shipRenderer().offsetPos.getY(), -physicsObject.get()
-                    .shipRenderer().offsetPos.getZ());
+                    .getShipRenderer().offsetPos.getX(), -physicsObject.get()
+                    .getShipRenderer().offsetPos.getY(), -physicsObject.get()
+                    .getShipRenderer().offsetPos.getZ());
                 physicsObject.get()
-                    .shipRenderer()
+                    .getShipRenderer()
                     .applyRenderTransform(event.getPartialTicks());
             }
         }
@@ -245,7 +245,7 @@ public class EventsClient {
             for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                 .getManagerForWorld(world)
                 .getTickablePhysicsEntities()) {
-                wrapper.getPhysicsObject().shipTransformationManager()
+                wrapper.getPhysicsObject().getShipTransformationManager()
                     .updateRenderTransform(partialTicks);
             }
         }

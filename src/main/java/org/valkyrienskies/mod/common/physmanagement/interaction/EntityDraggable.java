@@ -86,7 +86,7 @@ public class EntityDraggable {
 
         if (draggable.getWorldBelowFeet() != null) {
             ShipTransformationManager coordTransform = draggable.getWorldBelowFeet()
-                .getPhysicsObject().shipTransformationManager();
+                .getPhysicsObject().getShipTransformationManager();
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
                 // EventsClient.updatePlayerMouseOver(entity);

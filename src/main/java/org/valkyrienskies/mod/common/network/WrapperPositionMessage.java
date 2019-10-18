@@ -71,27 +71,27 @@ public class WrapperPositionMessage implements IMessage {
     public WrapperPositionMessage(PhysicsWrapperEntity toSend, int relativeTick) {
         this.setEntityID(toSend.getEntityId());
         this.setRelativeTick(relativeTick);
-        this.setShipBB(toSend.getPhysicsObject().shipBoundingBox());
+        this.setShipBB(toSend.getPhysicsObject().getShipBoundingBox());
         this.setPosX(toSend.posX);
         this.setPosY(toSend.posY);
         this.setPosZ(toSend.posZ);
         this.setPitch(toSend.getPitch());
         this.setYaw(toSend.getYaw());
         this.setRoll(toSend.getRoll());
-        this.setCenterOfMass(toSend.getPhysicsObject().centerCoord());
+        this.setCenterOfMass(toSend.getPhysicsObject().getCenterCoord());
     }
 
     public WrapperPositionMessage(PhysicsObject toRunLocally) {
-        setPosX(toRunLocally.wrapperEntity().posX);
-        setPosY(toRunLocally.wrapperEntity().posY);
-        setPosZ(toRunLocally.wrapperEntity().posZ);
+        setPosX(toRunLocally.getWrapperEntity().posX);
+        setPosY(toRunLocally.getWrapperEntity().posY);
+        setPosZ(toRunLocally.getWrapperEntity().posZ);
 
-        setPitch(toRunLocally.wrapperEntity().getPitch());
-        setYaw(toRunLocally.wrapperEntity().getYaw());
-        setRoll(toRunLocally.wrapperEntity().getRoll());
+        setPitch(toRunLocally.getWrapperEntity().getPitch());
+        setYaw(toRunLocally.getWrapperEntity().getYaw());
+        setRoll(toRunLocally.getWrapperEntity().getRoll());
 
-        setCenterOfMass(toRunLocally.centerCoord());
-        setShipBB(toRunLocally.shipBoundingBox());
+        setCenterOfMass(toRunLocally.getCenterCoord());
+        setShipBB(toRunLocally.getShipBoundingBox());
     }
 
     public WrapperPositionMessage(WrapperPositionMessage wrapperMessage) {
@@ -196,25 +196,25 @@ public class WrapperPositionMessage implements IMessage {
      *                   applies all of it. A number around .7 or .8 is ideal here.
      */
     public void applySmoothLerp(PhysicsObject physObj, double lerpFactor) {
-        Vector CMDif = centerOfMass.getSubtraction(physObj.centerCoord());
-        physObj.shipTransformationManager().getCurrentTickTransform()
+        Vector CMDif = centerOfMass.getSubtraction(physObj.getCenterCoord());
+        physObj.getShipTransformationManager().getCurrentTickTransform()
             .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
         // CMDif.multiply(lerpFactor);
 
-        physObj.wrapperEntity().posX -= CMDif.x;
-        physObj.wrapperEntity().posY -= CMDif.y;
-        physObj.wrapperEntity().posZ -= CMDif.z;
+        physObj.getWrapperEntity().posX -= CMDif.x;
+        physObj.getWrapperEntity().posY -= CMDif.y;
+        physObj.getWrapperEntity().posZ -= CMDif.z;
 
-        physObj.wrapperEntity().lastTickPosX = physObj.wrapperEntity().posX;
-        physObj.wrapperEntity().lastTickPosY = physObj.wrapperEntity().posY;
-        physObj.wrapperEntity().lastTickPosZ = physObj.wrapperEntity().posZ;
+        physObj.getWrapperEntity().lastTickPosX = physObj.getWrapperEntity().posX;
+        physObj.getWrapperEntity().lastTickPosY = physObj.getWrapperEntity().posY;
+        physObj.getWrapperEntity().lastTickPosZ = physObj.getWrapperEntity().posZ;
 
-        physObj.wrapperEntity().posX += (posX - physObj.wrapperEntity().posX) * lerpFactor;
-        physObj.wrapperEntity().posY += (posY - physObj.wrapperEntity().posY) * lerpFactor;
-        physObj.wrapperEntity().posZ += (posZ - physObj.wrapperEntity().posZ) * lerpFactor;
+        physObj.getWrapperEntity().posX += (posX - physObj.getWrapperEntity().posX) * lerpFactor;
+        physObj.getWrapperEntity().posY += (posY - physObj.getWrapperEntity().posY) * lerpFactor;
+        physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
 
         // Create the quaternion for the old physics tick
-        Quaternion prevRotation = physObj.shipTransformationManager().getCurrentTickTransform()
+        Quaternion prevRotation = physObj.getShipTransformationManager().getCurrentTickTransform()
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
 
         // Create the quaternion for the next physics tick
@@ -228,12 +228,12 @@ public class WrapperPositionMessage implements IMessage {
             .slerpInterpolate(prevRotation, newRotation, lerpFactor);
         double[] slerpedRotationAngles = slerpedRotation.toRadians();
 
-        physObj.wrapperEntity()
+        physObj.getWrapperEntity()
             .setPhysicsEntityRotation(Math.toDegrees(slerpedRotationAngles[0]),
                 Math.toDegrees(slerpedRotationAngles[1]), Math.toDegrees(slerpedRotationAngles[2]));
 
-        physObj.centerCoord(centerOfMass);
+        physObj.setCenterCoord(centerOfMass);
         // Update the ship bounding box
-        physObj.shipBoundingBox(shipBB);
+        physObj.setShipBoundingBox(shipBB);
     }
 }

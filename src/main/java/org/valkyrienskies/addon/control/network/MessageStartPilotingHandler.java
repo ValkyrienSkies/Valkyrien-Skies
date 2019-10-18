@@ -46,7 +46,7 @@ public class MessageStartPilotingHandler implements
                     .getPhysicsObject(Minecraft.getMinecraft().world, message.posToStartPiloting);
                 if (physicsObject.isPresent()) {
                     pilot.setPilotedShip(physicsObject.get()
-                        .wrapperEntity());
+                        .getWrapperEntity());
                 } else {
                     new IllegalStateException("Received incorrect piloting message!")
                         .printStackTrace();

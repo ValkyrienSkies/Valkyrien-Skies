@@ -63,14 +63,14 @@ public class PhysObjectRenderManager {
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
         if (renderChunks == null) {
-            renderChunks = new PhysRenderChunk[parent.ownedChunks().getChunkLengthX()][parent
-                .ownedChunks()
+            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent
+                .getOwnedChunks()
                 .getChunkLengthZ()];
-            for (int xChunk = 0; xChunk < parent.ownedChunks().getChunkLengthX(); xChunk++) {
-                for (int zChunk = 0; zChunk < parent.ownedChunks().getChunkLengthZ(); zChunk++) {
+            for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
+                for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
                     renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
-                        .getChunkAt(xChunk + parent.ownedChunks().minX(),
-                            zChunk + parent.ownedChunks().minZ()));
+                        .getChunkAt(xChunk + parent.getOwnedChunks().minX(),
+                            zChunk + parent.getOwnedChunks().minZ()));
                 }
             }
         }
@@ -108,7 +108,7 @@ public class PhysObjectRenderManager {
 
     public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         boolean updateImmediately) {
-        if (renderChunks == null || parent == null || parent.ownedChunks() == null) {
+        if (renderChunks == null || parent == null || parent.getOwnedChunks() == null) {
             return;
         }
 
@@ -130,13 +130,13 @@ public class PhysObjectRenderManager {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 // TODO: Fix this render bug
                 try {
-                    if (chunkX >= parent.ownedChunks().minX() && chunkZ >= parent
-                        .ownedChunks().minZ()
-                        && chunkX - parent.ownedChunks().minX() < renderChunks.length
-                        && chunkZ - parent.ownedChunks().minZ() < renderChunks[0].length) {
-                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks()
+                    if (chunkX >= parent.getOwnedChunks().minX() && chunkZ >= parent
+                        .getOwnedChunks().minZ()
+                        && chunkX - parent.getOwnedChunks().minX() < renderChunks.length
+                        && chunkZ - parent.getOwnedChunks().minZ() < renderChunks[0].length) {
+                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.getOwnedChunks()
                             .minX()][chunkZ
-                            - parent.ownedChunks().minZ()];
+                            - parent.getOwnedChunks().minZ()];
                         if (renderChunk != null) {
                             renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
                         } else {
@@ -156,15 +156,15 @@ public class PhysObjectRenderManager {
     }
 
     public boolean shouldRender() {
-        if (parent.wrapperEntity().isDead) {
+        if (parent.getWrapperEntity().isDead) {
             return false;
         }
         ICamera camera = ClientProxy.lastCamera;
-        return camera == null || camera.isBoundingBoxInFrustum(parent.shipBoundingBox());
+        return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 
     public void applyRenderTransform(double partialTicks) {
-        Vector centerOfRotation = parent.centerCoord();
+        Vector centerOfRotation = parent.getCenterCoord();
 
         double p0 = Minecraft.getMinecraft().player.lastTickPosX
             + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
@@ -176,7 +176,7 @@ public class PhysObjectRenderManager {
             + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
             * partialTicks;
 
-        ShipTransform renderTransform = parent.shipTransformationManager().getRenderTransform();
+        ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
         Vector renderPos = new Vector(centerOfRotation);
         renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
@@ -207,15 +207,15 @@ public class PhysObjectRenderManager {
 
     @Deprecated
     public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = parent.shipTransformationManager().getPrevTickTransform()
+        Quaternion oneTickBefore = parent.getShipTransformationManager().getPrevTickTransform()
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion nextQuat = parent.shipTransformationManager().getCurrentTickTransform()
+        Quaternion nextQuat = parent.getShipTransformationManager().getCurrentTickTransform()
             .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
     }
 
     public void inverseTransform(double partialTicks) {
-        Vector centerOfRotation = parent.centerCoord();
+        Vector centerOfRotation = parent.getCenterCoord();
 
         double p0 = Minecraft.getMinecraft().player.lastTickPosX
             + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
@@ -227,7 +227,7 @@ public class PhysObjectRenderManager {
             + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
             * partialTicks;
 
-        ShipTransform renderTransform = parent.shipTransformationManager().getRenderTransform();
+        ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
         Vector renderPos = new Vector(centerOfRotation);
         renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);

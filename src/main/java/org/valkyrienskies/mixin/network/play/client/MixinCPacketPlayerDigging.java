@@ -52,7 +52,7 @@ public class MixinCPacketPlayerDigging implements ITransformablePacket {
             .getPhysicsObject(world, thisPacketTryUse.getPosition());
         if (physicsObject.isPresent()) {
             return physicsObject.get()
-                .wrapperEntity();
+                .getWrapperEntity();
         } else {
             return null;
         }

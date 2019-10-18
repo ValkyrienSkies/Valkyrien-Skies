@@ -5,7 +5,11 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 
-public class VSDefaultCapabilityStorage<K extends VSDefaultCapability> implements Capability.IStorage<K> {
+/**
+ * @param <K> The {@link VSDefaultCapability} that we're storing
+ */
+public class VSDefaultCapabilityStorage<K extends VSDefaultCapability>
+    implements Capability.IStorage<K> {
 
     @Nullable
     @Override

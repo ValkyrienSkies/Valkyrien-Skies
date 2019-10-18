@@ -112,7 +112,7 @@ public class VSWorldEventListener implements IWorldEventListener {
                 world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
                     .removeEntity(entity);
                 physicsObject.get()
-                    .shipTransformationManager()
+                    .getShipTransformationManager()
                     .getCurrentTickTransform().transform(entity,
                     TransformType.SUBSPACE_TO_GLOBAL);
                 world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
@@ -145,7 +145,7 @@ public class VSWorldEventListener implements IWorldEventListener {
                         .getPhysicsObject(worldObj, pos);
 
                     physicsObject.ifPresent(object -> object
-                        .shipTransformationManager()
+                        .getShipTransformationManager()
                         .getCurrentTickTransform()
                         .transform(posVector,
                             TransformType.SUBSPACE_TO_GLOBAL));

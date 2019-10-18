@@ -62,18 +62,18 @@ public abstract class MixinRenderManager {
                 Vector localPosition = new Vector(mountData.getMountPos());
 
                 mountData.getMountedShip()
-                    .shipRenderer()
+                    .getShipRenderer()
                     .applyRenderTransform(partialTicks);
 
                 if (localPosition != null) {
                     localPosition = new Vector(localPosition);
 
                     localPosition.x -= mountData.getMountedShip()
-                        .shipRenderer().offsetPos.getX();
+                        .getShipRenderer().offsetPos.getX();
                     localPosition.y -= mountData.getMountedShip()
-                        .shipRenderer().offsetPos.getY();
+                        .getShipRenderer().offsetPos.getY();
                     localPosition.z -= mountData.getMountedShip()
-                        .shipRenderer().offsetPos.getZ();
+                        .getShipRenderer().offsetPos.getZ();
 
                     x = entityIn.posX = entityIn.lastTickPosX = localPosition.x;
                     y = entityIn.posY = entityIn.lastTickPosY = localPosition.y;
@@ -136,7 +136,7 @@ public abstract class MixinRenderManager {
 
                 if (localPosition != null) {
                     mountData.getMountedShip()
-                        .shipRenderer()
+                        .getShipRenderer()
                         .inverseTransform(partialTicks);
                 }
 

@@ -12,34 +12,33 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.util.EnumFacing;
-import org.valkyrienskies.mod.common.capability.QueryableShipDataCapability;
+import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
 
 /**
  * Implement as follows
  *
  * <pre>{@code
- * public class QueryableShipDataCapability extends VSDefaultCapability<QueryableShipData> {
- *
- *     public QueryableShipDataCapability(ObjectMapper mapper) {
- *         super(mapper, QueryableShipData.class);
+ * public class VSWorldDataCapability extends VSDefaultCapability<VSWorldData> {
+ *     public VSWorldDataCapability(ObjectMapper mapper) {
+ *         super(VSWorldData.class, VSWorldData::new, mapper);
  *     }
  *
- *     public QueryableShipDataCapability() {
- *         super(QueryableShipData.class);
+ *     public VSWorldDataCapability() {
+ *         super(VSWorldData.class, VSWorldData::new);
  *     }
- *
  * }
  * }</pre>
  *
  * @param <K> The type of object this capability should store
- * @see QueryableShipDataCapability
- * be implemented
+ * @see VSWorldDataCapability
  */
 @Accessors(fluent = false)
 @ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @Log4j2
 public abstract class VSDefaultCapability<K> {
 
@@ -48,7 +47,6 @@ public abstract class VSDefaultCapability<K> {
     private final Class<K> kClass;
     @Nonnull
     private K instance;
-
     private Supplier<K> factory;
 
     public VSDefaultCapability(Class<K> kClass, Supplier<K> factory) {

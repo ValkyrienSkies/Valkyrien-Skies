@@ -45,7 +45,7 @@ public final class ShipData {
             shipData.name = wrapperEntity.getCustomNameTag();
             shipData.uuid = wrapperEntity.getPersistentID();
             shipData.chunkLongs = ImmutableSet.copyOf(getChunkLongs(wrapperEntity));
-            shipData.chunkClaim = wrapperEntity.getPhysicsObject().ownedChunks();
+            shipData.chunkClaim = wrapperEntity.getPhysicsObject().getOwnedChunks();
         }
 
         public Builder() {
@@ -82,7 +82,7 @@ public final class ShipData {
          */
         private static Set<Long> getChunkLongs(PhysicsWrapperEntity entity) {
             Set<Long> chunkLongs = new HashSet<>();
-            VSChunkClaim ownedChunks = entity.getPhysicsObject().ownedChunks();
+            VSChunkClaim ownedChunks = entity.getPhysicsObject().getOwnedChunks();
 
             int centerX = ownedChunks.getCenterX();
             int centerZ = ownedChunks.getCenterZ();

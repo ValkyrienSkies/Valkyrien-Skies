@@ -50,6 +50,6 @@ public class MixinCPacketUpdateSign implements ITransformablePacket {
         World world = server.player.getEntityWorld();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
             .getPhysicsObject(world, thisAsPacketSign.getPosition());
-        return physicsObject.map(PhysicsObject::wrapperEntity).orElse(null);
+        return physicsObject.map(PhysicsObject::getWrapperEntity).orElse(null);
     }
 }

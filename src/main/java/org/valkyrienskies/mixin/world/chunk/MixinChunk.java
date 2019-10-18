@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 
 @Mixin(value = Chunk.class, priority = 1001)
 public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhysicsChunk {
@@ -115,7 +115,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhys
     @Inject(method = "populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
     public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator,
         CallbackInfo callbackInfo) {
-        if (PhysicsChunkManager.isLikelyShipChunk(this.x, this.z)) {
+        if (ShipChunkAllocator.isLikelyShipChunk(this.x, this.z)) {
             callbackInfo.cancel();
         }
     }

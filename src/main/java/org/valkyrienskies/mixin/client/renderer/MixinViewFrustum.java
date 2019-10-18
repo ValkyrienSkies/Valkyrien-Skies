@@ -26,6 +26,6 @@ public class MixinViewFrustum {
         Optional<PhysicsObject> physicsObject =
             ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
         physicsObject.ifPresent(p ->
-            p.shipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
+            p.getShipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
     }
 }

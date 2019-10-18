@@ -11,12 +11,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.capability.QueryableShipDataCapability;
+import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import valkyrienwarfare.api.TransformType;
 
@@ -68,7 +69,7 @@ public class ValkyrienUtils {
             // We're in a physics object; convert the bounding box to a polygon; put its coordinates
             // in global space, and then return the bounding box that encloses all the points.
             Polygon bbAsPoly = new Polygon(axisAlignedBB, physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
             return bbAsPoly.getEnclosedAABB();
         } else {
@@ -90,30 +91,47 @@ public class ValkyrienUtils {
 
     public static void fixEntityToShip(Entity toFix, Vector posInLocal,
         PhysicsObject mountingShip) {
-        World world = mountingShip.world();
+        World world = mountingShip.getWorld();
         EntityMountable entityMountable = new EntityMountable(world, posInLocal.toVec3d(),
-            CoordinateSpaceType.SUBSPACE_COORDINATES, mountingShip.referenceBlockPos());
+            CoordinateSpaceType.SUBSPACE_COORDINATES, mountingShip.getReferenceBlockPos());
         world.spawnEntity(entityMountable);
         toFix.startRiding(entityMountable);
     }
 
-    /**
-     * This method basically grabs the {@link QueryableShipData} capability from the world
-     * and then returns the QueryableShipData associated with it
-     *
-     * @param world The world we are getting the QueryableShipData from
-     * @return The QueryableShipData corresponding to the given world
-     */
-    public static QueryableShipData getQueryableData(World world) {
-        QueryableShipDataCapability worldData = world
-            .getCapability(ValkyrienSkiesMod.VS_SHIP_DATA, null);
+    private static VSWorldDataCapability getWorldDataCapability(World world) {
+        VSWorldDataCapability worldData = world
+            .getCapability(ValkyrienSkiesMod.VS_WOR_DATA, null);
         if (worldData == null) {
             // I hate it when other mods add their custom worlds without calling the forge world
             // load events, so I don't feel bad crashing the game here. Although we could also get
             // away with just adding the capability to world instead of crashing.
             throw new IllegalStateException(
-                "World " + world + " doesn't have an QueryableShipDataCapability. This is wrong!");
+                "World " + world + " doesn't have an VSWorldDataCapability. This is wrong!");
         }
-        return worldData.get();
+
+        return worldData;
+    }
+
+    /**
+     * This method basically grabs the {@link VSWorldDataCapability} capability from the world
+     * and then returns the {@link QueryableShipData} associated with it
+     *
+     * @param world The world we are getting the QueryableShipData from
+     * @return The QueryableShipData corresponding to the given world
+     */
+    public static QueryableShipData getQueryableData(World world) {
+        return getWorldDataCapability(world).get().getQueryableShipData();
+    }
+
+    /**
+     * This method basically grabs the {@link VSWorldDataCapability} capability from the world
+     * and then returns the {@link ShipChunkAllocator} associated with it
+     *
+     * @param world The world we are getting the QueryableShipData from
+     * @return The QueryableShipData corresponding to the given world
+     */
+    public static ShipChunkAllocator getShipChunkAllocator(World world) {
+        return getWorldDataCapability(world).get().getShipChunkAllocator();
+
     }
 }

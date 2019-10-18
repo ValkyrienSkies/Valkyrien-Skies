@@ -130,7 +130,7 @@ public class MainCommand implements Runnable {
 
             try {
                 PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) oEntity.get();
-                BlockPos infuserPos = wrapperEntity.getPhysicsObject().physicsInfuserPos();
+                BlockPos infuserPos = wrapperEntity.getPhysicsObject().getPhysicsInfuserPos();
                 TileEntityPhysicsInfuser infuser = Objects.requireNonNull(
                     (TileEntityPhysicsInfuser) world.getTileEntity(infuserPos));
 

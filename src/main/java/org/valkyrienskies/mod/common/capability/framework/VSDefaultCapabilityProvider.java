@@ -25,9 +25,7 @@ public class VSDefaultCapabilityProvider<K> implements ICapabilitySerializable<N
 
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        return capability == thisCapability
-            ? thisCapability.cast(inst)
-            : null;
+        return capability == thisCapability ? thisCapability.cast(inst) : null;
     }
 
     @Override

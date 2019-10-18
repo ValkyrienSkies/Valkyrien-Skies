@@ -36,7 +36,7 @@ import org.valkyrienskies.mod.common.container.EnumInfuserButton;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
@@ -107,7 +107,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             if (!parentShip.isPresent() && canMaintainShip() && isTryingToAssembleShip) {
                 // Create a ship with this physics infuser
                 // Make sure we don't try to create a ship when we're already in ship space.
-                if (!PhysicsChunkManager
+                if (!ShipChunkAllocator
                     .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
                         IThreadListener gameTickThread = (WorldServer) world;
@@ -311,7 +311,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
             .getPhysicsObject(getWorld(), getPos());
         return !physicsObject.isPresent() ||
-            physicsObject.get().physicsInfuserPos().equals(getPos());
+            physicsObject.get().getPhysicsInfuserPos().equals(getPos());
     }
 
     @SideOnly(Side.CLIENT)

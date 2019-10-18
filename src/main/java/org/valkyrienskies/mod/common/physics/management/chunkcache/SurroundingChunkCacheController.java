@@ -18,14 +18,14 @@ public class SurroundingChunkCacheController {
     }
 
     public void updateChunkCache() {
-        AxisAlignedBB cacheBB = physicsObject.shipBoundingBox();
+        AxisAlignedBB cacheBB = physicsObject.getShipBoundingBox();
 
         // Check if all those surrounding chunks are loaded
         BlockPos min = new BlockPos(cacheBB.minX, Math.max(cacheBB.minY, 0), cacheBB.minZ);
         BlockPos max = new BlockPos(cacheBB.maxX, Math.min(cacheBB.maxY, 255), cacheBB.maxZ);
 
-        if (!physicsObject.world().isRemote) {
-            ChunkProviderServer serverChunkProvider = (ChunkProviderServer) physicsObject.world()
+        if (!physicsObject.getWorld().isRemote) {
+            ChunkProviderServer serverChunkProvider = (ChunkProviderServer) physicsObject.getWorld()
                 .getChunkProvider();
 
             int chunkMinX = min.getX() >> 4;
@@ -46,12 +46,12 @@ public class SurroundingChunkCacheController {
             }
 
             if (areSurroundingChunksLoaded) {
-                cachedChunks = new ChunkCache(physicsObject.world(), min, max, 0);
+                cachedChunks = new ChunkCache(physicsObject.getWorld(), min, max, 0);
             } else {
                 physicsObject.resetConsecutiveProperTicks();
             }
         } else {
-            cachedChunks = new ChunkCache(physicsObject.world(), min, max, 0);
+            cachedChunks = new ChunkCache(physicsObject.getWorld(), min, max, 0);
         }
     }
 }

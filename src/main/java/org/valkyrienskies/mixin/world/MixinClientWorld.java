@@ -34,7 +34,7 @@ public class MixinClientWorld {
                 .getManagerForWorld(world).getNearbyPhysObjects(lightBB);
 
             for (PhysicsWrapperEntity physEnt : physEnts) {
-                BlockPos posInLocal = physEnt.getPhysicsObject().shipTransformationManager()
+                BlockPos posInLocal = physEnt.getPhysicsObject().getShipTransformationManager()
                     .getCurrentTickTransform().transform(pos, TransformType.GLOBAL_TO_SUBSPACE);
                 int localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal);
                 int localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal);

@@ -37,7 +37,6 @@ public class RotationMatrices {
      * @param pitch in degrees
      * @param yaw   in degrees
      * @param roll  in degrees
-     * @return
      */
     public static double[] getRotationMatrix(double pitch, double yaw, double roll) {
         double[] input = RotationMatrices
@@ -83,7 +82,11 @@ public class RotationMatrices {
     }
 
     private static double[] getDoubleIdentity() {
-        return new double[]{1.0D, 0, 0, 0, 0, 1.0D, 0, 0, 0, 0, 1.0D, 0, 0, 0, 0, 1.0D};
+        return new double[]{
+            1.0D, 0, 0, 0,
+            0, 1.0D, 0, 0,
+            0, 0, 1.0D, 0,
+            0, 0, 0, 1.0D};
     }
 
     public static double[] getZeroMatrix(int size) {

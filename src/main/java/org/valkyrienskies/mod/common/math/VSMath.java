@@ -16,13 +16,16 @@
 
 package org.valkyrienskies.mod.common.math;
 
+import java.nio.DoubleBuffer;
+import java.util.List;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
-import org.joml.*;
+import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
+import org.joml.Matrix4d;
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-
-import java.lang.Math;
-import java.util.List;
 
 /**
  * A lot of useful math functions belong here
@@ -45,22 +48,19 @@ public class VSMath {
      *                              8,  9, 10, 11,
      *                             12, 13, 14, 15]
      *                             }</pre>
-     *               where the numbers represent indices
+     *               where the numbers represent indices (row-major)
      * @return A {@link Matrix4d} representation
      */
     public static Matrix4d convertArrayMatrix4d(double[] matrix) {
-        return new Matrix4d(
-            matrix[0], matrix[4], matrix[8], matrix[12],
-            matrix[1], matrix[5], matrix[9], matrix[13],
-            matrix[2], matrix[6], matrix[10], matrix[14],
-            matrix[3], matrix[7], matrix[11], matrix[15]);
+        return new Matrix4d(DoubleBuffer.wrap(matrix)).transpose();
     }
 
     public static Matrix3d convertArrayMatrix3d(double[] matrix) {
-        return new Matrix3d(
-                matrix[0], matrix[3], matrix[6],
-                matrix[1], matrix[4], matrix[7],
-                matrix[2], matrix[5], matrix[8]);
+        Matrix3d matrix3d = new Matrix3d(
+            matrix[0], matrix[3], matrix[6],
+            matrix[1], matrix[4], matrix[7],
+            matrix[2], matrix[5], matrix[8]);
+        return matrix3d;
     }
 
     public static double getPitchFromVectorImmutable(VectorImmutable vec) {

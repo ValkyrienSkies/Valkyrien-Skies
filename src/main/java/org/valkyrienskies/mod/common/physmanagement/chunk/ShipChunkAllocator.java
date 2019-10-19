@@ -26,10 +26,13 @@ public class ShipChunkAllocator {
     /**
      * The size of the square of chunks (default 256 x 256) that are allocated to a ship.
      */
+    @SuppressWarnings("WeakerAccess")
     public static final int MAX_CHUNK_LENGTH = 32;
+    @SuppressWarnings("WeakerAccess")
     public static final int MAX_CHUNK_RADIUS = (MAX_CHUNK_LENGTH / 2) - 1;
-
+    @SuppressWarnings("WeakerAccess")
     public static final int CHUNK_X_START = 320000;
+    @SuppressWarnings("WeakerAccess")
     public static final int CHUNK_Z_START = 0;
 
     @Getter
@@ -38,7 +41,7 @@ public class ShipChunkAllocator {
     private int lastChunkZ = CHUNK_Z_START;
 
     public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
-        return chunkX >= CHUNK_X_START && chunkZ >= CHUNK_Z_START;
+        return chunkX >= CHUNK_X_START - MAX_CHUNK_RADIUS && chunkZ >= CHUNK_Z_START - MAX_CHUNK_RADIUS;
     }
 
     /**

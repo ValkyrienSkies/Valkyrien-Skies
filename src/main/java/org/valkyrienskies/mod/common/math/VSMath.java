@@ -17,7 +17,9 @@
 package org.valkyrienskies.mod.common.math;
 
 import java.util.List;
+import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
+import org.joml.Matrix4d;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 /**
@@ -25,10 +27,32 @@ import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
  *
  * @author thebest108
  */
+@UtilityClass
 public class VSMath {
 
     public static final int AABB_MERGE_PASSES = 5;
     public static final double STANDING_TOLERANCE = .42D;
+
+    /**
+     * Converts a double-array matrix to a JOML {@link Matrix4d}
+     *
+     * @param matrix A matrix as a double array of the form:
+     *               <pre>{@code
+     *                             [0,  1,  2,  3,
+     *                              4,  5,  6,  7,
+     *                              8,  9, 10, 11,
+     *                             12, 13, 14, 15]
+     *                             }</pre>
+     *               where the numbers represent indices
+     * @return A {@link Matrix4d} representation
+     */
+    public static Matrix4d convertArrayMatrix(double[] matrix) {
+        return new Matrix4d(
+            matrix[0], matrix[4], matrix[8], matrix[12],
+            matrix[1], matrix[5], matrix[9], matrix[13],
+            matrix[2], matrix[6], matrix[10], matrix[14],
+            matrix[3], matrix[7], matrix[11], matrix[15]);
+    }
 
     public static double getPitchFromVectorImmutable(VectorImmutable vec) {
         return -Math.asin(vec.getY()) * 180 / Math.PI;
@@ -45,9 +69,6 @@ public class VSMath {
     /**
      * Sorts the array, returns a new array of 2 elements. Element 0 is the minimum of the array
      * passed in, element 1 is the maximum of the array.
-     *
-     * @param elements
-     * @return
      */
     public static double[] getMinMaxOfArray(double[] elements) {
         double[] minMax = new double[2];
@@ -66,7 +87,6 @@ public class VSMath {
      * Used by the collision code to determine if the player should slide when standing on a ship.
      * That depends on the angle of the normal relative to the Y vector (0, 1, 0).
      *
-     * @param normal
      * @return true/false
      */
     public static boolean canStandOnNormal(Vector normal) {
@@ -76,8 +96,6 @@ public class VSMath {
 
     /**
      * Takes an arrayList of AABB's and merges them into larger AABB's
-     *
-     * @param toFuse
      */
     public static void mergeAABBList(List<AxisAlignedBB> toFuse) {
         boolean changed = true;

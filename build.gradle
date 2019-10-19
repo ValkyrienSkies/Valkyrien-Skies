@@ -146,6 +146,9 @@ dependencies {
         //exclude module: "typetools" //23.5 KB
     }
 
+    // JOML
+    shade 'org.joml:joml:1.9.19' // 663 KB
+
     // Jackson
     shade "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     shade "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$jacksonVersion"

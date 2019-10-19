@@ -503,7 +503,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             toUse.applySmoothLerp(this, .6D);
         }
 
-        getShipTransformationManager().updateAllTransforms(false, false, true);
+        getShipTransformationManager().updateAllTransforms(false, false);
     }
 
     public void updateChunkCache() {
@@ -847,7 +847,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     }
 
     private void markFullyLoaded() {
-        getShipTransformationManager().updateAllTransforms(!getWorld().isRemote, true, true);
+        getShipTransformationManager().updateAllTransforms(!getWorld().isRemote, true);
         isFullyLoaded = true;
     }
 }

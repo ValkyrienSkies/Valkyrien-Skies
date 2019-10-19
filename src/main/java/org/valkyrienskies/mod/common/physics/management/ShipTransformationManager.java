@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.common.physics.management;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.border.WorldBorder;
@@ -82,8 +81,7 @@ public class ShipTransformationManager {
      * @param updateParentAABB
      */
     @Deprecated
-    public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB,
-        boolean updatePassengers) {
+    public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB) {
         prevTickTransform = currentTickTransform;
         // The client should never be updating the AABB on its own.
         if (parent.getWorld().isRemote) {
@@ -104,9 +102,6 @@ public class ShipTransformationManager {
             updateParentAABB();
         }
         updateParentNormals();
-        if (updatePassengers) {
-            updatePassengerPositions();
-        }
     }
 
     /**
@@ -127,12 +122,6 @@ public class ShipTransformationManager {
         }
         if (shipBB.minZ < border.minZ()) {
             parent.getWrapperEntity().posZ += border.minZ() - shipBB.minZ;
-        }
-    }
-
-    public void updatePassengerPositions() {
-        for (Entity entity : parent.getWrapperEntity().riddenByEntities) {
-            parent.getWrapperEntity().updatePassenger(entity);
         }
     }
 

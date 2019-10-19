@@ -16,10 +16,6 @@
 
 package org.valkyrienskies.mod.common.multithreaded;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -32,6 +28,11 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
@@ -207,7 +208,7 @@ public class VSThread extends Thread {
             } else {
                 wrapper.getPhysicsObject()
                     .getShipTransformationManager()
-                    .updateAllTransforms(false, false, false);
+                        .updateAllTransforms(false, false);
             }
         }
     }

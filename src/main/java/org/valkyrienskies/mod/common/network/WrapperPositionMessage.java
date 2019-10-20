@@ -22,9 +22,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
@@ -35,7 +36,7 @@ import valkyrienwarfare.api.TransformType;
  * client. Usually the data sent from one of these packets is coming from the physics tick and isn't
  * exactly the same as the game tick; this is done so that the client can see ship movement smoothly
  * even when the server game tick is lagging.
- *
+ * <p>
  * It also has code to apply it onto a PhysicsObject.
  *
  * @author thebest108
@@ -52,10 +53,11 @@ public class WrapperPositionMessage implements IMessage {
     private Vector centerOfMass;
     private AxisAlignedBB shipBB;
 
-    public WrapperPositionMessage() { }
+    public WrapperPositionMessage() {
+    }
 
     public WrapperPositionMessage(PhysicsShipTransform transformData, int entityID,
-        int relativeTick) {
+                                  int relativeTick) {
         this.setEntityID(entityID);
         this.setRelativeTick(relativeTick);
         this.setShipBB(transformData.getShipBoundingBox());
@@ -111,7 +113,7 @@ public class WrapperPositionMessage implements IMessage {
     }
 
     public WrapperPositionMessage(WrapperPositionMessage[] transformations,
-        double[] weights) {
+                                  double[] weights) {
         double x = 0;
         double y = 0;
         double z = 0;
@@ -158,8 +160,8 @@ public class WrapperPositionMessage implements IMessage {
 
         setCenterOfMass(new Vector(buf.readDouble(), buf.readDouble(), buf.readDouble()));
         setShipBB(new AxisAlignedBB(buf.readDouble(), buf.readDouble(), buf.readDouble(),
-            buf.readDouble(),
-            buf.readDouble(), buf.readDouble()));
+                buf.readDouble(),
+                buf.readDouble(), buf.readDouble()));
     }
 
     @Override
@@ -198,7 +200,7 @@ public class WrapperPositionMessage implements IMessage {
     public void applySmoothLerp(PhysicsObject physObj, double lerpFactor) {
         Vector CMDif = centerOfMass.getSubtraction(physObj.getCenterCoord());
         physObj.getShipTransformationManager().getCurrentTickTransform()
-            .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
+                .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
         // CMDif.multiply(lerpFactor);
 
         physObj.getWrapperEntity().posX -= CMDif.x;
@@ -213,24 +215,27 @@ public class WrapperPositionMessage implements IMessage {
         physObj.getWrapperEntity().posY += (posY - physObj.getWrapperEntity().posY) * lerpFactor;
         physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
 
-        // Create the quaternion for the old physics tick
-        Quaternion prevRotation = physObj.getShipTransformationManager().getCurrentTickTransform()
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-
         // Create the quaternion for the next physics tick
         ShipTransform newRotationTransform = ShipTransform
-            .createRotationTransform(pitch, yaw, roll);
-        Quaternion newRotation = newRotationTransform
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+                .createRotationTransform(pitch, yaw, roll);
 
-        // Interpolate between two based on the current time-step.
-        Quaternion slerpedRotation = Quaternion
-            .slerpInterpolate(prevRotation, newRotation, lerpFactor);
-        double[] slerpedRotationAngles = slerpedRotation.toRadians();
+        Quaterniond preRotation = new Quaterniond();
+        preRotation.setFromUnnormalized(physObj.getShipTransformationManager().getCurrentTickTransform().getTransformMatrix(TransformType.SUBSPACE_TO_GLOBAL));
+
+        Quaterniond nextRotation = new Quaterniond();
+        newRotationTransform.getTransformMatrix(TransformType.SUBSPACE_TO_GLOBAL).getUnnormalizedRotation(nextRotation);
+
+        Quaterniond slerp = new Quaterniond();
+
+        preRotation.slerp(nextRotation, lerpFactor, slerp);
+
+        Vector3d rotAngles = new Vector3d();
+
+        slerp.getEulerAnglesXYZ(rotAngles);
 
         physObj.getWrapperEntity()
-            .setPhysicsEntityRotation(Math.toDegrees(slerpedRotationAngles[0]),
-                Math.toDegrees(slerpedRotationAngles[1]), Math.toDegrees(slerpedRotationAngles[2]));
+                .setPhysicsEntityRotation(Math.toDegrees(rotAngles.x),
+                        Math.toDegrees(rotAngles.y), Math.toDegrees(rotAngles.z));
 
         physObj.setCenterCoord(centerOfMass);
         // Update the ship bounding box

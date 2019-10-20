@@ -210,15 +210,6 @@ public class RotationMatrices {
         vec.z = (xx * M[6] + yy * M[7] + zz * M[8]);
     }
 
-    public static void doRotationOnly(double[] M, Vector vec) {
-        double x = vec.x;
-        double y = vec.y;
-        double z = vec.z;
-        vec.x = x * M[0] + y * M[1] + z * M[2];
-        vec.y = x * M[4] + y * M[5] + z * M[6];
-        vec.z = x * M[8] + y * M[9] + z * M[10];
-    }
-
     public static Vector get3by3TransformedVec(double[] M, Vector v) {
         Vector vec = new Vector(v);
         applyTransform3by3(M, vec);
@@ -242,22 +233,6 @@ public class RotationMatrices {
             inverse[i + 1] /= det;
             inverse[i + 2] /= det;
         }
-        return inverse;
-    }
-
-    public static double[] inverse(double[] matrix) {
-        double[] inverse = new double[16];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                inverse[(i * 4 + j)] = matrix[(i + j * 4)];
-            }
-            inverse[(i * 4 + 3)] = (-inverse[(i * 4)] * matrix[3] - inverse[(i * 4 + 1)] * matrix[7]
-                    - inverse[(i * 4 + 2)] * matrix[11]);
-        }
-        inverse[12] = 0.0D;
-        inverse[13] = 0.0D;
-        inverse[14] = 0.0D;
-        inverse[15] = 1.0D;
         return inverse;
     }
 

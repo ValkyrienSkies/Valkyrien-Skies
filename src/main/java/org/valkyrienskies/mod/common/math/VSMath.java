@@ -18,10 +18,10 @@ package org.valkyrienskies.mod.common.math;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
-import org.joml.Matrix3d;
-import org.joml.Matrix4d;
+import org.joml.*;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
+import java.lang.Math;
 import java.util.List;
 
 /**
@@ -237,5 +237,17 @@ public class VSMath {
             remainder += divisor;
         }
         return remainder;
+    }
+
+    public static Matrix3dc createRotationMatrix(double pitchRadians, double yawRadians, double rollRadians) {
+        Matrix3d rotationMatrix = new Matrix3d();
+        rotationMatrix.rotate(pitchRadians, 1, 0, 0);
+        rotationMatrix.rotate(yawRadians, 0, 1, 0);
+        rotationMatrix.rotate(rollRadians, 0, 0, 1);
+        return rotationMatrix;
+    }
+
+    public static Quaterniondc createRotationQuat(double pitchRadians, double yawRadians, double rollRadians) {
+        return createRotationMatrix(pitchRadians, yawRadians, rollRadians).getNormalizedRotation(new Quaterniond());
     }
 }

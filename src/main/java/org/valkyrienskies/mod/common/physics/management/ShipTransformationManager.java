@@ -19,6 +19,7 @@ package org.valkyrienskies.mod.common.physics.management;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.border.WorldBorder;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
@@ -291,20 +292,23 @@ public class ShipTransformationManager {
         }
         ShipTransform prev = prevTickTransform;
         ShipTransform cur = currentTickTransform;
-        Vector shipCenter = parent.getCenterCoord();
+        Vector3d shipCenter = parent.getCenterCoord().toVector3d();
 
-        Vector prevPos = new Vector(shipCenter);
-        Vector curPos = new Vector(shipCenter);
-        prev.transform(prevPos, TransformType.SUBSPACE_TO_GLOBAL);
-        cur.transform(curPos, TransformType.SUBSPACE_TO_GLOBAL);
-        Vector deltaPos = prevPos.getSubtraction(curPos);
-        deltaPos.multiply(partialTick);
-        Vector partialPos = new Vector(prevPos);
+        Vector3d prevPos = new Vector3d(shipCenter);
+        Vector3d curPos = new Vector3d(shipCenter);
+        prev.transformPosition(prevPos, TransformType.SUBSPACE_TO_GLOBAL);
+        cur.transformPosition(curPos, TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3d deltaPos = curPos.sub(prevPos, new Vector3d());
+        deltaPos.mul(partialTick);
+
+        Vector3d partialPos = new Vector3d(prevPos);
         partialPos.add(deltaPos); // Now partialPos is complete
 
         Quaternion prevRot = prev.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         Quaternion curRot = cur.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         Quaternion partialRot = Quaternion.slerpInterpolate(prevRot, curRot, partialTick);
+
+
         double[] partialAngles = partialRot
             .toRadians(); // Now partial angles {pitch, yaw, roll} are complete.
         // Put it all together to get the render transform.

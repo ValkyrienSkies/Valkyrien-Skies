@@ -763,7 +763,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      * deconstruct back to the world.
      */
     public boolean canShipBeDeconstructed() {
-        ShipTransform zeroTransform = ShipTransform.createRotationTransform(0, 0, 0);
+        ShipTransform zeroTransform = ShipTransformationManager.ZERO_TRANSFORM;
         // The quaternion with the world's orientation (which is zero because the world never moves
         // or rotates)
         Quaternion zeroQuat = zeroTransform

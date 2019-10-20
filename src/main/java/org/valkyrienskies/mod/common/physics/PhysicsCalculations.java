@@ -23,6 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
@@ -310,7 +311,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         double[] framedMOI = RotationMatrices.getZeroMatrix(3);
 
         // Copy the rotation matrix, ignore the translation and scaling parts.
-        Matrix3d rotationMatrix = getParent().getShipTransformationManager()
+        Matrix3dc rotationMatrix = getParent().getShipTransformationManager()
                 .getCurrentPhysicsTransform().createRotationMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
         Matrix3d inertiaBodyFrame = VSMath.convertArrayMatrix3d(gameMoITensor);

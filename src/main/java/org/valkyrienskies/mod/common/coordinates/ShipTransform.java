@@ -21,10 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3d;
-import org.joml.Matrix4d;
-import org.joml.Matrix4dc;
-import org.joml.Vector3d;
+import org.joml.*;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.VSMath;
@@ -68,10 +65,10 @@ public class ShipTransform {
     }
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
-        double roll, Vector centerCoord) {
+                         double roll, Vector centerCoord) {
         double[] lToWTransform = RotationMatrices.getTranslationMatrix(posX, posY, posZ);
         lToWTransform = RotationMatrices
-            .rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
+                .rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
         this.subspaceToGlobal = VSMath.convertArrayMatrix4d(lToWTransform);
         this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
     }
@@ -83,14 +80,15 @@ public class ShipTransform {
     }
 
     public ShipTransform(double translateX, double translateY, double translateZ) {
-        this(translateX, translateY, translateZ, 0, 0, 0, new Vector());
+        this(new Matrix4d().setTranslation(translateX, translateY, translateZ));
     }
 
     /**
      * Initializes an empty ShipTransform that does no translation or rotation.
      */
     public ShipTransform() {
-        this(RotationMatrices.getDoubleIdentity());
+        this.subspaceToGlobal = new Matrix4d();
+        this.globalToSubspace = new Matrix4d();
     }
 
     public static ShipTransform createRotationTransform(double pitch, double yaw, double roll) {
@@ -110,10 +108,18 @@ public class ShipTransform {
         return new ShipTransform(new Matrix4d().set(localToGlobalInternalArray));
     }
 
+    public void transformPosition(Vector3d position, TransformType transformType) {
+        getTransformMatrix(transformType).transformPosition(position);
+    }
+
+    public void transformDirection(Vector3d direction, TransformType transformType) {
+        getTransformMatrix(transformType).transformDirection(direction);
+    }
+
     @Deprecated
     public void transform(Vector vector, TransformType transformType) {
         Vector3d copy = vector.toVector3d();
-        getInternalMatrix(transformType).transformPosition(copy);
+        transformPosition(copy, transformType);
         vector.setValue(copy);
     }
 
@@ -124,31 +130,35 @@ public class ShipTransform {
     }
 
     public Vec3d rotate(Vec3d vec3d, TransformType transformType) {
-        Vector vec3dAsVector = new Vector(vec3d);
-        rotate(vec3dAsVector, transformType);
-        return vec3dAsVector.toVec3d();
+        Vector3d vec3dAsVector = new Vector3d(vec3d.x, vec3d.y, vec3d.z);
+        transformDirection(vec3dAsVector, transformType);
+        return new Vec3d(vec3dAsVector.x, vec3dAsVector.y, vec3dAsVector.z);
     }
 
     public BlockPos transform(BlockPos pos, TransformType transformType) {
-        Vector blockPosAsVector = new Vector(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
-        transform(blockPosAsVector, transformType);
+        Vector3d blockPosAsVector = new Vector3d(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+        transformPosition(blockPosAsVector, transformType);
         return new BlockPos(blockPosAsVector.x - .5D, blockPosAsVector.y - .5D,
-            blockPosAsVector.z - .5D);
+                blockPosAsVector.z - .5D);
     }
 
     @Deprecated
     public void rotate(Vector vector, TransformType transformType) {
         Vector3d copy = vector.toVector3d();
-        getInternalMatrix(transformType).transformDirection(copy);
+        transformDirection(copy, transformType);
         vector.setValue(copy);
     }
 
     public Quaternion createRotationQuaternion(TransformType transformType) {
-        Matrix4dc internalMatrix = getInternalMatrix(transformType);
+        Matrix4dc internalMatrix = getTransformMatrix(transformType);
         Matrix4dc transpose = internalMatrix.transpose(new Matrix4d());
         double[] oldCompat = new double[16];
         transpose.get(oldCompat);
         return Quaternion.QuaternionFromMatrix(oldCompat);
+    }
+
+    public Quaterniond rotationQuaternion(TransformType transformType) {
+        return getTransformMatrix(transformType).getNormalizedRotation(new Quaterniond());
     }
 
     public void writeToNBT(NBTTagCompound compound, String name) {
@@ -168,14 +178,23 @@ public class ShipTransform {
     }
 
     /**
-     * Please do not ever use this unless it is absolutely necessary! This exposes implementation
-     * details that will be changed eventually.
+     * Creates a standard 3x3 rotation matrix for this transform and the given transform type.
      *
      * @param transformType
-     * @return Unsafe internal arrays; for the love of god do not modify them!
+     * @return
      */
-    @Deprecated
-    private Matrix4dc getInternalMatrix(TransformType transformType) {
+    public Matrix3dc createRotationMatrix(TransformType transformType) {
+        return getTransformMatrix(transformType).get3x3(new Matrix3d());
+    }
+
+    /**
+     * Returns the same matrix this object has (not a copy). For that reason please DO NOT CAST THIS to Matrix4d.
+     * Doing so would violate the contract that the internal transform never changes, so DO NOT DO IT!
+     *
+     * @param transformType
+     * @return
+     */
+    public Matrix4dc getTransformMatrix(TransformType transformType) {
         switch (transformType) {
             case SUBSPACE_TO_GLOBAL:
                 return subspaceToGlobal;
@@ -183,35 +202,12 @@ public class ShipTransform {
                 return globalToSubspace;
             default:
                 throw new IllegalArgumentException(
-                    "Unexpected TransformType Enum: " + transformType);
+                        "Unexpected TransformType Enum: " + transformType);
         }
-    }
-
-    /**
-     * Creates a standard 3x3 rotation matrix for this transform and the given transform type.
-     *
-     * @param transformType
-     * @return
-     */
-    public Matrix3d createRotationMatrix(TransformType transformType) {
-        return getInternalMatrix(transformType).get3x3(new Matrix3d());
-    }
-
-    public Matrix4dc createTransformMatrix(TransformType transformType) {
-        return getInternalMatrix(transformType);
-    }
-
-    @Deprecated
-    public float[] generateFastRawTransformMatrix(TransformType transformType) {
-        Matrix4dc internalMatrix = getInternalMatrix(transformType);
-        Matrix4dc transpose = internalMatrix.transpose(new Matrix4d());
-        float[] floatMatrix = new float[16];
-        transpose.get(floatMatrix);
-        return floatMatrix;
     }
 
     @Deprecated
     public void transform(Entity player, TransformType globalToSubspace) {
-        RotationMatrices.applyTransform(getInternalMatrix(globalToSubspace), player);
+        RotationMatrices.applyTransform(getTransformMatrix(globalToSubspace), player);
     }
 }

@@ -22,6 +22,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 /**
@@ -30,6 +32,7 @@ import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
  * @author thebest108
  */
 @Data
+@Deprecated
 public class Vector {
 
     public double x;
@@ -275,5 +278,15 @@ public class Vector {
      */
     public boolean isNaN() {
         return Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z);
+    }
+
+    public void setValue(Vector3dc copy) {
+        this.x = copy.x();
+        this.y = copy.y();
+        this.z = copy.z();
+    }
+
+    public Vector3d toVector3d() {
+        return new Vector3d(x, y, z);
     }
 }

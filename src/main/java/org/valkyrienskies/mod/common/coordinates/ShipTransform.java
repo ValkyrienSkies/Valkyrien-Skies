@@ -23,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix3d;
 import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.VSMath;
@@ -32,7 +34,6 @@ import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Arrays;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
@@ -48,24 +49,22 @@ import java.util.Arrays;
 @Log4j2
 public class ShipTransform {
 
-    private final double[] subspaceToGlobal;
-    private final double[] globalToSubspace;
+    private final Matrix4dc subspaceToGlobal;
+    private final Matrix4dc globalToSubspace;
 
     /**
      * Don't use, we're planning on moving the math to a proper library eventually.
      *
-     * @param subspaceToGlobal
+     * @param doubleMatrix
      */
     @Deprecated
-    public ShipTransform(double[] subspaceToGlobal) {
-        this.subspaceToGlobal = subspaceToGlobal;
-        this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
+    public ShipTransform(double[] doubleMatrix) {
+        this(VSMath.convertArrayMatrix4d(doubleMatrix));
     }
 
-    public static Matrix4d createTransform(ShipTransform prev, ShipTransform current) {
-        Matrix4d oldTransformGtoS = VSMath.convertArrayMatrix4d(prev.globalToSubspace);
-        Matrix4d currentTransformStoG = VSMath.convertArrayMatrix4d(current.subspaceToGlobal);
-        return currentTransformStoG.mul(oldTransformGtoS);
+    public ShipTransform(Matrix4d sToG) {
+        this.subspaceToGlobal = sToG;
+        this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
     }
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
@@ -73,8 +72,14 @@ public class ShipTransform {
         double[] lToWTransform = RotationMatrices.getTranslationMatrix(posX, posY, posZ);
         lToWTransform = RotationMatrices
             .rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
-        this.subspaceToGlobal = lToWTransform;
-        this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
+        this.subspaceToGlobal = VSMath.convertArrayMatrix4d(lToWTransform);
+        this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
+    }
+
+    public static Matrix4d createTransform(ShipTransform prev, ShipTransform current) {
+        Matrix4dc oldTransformGtoS = prev.globalToSubspace;
+        Matrix4dc currentTransformStoG = current.subspaceToGlobal;
+        return currentTransformStoG.mul(oldTransformGtoS, new Matrix4d());
     }
 
     public ShipTransform(double translateX, double translateY, double translateZ) {
@@ -93,12 +98,23 @@ public class ShipTransform {
         return new ShipTransform(rotationOnlyMatrix);
     }
 
-    public void transform(Vector vector, TransformType transformType) {
-        RotationMatrices.applyTransform(getInternalMatrix(transformType), vector);
+    @Nullable
+    public static ShipTransform readFromNBT(NBTTagCompound compound, String name) {
+        byte[] localToGlobalAsBytes = compound.getByteArray(name);
+        if (localToGlobalAsBytes.length == 0) {
+            log.error("Loading from the ShipTransform has failed, now we are forced to fallback on " +
+                    "Vanilla MC positions. This probably won't go well at all!");
+            return null;
+        }
+        double[] localToGlobalInternalArray = ValkyrienNBTUtils.toDoubleArray(localToGlobalAsBytes);
+        return new ShipTransform(new Matrix4d().set(localToGlobalInternalArray));
     }
 
-    public void rotate(Vector vector, TransformType transformType) {
-        RotationMatrices.doRotationOnly(getInternalMatrix(transformType), vector);
+    @Deprecated
+    public void transform(Vector vector, TransformType transformType) {
+        Vector3d copy = vector.toVector3d();
+        getInternalMatrix(transformType).transformPosition(copy);
+        vector.setValue(copy);
     }
 
     public Vec3d transform(Vec3d vec3d, TransformType transformType) {
@@ -120,24 +136,23 @@ public class ShipTransform {
             blockPosAsVector.z - .5D);
     }
 
+    @Deprecated
+    public void rotate(Vector vector, TransformType transformType) {
+        Vector3d copy = vector.toVector3d();
+        getInternalMatrix(transformType).transformDirection(copy);
+        vector.setValue(copy);
+    }
+
     public Quaternion createRotationQuaternion(TransformType transformType) {
-        return Quaternion.QuaternionFromMatrix(getInternalMatrix(transformType));
+        Matrix4dc internalMatrix = getInternalMatrix(transformType);
+        Matrix4dc transpose = internalMatrix.transpose(new Matrix4d());
+        double[] oldCompat = new double[16];
+        transpose.get(oldCompat);
+        return Quaternion.QuaternionFromMatrix(oldCompat);
     }
 
     public void writeToNBT(NBTTagCompound compound, String name) {
-        compound.setByteArray(name, ValkyrienNBTUtils.toByteArray(subspaceToGlobal));
-    }
-
-    @Nullable
-    public static ShipTransform readFromNBT(NBTTagCompound compound, String name) {
-        byte[] localToGlobalAsBytes = compound.getByteArray(name);
-        if (localToGlobalAsBytes.length == 0) {
-            log.error("Loading from the ShipTransform has failed, now we are forced to fallback on " +
-                    "Vanilla MC positions. This probably won't go well at all!");
-            return null;
-        }
-        double[] localToGlobalInternalArray = ValkyrienNBTUtils.toDoubleArray(localToGlobalAsBytes);
-        return new ShipTransform(localToGlobalInternalArray);
+        compound.setByteArray(name, ValkyrienNBTUtils.toByteArray(subspaceToGlobal.get(new double[16])));
     }
 
     public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
@@ -160,12 +175,12 @@ public class ShipTransform {
      * @return Unsafe internal arrays; for the love of god do not modify them!
      */
     @Deprecated
-    private double[] getInternalMatrix(TransformType transformType) {
+    private Matrix4dc getInternalMatrix(TransformType transformType) {
         switch (transformType) {
             case SUBSPACE_TO_GLOBAL:
-                return Arrays.copyOf(subspaceToGlobal, subspaceToGlobal.length);
+                return subspaceToGlobal;
             case GLOBAL_TO_SUBSPACE:
-                return Arrays.copyOf(globalToSubspace, globalToSubspace.length);
+                return globalToSubspace;
             default:
                 throw new IllegalArgumentException(
                     "Unexpected TransformType Enum: " + transformType);
@@ -179,27 +194,24 @@ public class ShipTransform {
      * @return
      */
     public Matrix3d createRotationMatrix(TransformType transformType) {
-        double[] internalRotationMatrix = getInternalMatrix(transformType);
-        return VSMath.convertArrayMatrix4d(internalRotationMatrix).get3x3(new Matrix3d());
+        return getInternalMatrix(transformType).get3x3(new Matrix3d());
     }
 
-    public Matrix4d createTransformMatrix(TransformType transformType) {
-        double[] internalMatrix = getInternalMatrix(transformType);
-        return VSMath.convertArrayMatrix4d(internalMatrix);
+    public Matrix4dc createTransformMatrix(TransformType transformType) {
+        return getInternalMatrix(transformType);
     }
 
     @Deprecated
     public float[] generateFastRawTransformMatrix(TransformType transformType) {
-        double[] internalMatrix = getInternalMatrix(transformType);
-        float[] floatMatrix = new float[internalMatrix.length];
-        for (int i = 0; i < internalMatrix.length; i++) {
-            floatMatrix[i] = (float) internalMatrix[i];
-        }
+        Matrix4dc internalMatrix = getInternalMatrix(transformType);
+        Matrix4dc transpose = internalMatrix.transpose(new Matrix4d());
+        float[] floatMatrix = new float[16];
+        transpose.get(floatMatrix);
         return floatMatrix;
     }
 
     @Deprecated
     public void transform(Entity player, TransformType globalToSubspace) {
-        RotationMatrices.applyTransform(VSMath.convertArrayMatrix4d(getInternalMatrix(globalToSubspace)), player);
+        RotationMatrices.applyTransform(getInternalMatrix(globalToSubspace), player);
     }
 }

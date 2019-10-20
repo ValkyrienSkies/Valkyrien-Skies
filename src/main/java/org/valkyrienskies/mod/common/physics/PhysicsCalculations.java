@@ -674,7 +674,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         Vector3d rotationAxis = new org.valkyrienskies.mod.common.math.Vector(
                 angularVelocity).toVector3d();
         rotationAxis.normalize();
-        getPhysInvMOITensor().transform(rotationAxis);
+        getPhysMOITensor().transform(rotationAxis);
         return rotationAxis.length();
     }
 

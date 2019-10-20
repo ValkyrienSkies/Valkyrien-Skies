@@ -413,11 +413,11 @@ public class WorldPhysicsCollider {
         org.valkyrienskies.mod.common.math.Vector impulseVector,
         org.valkyrienskies.mod.common.math.Vector inBody) {
         org.valkyrienskies.mod.common.math.Vector contactNormal = new org.valkyrienskies.mod.common.math.Vector(
-            impulseVector);
+                impulseVector);
         contactNormal.normalize();
 
         org.valkyrienskies.mod.common.math.Vector frictionVector = new org.valkyrienskies.mod.common.math.Vector(
-            momentumAtPoint);
+                momentumAtPoint);
         frictionVector.normalize();
         frictionVector.multiply(impulseVector.length() * KINETIC_FRICTION_COEFFICIENT);
 
@@ -428,31 +428,31 @@ public class WorldPhysicsCollider {
         // Remove all friction components along the impulse vector
         double frictionImpulseDot = frictionVector.dot(contactNormal);
         org.valkyrienskies.mod.common.math.Vector toRemove = contactNormal
-            .getProduct(frictionImpulseDot);
+                .getProduct(frictionImpulseDot);
         frictionVector.subtract(toRemove);
 
         double inertiaScalarAlongAxis = parent.getPhysicsProcessor().getInertiaAlongRotationAxis();
         // The change in velocity vector
         org.valkyrienskies.mod.common.math.Vector initialVelocity = new org.valkyrienskies.mod.common.math.Vector(
-            parent.getPhysicsProcessor().linearMomentum,
-            parent.getPhysicsProcessor().getInvMass());
+                parent.getPhysicsProcessor().linearMomentum,
+                parent.getPhysicsProcessor().getInvMass());
         // Don't forget to multiply by delta t
         org.valkyrienskies.mod.common.math.Vector deltaVelocity = new org.valkyrienskies.mod.common.math.Vector(
-            frictionVector,
-            parent.getPhysicsProcessor().getInvMass() * parent.getPhysicsProcessor()
-                .getDragForPhysTick());
+                frictionVector,
+                parent.getPhysicsProcessor().getInvMass() * parent.getPhysicsProcessor()
+                        .getDragForPhysTick());
 
         double A = initialVelocity.lengthSq();
         double B = 2 * initialVelocity.dot(deltaVelocity);
         double C = deltaVelocity.lengthSq();
 
         org.valkyrienskies.mod.common.math.Vector initialAngularVelocity = parent
-            .getPhysicsProcessor().angularVelocity;
+                .getPhysicsProcessor().angularVelocity;
         org.valkyrienskies.mod.common.math.Vector deltaAngularVelocity = inBody
-            .cross(frictionVector);
+                .cross(frictionVector);
         // This might need to be 1 / inertiaScalarAlongAxis
         deltaAngularVelocity
-            .multiply(parent.getPhysicsProcessor().getDragForPhysTick() / inertiaScalarAlongAxis);
+                .multiply(parent.getPhysicsProcessor().getDragForPhysTick() / inertiaScalarAlongAxis);
 
         double D = initialAngularVelocity.lengthSq();
         double E = 2 * deltaAngularVelocity.dot(initialAngularVelocity);
@@ -467,11 +467,11 @@ public class WorldPhysicsCollider {
         // The coefficients of energy as a function of energyScaleFactor in the form (A
         // + B * k + c * k^2)
         double firstCoefficient =
-            A * parent.getPhysicsProcessor().getMass() + D * inertiaScalarAlongAxis;
+                A * parent.getPhysicsProcessor().getMass() + D * inertiaScalarAlongAxis;
         double secondCoefficient =
-            B * parent.getPhysicsProcessor().getMass() + E * inertiaScalarAlongAxis;
+                B * parent.getPhysicsProcessor().getMass() + E * inertiaScalarAlongAxis;
         double thirdCoefficient =
-            C * parent.getPhysicsProcessor().getMass() + F * inertiaScalarAlongAxis;
+                C * parent.getPhysicsProcessor().getMass() + F * inertiaScalarAlongAxis;
 
         double scaleFactor = -secondCoefficient / (thirdCoefficient * 2);
 

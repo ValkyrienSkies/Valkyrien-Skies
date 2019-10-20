@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.common.math;
 
-import java.nio.DoubleBuffer;
 import java.util.List;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -41,26 +40,21 @@ public class VSMath {
     /**
      * Converts a double-array matrix to a JOML {@link Matrix4d}
      *
-     * @param matrix A matrix as a double array of the form:
-     *               <pre>{@code
-     *                             [0,  1,  2,  3,
-     *                              4,  5,  6,  7,
-     *                              8,  9, 10, 11,
-     *                             12, 13, 14, 15]
-     *                             }</pre>
-     *               where the numbers represent indices (row-major)
+     * @param matrix A matrix 4x4 row-major double-array matrix
      * @return A {@link Matrix4d} representation
      */
     public static Matrix4d convertArrayMatrix4d(double[] matrix) {
-        return new Matrix4d(DoubleBuffer.wrap(matrix)).transpose();
+        return new Matrix4d().set(matrix).transpose();
     }
 
+    /**
+     * Converts a double-array matrix into a JOML {@link Matrix3d}
+     *
+     * @param matrix A 3x3 row-major double-array matrix
+     * @return A {@link Matrix3d} representation
+     */
     public static Matrix3d convertArrayMatrix3d(double[] matrix) {
-        Matrix3d matrix3d = new Matrix3d(
-            matrix[0], matrix[3], matrix[6],
-            matrix[1], matrix[4], matrix[7],
-            matrix[2], matrix[5], matrix[8]);
-        return matrix3d;
+        return new Matrix3d().set(matrix).transpose();
     }
 
     public static double getPitchFromVectorImmutable(VectorImmutable vec) {
@@ -239,7 +233,8 @@ public class VSMath {
         return remainder;
     }
 
-    public static Matrix3dc createRotationMatrix(double pitchRadians, double yawRadians, double rollRadians) {
+    public static Matrix3dc createRotationMatrix(double pitchRadians, double yawRadians,
+        double rollRadians) {
         Matrix3d rotationMatrix = new Matrix3d();
         rotationMatrix.rotate(pitchRadians, 1, 0, 0);
         rotationMatrix.rotate(yawRadians, 0, 1, 0);
@@ -247,7 +242,9 @@ public class VSMath {
         return rotationMatrix;
     }
 
-    public static Quaterniondc createRotationQuat(double pitchRadians, double yawRadians, double rollRadians) {
-        return createRotationMatrix(pitchRadians, yawRadians, rollRadians).getNormalizedRotation(new Quaterniond());
+    public static Quaterniondc createRotationQuat(double pitchRadians, double yawRadians,
+        double rollRadians) {
+        return createRotationMatrix(pitchRadians, yawRadians, rollRadians)
+            .getNormalizedRotation(new Quaterniond());
     }
 }

@@ -30,6 +30,7 @@ import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
  * Custom Vector class used by Valkyrien Skies
  *
  * @author thebest108
+ * @deprecated Use JOML {@link Vector3d}
  */
 @Data
 @Deprecated

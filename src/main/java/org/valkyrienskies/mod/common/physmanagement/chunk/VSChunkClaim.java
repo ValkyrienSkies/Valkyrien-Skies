@@ -16,15 +16,15 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Streams;
+import java.beans.ConstructorProperties;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import javax.annotation.concurrent.Immutable;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.experimental.Accessors;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,7 +40,6 @@ import net.minecraft.util.math.ChunkPos;
 @Accessors(fluent = false)
 @Value
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true) // For Jackson
 public final class VSChunkClaim {
 
     private final int centerX;
@@ -48,7 +47,17 @@ public final class VSChunkClaim {
     private final int radius;
 
     // NON-DATA CACHE FIELDS
-    private final transient ImmutableSet<Long> chunkLongs = calculateChunkLongs();
+    private final transient ImmutableSet<Long> chunkLongs;
+
+    @JsonCreator // This annotation tells Jackson to use this constructor for the class
+    // The below annotation says which JSON properties correspond to which constructor arguments
+    @ConstructorProperties({"centerX", "centerZ", "radius"})
+    public VSChunkClaim(int centerX, int centerZ, int radius) {
+        this.centerX = centerX;
+        this.centerZ = centerZ;
+        this.radius = radius;
+        this.chunkLongs = calculateChunkLongs();
+    }
 
     public VSChunkClaim(NBTTagCompound readFrom) {
         this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"),

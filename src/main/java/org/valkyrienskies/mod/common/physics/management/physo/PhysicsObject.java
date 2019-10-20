@@ -20,6 +20,13 @@ import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -80,9 +87,6 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * The heart and soul of this mod. The physics object does everything from custom collision, block
  * interactions, physics, networking, rendering, and more!
@@ -95,8 +99,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     @Getter
     private final PhysicsWrapperEntity wrapperEntity;
 
-    //private final PhysoPositionData posdata;
-    //private final PhysoMetadata metadata;
+    private PhysoData data;
 
     @Getter
     private final List<EntityPlayerMP> watchingPlayers;
@@ -255,7 +258,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     public void claimNewChunks() {
         setOwnedChunks(ValkyrienUtils.getShipChunkAllocator(getWorld()).allocateNextChunkClaim());
-        ValkyrienUtils.getQueryableData(getWorld()).addShip(getWrapperEntity());
+        ValkyrienUtils.getQueryableData(getWorld()).addShip(wrapperEntity);
     }
 
     /**

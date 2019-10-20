@@ -57,7 +57,7 @@ public abstract class VSDefaultCapability<K> {
         this.kClass = kClass;
         this.factory = factory;
         this.instance = factory.get();
-        System.out.println("CONSTRUCTED INSTANCE: " + instance);
+        log.debug("CONSTRUCTED INSTANCE: " + instance);
         this.mapper = mapper;
     }
 
@@ -75,11 +75,13 @@ public abstract class VSDefaultCapability<K> {
 
     @Nullable
     public NBTTagByteArray writeNBT(EnumFacing side) {
+        long time = System.currentTimeMillis();
         byte[] value;
         try {
             value = getMapper().writeValueAsBytes(instance);
-            log.debug(String.format("Writing data of size %f MB. (%s)",
-                value.length / Math.pow(2, 20), instance.getClass().getSimpleName()));
+            log.debug("VS serialization took {} ms. Writing data of size {} MB. ({})",
+                System.currentTimeMillis() - time, value.length / Math.pow(2, 20),
+                instance.getClass().getSimpleName());
         } catch (Exception ex) {
             log.fatal("Something just broke horrifically. Be wary of your data. "
                 + "This will crash the game in future releases", ex);
@@ -89,6 +91,8 @@ public abstract class VSDefaultCapability<K> {
     }
 
     public K readNBT(NBTBase base, EnumFacing side) {
+        long time = System.currentTimeMillis();
+
         byte[] value = ((NBTTagByteArray) base).getByteArray();
         try {
             this.instance = mapper.readValue(value, kClass);
@@ -102,6 +106,9 @@ public abstract class VSDefaultCapability<K> {
             log.fatal("Failed to read your ship data? Ships will probably be missing");
             this.instance = factory.get();
         }
+
+        log.info("VS deserialization took {} ms. Reading data of size {} MB.",
+            System.currentTimeMillis() - time, value.length / Math.pow(2, 20));
 
         return this.instance;
     }

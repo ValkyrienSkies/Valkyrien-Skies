@@ -3,9 +3,6 @@ package org.valkyrienskies.mod.common.physmanagement.shipdata;
 import static com.googlecode.cqengine.query.QueryFactory.equal;
 import static com.googlecode.cqengine.query.QueryFactory.startsWith;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
@@ -19,11 +16,11 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysoData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
@@ -32,7 +29,7 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 @MethodsReturnNonnullByDefault
 @Log4j2
 @SuppressWarnings("WeakerAccess")
-public class QueryableShipData implements Iterable<ShipData> {
+public class QueryableShipData implements Iterable<PhysoData> {
 
     /**
      * The key used to store/read the allShips collection from Kryo
@@ -46,12 +43,12 @@ public class QueryableShipData implements Iterable<ShipData> {
 
     // Where every ship data instance is stored, regardless if the corresponding PhysicsObject is
     // loaded in the World or not.
-    private ConcurrentIndexedCollection<ShipData> allShips = new ConcurrentIndexedCollection<>();
+    private ConcurrentIndexedCollection<PhysoData> allShips = new ConcurrentIndexedCollection<>();
 
     public QueryableShipData() {
-        allShips.addIndex(HashIndex.onAttribute(ShipData.NAME));
-        allShips.addIndex(UniqueIndex.onAttribute(ShipData.UUID));
-        allShips.addIndex(UniqueIndex.onAttribute(ShipData.CHUNKS));
+        allShips.addIndex(HashIndex.onAttribute(PhysoData.NAME));
+        allShips.addIndex(UniqueIndex.onAttribute(PhysoData.UUID));
+        allShips.addIndex(UniqueIndex.onAttribute(PhysoData.CHUNKS));
     }
 
     /**
@@ -62,18 +59,16 @@ public class QueryableShipData implements Iterable<ShipData> {
     }
 
     /**
-     * @param data    The ship to be renamed
+     * @param oldData    The ship to be renamed
      * @param newName The new name of the ship
      * @return True of the rename was successful, false if it wasn't.
      */
-    public boolean renameShip(ShipData data, String newName) {
-        Query<ShipData> query = equal(ShipData.NAME, newName);
+    public boolean renameShip(PhysoData oldData, String newName) {
+        Query<PhysoData> query = equal(PhysoData.NAME, newName);
         if (allShips.retrieve(query).isEmpty()) {
-            ShipData newData = new ShipData.Builder(data)
-                .setName(newName)
-                .build();
+            PhysoData newData = oldData.withName(newName);
 
-            allShips.remove(data);
+            allShips.remove(oldData);
             allShips.add(newData);
 
             return true;
@@ -81,8 +76,8 @@ public class QueryableShipData implements Iterable<ShipData> {
         return false;
     }
 
-    public Stream<ShipData> getShipsFromNameStartingWith(String startsWith) {
-        Query<ShipData> query = startsWith(ShipData.NAME, startsWith);
+    public Stream<PhysoData> getShipsFromNameStartingWith(String startsWith) {
+        Query<PhysoData> query = startsWith(PhysoData.NAME, startsWith);
 
         return allShips.retrieve(query).stream();
     }
@@ -90,17 +85,17 @@ public class QueryableShipData implements Iterable<ShipData> {
     /**
      * Retrieves a list of all ships.
      */
-    public List<ShipData> getShips() {
+    public List<PhysoData> getShips() {
         return ImmutableList.copyOf(allShips);
     }
 
-    public Optional<ShipData> getShipFromChunk(int chunkX, int chunkZ) {
+    public Optional<PhysoData> getShipFromChunk(int chunkX, int chunkZ) {
         return getShipFromChunk(ChunkPos.asLong(chunkX, chunkZ));
     }
 
-    public Optional<ShipData> getShipFromChunk(long chunkLong) {
-        Query<ShipData> query = equal(ShipData.CHUNKS, chunkLong);
-        ResultSet<ShipData> resultSet = allShips.retrieve(query);
+    public Optional<PhysoData> getShipFromChunk(long chunkLong) {
+        Query<PhysoData> query = equal(PhysoData.CHUNKS, chunkLong);
+        ResultSet<PhysoData> resultSet = allShips.retrieve(query);
 
         if (resultSet.size() > 1) {
             throw new IllegalStateException(
@@ -113,9 +108,9 @@ public class QueryableShipData implements Iterable<ShipData> {
         }
     }
 
-    public Optional<ShipData> getShip(UUID uuid) {
-        Query<ShipData> query = equal(ShipData.UUID, uuid);
-        ResultSet<ShipData> resultSet = allShips.retrieve(query);
+    public Optional<PhysoData> getShip(UUID uuid) {
+        Query<PhysoData> query = equal(PhysoData.UUID, uuid);
+        ResultSet<PhysoData> resultSet = allShips.retrieve(query);
 
         if (resultSet.isEmpty()) {
             return Optional.empty();
@@ -124,22 +119,22 @@ public class QueryableShipData implements Iterable<ShipData> {
         }
     }
 
-    public Optional<ShipData> getShip(PhysicsWrapperEntity wrapperEntity) {
+    public Optional<PhysoData> getShip(PhysicsWrapperEntity wrapperEntity) {
         return getShip(wrapperEntity.getPersistentID());
     }
 
-    public ShipData getOrCreateShip(PhysicsWrapperEntity wrapperEntity) {
-        Optional<ShipData> data = getShip(wrapperEntity.getPersistentID());
+    public PhysoData getOrCreateShip(PhysicsWrapperEntity wrapperEntity) {
+        Optional<PhysoData> data = getShip(wrapperEntity.getPersistentID());
         return data.orElseGet(() -> {
-            ShipData shipData = new ShipData.Builder(wrapperEntity).build();
+            PhysoData shipData = PhysoData.fromWrapperEntity(wrapperEntity).build();
             allShips.add(shipData);
             return shipData;
         });
     }
 
-    public Optional<ShipData> getShipFromName(String name) {
-        Query<ShipData> query = equal(ShipData.NAME, name);
-        ResultSet<ShipData> shipDataResultSet = allShips.retrieve(query);
+    public Optional<PhysoData> getShipFromName(String name) {
+        Query<PhysoData> query = equal(PhysoData.NAME, name);
+        ResultSet<PhysoData> shipDataResultSet = allShips.retrieve(query);
 
         if (shipDataResultSet.isEmpty()) {
             return Optional.empty();
@@ -153,96 +148,38 @@ public class QueryableShipData implements Iterable<ShipData> {
     }
 
     public void removeShip(UUID uuid) {
-        Optional<ShipData> shipOptional = getShip(uuid);
-
-        shipOptional.ifPresent(ship -> allShips.remove(ship));
+        getShip(uuid).ifPresent(ship -> allShips.remove(ship));
     }
 
-    public void addShip(ShipData ship) {
+    public void addShip(PhysoData ship) {
         allShips.add(ship);
     }
 
+    @Deprecated
     public void addShip(PhysicsWrapperEntity wrapperEntity) {
-        Query<ShipData> query = equal(ShipData.UUID, wrapperEntity.getPersistentID());
+        Query<PhysoData> query = equal(PhysoData.UUID, wrapperEntity.getPersistentID());
 
         // If this ship is already added, don't add it again?
         if (allShips.retrieve(query).isEmpty()) {
-            addShip(new ShipData.Builder(wrapperEntity).build());
+            addShip(PhysoData.fromWrapperEntity(wrapperEntity).build());
         }
     }
 
     public void updateShipPosition(PhysicsWrapperEntity wrapper) {
-        ShipData shipData = getOrCreateShip(wrapper);
-        if (shipData.positionData == null) {
-            shipData.positionData = new ShipPositionData(wrapper);
-        }
-        shipData.positionData.updateData(wrapper);
-    }
+        PhysoData shipData = getOrCreateShip(wrapper);
+        PhysoData newData = shipData.withPositionData(new ShipPositionData(wrapper));
 
-    public void readFromNBT(NBTTagCompound nbt) {
-        long start = System.currentTimeMillis();
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-
-            mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
-                .withFieldVisibility(Visibility.ANY)
-                .withGetterVisibility(Visibility.NONE)
-                .withIsGetterVisibility(Visibility.NONE)
-                .withSetterVisibility(Visibility.NONE));
-
-            byte[] value = nbt.getByteArray(NBT_KEY_JACKSON_PROTOBUF);
-            if (value.length != 0) {
-                this.allShips.clear();
-                this.allShips.addAll(mapper.readValue(
-                    value, ShipDataCollectionWrapper.class).collection);
-            } else {
-                allShips = new ConcurrentIndexedCollection<>();
-            }
-        } catch (Exception e) {
-            // Error reading allShips from memory, just make a new empty one.
-            e.printStackTrace();
-            allShips = new ConcurrentIndexedCollection<>();
-        }
-
-        if (allShips == null) {
-            // This should NEVER EVER happen! So I don't feel bad crashing the game, for now.
-            throw new IllegalStateException(
-                "Kryo read allships as null! Making a new empty allships instance");
-        }
-
-        System.out.println("Price of read: " + (System.currentTimeMillis() - start) + "ms");
-    }
-
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        long start = System.currentTimeMillis();
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
-                .withFieldVisibility(Visibility.ANY)
-                .withGetterVisibility(Visibility.NONE)
-                .withIsGetterVisibility(Visibility.NONE)
-                .withSetterVisibility(Visibility.NONE));
-
-            byte[] value = mapper.writeValueAsBytes(
-                new ShipDataCollectionWrapper(allShips));
-            compound.setByteArray(NBT_KEY_JACKSON_PROTOBUF, value);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Price of write: " + (System.currentTimeMillis() - start) + "ms");
-
-        return compound;
+        // TODO: this isn't threadsafe? Use TransactionalIndexedCollection
+        allShips.remove(shipData);
+        allShips.add(newData);
     }
 
     @Override
-    public Iterator<ShipData> iterator() {
+    public Iterator<PhysoData> iterator() {
         return allShips.iterator();
     }
 
-    public Stream<ShipData> stream() {
+    public Stream<PhysoData> stream() {
         return allShips.stream();
     }
 }

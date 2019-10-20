@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Streams;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -45,6 +46,9 @@ public final class VSChunkClaim {
     private final int centerX;
     private final int centerZ;
     private final int radius;
+
+    // NON-DATA CACHE FIELDS
+    private final transient ImmutableSet<Long> chunkLongs = calculateChunkLongs();
 
     public VSChunkClaim(NBTTagCompound readFrom) {
         this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"),
@@ -149,6 +153,12 @@ public final class VSChunkClaim {
 
     public int getChunkLengthZ() {
         return maxZ() - minZ() + 1;
+    }
+
+    private ImmutableSet<Long> calculateChunkLongs() {
+        return this.stream()
+            .map(pos -> ChunkPos.asLong(pos.x, pos.z))
+            .collect(ImmutableSet.toImmutableSet());
     }
 
     class ChunkPosIterator implements Iterator<ChunkPos> {

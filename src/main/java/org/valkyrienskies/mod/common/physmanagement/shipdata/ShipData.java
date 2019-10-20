@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.minecraft.util.math.ChunkPos;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 
 @AllArgsConstructor
@@ -44,8 +45,16 @@ public final class ShipData {
             shipData = new ShipData();
             shipData.name = wrapperEntity.getCustomNameTag();
             shipData.uuid = wrapperEntity.getPersistentID();
-            shipData.chunkLongs = ImmutableSet.copyOf(getChunkLongs(wrapperEntity));
+            shipData.chunkLongs = ImmutableSet
+                .copyOf(getChunkLongs(wrapperEntity.getPhysicsObject()));
             shipData.chunkClaim = wrapperEntity.getPhysicsObject().getOwnedChunks();
+        }
+
+        public Builder(PhysicsObject physo) {
+            shipData = new ShipData();
+            //shipData.uuid = .getPersistentID();
+            shipData.chunkLongs = ImmutableSet.copyOf(getChunkLongs(physo));
+            shipData.chunkClaim = physo.getOwnedChunks();
         }
 
         public Builder() {
@@ -77,12 +86,12 @@ public final class ShipData {
         }
 
         /**
-         * @return Every Chunk that this entity owns/claims represented as a long; for indexing
+         * @return Every Chunk that this physo owns/claims represented as a long; for indexing
          * purposes
          */
-        private static Set<Long> getChunkLongs(PhysicsWrapperEntity entity) {
+        private static Set<Long> getChunkLongs(PhysicsObject physo) {
             Set<Long> chunkLongs = new HashSet<>();
-            VSChunkClaim ownedChunks = entity.getPhysicsObject().getOwnedChunks();
+            VSChunkClaim ownedChunks = physo.getOwnedChunks();
 
             int centerX = ownedChunks.getCenterX();
             int centerZ = ownedChunks.getCenterZ();

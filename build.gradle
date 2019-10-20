@@ -100,7 +100,7 @@ repositories {
 ext {
     cqengineVersion = "3.4.0"
     graphlibVersion = "1.4.0"
-    lombokVersion = "1.18.8"
+    lombokVersion = "1.18.10"
     mixinVersion = "0.7.11-SNAPSHOT"
     opencomputersVersion = "MC1.12.1-1.7.1.+"
     spongeVersion = "1.12.2-2825-7.1.6"

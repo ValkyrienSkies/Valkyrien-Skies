@@ -16,21 +16,26 @@
 
 package org.valkyrienskies.mod.common.coordinates;
 
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.joml.*;
+import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
+import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.lang.Math;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
@@ -44,15 +49,17 @@ import java.lang.Math;
  */
 @Immutable
 @Log4j2
+@Accessors(fluent = false)
 public class ShipTransform {
 
     private final Matrix4dc subspaceToGlobal;
     private final Matrix4dc globalToSubspace;
 
+    @Getter double posX, posY, posZ, pitch, yaw, roll;
+    @Getter Vector centerCoord;
+
     /**
      * Don't use, we're planning on moving the math to a proper library eventually.
-     *
-     * @param doubleMatrix
      */
     @Deprecated
     public ShipTransform(double[] doubleMatrix) {
@@ -66,6 +73,13 @@ public class ShipTransform {
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
                          double roll, Vector centerCoord) {
+        this.posX = posX;
+        this.posY = posY;
+        this.posZ = posZ;
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.roll = roll;
+
         // First we translate the block coordinates to coordinates where center of mass is <0,0,0>
         Matrix4dc intialTranslate = new Matrix4d().translate(-centerCoord.x, -centerCoord.y, -centerCoord.z);
         // Then we rotate the coordinates based on the pitch/yaw/roll.

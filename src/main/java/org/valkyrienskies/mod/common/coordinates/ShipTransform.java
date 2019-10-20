@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.common.coordinates;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import lombok.Getter;
@@ -52,11 +53,15 @@ import valkyrienwarfare.api.TransformType;
 @Accessors(fluent = false)
 public class ShipTransform {
 
+    @JsonDeserialize(as = Matrix4d.class)
     private final Matrix4dc subspaceToGlobal;
+    @JsonDeserialize(as = Matrix4d.class)
     private final Matrix4dc globalToSubspace;
 
-    @Getter double posX, posY, posZ, pitch, yaw, roll;
-    @Getter Vector centerCoord;
+    @Getter
+    double posX, posY, posZ, pitch, yaw, roll;
+    @Getter
+    Vector centerCoord;
 
     /**
      * Don't use, we're planning on moving the math to a proper library eventually.
@@ -72,7 +77,7 @@ public class ShipTransform {
     }
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
-                         double roll, Vector centerCoord) {
+        double roll, Vector centerCoord) {
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
@@ -80,23 +85,19 @@ public class ShipTransform {
         this.yaw = yaw;
         this.roll = roll;
 
-        // First we translate the block coordinates to coordinates where center of mass is <0,0,0>
-        Matrix4dc intialTranslate = new Matrix4d().translate(-centerCoord.x, -centerCoord.y, -centerCoord.z);
-        // Then we rotate the coordinates based on the pitch/yaw/roll.
-        Matrix4dc rotationMatrix = new Matrix4d().rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll));
-        // Then we translate the coordinates to where they are in the world.
-        Matrix4dc finalTranslate = new Matrix4d().translate(posX, posY, posZ);
+        this.subspaceToGlobal = new Matrix4d()
+            // First we translate the coordinates to where they are in the world.
+            .translate(posX, posY, posZ)
+            // Then we rotate the coordinates based on the pitch/yaw/roll.
+            .rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll))
+            // Then translate the block coordinates to coordinates where center of mass is <0,0,0>
+            .translate(-centerCoord.x, -centerCoord.y, -centerCoord.z);
 
-        // We use matrix multiplication to combine these three matrix operations into one.
-        // (Remember that matrix multiplication is done from right to left)
-        this.subspaceToGlobal = finalTranslate.mul(rotationMatrix, new Matrix4d()).mul(intialTranslate);;
         this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
     }
 
     public static Matrix4d createTransform(ShipTransform prev, ShipTransform current) {
-        Matrix4dc oldTransformGtoS = prev.globalToSubspace;
-        Matrix4dc currentTransformStoG = current.subspaceToGlobal;
-        return currentTransformStoG.mul(oldTransformGtoS, new Matrix4d());
+        return current.subspaceToGlobal.mul(prev.globalToSubspace, new Matrix4d());
     }
 
     public ShipTransform(double translateX, double translateY, double translateZ) {
@@ -111,16 +112,12 @@ public class ShipTransform {
         this.globalToSubspace = new Matrix4d();
     }
 
-    public static ShipTransform createRotationTransform(double pitch, double yaw, double roll) {
-        double[] rotationOnlyMatrix = RotationMatrices.getRotationMatrix(pitch, yaw, roll);
-        return new ShipTransform(rotationOnlyMatrix);
-    }
-
     @Nullable
     public static ShipTransform readFromNBT(NBTTagCompound compound, String name) {
         byte[] localToGlobalAsBytes = compound.getByteArray(name);
         if (localToGlobalAsBytes.length == 0) {
-            log.error("Loading from the ShipTransform has failed, now we are forced to fallback on " +
+            log.error(
+                "Loading from the ShipTransform has failed, now we are forced to fallback on " +
                     "Vanilla MC positions. This probably won't go well at all!");
             return null;
         }
@@ -159,7 +156,7 @@ public class ShipTransform {
         Vector3d blockPosAsVector = new Vector3d(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
         transformPosition(blockPosAsVector, transformType);
         return new BlockPos(blockPosAsVector.x - .5D, blockPosAsVector.y - .5D,
-                blockPosAsVector.z - .5D);
+            blockPosAsVector.z - .5D);
     }
 
     @Deprecated
@@ -174,7 +171,8 @@ public class ShipTransform {
     }
 
     public void writeToNBT(NBTTagCompound compound, String name) {
-        compound.setByteArray(name, ValkyrienNBTUtils.toByteArray(subspaceToGlobal.get(new double[16])));
+        compound.setByteArray(name,
+            ValkyrienNBTUtils.toByteArray(subspaceToGlobal.get(new double[16])));
     }
 
     public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
@@ -191,20 +189,19 @@ public class ShipTransform {
 
     /**
      * Creates a standard 3x3 rotation matrix for this transform and the given transform type.
-     *
-     * @param transformType
-     * @return
      */
     public Matrix3dc createRotationMatrix(TransformType transformType) {
         return getTransformMatrix(transformType).get3x3(new Matrix3d());
     }
 
     /**
-     * Returns the same matrix this object has (not a copy). For that reason please DO NOT CAST THIS to Matrix4d.
-     * Doing so would violate the contract that the internal transform never changes, so DO NOT DO IT!
-     *
-     * @param transformType
-     * @return
+     * Returns the same matrix this object has (not a copy). For that reason please <h1>DO NOT
+     * CAST THIS</h1> to Matrix4d. Doing so would violate the contract that the internal
+     * transform never changes, so DO NOT DO IT! You would be worse than Thanos! You wouldn't break
+     * half the mod, you would break EVERYTHING. Your computer would explode, your house would burn
+     * down, your dog will die, you'll be exiled from your home country, and your parents will
+     * disown you. Even if you so much as think about casting this back to a Matrix4d you'll likely
+     * get struck by an asteroid. You've been warned.
      */
     public Matrix4dc getTransformMatrix(TransformType transformType) {
         switch (transformType) {
@@ -214,7 +211,7 @@ public class ShipTransform {
                 return globalToSubspace;
             default:
                 throw new IllegalArgumentException(
-                        "Unexpected TransformType Enum: " + transformType);
+                    "Unexpected TransformType Enum: " + transformType);
         }
     }
 
@@ -222,4 +219,5 @@ public class ShipTransform {
     public void transform(Entity player, TransformType globalToSubspace) {
         RotationMatrices.applyTransform(getTransformMatrix(globalToSubspace), player);
     }
+
 }

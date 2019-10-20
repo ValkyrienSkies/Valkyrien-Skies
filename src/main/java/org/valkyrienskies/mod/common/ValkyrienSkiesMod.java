@@ -61,7 +61,7 @@ import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityStorage;
-import org.valkyrienskies.mod.common.command.framework.VSModCommandRegistry;
+import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
 import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
@@ -179,7 +179,7 @@ public class ValkyrienSkiesMod {
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
         MinecraftServer server = event.getServer();
-        VSModCommandRegistry.registerCommands(server);
+        VSCommandRegistry.registerCommands(server);
     }
 
     private void registerNetworks(FMLStateEvent event) {

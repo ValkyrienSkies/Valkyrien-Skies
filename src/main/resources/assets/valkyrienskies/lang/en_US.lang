@@ -1,3 +1,5 @@
+#PARSE_ESCAPES
+
 # Items
 item.physics_core.name=Physics Core
 tooltip.valkyrienskies.physics_core=The core of a physics infuser
@@ -24,4 +26,4 @@ gui.stop_align_ship=Stop Alignment
 
 ## Commands
 commands.valkyrienskies.list-ships.noships=This world contains no ships!
-commands.valkyrienskies.list-ships.ships=This world contains the following ships: %s
+commands.valkyrienskies.list-ships.ships=This world contains the following ships: %s \n.

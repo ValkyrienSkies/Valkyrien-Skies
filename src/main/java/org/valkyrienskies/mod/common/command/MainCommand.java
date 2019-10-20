@@ -6,15 +6,19 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.command.MainCommand.TeleportTo;
 import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocompleter;
+import org.valkyrienskies.mod.common.command.autocompleters.WorldAutocompleter;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysoData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
@@ -35,7 +39,8 @@ import picocli.CommandLine.Spec;
         MainCommand.ListShips.class,
         MainCommand.DisableShip.class,
         MainCommand.GC.class,
-        MainCommand.TPS.class})
+        MainCommand.TPS.class,
+        TeleportTo.class})
 public class MainCommand implements Runnable {
 
     @Spec
@@ -49,6 +54,37 @@ public class MainCommand implements Runnable {
         String usageMessage = spec.commandLine().getUsageMessage().replace("\r", "");
 
         sender.sendMessage(new TextComponentString(usageMessage));
+    }
+
+    @Command(name = "teleport-to", aliases = "tpto")
+    static class TeleportTo implements Runnable {
+
+        @Inject
+        ICommandSender sender;
+
+        @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
+        String shipName;
+
+        public void run() {
+            if (!(sender instanceof EntityPlayer)) {
+                sender.sendMessage(new TextComponentString("You must execute this command as "
+                    + "a player!"));
+            }
+
+            World world = sender.getEntityWorld();
+            QueryableShipData data = QueryableShipData.get(world);
+            Optional<PhysoData> oTargetShipData = data.getShipFromName(shipName);
+
+            if (!oTargetShipData.isPresent()) {
+                sender.sendMessage(new TextComponentString(
+                    "That ship, " + shipName + " could not be found"));
+                return;
+            }
+
+            ShipPositionData pos = oTargetShipData.get().getPositionData();
+            ((EntityPlayer) sender).setPositionAndUpdate(pos.getPosX(), pos.getPosY(), pos.getPosZ());
+        }
+
     }
 
     @Command(name = "gc")
@@ -70,7 +106,7 @@ public class MainCommand implements Runnable {
         @Inject
         ICommandSender sender;
 
-        @Option(names = {"--world", "-w"})
+        @Option(names = {"--world", "-w"}, completionCandidates = WorldAutocompleter.class)
         World world;
 
         @Override
@@ -111,7 +147,7 @@ public class MainCommand implements Runnable {
         public void run() {
             World world = sender.getEntityWorld();
             QueryableShipData data = QueryableShipData.get(world);
-            Optional<ShipData> oTargetShipData = data.getShipFromName(shipName);
+            Optional<PhysoData> oTargetShipData = data.getShipFromName(shipName);
 
             if (!oTargetShipData.isPresent()) {
                 sender.sendMessage(new TextComponentString(
@@ -119,9 +155,9 @@ public class MainCommand implements Runnable {
                 return;
             }
 
-            ShipData targetShipData = oTargetShipData.get();
+            PhysoData targetShipData = oTargetShipData.get();
             Optional<Entity> oEntity = world.getLoadedEntityList().stream()
-                .filter(e -> e.getPersistentID().equals(targetShipData.getUUID()))
+                .filter(e -> e.getPersistentID().equals(targetShipData.getUuid()))
                 .findFirst();
 
             if (!oEntity.isPresent()) {
@@ -196,7 +232,7 @@ public class MainCommand implements Runnable {
             } else {
                 listOfShips = data.getShips()
                     .stream()
-                    .map(ShipData::getName)
+                    .map(PhysoData::getName)
                     .collect(Collectors.joining(",\n"));
             }
 

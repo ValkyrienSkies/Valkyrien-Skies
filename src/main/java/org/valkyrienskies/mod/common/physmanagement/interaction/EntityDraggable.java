@@ -20,14 +20,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import valkyrienwarfare.api.TransformType;
 
 import java.util.List;
 
@@ -59,14 +62,14 @@ public class EntityDraggable {
                                 if (player.isCreative() && player.capabilities.isFlying) {
                                     draggable.getVelocityAddedToPlayer().multiply(.99D * .95D);
                                     draggable.setYawDifVelocity(
-                                        draggable.getYawDifVelocity() * .95D * .95D);
+                                            draggable.getYawDifVelocity() * .95D * .95D);
                                 }
                             }
                         }
                     }
                     // Only run the added velocity code if there's a significant amount to add; or if we're standing on top of a ship.
                     if (draggable.getVelocityAddedToPlayer()
-                        .lengthSq() > .01 || draggable.getWorldBelowFeet() != null) {
+                            .lengthSq() > .01 || draggable.getWorldBelowFeet() != null) {
                         addEntityVelocityFromShipBelow(e);
                     }
 
@@ -100,9 +103,10 @@ public class EntityDraggable {
 
             Vector oldPos = new Vector(entity);
 
-            ShipTransform betweenTransform = new ShipTransform(
-                coordTransform.getPrevTickTransform(), coordTransform.getCurrentTickTransform());
-            betweenTransform.transform(entity, TransformType.SUBSPACE_TO_GLOBAL);
+            Matrix4d betweenTransform = ShipTransform.createTransform(
+                    coordTransform.getPrevTickTransform(), coordTransform.getCurrentTickTransform());
+
+            RotationMatrices.applyTransform(betweenTransform, entity);
 
             Vector newPos = new Vector(entity);
 
@@ -118,10 +122,12 @@ public class EntityDraggable {
             entity.prevRotationYaw = prevYaw;
             entity.prevRotationPitch = prevPitch;
 
-            Vector oldLookingPos = new Vector(entity.getLook(1.0F));
+            Vec3d oldLookingVecMc = entity.getLook(1.0f);
+
+            Vector3d oldLookingPos = new Vector3d(oldLookingVecMc.x, oldLookingVecMc.y, oldLookingVecMc.z);
             //            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_SUBSPACE);
             //            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
-            betweenTransform.rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
+            betweenTransform.transformDirection(oldLookingPos);
 
             double newPitch = Math.asin(oldLookingPos.y) * -180D / Math.PI;
             double f4 = -Math.cos(-newPitch * 0.017453292D);
@@ -167,9 +173,9 @@ public class EntityDraggable {
             entity.setEntityBoundingBox(originalBoundingBox);
 
             entity.setEntityBoundingBox(
-                entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().x,
-                    draggable.getVelocityAddedToPlayer().y,
-                    draggable.getVelocityAddedToPlayer().z));
+                    entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().x,
+                            draggable.getVelocityAddedToPlayer().y,
+                            draggable.getVelocityAddedToPlayer().z));
             entity.resetPositionToBB();
 
             if (!mountData.isMounted()) {
@@ -225,12 +231,12 @@ public class EntityDraggable {
         if (potentialCrashBB.getAverageEdgeLength() > 999999) {
             // The player went too fast, something is wrong.
             System.err.println("Entity with ID " + thisClassAsAnEntity.getEntityId()
-                + " went way too fast! Reseting its position.");
+                    + " went way too fast! Reseting its position.");
             return new Vector();
         }
 
         List<AxisAlignedBB> list1 = thisClassAsAnEntity.world
-            .getCollisionBoxes(thisClassAsAnEntity, potentialCrashBB);
+                .getCollisionBoxes(thisClassAsAnEntity, potentialCrashBB);
         AxisAlignedBB axisalignedbb = thisClassAsAnEntity.getEntityBoundingBox();
 
         if (y != 0.0D) {
@@ -241,7 +247,7 @@ public class EntityDraggable {
             }
 
             thisClassAsAnEntity.setEntityBoundingBox(
-                thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+                    thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
         }
 
         if (x != 0.0D) {
@@ -253,8 +259,8 @@ public class EntityDraggable {
 
             if (x != 0.0D) {
                 thisClassAsAnEntity
-                    .setEntityBoundingBox(
-                        thisClassAsAnEntity.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
+                        .setEntityBoundingBox(
+                                thisClassAsAnEntity.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
             }
         }
 
@@ -267,8 +273,8 @@ public class EntityDraggable {
 
             if (z != 0.0D) {
                 thisClassAsAnEntity
-                    .setEntityBoundingBox(
-                        thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, 0.0D, z));
+                        .setEntityBoundingBox(
+                                thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, 0.0D, z));
             }
         }
 
@@ -282,8 +288,8 @@ public class EntityDraggable {
             thisClassAsAnEntity.setEntityBoundingBox(axisalignedbb);
             y = thisClassAsAnEntity.stepHeight;
             List<AxisAlignedBB> list = thisClassAsAnEntity.world
-                .getCollisionBoxes(thisClassAsAnEntity,
-                    thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
+                    .getCollisionBoxes(thisClassAsAnEntity,
+                            thisClassAsAnEntity.getEntityBoundingBox().offset(d2, y, d4));
             AxisAlignedBB axisalignedbb2 = thisClassAsAnEntity.getEntityBoundingBox();
             AxisAlignedBB axisalignedbb3 = axisalignedbb2.offset(d2, 0.0D, d4);
             double d8 = y;
@@ -357,7 +363,7 @@ public class EntityDraggable {
             }
 
             thisClassAsAnEntity.setEntityBoundingBox(
-                thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+                    thisClassAsAnEntity.getEntityBoundingBox().offset(0.0D, y, 0.0D));
 
             if (d14 * d14 + d7 * d7 >= x * x + z * z) {
                 x = d14;

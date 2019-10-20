@@ -16,12 +16,13 @@
 
 package org.valkyrienskies.mod.common.physics.management;
 
-import java.util.List;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
+
+import java.util.List;
 
 public class PhysicsTickHandler {
 
@@ -50,7 +51,7 @@ public class PhysicsTickHandler {
                     physTransform.getYaw(), physTransform.getRoll());
                 wrapper.getPhysicsObject()
                     .getShipTransformationManager()
-                    .updateAllTransforms(false, true, true);
+                        .updateAllTransforms(false, true);
             }
 
             wrapper.getPhysicsObject().updateChunkCache();

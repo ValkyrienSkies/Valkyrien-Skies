@@ -16,11 +16,13 @@
 
 package org.valkyrienskies.mod.common.math;
 
-import java.util.List;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
+import org.joml.Matrix3d;
 import org.joml.Matrix4d;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
+
+import java.util.List;
 
 /**
  * A lot of useful math functions belong here
@@ -46,12 +48,19 @@ public class VSMath {
      *               where the numbers represent indices
      * @return A {@link Matrix4d} representation
      */
-    public static Matrix4d convertArrayMatrix(double[] matrix) {
+    public static Matrix4d convertArrayMatrix4d(double[] matrix) {
         return new Matrix4d(
             matrix[0], matrix[4], matrix[8], matrix[12],
             matrix[1], matrix[5], matrix[9], matrix[13],
             matrix[2], matrix[6], matrix[10], matrix[14],
             matrix[3], matrix[7], matrix[11], matrix[15]);
+    }
+
+    public static Matrix3d convertArrayMatrix3d(double[] matrix) {
+        return new Matrix3d(
+                matrix[0], matrix[3], matrix[6],
+                matrix[1], matrix[4], matrix[7],
+                matrix[2], matrix[5], matrix[8]);
     }
 
     public static double getPitchFromVectorImmutable(VectorImmutable vec) {

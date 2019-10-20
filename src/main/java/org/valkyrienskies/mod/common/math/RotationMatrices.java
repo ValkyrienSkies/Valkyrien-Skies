@@ -19,18 +19,16 @@ package org.valkyrienskies.mod.common.math;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.projectile.EntityFireball;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
+import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix4dc;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import valkyrienwarfare.api.TransformType;
 
 /**
- * This class creates and processes rotation matrix transforms used by Valkyrien Skies
- *
- * @author thebest108
+ * This is getting deleted. Do NOT Use!
  */
+@Deprecated
 public class RotationMatrices {
 
     public static double[] getTranslationMatrix(double x, double y, double z) {
@@ -42,15 +40,15 @@ public class RotationMatrices {
     }
 
     public static double[] rotateAndTranslate(double[] input, double pitch, double yaw, double roll,
-        Vector localOrigin) {
+                                              Vector localOrigin) {
         input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
+                RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
         input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
+                RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
         input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
+                RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
         input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getTranslationMatrix(-localOrigin.x, -localOrigin.y, -localOrigin.z));
+                RotationMatrices.getTranslationMatrix(-localOrigin.x, -localOrigin.y, -localOrigin.z));
         return input;
     }
 
@@ -64,11 +62,11 @@ public class RotationMatrices {
      */
     public static double[] getRotationMatrix(double pitch, double yaw, double roll) {
         double[] input = RotationMatrices
-            .getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch));
+                .getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch));
         input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
+                RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
         input = RotationMatrices.getMatrixProduct(input,
-            RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
+                RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
         return input;
     }
 
@@ -144,44 +142,23 @@ public class RotationMatrices {
     }
 
     /**
-     * Needs to be replaced with some more robust code.
+     * Bad code.
      *
-     * @param shipTransform
+     * @param transform
      * @param entity
-     * @param transformType
      */
-    @Deprecated
-    public static void applyTransform(ShipTransform shipTransform, Entity entity,
-        TransformType transformType) {
+    public static void applyTransform(Matrix4dc transform, Entity entity) {
         if (entity instanceof PhysicsWrapperEntity) {
             throw new IllegalArgumentException(
-                "Tried applying a transform to the PhysicsWrapeerEntity, this creates instability so we crash here!");
+                    "Tried applying a transform to the PhysicsWrapeerEntity, this creates instability so we crash here!");
         }
-        ISubspacedEntity entitySubspaceTracker = (ISubspacedEntity) entity;
+        // ISubspacedEntity entitySubspaceTracker = (ISubspacedEntity) entity;
 
-        // RIP
-        if (false) {
-            if (transformType == TransformType.SUBSPACE_TO_GLOBAL
-                && entitySubspaceTracker.currentSubspaceType()
-                != CoordinateSpaceType.SUBSPACE_COORDINATES) {
-                // throw new IllegalArgumentException(
-                // "Entity " + entity.getName() + " is already in global coordinates. This is
-                // wrong!");
-                System.err.println("Entity " + entity.getName()
-                    + " is already in global coordinates. This is wrong!");
-            }
-            if (transformType == TransformType.GLOBAL_TO_SUBSPACE
-                && entitySubspaceTracker.currentSubspaceType()
-                != CoordinateSpaceType.GLOBAL_COORDINATES) {
-                throw new IllegalArgumentException(
-                    "Entity " + entity.getName()
-                        + " is already in subspace coordinates. This is wrong!");
-            }
-        }
+        Vec3d entityLookMc = entity.getLook(1.0F);
 
-        Vector entityPos = new Vector(entity.posX, entity.posY, entity.posZ);
-        Vector entityLook = new Vector(entity.getLook(1.0F));
-        Vector entityMotion = new Vector(entity.motionX, entity.motionY, entity.motionZ);
+        Vector3d entityPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
+        Vector3d entityLook = new Vector3d(entityLookMc.x, entityLookMc.y, entityLookMc.z);
+        Vector3d entityMotion = new Vector3d(entity.motionX, entity.motionY, entity.motionZ);
 
         if (entity instanceof EntityFireball) {
             EntityFireball ball = (EntityFireball) entity;
@@ -190,9 +167,9 @@ public class RotationMatrices {
             entityMotion.z = ball.accelerationZ;
         }
 
-        shipTransform.transform(entityPos, transformType);
-        shipTransform.rotate(entityLook, transformType);
-        shipTransform.rotate(entityMotion, transformType);
+        transform.transformPosition(entityPos);
+        transform.transformDirection(entityLook);
+        transform.transformDirection(entityMotion);
 
         entityLook.normalize();
 
@@ -204,7 +181,7 @@ public class RotationMatrices {
         }
 
         // ===== Fix change the entity rotation to be proper relative to ship space =====
-        VectorImmutable entityLookImmutable = entityLook.toImmutable();
+        VectorImmutable entityLookImmutable = new Vector(entityLook.x, entityLook.y, entityLook.z).toImmutable();
         double pitch = VSMath.getPitchFromVectorImmutable(entityLookImmutable);
         double yaw = VSMath.getYawFromVectorImmutable(entityLookImmutable, pitch);
         entity.rotationYaw = (float) yaw;
@@ -275,7 +252,7 @@ public class RotationMatrices {
                 inverse[(i * 4 + j)] = matrix[(i + j * 4)];
             }
             inverse[(i * 4 + 3)] = (-inverse[(i * 4)] * matrix[3] - inverse[(i * 4 + 1)] * matrix[7]
-                - inverse[(i * 4 + 2)] * matrix[11]);
+                    - inverse[(i * 4 + 2)] * matrix[11]);
         }
         inverse[12] = 0.0D;
         inverse[13] = 0.0D;

@@ -16,21 +16,23 @@
 
 package org.valkyrienskies.mod.common.coordinates;
 
-import java.util.Arrays;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Matrix4d;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix3d;
+import org.joml.Matrix4d;
 import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
+import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
@@ -60,20 +62,10 @@ public class ShipTransform {
         this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
     }
 
-    /**
-     * Creates a new ship transform that moves positions from the current transform to the next
-     * one.
-     *
-     * @param current
-     * @param next
-     */
-    public ShipTransform(ShipTransform current, ShipTransform next) {
-        double[] currentWorldToLocal = current.globalToSubspace;
-        double[] nextLocaltoWorld = next.subspaceToGlobal;
-        double[] currentWorldToNextWorld = RotationMatrices
-            .getMatrixProduct(nextLocaltoWorld, currentWorldToLocal);
-        this.subspaceToGlobal = currentWorldToNextWorld;
-        this.globalToSubspace = RotationMatrices.inverse(subspaceToGlobal);
+    public static Matrix4d createTransform(ShipTransform prev, ShipTransform current) {
+        Matrix4d oldTransformGtoS = VSMath.convertArrayMatrix4d(prev.globalToSubspace);
+        Matrix4d currentTransformStoG = VSMath.convertArrayMatrix4d(current.subspaceToGlobal);
+        return currentTransformStoG.mul(oldTransformGtoS);
     }
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
@@ -180,11 +172,6 @@ public class ShipTransform {
         }
     }
 
-    @Deprecated
-    public void transform(Entity entity, TransformType subspaceToGlobal) {
-        RotationMatrices.applyTransform(this, entity, subspaceToGlobal);
-    }
-
     /**
      * Creates a standard 3x3 rotation matrix for this transform and the given transform type.
      *
@@ -193,15 +180,12 @@ public class ShipTransform {
      */
     public Matrix3d createRotationMatrix(TransformType transformType) {
         double[] internalRotationMatrix = getInternalMatrix(transformType);
-        return new Matrix3d(internalRotationMatrix[0], internalRotationMatrix[1],
-            internalRotationMatrix[2], internalRotationMatrix[4], internalRotationMatrix[5],
-            internalRotationMatrix[6], internalRotationMatrix[8], internalRotationMatrix[9],
-            internalRotationMatrix[10]);
+        return VSMath.convertArrayMatrix4d(internalRotationMatrix).get3x3(new Matrix3d());
     }
 
     public Matrix4d createTransformMatrix(TransformType transformType) {
         double[] internalMatrix = getInternalMatrix(transformType);
-        return new Matrix4d(internalMatrix);
+        return VSMath.convertArrayMatrix4d(internalMatrix);
     }
 
     @Deprecated
@@ -212,5 +196,10 @@ public class ShipTransform {
             floatMatrix[i] = (float) internalMatrix[i];
         }
         return floatMatrix;
+    }
+
+    @Deprecated
+    public void transform(Entity player, TransformType globalToSubspace) {
+        RotationMatrices.applyTransform(VSMath.convertArrayMatrix4d(getInternalMatrix(globalToSubspace)), player);
     }
 }

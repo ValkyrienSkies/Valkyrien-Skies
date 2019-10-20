@@ -9,7 +9,10 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.With;
 import lombok.experimental.Accessors;
@@ -22,6 +25,8 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 @With
 @Accessors(fluent = false)
 @Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true) // For Jackson
 public class PhysoData {
 
     /**

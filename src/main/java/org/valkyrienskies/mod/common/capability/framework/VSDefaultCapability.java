@@ -79,8 +79,8 @@ public abstract class VSDefaultCapability<K> {
         byte[] value;
         try {
             value = getMapper().writeValueAsBytes(instance);
-            log.debug("VS serialization took {} ms. Writing data of size {} MB. ({})",
-                System.currentTimeMillis() - time, value.length / Math.pow(2, 20),
+            log.debug("VS serialization took {} ms. Writing data of size {} KB. ({})",
+                System.currentTimeMillis() - time, value.length / Math.pow(2, 10),
                 instance.getClass().getSimpleName());
         } catch (Exception ex) {
             log.fatal("Something just broke horrifically. Be wary of your data. "
@@ -107,8 +107,8 @@ public abstract class VSDefaultCapability<K> {
             this.instance = factory.get();
         }
 
-        log.info("VS deserialization took {} ms. Reading data of size {} MB.",
-            System.currentTimeMillis() - time, value.length / Math.pow(2, 20));
+        log.info("VS deserialization took {} ms. Reading data of size {} KB.",
+            System.currentTimeMillis() - time, value.length / Math.pow(2, 10));
 
         return this.instance;
     }

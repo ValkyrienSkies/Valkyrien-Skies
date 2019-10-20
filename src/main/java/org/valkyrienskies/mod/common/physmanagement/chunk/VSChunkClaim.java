@@ -40,7 +40,7 @@ import net.minecraft.util.math.ChunkPos;
 @Accessors(fluent = false)
 @Value
 @AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE) // For Kryo
+@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true) // For Jackson
 public final class VSChunkClaim {
 
     private final int centerX;

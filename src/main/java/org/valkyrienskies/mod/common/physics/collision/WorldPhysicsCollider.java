@@ -37,6 +37,7 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
@@ -361,7 +362,11 @@ public class WorldPhysicsCollider {
         org.valkyrienskies.mod.common.math.Vector offsetVector, boolean didBlockBreakInShip,
         boolean didBlockBreakInWorld, double impulseApplied) {
         org.valkyrienskies.mod.common.math.Vector firstCross = inBody.cross(axis);
-        RotationMatrices.applyTransform3by3(calculator.getPhysInvMOITensor(), firstCross);
+        Vector3d firstCrossCopy = firstCross.toVector3d();
+
+        calculator.getPhysInvMOITensor().transform(firstCrossCopy);
+
+        firstCross.setValue(firstCrossCopy);
 
         org.valkyrienskies.mod.common.math.Vector secondCross = firstCross.cross(inBody);
 
@@ -393,7 +398,11 @@ public class WorldPhysicsCollider {
             org.valkyrienskies.mod.common.math.Vector thirdCross = inBody
                 .cross(collisionImpulseForce);
 
-            RotationMatrices.applyTransform3by3(calculator.getPhysInvMOITensor(), thirdCross);
+            Vector3d thirdCrossTemp = thirdCross.toVector3d();
+
+            calculator.getPhysInvMOITensor().transform(thirdCrossTemp);
+
+            thirdCross.setValue(thirdCrossTemp);
             calculator.angularVelocity.add(thirdCross);
         }
     }

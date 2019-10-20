@@ -2,6 +2,7 @@ package org.valkyrienskies.addon.control.tileentity;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
@@ -27,16 +28,16 @@ public class TileEntityGyroscopeDampener extends TileEntity {
         Vector dampingTorque = angularVelocityToDamp
             .getProduct(physicsCalculations.getPhysicsTimeDeltaPerPhysTick());
 
-        Vector dampingTorqueWithRespectToInertia = RotationMatrices
-            .get3by3TransformedVec(physicsCalculations.getPhysMOITensor(), dampingTorque);
+
+        Vector3d dampingTorqueWithRespectToInertia = physicsCalculations.getPhysMOITensor().transform(dampingTorque.toVector3d());
 
         double dampingTorqueRespectMagnitude = dampingTorqueWithRespectToInertia.length();
         if (dampingTorqueRespectMagnitude > maximumTorque) {
             dampingTorqueWithRespectToInertia
-                .multiply(maximumTorque / dampingTorqueRespectMagnitude);
+                .mul(maximumTorque / dampingTorqueRespectMagnitude);
             // System.out.println("yee");
         }
 
-        return dampingTorqueWithRespectToInertia;
+        return new Vector(dampingTorqueWithRespectToInertia.x, dampingTorqueWithRespectToInertia.y, dampingTorqueWithRespectToInertia.z);
     }
 }

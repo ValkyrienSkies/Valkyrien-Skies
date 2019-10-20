@@ -68,9 +68,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // private double physMass;
     // The time occurring on each PhysTick
     private double physTickTimeDelta;
-    private double[] gameMoITensor;
-    private double[] physMOITensor;
-    private double[] physInvMOITensor;
+    private Matrix3dc gameMoITensor;
+    private Matrix3dc physMOITensor;
+    private Matrix3dc physInvMOITensor;
     private double physRoll, physPitch, physYaw;
     private double physX, physY, physZ;
 
@@ -79,9 +79,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         worldCollision = new WorldPhysicsCollider(this);
         particleManager = new PhysicsParticleManager(this);
 
-        gameMoITensor = RotationMatrices.getZeroMatrix(3);
-        physMOITensor = RotationMatrices.getZeroMatrix(3);
-        setPhysInvMOITensor(RotationMatrices.getZeroMatrix(3));
+        gameMoITensor = new Matrix3d();
+        physMOITensor = new Matrix3d();
+        physInvMOITensor = new Matrix3d();
 
         gameTickCenterOfMass = new org.valkyrienskies.mod.common.math.Vector(
                 toProcess.getCenterCoord());
@@ -137,7 +137,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             gameTickCenterOfMass.multiply(1.0D / (gameTickMass + addedMass));
         } else {
             gameTickCenterOfMass = new org.valkyrienskies.mod.common.math.Vector(x, y, z);
-            gameMoITensor = RotationMatrices.getZeroMatrix(3);
+            gameMoITensor = new Matrix3d();
         }
         double cmShiftX = prevCenterOfMass.x - gameTickCenterOfMass.x;
         double cmShiftY = prevCenterOfMass.y - gameTickCenterOfMass.y;
@@ -146,24 +146,31 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         double ry = y - gameTickCenterOfMass.y;
         double rz = z - gameTickCenterOfMass.z;
 
-        gameMoITensor[0] =
-                gameMoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * gameTickMass
+
+        Matrix3d copy = new Matrix3d(gameMoITensor);
+
+
+        copy.m00 =
+                gameMoITensor.m00() + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * gameTickMass
                         + (ry * ry + rz * rz) * addedMass;
-        gameMoITensor[1] =
-                gameMoITensor[1] - cmShiftX * cmShiftY * gameTickMass - rx * ry * addedMass;
-        gameMoITensor[2] =
-                gameMoITensor[2] - cmShiftX * cmShiftZ * gameTickMass - rx * rz * addedMass;
-        gameMoITensor[3] = gameMoITensor[1];
-        gameMoITensor[4] =
-                gameMoITensor[4] + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * gameTickMass
+        copy.m10 =
+                gameMoITensor.m10() - cmShiftX * cmShiftY * gameTickMass - rx * ry * addedMass;
+        copy.m20 =
+                gameMoITensor.m20() - cmShiftX * cmShiftZ * gameTickMass - rx * rz * addedMass;
+        copy.m01 = gameMoITensor.m10();
+        copy.m11 =
+                gameMoITensor.m11() + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * gameTickMass
                         + (rx * rx + rz * rz) * addedMass;
-        gameMoITensor[5] =
-                gameMoITensor[5] - cmShiftY * cmShiftZ * gameTickMass - ry * rz * addedMass;
-        gameMoITensor[6] = gameMoITensor[2];
-        gameMoITensor[7] = gameMoITensor[5];
-        gameMoITensor[8] =
-                gameMoITensor[8] + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * gameTickMass
+        copy.m21 =
+                gameMoITensor.m21() - cmShiftY * cmShiftZ * gameTickMass - ry * rz * addedMass;
+        copy.m02 = gameMoITensor.m20();
+        copy.m12 = gameMoITensor.m21();
+        copy.m22 =
+                gameMoITensor.m22() + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * gameTickMass
                         + (rx * rx + ry * ry) * addedMass;
+
+
+        gameMoITensor = copy;
 
         // Do this to avoid a mass of zero, which runs the risk of dividing by zero and
         // crashing the program.
@@ -307,13 +314,11 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * Reference: https://en.wikipedia.org/wiki/Moment_of_inertia#Inertia_matrix_in_different_reference_frames
      */
     private void calculateFramedMOITensor() {
-        double[] framedMOI = RotationMatrices.getZeroMatrix(3);
-
         // Copy the rotation matrix, ignore the translation and scaling parts.
         Matrix3dc rotationMatrix = getParent().getShipTransformationManager()
                 .getCurrentPhysicsTransform().createRotationMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
-        Matrix3d inertiaBodyFrame = VSMath.convertArrayMatrix3d(gameMoITensor);
+        Matrix3dc inertiaBodyFrame = gameMoITensor;
 
         Matrix3d rotationMatrixTranspose = new Matrix3d();
         rotationMatrix.transpose(rotationMatrixTranspose);
@@ -321,22 +326,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         Matrix3d finalInertia = new Matrix3d(rotationMatrix);
         finalInertia.mul(inertiaBodyFrame);
         finalInertia.mul(rotationMatrixTranspose);
-        // TODO: This is really bad but we need to convert between this and the other code.
-        finalInertia.transpose();
-        // The product of the inertia tensor multiplied with the transpose of the
-        // rotation transpose.
-        framedMOI[0] = finalInertia.m00;
-        framedMOI[1] = finalInertia.m01;
-        framedMOI[2] = finalInertia.m02;
-        framedMOI[3] = finalInertia.m10;
-        framedMOI[4] = finalInertia.m11;
-        framedMOI[5] = finalInertia.m12;
-        framedMOI[6] = finalInertia.m20;
-        framedMOI[7] = finalInertia.m21;
-        framedMOI[8] = finalInertia.m22;
 
-        physMOITensor = framedMOI;
-        setPhysInvMOITensor(RotationMatrices.inverse3by3(framedMOI));
+        physMOITensor = finalInertia;
+        setPhysInvMOITensor(finalInertia.invert(new Matrix3d()));
     }
 
     protected void calculateForces() {
@@ -506,8 +498,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public void convertTorqueToVelocity() {
         if (!torque.isZero()) {
-            angularVelocity
-                    .add(RotationMatrices.get3by3TransformedVec(getPhysInvMOITensor(), torque));
+            Vector3d torqueTransformed = torque.toVector3d();
+            getPhysInvMOITensor().transform(torqueTransformed);
+            angularVelocity.add(torqueTransformed.x, torqueTransformed.y, torqueTransformed.z);
             torque.zero();
         }
     }
@@ -610,7 +603,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         angularVelocity.zero();
         gameTickCenterOfMass.zero();
         gameTickMass = 0;
-        gameMoITensor = RotationMatrices.getZeroMatrix(3);
+        gameMoITensor = new Matrix3d();
         IBlockState air = Blocks.AIR.getDefaultState();
         for (BlockPos pos : getParent().getBlockPositions()) {
             onSetBlockState(air, getParent().getChunkAt(pos.getX() >> 4, pos.getZ() >> 4)
@@ -644,14 +637,14 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * @return The inverse moment of inertia tensor with local translation (0 vector is at the
      * center of mass), but rotated into world coordinates.
      */
-    public double[] getPhysInvMOITensor() {
+    public Matrix3dc getPhysInvMOITensor() {
         return physInvMOITensor;
     }
 
     /**
      * @param physInvMOITensor the physInvMOITensor to set
      */
-    private void setPhysInvMOITensor(double[] physInvMOITensor) {
+    private void setPhysInvMOITensor(Matrix3dc physInvMOITensor) {
         this.physInvMOITensor = physInvMOITensor;
     }
 
@@ -659,7 +652,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * @return The moment of inertia tensor with local translation (0 vector is at the center of
      * mass), but rotated into world coordinates.
      */
-    public double[] getPhysMOITensor() {
+    public Matrix3dc getPhysMOITensor() {
         return this.physMOITensor;
     }
 
@@ -678,10 +671,10 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     public double getInertiaAlongRotationAxis() {
-        org.valkyrienskies.mod.common.math.Vector rotationAxis = new org.valkyrienskies.mod.common.math.Vector(
-                angularVelocity);
+        Vector3d rotationAxis = new org.valkyrienskies.mod.common.math.Vector(
+                angularVelocity).toVector3d();
         rotationAxis.normalize();
-        RotationMatrices.applyTransform3by3(getPhysMOITensor(), rotationAxis);
+        getPhysInvMOITensor().transform(rotationAxis);
         return rotationAxis.length();
     }
 

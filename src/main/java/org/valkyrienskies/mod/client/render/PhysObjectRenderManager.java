@@ -21,9 +21,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.proxy.ClientProxy;
@@ -185,12 +187,12 @@ public class PhysObjectRenderManager {
         double moddedY = renderPos.y;
         double moddedZ = renderPos.z;
 
-        double[] radians = renderTransform
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL).toRadians();
+        Quaterniondc quaterniondc = renderTransform.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3dc angles = quaterniondc.getEulerAnglesXYZ(new Vector3d());
 
-        double moddedPitch = Math.toDegrees(radians[0]);
-        double moddedYaw = Math.toDegrees(radians[1]);
-        double moddedRoll = Math.toDegrees(radians[2]);
+        double moddedPitch = Math.toDegrees(angles.x());
+        double moddedYaw = Math.toDegrees(angles.y());
+        double moddedRoll = Math.toDegrees(angles.z());
         // Offset pos is used to prevent floating point errors when rendering stuff thats very far away.
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.x;
@@ -203,15 +205,6 @@ public class PhysObjectRenderManager {
             GL11.glRotated(moddedRoll, 0, 0, 1D);
             GL11.glTranslated(offsetX, offsetY, offsetZ);
         }
-    }
-
-    @Deprecated
-    public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = parent.getShipTransformationManager().getPrevTickTransform()
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion nextQuat = parent.getShipTransformationManager().getCurrentTickTransform()
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
     }
 
     public void inverseTransform(double partialTicks) {
@@ -236,12 +229,12 @@ public class PhysObjectRenderManager {
         double moddedY = renderPos.y;
         double moddedZ = renderPos.z;
 
-        double[] radians = renderTransform
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL).toRadians();
+        Quaterniondc quaterniondc = renderTransform.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3dc angles = quaterniondc.getEulerAnglesXYZ(new Vector3d());
 
-        double moddedPitch = Math.toDegrees(radians[0]);
-        double moddedYaw = Math.toDegrees(radians[1]);
-        double moddedRoll = Math.toDegrees(radians[2]);
+        double moddedPitch = Math.toDegrees(angles.x());
+        double moddedYaw = Math.toDegrees(angles.y());
+        double moddedRoll = Math.toDegrees(angles.z());
 
         if (offsetPos != null) {
             double offsetX = offsetPos.getX() - centerOfRotation.x;

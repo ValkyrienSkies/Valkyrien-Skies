@@ -19,11 +19,13 @@ package org.valkyrienskies.mod.common.physics.management;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.border.WorldBorder;
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
@@ -304,17 +306,16 @@ public class ShipTransformationManager {
         Vector3d partialPos = new Vector3d(prevPos);
         partialPos.add(deltaPos); // Now partialPos is complete
 
-        Quaternion prevRot = prev.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion curRot = cur.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion partialRot = Quaternion.slerpInterpolate(prevRot, curRot, partialTick);
+        Quaterniondc prevRot = prev.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaterniondc curRot = cur.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaterniondc partialRot = prevRot.slerp(curRot, partialTick, new Quaterniond());
 
+        Vector3dc angles = partialRot.getEulerAnglesXYZ(new Vector3d());
 
-        double[] partialAngles = partialRot
-            .toRadians(); // Now partial angles {pitch, yaw, roll} are complete.
         // Put it all together to get the render transform.
         renderTransform = new ShipTransform(partialPos.x, partialPos.y,
-            partialPos.z, Math.toDegrees(partialAngles[0]), Math.toDegrees(partialAngles[1]),
-            Math.toDegrees(partialAngles[2]),
+            partialPos.z, Math.toDegrees(angles.x()), Math.toDegrees(angles.y()),
+            Math.toDegrees(angles.z()),
             parent.getCenterCoord());
     }
 

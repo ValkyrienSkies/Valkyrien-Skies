@@ -22,8 +22,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
+import org.joml.*;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
@@ -32,7 +31,6 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -43,6 +41,7 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
 
+import java.lang.Math;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -468,26 +467,27 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     private void calculateForcesDeconstruction() {
         applyAirDrag();
-        Quaternion gridRotation = new Quaternion(0, 0, 0, 1);
-        Quaternion inverseCurrentRotation = parent.getShipTransformationManager()
+
+        Quaterniondc inverseCurrentRotation = parent.getShipTransformationManager()
                 .getCurrentPhysicsTransform()
-                .createRotationQuaternion(TransformType.GLOBAL_TO_SUBSPACE);
+                .rotationQuaternion(TransformType.GLOBAL_TO_SUBSPACE);
 
-        Quaternion r = gridRotation.crossProduct(inverseCurrentRotation);
-        double theta = 2D * Math.acos(r.getW());
-        if (theta > Math.PI) {
-            theta -= 2D * Math.PI;
-        }
-        org.valkyrienskies.mod.common.math.Vector idealAngularVelocity = new org.valkyrienskies.mod.common.math.Vector(
-                r.getX(), r.getY(), r.getZ());
+        Quaterniondc r = inverseCurrentRotation;
+        AxisAngle4d idealAxisAngle = new AxisAngle4d(r);
 
-        if (idealAngularVelocity.lengthSq() < EPSILON) {
+        if (idealAxisAngle.angle < EPSILON) {
             // We already have the perfect angular velocity, nothing left to do.
             return;
         }
+
+        // Normalizes the axis, not the angle.
+        idealAxisAngle.normalize();
+
         // Number of seconds we'd expect this angular velocity to convert us onto the grid orientation.
         double timeStep = 1D;
-        double idealAngularVelocityMultiple = (-theta / (timeStep * idealAngularVelocity.length()));
+        double idealAngularVelocityMultiple = idealAxisAngle.angle / timeStep;
+
+        Vector idealAngularVelocity = new Vector(idealAxisAngle.x, idealAxisAngle.y, idealAxisAngle.z);
         idealAngularVelocity.multiply(idealAngularVelocityMultiple);
 
         org.valkyrienskies.mod.common.math.Vector angularVelocityDif = idealAngularVelocity
@@ -498,7 +498,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         angularVelocity.subtract(angularVelocityDif);
     }
 
-    protected void applyAirDrag() {
+    private void applyAirDrag() {
         double drag = getDragForPhysTick();
         linearMomentum.multiply(drag);
         angularVelocity.multiply(drag);
@@ -531,27 +531,28 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     /**
-     * Only run ONCE per phys tick!
+     * This may or may not be correct :/ It seems to work fine but quaternion math is such a headache I'll take whatever works.
      */
     private void integrateAngularVelocity() {
         ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
 
-        double[] rotationChange = RotationMatrices
-                .getRotationMatrix(angularVelocity.x, angularVelocity.y,
-                        angularVelocity.z, angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick());
+        AxisAngle4d axisAngle4d = new AxisAngle4d(angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick(), angularVelocity.x, angularVelocity.y, angularVelocity.z);
+        axisAngle4d.normalize();
+
+        Matrix3dc rotationChange = new Matrix3d().set(axisAngle4d);
 
         // Take the product of the current rotation with the change in rotation that results from
         // the angular velocity. Then change our pitch/yaw/roll based on the result.
-        Quaternion rotationChangeQuat = Quaternion.QuaternionFromMatrix(rotationChange);
-        Quaternion initialRotation = coordTrans.getCurrentPhysicsTransform()
-                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion finalRotation = initialRotation.crossProduct(rotationChangeQuat);
+        Quaterniondc rotationChangeQuat = rotationChange.getNormalizedRotation(new Quaterniond());
+        Quaterniondc initialRotation = coordTrans.getCurrentPhysicsTransform()
+                .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaterniondc finalRotation = rotationChangeQuat.mul(initialRotation, new Quaterniond());
 
-        // Update the pitch/yaw/roll angles.
-        double[] radians = finalRotation.toRadians();
-        physPitch = Double.isNaN(radians[0]) ? 0.0f : (float) Math.toDegrees(radians[0]);
-        physYaw = Double.isNaN(radians[1]) ? 0.0f : (float) Math.toDegrees(radians[1]);
-        physRoll = Double.isNaN(radians[2]) ? 0.0f : (float) Math.toDegrees(radians[2]);
+        Vector3dc angles = finalRotation.getEulerAnglesXYZ(new Vector3d());
+
+        physPitch = Double.isNaN(angles.x()) ? 0.0f : (float) Math.toDegrees(angles.x());
+        physYaw = Double.isNaN(angles.y()) ? 0.0f : (float) Math.toDegrees(angles.y());
+        physRoll = Double.isNaN(angles.z()) ? 0.0f : (float) Math.toDegrees(angles.z());
     }
 
     /**

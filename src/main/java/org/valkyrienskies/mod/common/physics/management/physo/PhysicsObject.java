@@ -46,6 +46,9 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
@@ -56,7 +59,6 @@ import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
 import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
 import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
@@ -625,12 +627,14 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             getWrapperEntity().posY = centerOfMassInGlobal.y;
             getWrapperEntity().posZ = centerOfMassInGlobal.z;
 
-            Quaternion rotationQuaternion = savedTransform
-                .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-            double[] angles = rotationQuaternion.toRadians();
+            Quaterniondc rotationQuaternion = savedTransform
+                .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+
+            Vector3dc angles = rotationQuaternion.getEulerAnglesXYZ(new Vector3d());
+
             getWrapperEntity()
-                .setPhysicsEntityRotation(Math.toDegrees(angles[0]), Math.toDegrees(angles[1]),
-                    Math.toDegrees(angles[2]));
+                .setPhysicsEntityRotation(Math.toDegrees(angles.x()), Math.toDegrees(angles.y()),
+                    Math.toDegrees(angles.z()));
         }
 
         loadClaimedChunks();
@@ -763,19 +767,11 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      * deconstruct back to the world.
      */
     public boolean canShipBeDeconstructed() {
-        ShipTransform zeroTransform = ShipTransformationManager.ZERO_TRANSFORM;
-        // The quaternion with the world's orientation (which is zero because the world never moves
-        // or rotates)
-        Quaternion zeroQuat = zeroTransform
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         // The quaternion with the ship's orientation
-        Quaternion shipQuat = getShipTransformationManager().getCurrentTickTransform()
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        double dotProduct = Quaternion.dotProduct(zeroQuat, shipQuat);
-        // Calculate the angle between the two quaternions
-        double anglesBetweenQuaternions = Math.toDegrees(Math.acos(dotProduct));
+        Quaterniondc shipQuat = getShipTransformationManager().getCurrentTickTransform()
+            .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         // Only allow a ship to be deconstructed if the angle between the grid and its orientation is less than half a degree.
-        return anglesBetweenQuaternions < .5;
+        return Math.toDegrees(shipQuat.angle()) < .5;
     }
 
     public void tryToDeconstructShip() {

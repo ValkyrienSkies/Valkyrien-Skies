@@ -22,7 +22,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.*;
-import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -147,14 +146,6 @@ public class ShipTransform {
         Vector3d copy = vector.toVector3d();
         transformDirection(copy, transformType);
         vector.setValue(copy);
-    }
-
-    public Quaternion createRotationQuaternion(TransformType transformType) {
-        Matrix4dc internalMatrix = getTransformMatrix(transformType);
-        Matrix4dc transpose = internalMatrix.transpose(new Matrix4d());
-        double[] oldCompat = new double[16];
-        transpose.get(oldCompat);
-        return Quaternion.QuaternionFromMatrix(oldCompat);
     }
 
     public Quaterniond rotationQuaternion(TransformType transformType) {

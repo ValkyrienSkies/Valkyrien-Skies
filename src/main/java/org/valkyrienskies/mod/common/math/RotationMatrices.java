@@ -31,27 +31,6 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 @Deprecated
 public class RotationMatrices {
 
-    public static double[] getTranslationMatrix(double x, double y, double z) {
-        double[] matrix = getDoubleIdentity();
-        matrix[3] = x;
-        matrix[7] = y;
-        matrix[11] = z;
-        return matrix;
-    }
-
-    public static double[] rotateAndTranslate(double[] input, double pitch, double yaw, double roll,
-                                              Vector localOrigin) {
-        input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(1.0D, 0.0D, 0.0D, Math.toRadians(pitch)));
-        input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(0.0D, 1.0D, 0.0D, Math.toRadians(yaw)));
-        input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getRotationMatrix(0.0D, 0.0D, 1.0D, Math.toRadians(roll)));
-        input = RotationMatrices.getMatrixProduct(input,
-                RotationMatrices.getTranslationMatrix(-localOrigin.x, -localOrigin.y, -localOrigin.z));
-        return input;
-    }
-
     /**
      * Returns a rotation matrix with the described rotation and no translation.
      *
@@ -103,7 +82,7 @@ public class RotationMatrices {
         return matrix;
     }
 
-    public static double[] getDoubleIdentity() {
+    private static double[] getDoubleIdentity() {
         return new double[]{1.0D, 0, 0, 0, 0, 1.0D, 0, 0, 0, 0, 1.0D, 0, 0, 0, 0, 1.0D};
     }
 
@@ -111,7 +90,7 @@ public class RotationMatrices {
         return new double[size * size];
     }
 
-    public static double[] getMatrixProduct(double[] M1, double[] M2) {
+    private static double[] getMatrixProduct(double[] M1, double[] M2) {
         double[] product = new double[16];
         product[0] = (M1[0] * M2[0] + M1[1] * M2[4] + M1[2] * M2[8] + M1[3] * M2[12]);
         product[1] = (M1[0] * M2[1] + M1[1] * M2[5] + M1[2] * M2[9] + M1[3] * M2[13]);

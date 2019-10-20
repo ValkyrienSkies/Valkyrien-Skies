@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import org.joml.Matrix4d;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
@@ -216,14 +217,13 @@ public class WrapperPositionMessage implements IMessage {
         physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
 
         // Create the quaternion for the next physics tick
-        ShipTransform newRotationTransform = ShipTransform
-                .createRotationTransform(pitch, yaw, roll);
+        Matrix4d newRotationTransform = new Matrix4d().rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll));
 
         Quaterniond preRotation = new Quaterniond();
         preRotation.setFromUnnormalized(physObj.getShipTransformationManager().getCurrentTickTransform().getTransformMatrix(TransformType.SUBSPACE_TO_GLOBAL));
 
         Quaterniond nextRotation = new Quaterniond();
-        newRotationTransform.getTransformMatrix(TransformType.SUBSPACE_TO_GLOBAL).getUnnormalizedRotation(nextRotation);
+        newRotationTransform.getNormalizedRotation(nextRotation);
 
         Quaterniond slerp = new Quaterniond();
 

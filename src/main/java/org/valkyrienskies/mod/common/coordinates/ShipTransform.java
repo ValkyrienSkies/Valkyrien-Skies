@@ -30,6 +30,7 @@ import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.lang.Math;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
@@ -65,10 +66,16 @@ public class ShipTransform {
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
                          double roll, Vector centerCoord) {
-        double[] lToWTransform = RotationMatrices.getTranslationMatrix(posX, posY, posZ);
-        lToWTransform = RotationMatrices
-                .rotateAndTranslate(lToWTransform, pitch, yaw, roll, centerCoord);
-        this.subspaceToGlobal = VSMath.convertArrayMatrix4d(lToWTransform);
+        // First we translate the block coordinates to coordinates where center of mass is <0,0,0>
+        Matrix4dc intialTranslate = new Matrix4d().translate(-centerCoord.x, -centerCoord.y, -centerCoord.z);
+        // Then we rotate the coordinates based on the pitch/yaw/roll.
+        Matrix4dc rotationMatrix = new Matrix4d().rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll));
+        // Then we translate the coordinates to where they are in the world.
+        Matrix4dc finalTranslate = new Matrix4d().translate(posX, posY, posZ);
+
+        // We use matrix multiplication to combine these three matrix operations into one.
+        // (Remember that matrix multiplication is done from right to left)
+        this.subspaceToGlobal = finalTranslate.mul(rotationMatrix, new Matrix4d()).mul(intialTranslate);;
         this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
     }
 

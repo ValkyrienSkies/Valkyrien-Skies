@@ -59,7 +59,7 @@ public class MainCommand implements Runnable {
 
         public void run() {
             System.gc();
-            sender.sendMessage(new TextComponentString("Successfully garbage collected"));
+            sender.sendMessage(new TextComponentTranslation("commands.vs.gc.success"));
         }
 
     }
@@ -170,8 +170,7 @@ public class MainCommand implements Runnable {
 
             if (data.getShips().size() == 0) {
                 // There are no ships
-                sender.sendMessage(new TextComponentTranslation(
-                    "commands.valkyrienskies.list-ships.noships"));
+                sender.sendMessage(new TextComponentTranslation("commands.vs.list-ships.noships"));
                 return;
             }
 
@@ -201,7 +200,7 @@ public class MainCommand implements Runnable {
             }
 
             sender.sendMessage(new TextComponentTranslation(
-                "commands.valkyrienskies.list-ships.ships", listOfShips));
+                "commands.vs.list-ships.ships", listOfShips));
         }
 
     }

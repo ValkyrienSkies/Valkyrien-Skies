@@ -16,8 +16,9 @@
 
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
-import java.util.List;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
@@ -32,6 +33,8 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.List;
 
 /**
  * Bad class, delete soon!
@@ -136,7 +139,14 @@ public class EntityDraggable {
 
             if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
                 double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
-                double wrappedRotYaw = MathHelper.wrapDegrees(entity.rotationYaw);
+                double wrappedRotYaw;
+                // We do this because entity.getLook() is calculated differently for EntityLivingBase, it uses
+                // rotationYawHead instead of just rotationYaw.
+                if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
+                    wrappedRotYaw = MathHelper.wrapDegrees(entity.getRotationYawHead());
+                } else {
+                    wrappedRotYaw = MathHelper.wrapDegrees(entity.rotationYaw);
+                }
                 double yawDif = wrappedYaw - wrappedRotYaw;
                 if (Math.abs(yawDif) > 180D) {
                     if (yawDif < 0) {
@@ -178,7 +188,11 @@ public class EntityDraggable {
             entity.resetPositionToBB();
 
             if (!mountData.isMounted()) {
-                entity.rotationYaw += draggable.getYawDifVelocity();
+                if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
+                    entity.setRotationYawHead((float) (entity.getRotationYawHead() + draggable.getYawDifVelocity()));
+                } else {
+                    entity.rotationYaw += draggable.getYawDifVelocity();
+                }
             }
 
             // Do not add this movement as if the entity were walking it

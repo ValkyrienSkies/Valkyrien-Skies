@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 
@@ -25,6 +26,8 @@ public class ShipSerializedData {
     private final ShipPhysicsData physicsData;
 
     private ShipTransform shipTransform;
+
+    private AxisAlignedBB shipBB;
 
     /**
      * Whether or not physics are enabled on this physo

@@ -283,4 +283,10 @@ public class ShipTransformationManager {
             parent.getCenterCoord());
     }
 
+    public void setInitialTransform(ShipTransform shipTransform) {
+        prevTickTransform = shipTransform;
+        currentTickTransform = shipTransform;
+        prevPhysicsTransform = shipTransform;
+        currentPhysicsTransform = shipTransform;
+    }
 }

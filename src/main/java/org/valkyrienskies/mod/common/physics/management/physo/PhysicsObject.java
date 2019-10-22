@@ -24,7 +24,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -52,6 +51,7 @@ import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
+import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
@@ -112,9 +112,6 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     @Getter
     private final ClaimedChunkCacheController claimedChunkCache;
-    @Getter
-    @Setter
-    private AxisAlignedBB shipBoundingBox;
     /**
      * If this PhysicsObject needs to update the collision cache immediately
      */
@@ -145,7 +142,6 @@ public class PhysicsObject implements IPhysicsEntity {
         }
         // We need safe access to this across multiple threads.
         this.blockPositions = ConcurrentHashMap.newKeySet();
-        this.shipBoundingBox = Entity.ZERO_AABB;
         this.watchingPlayers = new ArrayList<>();
         this.physicsControllers = Sets.newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
@@ -156,6 +152,7 @@ public class PhysicsObject implements IPhysicsEntity {
                 referenceBlockPos.getZ());
         this.claimedChunkCache = new ClaimedChunkCacheController(this, false);
         this.shipTransformationManager = new ShipTransformationManager(this);
+        this.shipTransformationManager.setInitialTransform(getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
     }
 
@@ -213,8 +210,8 @@ public class PhysicsObject implements IPhysicsEntity {
         }
     }
 
-    private void assembleShip(EntityPlayer player, SpatialDetector detector,
-                              BlockPos centerInWorld) {
+    public void assembleShip(EntityPlayer player, SpatialDetector detector,
+                             BlockPos centerInWorld) {
 
         MutableBlockPos pos = new MutableBlockPos();
 
@@ -292,6 +289,11 @@ public class PhysicsObject implements IPhysicsEntity {
         detectBlockPositions();
 
         getPhysicsCalculations().updateParentCenterOfMass();
+
+        // Create a starter ship AABB.
+        AxisAlignedBB bbInShipSpace = voxelFieldAABBMaker.makeVoxelFieldAABB();
+        Polygon polygon = new Polygon(bbInShipSpace, getShipTransformationManager().getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
+        getData().setShipBB(polygon.getEnclosedAABB());
     }
 
     public void preloadNewPlayers() {
@@ -647,4 +649,11 @@ public class PhysicsObject implements IPhysicsEntity {
         return claimedChunkCache.getChunkAt(chunkX, chunkZ);
     }
 
+    public AxisAlignedBB getShipBoundingBox() {
+        return getData().getShipBB();
+    }
+
+    public void setShipBoundingBox(AxisAlignedBB shipBoundingBox) {
+        getData().setShipBB(shipBoundingBox);
+    }
 }

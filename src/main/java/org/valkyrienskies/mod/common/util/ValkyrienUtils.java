@@ -164,7 +164,8 @@ public class ValkyrienUtils {
         Vector centerOfMassInitial = new Vector(chunkClaim.getRegionCenter());
         Vector3dc shipPosInitial = new Vector3d(physInfuserPos.getX() + .5, physInfuserPos.getY() + .5, physInfuserPos.getZ() + .5);
         ShipTransform initial = new ShipTransform(shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z(), 0, 0, 0, centerOfMassInitial);
-        ShipIndexedData data = ShipIndexedData.createData(name, chunkClaim, shipID, initial);
+        AxisAlignedBB axisAlignedBB = new AxisAlignedBB(shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z(), shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z());
+        ShipIndexedData data = ShipIndexedData.createData(name, chunkClaim, shipID, initial, axisAlignedBB);
         // This is fine because we are not indexing by physInfuserPos.
         data.setPhysInfuserPos(physInfuserPos);
         return data;
@@ -211,6 +212,9 @@ public class ValkyrienUtils {
                     PhysicsObject physicsObject = new PhysicsObject(world, shipData.getUuid());
                     ShipIndexedData withPhysicsObject = shipData.withPhyso(physicsObject);
                     QueryableShipData.get(world).updateShip(shipData, withPhysicsObject);
+
+                    physicsObject.assembleShip(creator, detector, physicsInfuserPos);
+
                     int i = 1;
                     // TODO: Do something with this?
                 }, VSExecutors.forWorld((WorldServer) world));

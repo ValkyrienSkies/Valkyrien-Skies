@@ -7,6 +7,7 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.Delegate;
+import net.minecraft.util.math.AxisAlignedBB;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 
@@ -62,13 +63,14 @@ public class ShipIndexedData {
      */
     private final String name;
 
-    public static ShipIndexedData createData(String name, VSChunkClaim chunkClaim, UUID shipID, ShipTransform shipTransform) {
+    public static ShipIndexedData createData(String name, VSChunkClaim chunkClaim, UUID shipID, ShipTransform shipTransform, AxisAlignedBB aabb) {
         ShipIndexedData data = ShipIndexedData.builder()
                 .name(name)
                 .chunkClaim(chunkClaim)
                 .uuid(shipID)
                 .mut(new ShipSerializedData()).build();
         data.setShipTransform(shipTransform);
+        data.setShipBB(aabb);
         return data;
     }
 

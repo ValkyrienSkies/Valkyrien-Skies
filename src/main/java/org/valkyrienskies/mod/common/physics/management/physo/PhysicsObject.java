@@ -151,8 +151,7 @@ public class PhysicsObject implements IPhysicsEntity {
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
                 referenceBlockPos.getZ());
         this.claimedChunkCache = new ClaimedChunkCacheController(this, false);
-        this.shipTransformationManager = new ShipTransformationManager(this);
-        this.shipTransformationManager.setInitialTransform(getData().getShipTransform());
+        this.shipTransformationManager = new ShipTransformationManager(this, getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
     }
 
@@ -367,6 +366,7 @@ public class PhysicsObject implements IPhysicsEntity {
         if (!getWorld().isRemote) {
             TileEntity te = getWorld().getTileEntity(getData().getPhysInfuserPos());
             boolean shouldDeconstructShip;
+
             if (te instanceof TileEntityPhysicsInfuser) {
                 TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
                 // Mark for deconstruction
@@ -382,6 +382,8 @@ public class PhysicsObject implements IPhysicsEntity {
                 shouldDeconstructShip = true;
                 getData().setPhysicsEnabled(false);
             }
+
+            getData().setPhysicsEnabled(false);
 
             if (shouldDeconstructShip) {
                 this.tryToDeconstructShip();

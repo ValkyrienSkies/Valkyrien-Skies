@@ -6,8 +6,10 @@ import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,11 +53,24 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     @Nonnull
     @Override
     public List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck) {
-        throw new UnsupportedOperationException();
+        List<PhysicsObject> nearby = new ArrayList<>();
+        for (ShipIndexedData data : QueryableShipData.get(world)) {
+            if (data.getPhyso() != null) {
+                if (toCheck.intersects(data.getShipBB())) {
+                    nearby.add(data.getPhyso());
+                }
+            }
+        }
+        return nearby;
     }
 
     public void tick() {
         // Does nothing for now, will eventually be used when ships are no longer entities.
+        for (ShipIndexedData data : QueryableShipData.get(world)) {
+            if (data.getPhyso() != null) {
+                // data.getPhyso().onTick();
+            }
+        }
     }
 
     public World getWorld() {

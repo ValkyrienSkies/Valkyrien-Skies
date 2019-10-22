@@ -7,6 +7,7 @@ import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorldClientShipManager implements IPhysObjectWorld {
@@ -47,7 +48,8 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Nonnull
     public List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck) {
-        throw new UnsupportedOperationException();
+        return new ArrayList<>();
+        // throw new UnsupportedOperationException();
     }
 
     @Nonnull

@@ -205,7 +205,6 @@ public class ValkyrienUtils {
                                             "or because it's attached to bedrock. " +
                                             "Raise it with /physsettings maxshipsize [number]"));
                         }
-                        // getWrapperEntity().setDead();
                         return;
                     }
                     QueryableShipData.get(world).addShip(shipData);

@@ -47,43 +47,51 @@ public class ShipTransformationManager {
     private ShipTransform currentPhysicsTransform;
     private ShipTransform prevPhysicsTransform;
 
-    public ShipTransformationManager(PhysicsObject parent) {
+    public ShipTransformationManager(PhysicsObject parent, ShipTransform initialTransform) {
         this.parent = parent;
-        this.currentTickTransform = null;
-        this.renderTransform = null;
-        this.prevTickTransform = null;
-        this.currentPhysicsTransform = null;
-        this.prevPhysicsTransform = null;
-        this.normals = null;
+        this.currentTickTransform = initialTransform;
+        this.renderTransform = initialTransform;
+        this.prevTickTransform = initialTransform;
+        this.currentPhysicsTransform = initialTransform;
+        this.prevPhysicsTransform = initialTransform;
+        // Create the normals.
+        this.normals = createCollisionNormals(initialTransform);
         this.serverBuffer = new ShipTransformationBuffer();
     }
 
+    private static Vector[] createCollisionNormals(ShipTransform transform) {
+        // We edit a local array instead of normals to avoid data races.
+        final Vector[] newNormals = new Vector[15];
+        // Used to generate Normals for the Axis Aligned World
+        final Vector[] alignedNorms = Vector.generateAxisAlignedNorms();
+        final Vector[] rotatedNorms = generateRotationNormals(transform);
+        for (int i = 0; i < 6; i++) {
+            Vector currentNorm;
+            if (i < 3) {
+                currentNorm = alignedNorms[i];
+            } else {
+                currentNorm = rotatedNorms[i - 3];
+            }
+            newNormals[i] = currentNorm;
+        }
+        int cont = 6;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                Vector norm = newNormals[i].crossAndUnit(newNormals[j + 3]);
+                newNormals[cont] = norm;
+                cont++;
+            }
+        }
+        for (int i = 0; i < newNormals.length; i++) {
+            if (newNormals[i].isZero()) {
+                newNormals[i] = new Vector(0.0D, 1.0D, 0.0D);
+            }
+        }
+        newNormals[0] = new Vector(1.0D, 0.0D, 0.0D);
+        newNormals[1] = new Vector(0.0D, 1.0D, 0.0D);
+        newNormals[2] = new Vector(0.0D, 0.0D, 1.0D);
 
-    /**
-     * Updates all the transformations, only updates the AABB if passed true.
-     */
-    @Deprecated
-    public void updateAllTransforms(ShipTransform newTransform, boolean updatePhysicsTransform, boolean updateParentAABB) {
-        prevTickTransform = currentTickTransform;
-        currentTickTransform = newTransform;
-        // The client should never be updating the AABB on its own.
-        if (parent.getWorld().isRemote) {
-            updateParentAABB = false;
-        }
-
-        if (prevTickTransform == null) {
-            prevTickTransform = currentTickTransform;
-        }
-        if (updatePhysicsTransform) {
-            // This should only be called once when the ship finally loads from nbt.
-            parent.getPhysicsCalculations()
-                .generatePhysicsTransform();
-            prevPhysicsTransform = currentPhysicsTransform;
-        }
-        if (updateParentAABB) {
-            updateParentAABB();
-        }
-        updateParentNormals();
+        return newNormals;
     }
 
     /*
@@ -111,47 +119,39 @@ public class ShipTransformationManager {
     }
      */
 
-    private void updateParentNormals() {
-        // We edit a local array instead of normals to avoid data races.
-        final Vector[] newNormals = new Vector[15];
-        // Used to generate Normals for the Axis Aligned World
-        final Vector[] alignedNorms = Vector.generateAxisAlignedNorms();
-        final Vector[] rotatedNorms = generateRotationNormals();
-        for (int i = 0; i < 6; i++) {
-            Vector currentNorm;
-            if (i < 3) {
-                currentNorm = alignedNorms[i];
-            } else {
-                currentNorm = rotatedNorms[i - 3];
-            }
-            newNormals[i] = currentNorm;
-        }
-        int cont = 6;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                Vector norm = newNormals[i].crossAndUnit(newNormals[j + 3]);
-                newNormals[cont] = norm;
-                cont++;
-            }
-        }
-        for (int i = 0; i < newNormals.length; i++) {
-            if (newNormals[i].isZero()) {
-                newNormals[i] = new Vector(0.0D, 1.0D, 0.0D);
-            }
-        }
-        newNormals[0] = new Vector(1.0D, 0.0D, 0.0D);
-        newNormals[1] = new Vector(0.0D, 1.0D, 0.0D);
-        newNormals[2] = new Vector(0.0D, 0.0D, 1.0D);
-
-        this.normals = newNormals;
-    }
-
-    private Vector[] generateRotationNormals() {
+    private static Vector[] generateRotationNormals(ShipTransform shipTransform) {
         Vector[] norms = Vector.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
-            getCurrentTickTransform().rotate(norms[i], TransformType.SUBSPACE_TO_GLOBAL);
+            shipTransform.rotate(norms[i], TransformType.SUBSPACE_TO_GLOBAL);
         }
         return norms;
+    }
+
+    /**
+     * Updates all the transformations, only updates the AABB if passed true.
+     */
+    @Deprecated
+    public void updateAllTransforms(ShipTransform newTransform, boolean updatePhysicsTransform, boolean updateParentAABB) {
+        prevTickTransform = currentTickTransform;
+        currentTickTransform = newTransform;
+        // The client should never be updating the AABB on its own.
+        if (parent.getWorld().isRemote) {
+            updateParentAABB = false;
+        }
+
+        if (prevTickTransform == null) {
+            prevTickTransform = currentTickTransform;
+        }
+        if (updatePhysicsTransform) {
+            // This should only be called once when the ship finally loads from nbt.
+            parent.getPhysicsCalculations()
+                    .generatePhysicsTransform();
+            prevPhysicsTransform = currentPhysicsTransform;
+        }
+        if (updateParentAABB) {
+            updateParentAABB();
+        }
+        this.normals = createCollisionNormals(currentTickTransform);
     }
 
     // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
@@ -283,10 +283,4 @@ public class ShipTransformationManager {
             parent.getCenterCoord());
     }
 
-    public void setInitialTransform(ShipTransform shipTransform) {
-        prevTickTransform = shipTransform;
-        currentTickTransform = shipTransform;
-        prevPhysicsTransform = shipTransform;
-        currentPhysicsTransform = shipTransform;
-    }
 }

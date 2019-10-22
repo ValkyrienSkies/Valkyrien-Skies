@@ -79,8 +79,6 @@ public class ShipTransformationManager {
 
     /**
      * Updates all the transformations, only updates the AABB if passed true.
-     *
-     * @param updateParentAABB
      */
     @Deprecated
     public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB) {

@@ -96,6 +96,10 @@ public class ShipTransform {
         this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
     }
 
+    public BlockPos toBlockPos() {
+        return new BlockPos(this.getPosX(), this.getPosY(), this.getPosZ());
+    }
+
     public static Matrix4d createTransform(ShipTransform prev, ShipTransform current) {
         return current.subspaceToGlobal.mul(prev.globalToSubspace, new Matrix4d());
     }

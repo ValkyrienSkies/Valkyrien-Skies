@@ -623,6 +623,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      *
      * @deprecated See {@link #loadPhysicsObject()}
      */
+    @Deprecated
     public void readFromNBTTag(NBTTagCompound compound) {
         // This first
         setCenterCoord(ValkyrienNBTUtils.readVectorFromNBT("c", compound));

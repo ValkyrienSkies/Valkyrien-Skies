@@ -32,16 +32,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.ShipPolygon;
-import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
@@ -418,9 +414,7 @@ public class EntityCollisionInjector {
             .offset(velocity.x, velocity.y, velocity.z).expand(1, 1,
                 1);
 
-        WorldPhysObjectManager localPhysManager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-            .getManagerForWorld(entity.world);
-
+        /*
         List<PhysicsWrapperEntity> ships = localPhysManager.getNearbyPhysObjects(entityBB);
         // If a player is riding a Ship, don't process any collision between that Ship
         // and the Player
@@ -500,6 +494,8 @@ public class EntityCollisionInjector {
                 setEntityPositionAndUpdateBB(entity, posX, posY, posZ);
             }
         }
+
+         */
 
         return collisions;
     }

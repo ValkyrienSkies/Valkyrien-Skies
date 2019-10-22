@@ -323,7 +323,7 @@ public class PhysicsObject implements IPhysicsEntity {
         }
     }
 
-    private VSChunkClaim getOwnedChunks() {
+    public VSChunkClaim getOwnedChunks() {
         return getData().getChunkClaim();
     }
 

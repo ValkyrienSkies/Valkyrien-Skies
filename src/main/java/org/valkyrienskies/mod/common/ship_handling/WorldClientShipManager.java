@@ -3,7 +3,7 @@ package org.valkyrienskies.mod.common.ship_handling;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,18 +30,18 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Nonnull
     @Override
-    public PhysicsObject createPhysObjectFromData(ShipData data) {
+    public PhysicsObject createPhysObjectFromData(ShipIndexedData data) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removePhysObject(ShipData data) {
+    public boolean removePhysObject(ShipIndexedData data) {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
     @Override
-    public PhysicsObject getPhysObjectFromData(ShipData data) {
+    public PhysicsObject getPhysObjectFromData(ShipIndexedData data) {
         throw new UnsupportedOperationException();
     }
 

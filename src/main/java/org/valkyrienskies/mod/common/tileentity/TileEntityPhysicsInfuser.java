@@ -110,7 +110,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 if (!ShipChunkAllocator
                     .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
-                        ValkyrienUtils.assembleShipAsOrderedByPlayer(getWorld(), getPos())
+                        ValkyrienUtils.assembleShipAsOrderedByPlayer(getWorld(), null, getPos())
                             .thenAcceptAsync(ship -> {
                                 System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
                                 // TODO: Hmmmmmmmm

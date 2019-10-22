@@ -4,9 +4,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import org.valkyrienskies.mod.common.MixinLoadManager;
-import org.valkyrienskies.mod.common.coordinates.*;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import valkyrienwarfare.api.TransformType;
 
 /**
  * Used to indicate when a packet must be transformed into ship space to work properly (Digging
@@ -38,12 +36,12 @@ public interface ITransformablePacket {
             PhysicsObject physicsObject = getPacketParent(serverHandler);
             if (physicsObject != null
                     && physicsObject.getShipTransformationManager() != null) {
-                ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
-                ISubspace worldSubspace = worldProvider.getSubspace();
-                worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
-                physicsObject.getShipTransformationManager()
-                    .getCurrentTickTransform().transform(player,
-                    TransformType.GLOBAL_TO_SUBSPACE);
+//                ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
+//                ISubspace worldSubspace = worldProvider.getSubspace();
+//                worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
+//                physicsObject.getShipTransformationManager()
+//                    .getCurrentTickTransform().transform(player,
+//                    TransformType.GLOBAL_TO_SUBSPACE);
             }
 
         }
@@ -58,16 +56,16 @@ public interface ITransformablePacket {
             EntityPlayerMP player = serverHandler.player;
             // I don't care what happened to that ship in the time between, we must restore
             // the player to their proper coordinates.
-            ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
-            ISubspace worldSubspace = worldProvider.getSubspace();
-            ISubspacedEntity subspacedEntity = (ISubspacedEntity) player;
-            ISubspacedEntityRecord record = worldSubspace
-                .getRecordForSubspacedEntity(subspacedEntity);
+//            ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
+//            ISubspace worldSubspace = worldProvider.getSubspace();
+//            ISubspacedEntity subspacedEntity = (ISubspacedEntity) player;
+//            ISubspacedEntityRecord record = worldSubspace
+//                .getRecordForSubspacedEntity(subspacedEntity);
             // System.out.println(player.getPosition());
-            if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {
-                subspacedEntity.restoreSubspacedEntityStateToRecord(record);
-                player.setPosition(player.posX, player.posY, player.posZ);
-            }
+//            if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {
+//                subspacedEntity.restoreSubspacedEntityStateToRecord(record);
+//                player.setPosition(player.posX, player.posY, player.posZ);
+//            }
             // System.out.println(player.getPosition());
             // We need this because Sponge Mixins prevent this from properly working. This
             // won't be necessary on client however.

@@ -29,14 +29,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -45,7 +39,7 @@ import valkyrienwarfare.api.TransformType;
 import java.util.Optional;
 
 @Mixin(Entity.class)
-public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
+public abstract class MixinEntity implements IDraggable {
 
     private final IDraggable thisAsDraggable = this;
     private final Entity thisAsEntity = Entity.class.cast(this);
@@ -73,65 +67,6 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
     private Vector positionInShipSpace;
     private Vector velocityInShipSpace;
     private Vector searchVector = null;
-
-    @Override
-    public CoordinateSpaceType currentSubspaceType() {
-        int entityChunkXPosition = ((int) posX) >> 4;
-        int entityChunkZPosition = ((int) posZ) >> 4;
-        boolean isInShipChunks = ShipChunkAllocator
-            .isLikelyShipChunk(entityChunkXPosition, entityChunkZPosition);
-        if (isInShipChunks) {
-            return CoordinateSpaceType.SUBSPACE_COORDINATES;
-        } else {
-            return CoordinateSpaceType.GLOBAL_COORDINATES;
-        }
-    }
-
-    @Override
-    public Vector createCurrentPositionVector() {
-        return new Vector(posX, posY, posZ);
-    }
-
-    @Override
-    public Vector createLastTickPositionVector() {
-        return new Vector(thisAsEntity.lastTickPosX, thisAsEntity.lastTickPosY,
-            thisAsEntity.lastTickPosZ);
-    }
-
-    @Override
-    public Vector createCurrentLookVector() {
-        return new Vector(thisAsEntity.getLookVec());
-    }
-
-    @Override
-    public Vector createCurrentVelocityVector() {
-        return new Vector(thisAsEntity.motionX, thisAsEntity.motionY, thisAsEntity.motionZ);
-    }
-
-    @Override
-    public void restoreSubspacedEntityStateToRecord(ISubspacedEntityRecord record) {
-        VectorImmutable coordinates = record.getPosition();
-        VectorImmutable coordinatesLastTick = record.getPositionLastTick();
-        VectorImmutable lookVector = record.getLookDirection();
-        VectorImmutable velocityVector = record.getVelocity();
-
-        thisAsEntity.lastTickPosX = coordinatesLastTick.getX();
-        thisAsEntity.lastTickPosY = coordinatesLastTick.getY();
-        thisAsEntity.lastTickPosZ = coordinatesLastTick.getZ();
-
-        double pitch = VSMath.getPitchFromVectorImmutable(lookVector);
-        double yaw = VSMath.getYawFromVectorImmutable(lookVector, pitch);
-
-        this.rotationPitch = (float) pitch;
-        this.rotationYaw = (float) yaw;
-
-        thisAsEntity.setPosition(coordinates.getX(), coordinates.getY(), coordinates.getZ());
-    }
-
-    @Override
-    public int getSubspacedEntityID() {
-        return thisAsEntity.getEntityId();
-    }
 
     @Override
     public PhysicsObject getWorldBelowFeet() {

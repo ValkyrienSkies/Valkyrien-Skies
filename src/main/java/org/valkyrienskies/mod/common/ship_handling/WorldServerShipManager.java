@@ -5,7 +5,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class WorldServerShipManager implements IPhysObjectWorld {
 
     private transient World world;
-    private transient Map<EntityPlayer, List<ShipData>> playerToWatchingShips;
+    private transient Map<EntityPlayer, List<ShipIndexedData>> playerToWatchingShips;
     private transient VSThread physicsThread;
 
     public WorldServerShipManager(World world) {
@@ -34,17 +34,17 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     @Override
-    public PhysicsObject createPhysObjectFromData(ShipData data) {
+    public PhysicsObject createPhysObjectFromData(ShipIndexedData data) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removePhysObject(ShipData data) {
+    public boolean removePhysObject(ShipIndexedData data) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public PhysicsObject getPhysObjectFromData(ShipData data) {
+    public PhysicsObject getPhysObjectFromData(ShipIndexedData data) {
         throw new UnsupportedOperationException();
     }
 

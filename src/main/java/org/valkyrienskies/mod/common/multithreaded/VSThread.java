@@ -16,10 +16,6 @@
 
 package org.valkyrienskies.mod.common.multithreaded;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -29,9 +25,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
-import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
@@ -148,9 +148,9 @@ public class VSThread extends Thread {
     // values.
     private void physicsTick() {
         // TODO: Temporary fix:
-        WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-            .getManagerForWorld(hostWorld);
-        List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
+//        WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
+//            .getManagerForWorld(hostWorld);
+        List<PhysicsObject> physicsEntities = new ArrayList<>(); // manager.getTickablePhysicsEntities();
         // Tick ship physics here
         tickThePhysicsAndCollision(physicsEntities);
         tickSendUpdatesToPlayers(physicsEntities);
@@ -159,21 +159,21 @@ public class VSThread extends Thread {
     /**
      * Ticks physics and collision for the List of PhysicsWrapperEntity passed in.
      */
-    private void tickThePhysicsAndCollision(List<PhysicsWrapperEntity> shipsWithPhysics) {
+    private void tickThePhysicsAndCollision(List<PhysicsObject> shipsWithPhysics) {
         double newPhysSpeed = VSConfig.physSpeed;
         List<ShipCollisionTask> collisionTasks = new ArrayList<>(
             shipsWithPhysics.size() * 2);
-        for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
-            if (!wrapper.firstUpdate) {
+        for (PhysicsObject wrapper : shipsWithPhysics) {
+//            if (!wrapper.firstUpdate) {
                 // Update the physics simulation
-                wrapper.getPhysicsObject().getPhysicsCalculations().rawPhysTickPreCol(newPhysSpeed);
+            wrapper.getPhysicsCalculations().rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
-                wrapper.getPhysicsObject().getPhysicsCalculations().getWorldCollision()
+            wrapper.getPhysicsCalculations().getWorldCollision()
                     .tickUpdatingTheCollisionCache();
                 // Take the big collision and split into tiny ones
-                wrapper.getPhysicsObject().getPhysicsCalculations().getWorldCollision()
+            wrapper.getPhysicsCalculations().getWorldCollision()
                     .splitIntoCollisionTasks(collisionTasks);
-            }
+//            }
         }
 
         // Process gear physics simulation for the game worlds.
@@ -191,32 +191,32 @@ public class VSThread extends Thread {
         // Then those collision points have to be processed sequentially afterwards, all in
         // this thread. Thankfully this step is not cpu intensive.
         for (ShipCollisionTask task : collisionTasks) {
-            PhysicsWrapperEntity wrapper = task.getToTask().getParent().getWrapperEntity();
-            if (!wrapper.firstUpdate) {
+            // PhysicsWrapperEntity wrapper = task.getToTask().getParent().getWrapperEntity();
+//            if (!wrapper.firstUpdate) {
                 task.getToTask().processCollisionTask(task);
-            }
+//            }
         }
 
-        for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
-            if (!wrapper.firstUpdate) {
+        for (PhysicsObject wrapper : shipsWithPhysics) {
+//            if (!wrapper.firstUpdate) {
                 try {
-                    wrapper.getPhysicsObject().getPhysicsCalculations().rawPhysTickPostCol();
+                    wrapper.getPhysicsCalculations().rawPhysTickPostCol();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else {
-                wrapper.getPhysicsObject()
-                    .getShipTransformationManager()
-                        .updateAllTransforms(false, false);
-            }
+//            } else {
+//                wrapper.getPhysicsObject()
+//                    .getShipTransformationManager()
+//                        .updateAllTransforms(false, false);
+//            }
         }
     }
 
-    private void tickSendUpdatesToPlayers(List<PhysicsWrapperEntity> ships) {
-        for (PhysicsWrapperEntity wrapper : ships) {
-            wrapper.getPhysicsObject().getShipTransformationManager()
-                .sendPositionToPlayers(physicsTicksCount);
-        }
+    private void tickSendUpdatesToPlayers(List<PhysicsObject> ships) {
+//        for (PhysicsWrapperEntity wrapper : ships) {
+//            wrapper.getPhysicsObject().getShipTransformationManager()
+//                .sendPositionToPlayers(physicsTicksCount);
+//        }
         physicsTicksCount++;
     }
 

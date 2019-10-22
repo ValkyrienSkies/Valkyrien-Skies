@@ -158,9 +158,6 @@ public class PhysObjectRenderManager {
     }
 
     public boolean shouldRender() {
-        if (parent.getWrapperEntity().isDead) {
-            return false;
-        }
         ICamera camera = ClientProxy.lastCamera;
         return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }

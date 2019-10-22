@@ -1,35 +1,26 @@
 package org.valkyrienskies.mod.common.command;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.inject.Inject;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.command.MainCommand.TeleportTo;
 import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocompleter;
 import org.valkyrienskies.mod.common.command.autocompleters.WorldAutocompleter;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.HelpCommand;
-import picocli.CommandLine.Model;
+import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
-import picocli.CommandLine.Spec;
+
+import javax.inject.Inject;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Command(name = "valkyrienskies", aliases = "vs",
     synopsisSubcommandLabel = "COMMAND", mixinStandardHelpOptions = true,
@@ -81,7 +72,7 @@ public class MainCommand implements Runnable {
                 return;
             }
 
-            ShipPositionData pos = oTargetShipData.get().getPositionData();
+            ShipTransform pos = oTargetShipData.get().getShipTransform();
             ((EntityPlayer) sender).setPositionAndUpdate(pos.getPosX(), pos.getPosY(), pos.getPosZ());
         }
 
@@ -156,6 +147,8 @@ public class MainCommand implements Runnable {
             }
 
             ShipIndexedData targetShipData = oTargetShipData.get();
+
+            /*
             Optional<Entity> oEntity = world.getLoadedEntityList().stream()
                 .filter(e -> e.getPersistentID().equals(targetShipData.getUuid()))
                 .findFirst();
@@ -187,6 +180,8 @@ public class MainCommand implements Runnable {
                 throw new RuntimeException("Ship entity is not PhysicsWrapperEntity or "
                     + "Physics infuser is not a physics infuser?", e);
             }
+
+             */
         }
     }
 
@@ -217,15 +212,15 @@ public class MainCommand implements Runnable {
                 listOfShips = data.getShips()
                     .stream()
                     .map(shipData -> {
-                        if (shipData.getPositionData() == null) {
+                        if (shipData.getShipTransform() == null) {
                             // Unknown Location (this should be an error? TODO: look into this)
                             return String.format("%s, Unknown Location", shipData.getName());
                         } else {
                             // Known Location
                             return String.format("%s [%.1f, %.1f, %.1f]", shipData.getName(),
-                                shipData.getPositionData().getPosX(),
-                                shipData.getPositionData().getPosY(),
-                                shipData.getPositionData().getPosZ());
+                                    shipData.getShipTransform().getPosX(),
+                                    shipData.getShipTransform().getPosY(),
+                                    shipData.getShipTransform().getPosZ());
                         }
                     })
                     .collect(Collectors.joining(",\n"));

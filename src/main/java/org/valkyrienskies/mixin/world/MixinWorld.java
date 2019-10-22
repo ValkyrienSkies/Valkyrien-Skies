@@ -20,7 +20,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.*;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
@@ -35,15 +34,8 @@ import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
 import org.valkyrienskies.fixes.MixinWorldIntrinsicMethods;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.coordinates.ISubspace;
-import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
-import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
-import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
@@ -61,7 +53,7 @@ import java.util.function.Function;
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
 @Implements(@Interface(iface = MixinWorldIntrinsicMethods.class, prefix = "vs$", remap = Remap.NONE))
-public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShipManager,
+public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     IRotationNodeWorldProvider {
 
     private static final double MAX_ENTITY_RADIUS_ALT = 2.0D;
@@ -72,7 +64,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
     private final ThreadLocal<PhysicsObject> dontInterceptShip = ThreadLocal
         .withInitial(() -> null);
-    private final ISubspace worldSubspace = new ImplSubspace(null);
+
     private final World world = World.class.cast(this);
     // The IWorldShipManager
     private IPhysObjectWorld manager = null;
@@ -82,11 +74,6 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
     @Shadow
     protected List<IWorldEventListener> eventListeners;
-
-    @Override
-    public ISubspace getSubspace() {
-        return worldSubspace;
-    }
 
     @Shadow
     public abstract Biome getBiomeForCoordsBody(BlockPos pos);
@@ -253,9 +240,6 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
                 TransformType.SUBSPACE_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();// .contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
-
-            toReturn.remove(physicsObject.get()
-                .getWrapperEntity());
         }
         return toReturn;
     }
@@ -272,23 +256,6 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
         if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxZ - boundingBox.minZ)
             > 1000000D) {
             return new ArrayList<>();
-        }
-
-        // Prevents the players item pickup AABB from merging with a
-        // PhysicsWrapperEntity AABB
-        if (entityIn instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entityIn;
-            if (player.getRidingEntity() != null &&
-                !player.getRidingEntity().isDead &&
-                player.getRidingEntity() instanceof PhysicsWrapperEntity) {
-                AxisAlignedBB axisalignedbb = player.getEntityBoundingBox()
-                    .union(player.getRidingEntity().getEntityBoundingBox())
-                    .expand(1.0D, 0.0D, 1.0D);
-
-                if (boundingBox.equals(axisalignedbb)) {
-                    boundingBox = player.getEntityBoundingBox().expand(1.0D, 0.5D, 1.0D);
-                }
-            }
         }
 
         if (isBoundingBoxTooLarge(boundingBox)) {
@@ -321,9 +288,6 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
             toReturn
                 .addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
-
-            toReturn.remove(physicsObject.get()
-                .getWrapperEntity());
         }
         return toReturn;
     }
@@ -379,6 +343,10 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
         RayTraceResult vanillaTrace = world
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+
+        return vanillaTrace;
+
+        /*
         WorldPhysObjectManager physManager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(world);
         if (physManager == null) {
@@ -432,6 +400,8 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
         this.dontIntercept.set(false);
         return vanillaTrace;
+
+         */
     }
 
     @Override

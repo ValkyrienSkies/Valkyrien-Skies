@@ -20,7 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
@@ -38,10 +37,6 @@ public class EntityMoveInjectionMethods {
 
     public static IntermediateMovementVariableStorage handleMove(MoverType type, double dx,
         double dy, double dz, Entity this_) {
-        if (this_ instanceof PhysicsWrapperEntity) {
-            //Don't move at all
-            return null;
-        }
         if (this_ instanceof EntityPlayer && ((EntityPlayer) this_).isSpectator()) {
             return null;
         }

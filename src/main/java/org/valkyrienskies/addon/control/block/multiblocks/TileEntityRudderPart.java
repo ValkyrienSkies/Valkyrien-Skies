@@ -1,6 +1,5 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
-import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -14,6 +13,8 @@ import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 public class TileEntityRudderPart extends
     TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic, TileEntityRudderPart> {
@@ -77,7 +78,7 @@ public class TileEntityRudderPart extends
             Vector directionFacing = this.getForcePosRelativeToAxleInShipSpace();
             Vector forcePosRelativeToShipCenter = this.getForcePositionInShipSpace();
             forcePosRelativeToShipCenter
-                .subtract(physicsObject.getPhysicsCalculations().getGameTickCenterOfMass());
+                    .subtract(physicsObject.getTransform().getCenterCoord());
             physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
                 .rotate(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
 

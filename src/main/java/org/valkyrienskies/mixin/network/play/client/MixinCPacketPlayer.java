@@ -10,11 +10,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.fixes.ITransformablePacket;
-import org.valkyrienskies.mod.common.coordinates.ISubspace;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.VSMath;
+import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 
@@ -39,12 +37,10 @@ public class MixinCPacketPlayer implements ITransformablePacket {
         if (isPacketOnMainThread(server, callingFromSponge)) {
             PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
             if (parent != null) {
-                ISubspace parentSubspace = parent.getSubspace();
-                ISubspacedEntityRecord entityRecord = parentSubspace
-                    .getRecordForSubspacedEntity((ISubspacedEntity) getPacketPlayer(server));
-                VectorImmutable positionGlobal = entityRecord.getPositionInGlobalCoordinates();
-                VectorImmutable lookVectorGlobal = entityRecord
-                    .getLookDirectionInGlobalCoordinates();
+
+                EntityPlayerMP playerMP = getPacketPlayer(server);
+                VectorImmutable positionGlobal = new Vector(playerMP.posX, playerMP.posY, playerMP.posZ).toImmutable();
+                VectorImmutable lookVectorGlobal = new Vector(playerMP.getLook(1.0f)).toImmutable();
 
                 float pitch = (float) VSMath.getPitchFromVectorImmutable(lookVectorGlobal);
                 float yaw = (float) VSMath.getYawFromVectorImmutable(lookVectorGlobal, pitch);
@@ -76,10 +72,10 @@ public class MixinCPacketPlayer implements ITransformablePacket {
                 getPacketPlayer(server).interactionManager.gameType = cachedPlayerGameType;
             }
             PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
-            if (parent != null) {
-                parent.getSubspace()
-                    .forceSubspaceRecord((ISubspacedEntity) getPacketPlayer(server), null);
-            }
+//            if (parent != null) {
+//                parent.getSubspace()
+//                    .forceSubspaceRecord((ISubspacedEntity) getPacketPlayer(server), null);
+//            }
             IDraggable draggable = (IDraggable) getPacketPlayer(server);
             draggable.setForcedRelativeSubspace(null);
         }

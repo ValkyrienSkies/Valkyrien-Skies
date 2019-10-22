@@ -23,7 +23,6 @@ import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4dc;
 import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 
 /**
  * This is getting deleted. Do NOT Use!
@@ -130,10 +129,6 @@ public class RotationMatrices {
      * @param entity
      */
     public static void applyTransform(Matrix4dc transform, Entity entity) {
-        if (entity instanceof PhysicsWrapperEntity) {
-            throw new IllegalArgumentException(
-                    "Tried applying a transform to the PhysicsWrapeerEntity, this creates instability so we crash here!");
-        }
         // ISubspacedEntity entitySubspaceTracker = (ISubspacedEntity) entity;
 
         Vec3d entityLookMc = entity.getLook(1.0F);

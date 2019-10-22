@@ -16,12 +16,6 @@
 
 package org.valkyrienskies.mod.common;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -31,17 +25,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
@@ -63,8 +54,6 @@ import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityProvider;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VSWorldEventListener;
@@ -73,6 +62,10 @@ import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class EventsCommon {
@@ -187,7 +180,7 @@ public class EventsCommon {
     public static void onWorldUnload(WorldEvent.Unload event) {
         // Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
         lastPositions.clear();
-        ValkyrienSkiesMod.VS_PHYSICS_MANAGER.removeWorld(event.getWorld());
+        // ValkyrienSkiesMod.VS_PHYSICS_MANAGER.removeWorld(event.getWorld());
         IHasShipManager shipManager = (IHasShipManager) event.getWorld();
         shipManager.getManager().onWorldUnload();
     }
@@ -196,10 +189,10 @@ public class EventsCommon {
     public static void onEntityUntrack(PlayerEvent.StopTracking event) {
         if (!event.getEntityPlayer().world.isRemote) {
             Entity ent = event.getTarget();
-            if (ent instanceof PhysicsWrapperEntity) {
-                ((PhysicsWrapperEntity) ent).getPhysicsObject()
-                    .onPlayerUntracking(event.getEntityPlayer());
-            }
+//            if (ent instanceof PhysicsWrapperEntity) {
+//                ((PhysicsWrapperEntity) ent).getPhysicsObject()
+//                    .onPlayerUntracking(event.getEntityPlayer());
+//            }
         }
     }
 
@@ -267,6 +260,7 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onExplosionStart(ExplosionEvent.Start event) {
+        /*
         // Only run on server side
         if (!event.getWorld().isRemote) {
             Explosion explosion = event.getExplosion();
@@ -317,13 +311,7 @@ public class EventsCommon {
                 event.getExplosion().affectedBlockPositions.addAll(expl.affectedBlockPositions);
             }
         }
+         */
     }
 
-    @SubscribeEvent
-    public static void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
-        if (event.getEntity() instanceof PhysicsWrapperEntity) {
-            //prevent ships from changing dimensions, because it can and will break everything very badly
-            event.setCanceled(true);
-        }
-    }
 }

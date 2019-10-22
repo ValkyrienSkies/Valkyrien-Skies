@@ -26,11 +26,12 @@ import org.joml.Matrix4d;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.UUID;
 
 /**
  * This IMessage sends all the position rotation data of a PhysicsObject from the server to the
@@ -48,7 +49,7 @@ import valkyrienwarfare.api.TransformType;
 public class WrapperPositionMessage implements IMessage {
 
     private int relativeTick;
-    private int entityID;
+    private UUID entityID;
     private double posX, posY, posZ;
     private double pitch, yaw, roll;
     private Vector centerOfMass;
@@ -57,8 +58,8 @@ public class WrapperPositionMessage implements IMessage {
     public WrapperPositionMessage() {
     }
 
-    public WrapperPositionMessage(PhysicsShipTransform transformData, int entityID,
-        int relativeTick) {
+    public WrapperPositionMessage(PhysicsShipTransform transformData, UUID entityID,
+                                  int relativeTick) {
         this.setEntityID(entityID);
         this.setRelativeTick(relativeTick);
         this.setShipBB(transformData.getShipBoundingBox());
@@ -71,17 +72,17 @@ public class WrapperPositionMessage implements IMessage {
         this.setCenterOfMass(transformData.getCenterOfMass());
     }
 
-    public WrapperPositionMessage(PhysicsWrapperEntity toSend, int relativeTick) {
-        this.setEntityID(toSend.getEntityId());
+    public WrapperPositionMessage(PhysicsObject toSend, int relativeTick) {
+        this.setEntityID(toSend.getData().getUuid());
         this.setRelativeTick(relativeTick);
-        this.setShipBB(toSend.getPhysicsObject().getShipBoundingBox());
-        this.setPosX(toSend.posX);
-        this.setPosY(toSend.posY);
-        this.setPosZ(toSend.posZ);
-        this.setPitch(toSend.getPitch());
-        this.setYaw(toSend.getYaw());
-        this.setRoll(toSend.getRoll());
-        this.setCenterOfMass(toSend.getPhysicsObject().getCenterCoord());
+        this.setShipBB(toSend.getShipBoundingBox());
+        this.setPosX(toSend.getTransform().getPosX());
+        this.setPosY(toSend.getTransform().getPosY());
+        this.setPosZ(toSend.getTransform().getPosZ());
+        this.setPitch(toSend.getTransform().getPitch());
+        this.setYaw(toSend.getTransform().getYaw());
+        this.setRoll(toSend.getTransform().getRoll());
+        this.setCenterOfMass(toSend.getCenterCoord());
     }
 
     public WrapperPositionMessage(PhysicsObject toRunLocally) {
@@ -150,7 +151,9 @@ public class WrapperPositionMessage implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        setEntityID(buf.readInt());
+        long mostSig = buf.readLong();
+        long leastSig = buf.readLong();
+        setEntityID(new UUID(mostSig, leastSig));
         setRelativeTick(buf.readInt());
 
         setPosX(buf.readDouble());
@@ -169,7 +172,8 @@ public class WrapperPositionMessage implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(getEntityID());
+        buf.writeLong(getEntityID().getMostSignificantBits());
+        buf.writeLong(getEntityID().getLeastSignificantBits());
         buf.writeInt(getRelativeTick());
 
         buf.writeDouble(getPosX());

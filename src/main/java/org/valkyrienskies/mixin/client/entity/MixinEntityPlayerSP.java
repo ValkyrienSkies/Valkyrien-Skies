@@ -8,12 +8,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
 
 @Mixin(EntityPlayerSP.class)
 public class MixinEntityPlayerSP {
 
-    private final ISubspacedEntity thisAsSubspaced = (ISubspacedEntity) this;
     private final EntityPlayerSP player = EntityPlayerSP.class.cast(this);
     @Shadow
     private double lastReportedPosX;

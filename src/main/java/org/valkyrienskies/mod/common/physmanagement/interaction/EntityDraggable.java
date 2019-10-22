@@ -27,7 +27,6 @@ import net.minecraft.world.World;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
@@ -51,7 +50,7 @@ public class EntityDraggable {
         try {
             for (int i = 0; i < world.loadedEntityList.size(); i++) {
                 Entity e = world.loadedEntityList.get(i);
-                if (!(e instanceof PhysicsWrapperEntity) && !e.isDead) {
+                if (!e.isDead) {
                     IDraggable draggable = getDraggableFromEntity(e);
 
                     if (draggable.getWorldBelowFeet() == null) {

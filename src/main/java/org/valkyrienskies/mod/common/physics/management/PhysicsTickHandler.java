@@ -17,16 +17,11 @@
 package org.valkyrienskies.mod.common.physics.management;
 
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
-import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
-
-import java.util.List;
 
 public class PhysicsTickHandler {
 
     public static void onWorldTickStart(World world) {
+        /*
         WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(world);
 
@@ -69,9 +64,11 @@ public class PhysicsTickHandler {
         // try { manager.setPhysicsThread(ValkyrienSkiesMod.PHYSICS_THREADS.submit(
         // physicsThreadTask)); } catch (Exception e) { e.printStackTrace(); }
 
+
     }
 
     public static void onWorldTickEnd(World world) {
+        /*
         WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(world);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
@@ -87,10 +84,13 @@ public class PhysicsTickHandler {
         // }
 
         // Remember only to run this from the game tick thread.
+        /*
         EntityDraggable.tickAddedVelocityForWorld(world);
         for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
             wrapperEnt.getPhysicsObject().onPostTick();
         }
+        
+         */
     }
 
 }

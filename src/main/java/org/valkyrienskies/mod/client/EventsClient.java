@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.client;
 
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -46,14 +45,13 @@ import org.valkyrienskies.fixes.SoundFixWrapper;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 public class EventsClient {
 
@@ -79,6 +77,7 @@ public class EventsClient {
         switch (event.phase) {
             case START:
                 // Nothing for now
+                /*
                 for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                     .getManagerForWorld(world)
                     .getTickablePhysicsEntities()) {
@@ -89,6 +88,8 @@ public class EventsClient {
                     wrapper.getPhysicsObject().getShipTransformationManager()
                         .updateRenderTransform(1.0);
                 }
+
+                 */
                 break;
             case END:
                 // Tick the IShipManager on the world client.
@@ -126,6 +127,7 @@ public class EventsClient {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.world != null) {
             if (!mc.isGamePaused()) {
+                /*
                 WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                     .getManagerForWorld(mc.world);
                 if (event.phase == Phase.END) {
@@ -134,6 +136,8 @@ public class EventsClient {
                     }
                     EntityDraggable.tickAddedVelocityForWorld(mc.world);
                 }
+
+                 */
             }
         }
 
@@ -242,12 +246,15 @@ public class EventsClient {
         }
 
         if (event.phase == Phase.START) {
+            /*
             for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                 .getManagerForWorld(world)
                 .getTickablePhysicsEntities()) {
                 wrapper.getPhysicsObject().getShipTransformationManager()
                     .updateRenderTransform(partialTicks);
             }
+
+             */
         }
     }
 }

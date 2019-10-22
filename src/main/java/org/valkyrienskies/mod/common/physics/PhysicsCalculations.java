@@ -226,7 +226,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public void generatePhysicsTransform() {
         // Create a new physics transform.
-        ShipTransform parentTransform = getParent().getData().getTransform();
+        ShipTransform parentTransform = getParent().getData().getShipTransform();
         physRoll = parentTransform.getRoll();
         physPitch = parentTransform.getPitch();
         physYaw = parentTransform.getYaw();

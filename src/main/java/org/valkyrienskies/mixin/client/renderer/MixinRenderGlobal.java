@@ -16,25 +16,12 @@
 
 package org.valkyrienskies.mixin.client.renderer;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockChest;
-import net.minecraft.block.BlockEnderChest;
-import net.minecraft.block.BlockSign;
-import net.minecraft.block.BlockSkull;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.DestroyBlockProgress;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -47,7 +34,6 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -56,11 +42,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.proxy.ClientProxy;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
 
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
@@ -83,7 +71,6 @@ public abstract class MixinRenderGlobal {
 
     @Shadow
     public WorldClient world;
-    private PhysicsWrapperEntity wrapperEntity;
 
     @Shadow
     public static void drawSelectionBoundingBox(AxisAlignedBB box, float red, float green,
@@ -267,6 +254,7 @@ public abstract class MixinRenderGlobal {
         Entity entityIn, CallbackInfoReturnable callbackInfo) {
         RenderHelper.disableStandardItemLighting();
 
+        /*
         for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(this.world)
             .getTickablePhysicsEntities()) {
@@ -278,6 +266,8 @@ public abstract class MixinRenderGlobal {
             }
             GL11.glPopMatrix();
         }
+
+         */
 
         GlStateManager.resetColor();
     }

@@ -55,7 +55,10 @@ import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilitySto
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.*;
+import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
@@ -176,12 +179,6 @@ public class ValkyrienSkiesMod {
         physWrapperNetwork
             .registerMessage(PhysWrapperPositionHandler.class, WrapperPositionMessage.class, 0,
                 Side.CLIENT);
-        physWrapperNetwork
-            .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
-                1, Side.CLIENT);
-        physWrapperNetwork
-            .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
-                2, Side.SERVER);
         physWrapperNetwork
             .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 3, Side.SERVER);
     }

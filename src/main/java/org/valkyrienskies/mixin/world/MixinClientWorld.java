@@ -1,17 +1,7 @@
 package org.valkyrienskies.mixin.world;
 
-import java.util.List;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import valkyrienwarfare.api.TransformType;
 
 /**
  * This class contains the mixins for the World class that are client side only.
@@ -21,6 +11,7 @@ public class MixinClientWorld {
 
     private final World world = World.class.cast(this);
 
+    /*
     @Inject(method = "getCombinedLight(Lnet/minecraft/util/math/BlockPos;I)I", at = @At("HEAD"),
         cancellable = true)
     private void preGetCombinedLight(BlockPos pos, int lightValue,
@@ -78,4 +69,5 @@ public class MixinClientWorld {
             e.printStackTrace();
         }
     }
+    */
 }

@@ -3,7 +3,7 @@ package org.valkyrienskies.mod.common.ship_handling;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +33,7 @@ public interface IPhysObjectWorld {
      * @return
      */
     @Nonnull
-    PhysicsObject createPhysObjectFromData(ShipData data) throws IllegalArgumentException;
+    PhysicsObject createPhysObjectFromData(ShipIndexedData data) throws IllegalArgumentException;
 
     /**
      * Removes the PhysicsObject with the ShipData.
@@ -41,14 +41,14 @@ public interface IPhysObjectWorld {
      * @param data
      * @return True if there was a PhysicsObject with ShipData of data, false if there wasn't.
      */
-    boolean removePhysObject(ShipData data);
+    boolean removePhysObject(ShipIndexedData data);
 
     /**
      * @param data
      * @return Null if there wasn't a PhysicsObject for the given data.
      */
     @Nullable
-    PhysicsObject getPhysObjectFromData(ShipData data);
+    PhysicsObject getPhysObjectFromData(ShipIndexedData data);
 
     /**
      * @param toCheck

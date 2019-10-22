@@ -20,13 +20,6 @@ import gnu.trove.TCollections;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
-import java.util.Random;
-import java.util.function.Consumer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -51,6 +44,9 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollision
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Handles the task of finding and processing collisions between a PhysicsObject and the game
@@ -218,7 +214,7 @@ public class WorldPhysicsCollider {
             if (!(minChunkY > 15 || maxChunkY < 0)) {
                 for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
                     for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                        if (parent.ownsChunk(chunkX, chunkZ)) {
+                        if (parent.getOwnedChunks().containsChunk(chunkX, chunkZ)) {
                             final Chunk chunkIn = parent.getChunkAt(chunkX, chunkZ);
 
                             int minXToCheck = chunkX << 4;
@@ -877,8 +873,8 @@ public class WorldPhysicsCollider {
                 // maxX = Math.min(maxX, minX << 4);
                 // maxZ = Math.min(maxZ, minZ << 4);
 
-                if (parent.ownsChunk(minX >> 4, minZ >> 4) && parent
-                    .ownsChunk(maxX >> 4, maxZ >> 4)) {
+                if (parent.getOwnedChunks().containsChunk(minX >> 4, minZ >> 4) && parent
+                        .getOwnedChunks().containsChunk(maxX >> 4, maxZ >> 4)) {
 
                     Chunk chunkIn00 = parent.getChunkAt(minX >> 4, minZ >> 4);
                     Chunk chunkIn01 = parent.getChunkAt(minX >> 4, maxZ >> 4);
@@ -999,7 +995,7 @@ public class WorldPhysicsCollider {
             for (int localX = minX; localX < maxX; localX++) {
                 for (int localZ = minZ; localZ < maxZ; localZ++) {
                     for (int localY = minY; localY < maxY; localY++) {
-                        if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
+                        if (parent.getOwnedChunks().containsChunk(localX >> 4, localZ >> 4)) {
                             Chunk chunkIn = parent.getChunkAt(localX >> 4, localZ >> 4);
                             if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
                                 IBitOctreeProvider provider = (IBitOctreeProvider) chunkIn.storageArrays[

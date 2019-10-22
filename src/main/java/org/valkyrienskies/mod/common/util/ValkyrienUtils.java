@@ -3,6 +3,7 @@ package org.valkyrienskies.mod.common.util;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -163,7 +164,7 @@ public class ValkyrienUtils {
         Vector centerOfMassInitial = new Vector(chunkClaim.getRegionCenter());
         Vector3dc shipPosInitial = new Vector3d(physInfuserPos.getX() + .5, physInfuserPos.getY() + .5, physInfuserPos.getZ() + .5);
         ShipTransform initial = new ShipTransform(shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z(), 0, 0, 0, centerOfMassInitial);
-        ShipIndexedData data = ShipIndexedData.createData(name, chunkClaim, shipID, initial).build();
+        ShipIndexedData data = ShipIndexedData.createData(name, chunkClaim, shipID, initial);
         // This is fine because we are not indexing by physInfuserPos.
         data.setPhysInfuserPos(physInfuserPos);
         return data;
@@ -174,7 +175,7 @@ public class ValkyrienUtils {
      * @param physicsInfuserPos
      * @return
      */
-    public static TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(World world, BlockPos physicsInfuserPos) {
+    public static TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(World world, EntityPlayerMP creator, BlockPos physicsInfuserPos) {
         if (world.isRemote) {
             throw new IllegalStateException("This method cannot be invoked on client side!");
         }
@@ -196,8 +197,8 @@ public class ValkyrienUtils {
                     System.out.println("Hello! " + Thread.currentThread().getName());
                     if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
                         System.err.println("Ship too big or bedrock detected!");
-                        if (player != null) {
-                            player.sendMessage(new TextComponentString(
+                        if (creator != null) {
+                            creator.sendMessage(new TextComponentString(
                                     "Ship construction canceled because its exceeding the ship size limit; "
                                             +
                                             "or because it's attached to bedrock. " +
@@ -206,8 +207,11 @@ public class ValkyrienUtils {
                         // getWrapperEntity().setDead();
                         return;
                     }
-
-                    PhysicsObject physicsObject = new PhysicsObject(world, shipData);
+                    QueryableShipData.get(world).addShip(shipData);
+                    PhysicsObject physicsObject = new PhysicsObject(world, shipData.getUuid());
+                    ShipIndexedData withPhysicsObject = shipData.withPhyso(physicsObject);
+                    QueryableShipData.get(world).updateShip(shipData, withPhysicsObject);
+                    int i = 1;
                     // TODO: Do something with this?
                 }, VSExecutors.forWorld((WorldServer) world));
     }

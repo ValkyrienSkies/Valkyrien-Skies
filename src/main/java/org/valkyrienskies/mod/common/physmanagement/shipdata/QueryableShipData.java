@@ -1,27 +1,27 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import static com.googlecode.cqengine.query.QueryFactory.equal;
-import static com.googlecode.cqengine.query.QueryFactory.startsWith;
-
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import static com.googlecode.cqengine.query.QueryFactory.equal;
+import static com.googlecode.cqengine.query.QueryFactory.startsWith;
 
 /**
  * A class that keeps track of ship data
@@ -119,19 +119,6 @@ public class QueryableShipData implements Iterable<ShipIndexedData> {
         }
     }
 
-    public Optional<ShipIndexedData> getShip(PhysicsWrapperEntity wrapperEntity) {
-        return getShip(wrapperEntity.getPersistentID());
-    }
-
-    public ShipIndexedData getOrCreateShip(PhysicsWrapperEntity wrapperEntity) {
-        Optional<ShipIndexedData> data = getShip(wrapperEntity.getPersistentID());
-        return data.orElseGet(() -> {
-            ShipIndexedData shipData = ShipIndexedData.fromWrapperEntity(wrapperEntity).build();
-            allShips.add(shipData);
-            return shipData;
-        });
-    }
-
     public Optional<ShipIndexedData> getShipFromName(String name) {
         Query<ShipIndexedData> query = equal(ShipIndexedData.NAME, name);
         ResultSet<ShipIndexedData> shipDataResultSet = allShips.retrieve(query);
@@ -141,10 +128,6 @@ public class QueryableShipData implements Iterable<ShipIndexedData> {
         } else {
             return Optional.of(shipDataResultSet.uniqueResult());
         }
-    }
-
-    public void removeShip(PhysicsWrapperEntity wrapper) {
-        removeShip(wrapper.getPersistentID());
     }
 
     public void removeShip(UUID uuid) {
@@ -159,24 +142,10 @@ public class QueryableShipData implements Iterable<ShipIndexedData> {
         allShips.add(ship);
     }
 
-    @Deprecated
-    public void addShip(PhysicsWrapperEntity wrapperEntity) {
-        Query<ShipIndexedData> query = equal(ShipIndexedData.UUID, wrapperEntity.getPersistentID());
-
-        // If this ship is already added, don't add it again?
-        if (allShips.retrieve(query).isEmpty()) {
-            addShip(ShipIndexedData.fromWrapperEntity(wrapperEntity).build());
-        }
-    }
-
     // TODO: this isn't threadsafe? Use TransactionalIndexedCollection
     public void updateShip(ShipIndexedData oldData, ShipIndexedData newData) {
         allShips.remove(oldData);
         allShips.add(newData);
-    }
-
-    public void updateShipPosition(PhysicsWrapperEntity wrapper) {
-        getOrCreateShip(wrapper).setPositionData(new ShipPositionData(wrapper));
     }
 
     @Override

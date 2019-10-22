@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 
 @Data
 @Accessors(fluent = false)
@@ -24,11 +24,7 @@ public class ShipSerializedData {
      */
     private final ShipPhysicsData physicsData;
 
-    /**
-     * @deprecated To be replaced by {@link ShipIndexedData#getTransform()}
-     */
-    @Deprecated
-    private ShipPositionData positionData;
+    private ShipTransform shipTransform;
 
     /**
      * Whether or not physics are enabled on this physo

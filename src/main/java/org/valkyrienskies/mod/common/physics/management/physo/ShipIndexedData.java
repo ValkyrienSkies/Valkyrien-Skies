@@ -62,18 +62,14 @@ public class ShipIndexedData {
      */
     private final String name;
 
-    /**
-     * The transform of this physo, e.g., the position and rotation
-     */
-    private final ShipTransform transform;
-
-    public static ShipIndexedDataBuilder createData(String name, VSChunkClaim chunkClaim, UUID shipID, ShipTransform transform) {
-        return ShipIndexedData.builder()
+    public static ShipIndexedData createData(String name, VSChunkClaim chunkClaim, UUID shipID, ShipTransform shipTransform) {
+        ShipIndexedData data = ShipIndexedData.builder()
                 .name(name)
                 .chunkClaim(chunkClaim)
                 .uuid(shipID)
-                .transform(transform)
-                .mut(new ShipSerializedData());
+                .mut(new ShipSerializedData()).build();
+        data.setShipTransform(shipTransform);
+        return data;
     }
 
     public static final Attribute<ShipIndexedData, Boolean> HAS_PHYSO = attribute(
@@ -87,13 +83,6 @@ public class ShipIndexedData {
             return physo.getChunkClaim().getChunkLongs();
         }
     };
-    public static final Attribute<ShipIndexedData, Double> X_POS = attribute(
-        data -> data.transform.getPosX());
-    public static final Attribute<ShipIndexedData, Double> Y_POS = attribute(
-        data -> data.transform.getPosY());
-    public static final Attribute<ShipIndexedData, Double> Z_POS = attribute(
-        data -> data.transform.getPosZ());
-
 
     private interface Excludes {
 

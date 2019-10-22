@@ -16,20 +16,13 @@
 
 package org.valkyrienskies.mod.common.physics.management;
 
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.border.WorldBorder;
-import org.joml.Matrix4dc;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
-import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
@@ -65,30 +58,19 @@ public class ShipTransformationManager {
         this.serverBuffer = new ShipTransformationBuffer();
     }
 
-    /**
-     * Polls position and rotation data from the parent ship, and creates a new current transform
-     * made from this data.
-     */
-    public void updateCurrentTickTransform() {
-        PhysicsWrapperEntity wrapperEntity = parent.getWrapperEntity();
-        ShipTransform newTickTransform = new ShipTransform(wrapperEntity.posX, wrapperEntity.posY,
-            wrapperEntity.posZ, wrapperEntity.getPitch(), wrapperEntity.getYaw(),
-            wrapperEntity.getRoll(), parent.getCenterCoord());
-        setCurrentTickTransform(newTickTransform);
-    }
 
     /**
      * Updates all the transformations, only updates the AABB if passed true.
      */
     @Deprecated
-    public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB) {
+    public void updateAllTransforms(ShipTransform newTransform, boolean updatePhysicsTransform, boolean updateParentAABB) {
         prevTickTransform = currentTickTransform;
+        currentTickTransform = newTransform;
         // The client should never be updating the AABB on its own.
         if (parent.getWorld().isRemote) {
             updateParentAABB = false;
         }
-        forceShipIntoWorldBorder();
-        updateCurrentTickTransform();
+
         if (prevTickTransform == null) {
             prevTickTransform = currentTickTransform;
         }
@@ -104,33 +86,7 @@ public class ShipTransformationManager {
         updateParentNormals();
     }
 
-    /**
-     * Keeps the Ship in the world border
-     */
-    private void forceShipIntoWorldBorder() {
-        WorldBorder border = parent.getWorld().getWorldBorder();
-        AxisAlignedBB shipBB = parent.getShipBoundingBox();
-
-        ShipTransform transform = parent.getTransform();
-        ShipTransform.ShipTransformBuilder builder = transform.toBuilder();
-
-        if (shipBB.maxX > border.maxX()) {
-            builder.posX(transform.getPosX() + border.maxX() - shipBB.maxX);
-        }
-        if (shipBB.minX < border.minX()) {
-            builder.posX(transform.getPosX() + border.minX() - shipBB.minX);
-        }
-        if (shipBB.maxZ > border.maxZ()) {
-            builder.posZ(transform.getPosZ() + border.maxZ() - shipBB.maxZ);
-        }
-        if (shipBB.minZ < border.minZ()) {
-            builder.posZ(transform.getPosZ() + border.minZ() - shipBB.minZ);
-        }
-
-        ShipTransform newTransform = builder.build();
-        parent.updateTransform(newTransform);
-    }
-
+    /*
     public void sendPositionToPlayers(int positionTickID) {
         WrapperPositionMessage posMessage = null;
         Matrix4dc gts = getCurrentPhysicsTransform().getGlobalToSubspace();
@@ -153,6 +109,7 @@ public class ShipTransformationManager {
             }
         }
     }
+     */
 
     private void updateParentNormals() {
         // We edit a local array instead of normals to avoid data races.

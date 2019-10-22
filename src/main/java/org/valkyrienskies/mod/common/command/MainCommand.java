@@ -16,7 +16,7 @@ import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocomplete
 import org.valkyrienskies.mod.common.command.autocompleters.WorldAutocompleter;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysoData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
@@ -73,7 +73,7 @@ public class MainCommand implements Runnable {
 
             World world = sender.getEntityWorld();
             QueryableShipData data = QueryableShipData.get(world);
-            Optional<PhysoData> oTargetShipData = data.getShipFromName(shipName);
+            Optional<ShipIndexedData> oTargetShipData = data.getShipFromName(shipName);
 
             if (!oTargetShipData.isPresent()) {
                 sender.sendMessage(new TextComponentString(
@@ -147,7 +147,7 @@ public class MainCommand implements Runnable {
         public void run() {
             World world = sender.getEntityWorld();
             QueryableShipData data = QueryableShipData.get(world);
-            Optional<PhysoData> oTargetShipData = data.getShipFromName(shipName);
+            Optional<ShipIndexedData> oTargetShipData = data.getShipFromName(shipName);
 
             if (!oTargetShipData.isPresent()) {
                 sender.sendMessage(new TextComponentString(
@@ -155,7 +155,7 @@ public class MainCommand implements Runnable {
                 return;
             }
 
-            PhysoData targetShipData = oTargetShipData.get();
+            ShipIndexedData targetShipData = oTargetShipData.get();
             Optional<Entity> oEntity = world.getLoadedEntityList().stream()
                 .filter(e -> e.getPersistentID().equals(targetShipData.getUuid()))
                 .findFirst();
@@ -232,7 +232,7 @@ public class MainCommand implements Runnable {
             } else {
                 listOfShips = data.getShips()
                     .stream()
-                    .map(PhysoData::getName)
+                    .map(ShipIndexedData::getName)
                     .collect(Collectors.joining(",\n"));
             }
 

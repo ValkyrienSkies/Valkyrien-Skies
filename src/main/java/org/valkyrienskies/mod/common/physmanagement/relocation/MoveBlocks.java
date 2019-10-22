@@ -9,16 +9,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class MoveBlocks {
 
     /**
-     * @param world
-     * @param oldPos
-     * @param newPos
      * @param physicsObjectOptional Used when we're using this to copy from world to physics object;
      *                              should be empty when other way around.
      */
@@ -66,15 +61,8 @@ public class MoveBlocks {
             NBTTagCompound tileEntNBT = new NBTTagCompound();
             TileEntity newInstance;
             if (worldTile instanceof IRelocationAwareTile) {
-                CoordinateSpaceType coordinateSpaceType =
-                    physicsObjectOptional.isPresent() ? CoordinateSpaceType.SUBSPACE_COORDINATES
-                        : CoordinateSpaceType.GLOBAL_COORDINATES;
-
-                ShipTransform transform = new ShipTransform(newPos.getX() - oldPos.getX(),
-                    newPos.getY() - oldPos.getY(), newPos.getZ() - oldPos.getZ());
-
-                newInstance = ((IRelocationAwareTile) worldTile)
-                    .createRelocatedTile(newPos, transform, coordinateSpaceType);
+                newInstance = ((IRelocationAwareTile) worldTile).createRelocatedTile(newPos,
+                    physicsObjectOptional.map(PhysicsObject::getData).orElse(null));
             } else {
                 tileEntNBT = worldTile.writeToNBT(tileEntNBT);
                 // Change the block position to be inside of the Ship

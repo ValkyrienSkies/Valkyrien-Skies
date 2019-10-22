@@ -20,7 +20,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysoData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
@@ -29,7 +29,7 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 @MethodsReturnNonnullByDefault
 @Log4j2
 @SuppressWarnings("WeakerAccess")
-public class QueryableShipData implements Iterable<PhysoData> {
+public class QueryableShipData implements Iterable<ShipIndexedData> {
 
     /**
      * The key used to store/read the allShips collection from Kryo
@@ -43,12 +43,12 @@ public class QueryableShipData implements Iterable<PhysoData> {
 
     // Where every ship data instance is stored, regardless if the corresponding PhysicsObject is
     // loaded in the World or not.
-    private ConcurrentIndexedCollection<PhysoData> allShips = new ConcurrentIndexedCollection<>();
+    private ConcurrentIndexedCollection<ShipIndexedData> allShips = new ConcurrentIndexedCollection<>();
 
     public QueryableShipData() {
-        allShips.addIndex(HashIndex.onAttribute(PhysoData.NAME));
-        allShips.addIndex(UniqueIndex.onAttribute(PhysoData.UUID));
-        allShips.addIndex(UniqueIndex.onAttribute(PhysoData.CHUNKS));
+        allShips.addIndex(HashIndex.onAttribute(ShipIndexedData.NAME));
+        allShips.addIndex(UniqueIndex.onAttribute(ShipIndexedData.UUID));
+        allShips.addIndex(UniqueIndex.onAttribute(ShipIndexedData.CHUNKS));
     }
 
     /**
@@ -63,10 +63,10 @@ public class QueryableShipData implements Iterable<PhysoData> {
      * @param newName The new name of the ship
      * @return True of the rename was successful, false if it wasn't.
      */
-    public boolean renameShip(PhysoData oldData, String newName) {
-        Query<PhysoData> query = equal(PhysoData.NAME, newName);
+    public boolean renameShip(ShipIndexedData oldData, String newName) {
+        Query<ShipIndexedData> query = equal(ShipIndexedData.NAME, newName);
         if (allShips.retrieve(query).isEmpty()) {
-            PhysoData newData = oldData.withName(newName);
+            ShipIndexedData newData = oldData.withName(newName);
 
             allShips.remove(oldData);
             allShips.add(newData);
@@ -76,8 +76,8 @@ public class QueryableShipData implements Iterable<PhysoData> {
         return false;
     }
 
-    public Stream<PhysoData> getShipsFromNameStartingWith(String startsWith) {
-        Query<PhysoData> query = startsWith(PhysoData.NAME, startsWith);
+    public Stream<ShipIndexedData> getShipsFromNameStartingWith(String startsWith) {
+        Query<ShipIndexedData> query = startsWith(ShipIndexedData.NAME, startsWith);
 
         return allShips.retrieve(query).stream();
     }
@@ -85,17 +85,17 @@ public class QueryableShipData implements Iterable<PhysoData> {
     /**
      * Retrieves a list of all ships.
      */
-    public List<PhysoData> getShips() {
+    public List<ShipIndexedData> getShips() {
         return ImmutableList.copyOf(allShips);
     }
 
-    public Optional<PhysoData> getShipFromChunk(int chunkX, int chunkZ) {
+    public Optional<ShipIndexedData> getShipFromChunk(int chunkX, int chunkZ) {
         return getShipFromChunk(ChunkPos.asLong(chunkX, chunkZ));
     }
 
-    public Optional<PhysoData> getShipFromChunk(long chunkLong) {
-        Query<PhysoData> query = equal(PhysoData.CHUNKS, chunkLong);
-        ResultSet<PhysoData> resultSet = allShips.retrieve(query);
+    public Optional<ShipIndexedData> getShipFromChunk(long chunkLong) {
+        Query<ShipIndexedData> query = equal(ShipIndexedData.CHUNKS, chunkLong);
+        ResultSet<ShipIndexedData> resultSet = allShips.retrieve(query);
 
         if (resultSet.size() > 1) {
             throw new IllegalStateException(
@@ -108,9 +108,9 @@ public class QueryableShipData implements Iterable<PhysoData> {
         }
     }
 
-    public Optional<PhysoData> getShip(UUID uuid) {
-        Query<PhysoData> query = equal(PhysoData.UUID, uuid);
-        ResultSet<PhysoData> resultSet = allShips.retrieve(query);
+    public Optional<ShipIndexedData> getShip(UUID uuid) {
+        Query<ShipIndexedData> query = equal(ShipIndexedData.UUID, uuid);
+        ResultSet<ShipIndexedData> resultSet = allShips.retrieve(query);
 
         if (resultSet.isEmpty()) {
             return Optional.empty();
@@ -119,22 +119,22 @@ public class QueryableShipData implements Iterable<PhysoData> {
         }
     }
 
-    public Optional<PhysoData> getShip(PhysicsWrapperEntity wrapperEntity) {
+    public Optional<ShipIndexedData> getShip(PhysicsWrapperEntity wrapperEntity) {
         return getShip(wrapperEntity.getPersistentID());
     }
 
-    public PhysoData getOrCreateShip(PhysicsWrapperEntity wrapperEntity) {
-        Optional<PhysoData> data = getShip(wrapperEntity.getPersistentID());
+    public ShipIndexedData getOrCreateShip(PhysicsWrapperEntity wrapperEntity) {
+        Optional<ShipIndexedData> data = getShip(wrapperEntity.getPersistentID());
         return data.orElseGet(() -> {
-            PhysoData shipData = PhysoData.fromWrapperEntity(wrapperEntity).build();
+            ShipIndexedData shipData = ShipIndexedData.fromWrapperEntity(wrapperEntity).build();
             allShips.add(shipData);
             return shipData;
         });
     }
 
-    public Optional<PhysoData> getShipFromName(String name) {
-        Query<PhysoData> query = equal(PhysoData.NAME, name);
-        ResultSet<PhysoData> shipDataResultSet = allShips.retrieve(query);
+    public Optional<ShipIndexedData> getShipFromName(String name) {
+        Query<ShipIndexedData> query = equal(ShipIndexedData.NAME, name);
+        ResultSet<ShipIndexedData> shipDataResultSet = allShips.retrieve(query);
 
         if (shipDataResultSet.isEmpty()) {
             return Optional.empty();
@@ -151,35 +151,40 @@ public class QueryableShipData implements Iterable<PhysoData> {
         getShip(uuid).ifPresent(ship -> allShips.remove(ship));
     }
 
-    public void addShip(PhysoData ship) {
+    public void removeShip(ShipIndexedData data) {
+        allShips.remove(data);
+    }
+
+    public void addShip(ShipIndexedData ship) {
         allShips.add(ship);
     }
 
     @Deprecated
     public void addShip(PhysicsWrapperEntity wrapperEntity) {
-        Query<PhysoData> query = equal(PhysoData.UUID, wrapperEntity.getPersistentID());
+        Query<ShipIndexedData> query = equal(ShipIndexedData.UUID, wrapperEntity.getPersistentID());
 
         // If this ship is already added, don't add it again?
         if (allShips.retrieve(query).isEmpty()) {
-            addShip(PhysoData.fromWrapperEntity(wrapperEntity).build());
+            addShip(ShipIndexedData.fromWrapperEntity(wrapperEntity).build());
         }
     }
 
-    public void updateShipPosition(PhysicsWrapperEntity wrapper) {
-        PhysoData shipData = getOrCreateShip(wrapper);
-        PhysoData newData = shipData.withPositionData(new ShipPositionData(wrapper));
-
-        // TODO: this isn't threadsafe? Use TransactionalIndexedCollection
-        allShips.remove(shipData);
+    // TODO: this isn't threadsafe? Use TransactionalIndexedCollection
+    public void updateShip(ShipIndexedData oldData, ShipIndexedData newData) {
+        allShips.remove(oldData);
         allShips.add(newData);
     }
 
+    public void updateShipPosition(PhysicsWrapperEntity wrapper) {
+        getOrCreateShip(wrapper).setPositionData(new ShipPositionData(wrapper));
+    }
+
     @Override
-    public Iterator<PhysoData> iterator() {
+    public Iterator<ShipIndexedData> iterator() {
         return allShips.iterator();
     }
 
-    public Stream<PhysoData> stream() {
+    public Stream<ShipIndexedData> stream() {
         return allShips.stream();
     }
 }

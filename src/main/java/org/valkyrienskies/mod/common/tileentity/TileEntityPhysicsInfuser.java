@@ -16,7 +16,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -34,6 +33,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.container.EnumInfuserButton;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.multithreaded.VSExecutors;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
@@ -110,12 +110,11 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 if (!ShipChunkAllocator
                     .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
-                        IThreadListener gameTickThread = (WorldServer) world;
                         PhysicsWrapperEntity.createWrapperEntity(this)
-                            .thenAcceptSync(ship -> {
+                            .thenAcceptAsync(ship -> {
                                 System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
                                 getWorld().spawnEntity(ship);
-                            }, gameTickThread);
+                            }, VSExecutors.forWorld((WorldServer) world));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

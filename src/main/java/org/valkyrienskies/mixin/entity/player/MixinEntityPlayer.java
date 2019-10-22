@@ -29,7 +29,7 @@ import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysoData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -58,7 +58,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
 
-        Optional<PhysoData> shipData = ValkyrienUtils.getQueryableData(worldIn).getShipFromChunk(chunkX, chunkZ);
+        Optional<ShipIndexedData> shipData = ValkyrienUtils.getQueryableData(worldIn).getShipFromChunk(chunkX, chunkZ);
 
         if (shipData.isPresent()) {
             ShipPositionData positionData = shipData.get().getPositionData();

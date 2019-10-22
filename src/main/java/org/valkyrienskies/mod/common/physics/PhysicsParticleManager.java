@@ -42,9 +42,10 @@ public class PhysicsParticleManager {
             } else {
                 if (physicsParticle.addMomentumToShip) {
                     bufferVectorForcePos
-                        .setValue(physicsParticle.posX - parent.getParent().getWrapperEntity().posX,
-                            physicsParticle.posY - parent.getParent().getWrapperEntity().posY,
-                            physicsParticle.posZ - parent.getParent().getWrapperEntity().posZ);
+                        .setValue(
+                            physicsParticle.posX - parent.getParent().getTransform().getPosX(),
+                            physicsParticle.posY - parent.getParent().getTransform().getPosY(),
+                            physicsParticle.posZ - parent.getParent().getTransform().getPosZ());
                     bufferVectorForce.setValue(physicsParticle.velX * physicsParticle.mass,
                         physicsParticle.velY * physicsParticle.mass,
                         physicsParticle.velZ * physicsParticle.mass);

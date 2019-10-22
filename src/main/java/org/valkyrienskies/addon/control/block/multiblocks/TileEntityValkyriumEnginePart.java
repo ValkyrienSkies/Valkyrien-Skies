@@ -54,7 +54,7 @@ public class TileEntityValkyriumEnginePart extends
 
                 IRotationNodeWorld nodeWorld;
                 if (physicsObjectOptional.isPresent()) {
-                    nodeWorld = physicsObjectOptional.get().getPhysicsProcessor()
+                    nodeWorld = physicsObjectOptional.get().getPhysicsCalculations()
                         .getPhysicsRotationNodeWorld();
                 } else {
                     IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
@@ -107,7 +107,7 @@ public class TileEntityValkyriumEnginePart extends
                 .getPhysicsObject(getWorld(), getPos());
             IRotationNodeWorld nodeWorld;
             if (objectOptional.isPresent()) {
-                nodeWorld = objectOptional.get().getPhysicsProcessor()
+                nodeWorld = objectOptional.get().getPhysicsCalculations()
                     .getPhysicsRotationNodeWorld();
             } else {
                 IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();

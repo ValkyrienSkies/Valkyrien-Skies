@@ -3,7 +3,6 @@ package org.valkyrienskies.addon.control.tileentity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import org.joml.Vector3d;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import valkyrienwarfare.api.TransformType;
@@ -19,10 +18,10 @@ public class TileEntityGyroscopeDampener extends TileEntity {
         physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
             .rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
 
-        double dampingComponent = shipLevelNormal.dot(physicsCalculations.angularVelocity);
+        double dampingComponent = shipLevelNormal.dot(physicsCalculations.getAngularVelocity());
         Vector angularChangeAllowed = shipLevelNormal
-            .getProduct(shipLevelNormal.dot(physicsCalculations.angularVelocity));
-        Vector angularVelocityToDamp = physicsCalculations.angularVelocity
+            .getProduct(shipLevelNormal.dot(physicsCalculations.getAngularVelocity()));
+        Vector angularVelocityToDamp = physicsCalculations.getAngularVelocity()
             .getSubtraction(angularChangeAllowed);
 
         Vector dampingTorque = angularVelocityToDamp

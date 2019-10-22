@@ -81,7 +81,8 @@ public class ImplSubspace implements ISubspace {
                 .getCurrentTickTransform();
             if (transform == null) {
                 throw new IllegalStateException(
-                    "A PhysicsObject got a request to use its subspace, but it had no transforms loaded. This is crash worthy.");
+                    "A PhysicsObject got a request to use its subspace, but it had no transforms "
+                        + "loaded. This is crash worthy.");
             }
             return transform;
         }
@@ -91,7 +92,8 @@ public class ImplSubspace implements ISubspace {
     public int getSubspaceParentEntityID() {
         if (getSubspaceCoordinatesType() == CoordinateSpaceType.GLOBAL_COORDINATES) {
             throw new IllegalStateException(
-                "The World coordinate subspace doesn't have an entity ID. Don't call this method unless you're sure that the subspace isn't the world.");
+                "The World coordinate subspace doesn't have an entity ID. Don't call this method "
+                    + "unless you're sure that the subspace isn't the world.");
         }
         return parent.getWrapperEntity().getEntityId();
     }

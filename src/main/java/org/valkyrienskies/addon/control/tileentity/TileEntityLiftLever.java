@@ -95,7 +95,7 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl {
             if (physicsObject.isPresent()) {
                 // The linear velocity of the ship
                 Vector linearVel = physicsObject.get()
-                    .getPhysicsProcessor()
+                    .getPhysicsCalculations()
                     .getVelocityAtPoint(new Vector());
                 // The global coordinates of this tile entity
                 Vector tilePos = new Vector(getPos().getX() + .5, getPos().getY() + .5,

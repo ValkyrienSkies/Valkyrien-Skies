@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 import net.minecraft.util.math.ChunkPos;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysoData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 
 /**
- * @deprecated Use {@link PhysoData}
+ * @deprecated Use {@link ShipIndexedData}
  */
 @AllArgsConstructor
 @NoArgsConstructor

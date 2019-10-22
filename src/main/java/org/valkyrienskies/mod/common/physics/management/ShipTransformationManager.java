@@ -19,6 +19,7 @@ package org.valkyrienskies.mod.common.physics.management;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.border.WorldBorder;
+import org.joml.Matrix4dc;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
@@ -41,8 +42,6 @@ import valkyrienwarfare.api.TransformType;
  */
 public class ShipTransformationManager {
 
-    // A transformation that does no rotation, and does no translation.
-    public static final ShipTransform ZERO_TRANSFORM = new ShipTransform();
     // A buffer to hold ship transform data sent from server to the client.
     public final ShipTransformationBuffer serverBuffer;
     private final PhysicsObject parent;
@@ -97,7 +96,7 @@ public class ShipTransformationManager {
         }
         if (updatePhysicsTransform) {
             // This should only be called once when the ship finally loads from nbt.
-            parent.getPhysicsProcessor()
+            parent.getPhysicsCalculations()
                 .generatePhysicsTransform();
             prevPhysicsTransform = currentPhysicsTransform;
         }
@@ -114,23 +113,33 @@ public class ShipTransformationManager {
         WorldBorder border = parent.getWorld().getWorldBorder();
         AxisAlignedBB shipBB = parent.getShipBoundingBox();
 
+        ShipTransform transform = parent.getTransform();
+        ShipTransform.ShipTransformBuilder builder = transform.toBuilder();
+
         if (shipBB.maxX > border.maxX()) {
-            parent.getWrapperEntity().posX += border.maxX() - shipBB.maxX;
+            builder.posX(transform.getPosX() + border.maxX() - shipBB.maxX);
         }
         if (shipBB.minX < border.minX()) {
-            parent.getWrapperEntity().posX += border.minX() - shipBB.minX;
+            builder.posX(transform.getPosX() + border.minX() - shipBB.minX);
         }
         if (shipBB.maxZ > border.maxZ()) {
-            parent.getWrapperEntity().posZ += border.maxZ() - shipBB.maxZ;
+            builder.posZ(transform.getPosZ() + border.maxZ() - shipBB.maxZ);
         }
         if (shipBB.minZ < border.minZ()) {
-            parent.getWrapperEntity().posZ += border.minZ() - shipBB.minZ;
+            builder.posZ(transform.getPosZ() + border.minZ() - shipBB.minZ);
         }
+
+        ShipTransform newTransform = builder.build();
+        parent.updateTransform(newTransform);
     }
 
     public void sendPositionToPlayers(int positionTickID) {
         WrapperPositionMessage posMessage = null;
-        if (getCurrentPhysicsTransform() != ZERO_TRANSFORM) {
+        Matrix4dc gts = getCurrentPhysicsTransform().getGlobalToSubspace();
+        Matrix4dc stg = getCurrentPhysicsTransform().getSubspaceToGlobal();
+        // If it is the identity transform
+        if ((gts.properties() & Matrix4dc.PROPERTY_IDENTITY) != 0 &&
+            (stg.properties() & Matrix4dc.PROPERTY_IDENTITY) != 0) {
             posMessage = new WrapperPositionMessage(
                 (PhysicsShipTransform) getCurrentPhysicsTransform(),
                 parent.getWrapperEntity().getEntityId(), positionTickID);

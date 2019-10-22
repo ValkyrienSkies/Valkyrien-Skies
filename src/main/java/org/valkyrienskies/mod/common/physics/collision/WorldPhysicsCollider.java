@@ -38,7 +38,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.joml.Vector3d;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
@@ -119,7 +118,8 @@ public class WorldPhysicsCollider {
             cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
         cachedHitsToRemove.resetQuick();
-        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent.isNeedsCollisionCacheUpdate()) {
+        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent
+            .isNeedsCollisionCacheUpdate()) {
             updatePotentialCollisionCache();
             updateCollisionTasksCache = true;
         }
@@ -327,26 +327,30 @@ public class WorldPhysicsCollider {
             toCollideWith = collider.collisions[collider.minDistanceIndex];
         }
 
-        org.valkyrienskies.mod.common.math.Vector positionInBody = collider.entity.getCenter();
-        positionInBody.subtract(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY,
-            parent.getWrapperEntity().posZ);
+        Vector positionInBody = collider.entity.getCenter();
+        positionInBody.subtract(
+            parent.getTransform().getPosX(),
+            parent.getTransform().getPosY(),
+            parent.getTransform().getPosZ());
 
         double impulseApplied = 1D;
 
-        org.valkyrienskies.mod.common.math.Vector[] collisionPoints = PolygonCollisionPointFinder
+        Vector[] collisionPoints = PolygonCollisionPointFinder
             .getPointsOfCollisionForPolygons(toCollideWith);
 
         impulseApplied /= collisionPoints.length;
 
-        for (org.valkyrienskies.mod.common.math.Vector collisionPos : collisionPoints) {
-            org.valkyrienskies.mod.common.math.Vector inBody = collisionPos.getSubtraction(
-                new org.valkyrienskies.mod.common.math.Vector(parent.getWrapperEntity().posX,
-                    parent.getWrapperEntity().posY, parent.getWrapperEntity().posZ));
+        for (Vector collisionPos : collisionPoints) {
+            Vector inBody = collisionPos.getSubtraction(
+                new Vector(
+                    parent.getTransform().getPosX(),
+                    parent.getTransform().getPosY(),
+                    parent.getTransform().getPosZ()));
             inBody.multiply(-1D);
-            org.valkyrienskies.mod.common.math.Vector momentumAtPoint = calculator
+            Vector momentumAtPoint = calculator
                 .getVelocityAtPoint(inBody);
-            org.valkyrienskies.mod.common.math.Vector axis = toCollideWith.collision_normal;
-            org.valkyrienskies.mod.common.math.Vector offsetVector = toCollideWith.getResponse();
+            Vector axis = toCollideWith.collision_normal;
+            Vector offsetVector = toCollideWith.getResponse();
             calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, false,
                 false, impulseApplied);
         }
@@ -357,11 +361,11 @@ public class WorldPhysicsCollider {
     // Finally, the end of all this spaghetti code! This step takes all of the math
     // generated before, and it directly adds the result to Ship velocities
     private void calculateCollisionImpulseForce(org.valkyrienskies.mod.common.math.Vector inBody,
-        org.valkyrienskies.mod.common.math.Vector velocityAtPointOfCollision,
-        org.valkyrienskies.mod.common.math.Vector axis,
-        org.valkyrienskies.mod.common.math.Vector offsetVector, boolean didBlockBreakInShip,
+        Vector velocityAtPointOfCollision,
+        Vector axis,
+        Vector offsetVector, boolean didBlockBreakInShip,
         boolean didBlockBreakInWorld, double impulseApplied) {
-        org.valkyrienskies.mod.common.math.Vector firstCross = inBody.cross(axis);
+        Vector firstCross = inBody.cross(axis);
         Vector3d firstCrossCopy = firstCross.toVector3d();
 
         calculator.getPhysInvMOITensor().transform(firstCrossCopy);
@@ -394,7 +398,7 @@ public class WorldPhysicsCollider {
             double collisionVelocity = velocityAtPointOfCollision.dot(axis);
 
             addFrictionToNormalForce(velocityAtPointOfCollision, collisionImpulseForce, inBody);
-            calculator.linearMomentum.add(collisionImpulseForce);
+            calculator.getLinearMomentum().add(collisionImpulseForce);
             org.valkyrienskies.mod.common.math.Vector thirdCross = inBody
                 .cross(collisionImpulseForce);
 
@@ -403,7 +407,7 @@ public class WorldPhysicsCollider {
             calculator.getPhysInvMOITensor().transform(thirdCrossTemp);
 
             thirdCross.setValue(thirdCrossTemp);
-            calculator.angularVelocity.add(thirdCross);
+            calculator.getLinearMomentum().add(thirdCross);
         }
     }
 
@@ -413,11 +417,11 @@ public class WorldPhysicsCollider {
         org.valkyrienskies.mod.common.math.Vector impulseVector,
         org.valkyrienskies.mod.common.math.Vector inBody) {
         org.valkyrienskies.mod.common.math.Vector contactNormal = new org.valkyrienskies.mod.common.math.Vector(
-                impulseVector);
+            impulseVector);
         contactNormal.normalize();
 
         org.valkyrienskies.mod.common.math.Vector frictionVector = new org.valkyrienskies.mod.common.math.Vector(
-                momentumAtPoint);
+            momentumAtPoint);
         frictionVector.normalize();
         frictionVector.multiply(impulseVector.length() * KINETIC_FRICTION_COEFFICIENT);
 
@@ -428,31 +432,33 @@ public class WorldPhysicsCollider {
         // Remove all friction components along the impulse vector
         double frictionImpulseDot = frictionVector.dot(contactNormal);
         org.valkyrienskies.mod.common.math.Vector toRemove = contactNormal
-                .getProduct(frictionImpulseDot);
+            .getProduct(frictionImpulseDot);
         frictionVector.subtract(toRemove);
 
-        double inertiaScalarAlongAxis = parent.getPhysicsProcessor().getInertiaAlongRotationAxis();
+        double inertiaScalarAlongAxis = parent.getPhysicsCalculations()
+            .getInertiaAlongRotationAxis();
         // The change in velocity vector
         org.valkyrienskies.mod.common.math.Vector initialVelocity = new org.valkyrienskies.mod.common.math.Vector(
-                parent.getPhysicsProcessor().linearMomentum,
-                parent.getPhysicsProcessor().getInvMass());
+            parent.getPhysicsCalculations().getLinearMomentum(),
+            parent.getPhysicsCalculations().getInvMass());
         // Don't forget to multiply by delta t
         org.valkyrienskies.mod.common.math.Vector deltaVelocity = new org.valkyrienskies.mod.common.math.Vector(
-                frictionVector,
-                parent.getPhysicsProcessor().getInvMass() * parent.getPhysicsProcessor()
-                        .getDragForPhysTick());
+            frictionVector,
+            parent.getPhysicsCalculations().getInvMass() * parent.getPhysicsCalculations()
+                .getDragForPhysTick());
 
         double A = initialVelocity.lengthSq();
         double B = 2 * initialVelocity.dot(deltaVelocity);
         double C = deltaVelocity.lengthSq();
 
         org.valkyrienskies.mod.common.math.Vector initialAngularVelocity = parent
-                .getPhysicsProcessor().angularVelocity;
+            .getPhysicsCalculations().getAngularVelocity();
         org.valkyrienskies.mod.common.math.Vector deltaAngularVelocity = inBody
-                .cross(frictionVector);
+            .cross(frictionVector);
         // This might need to be 1 / inertiaScalarAlongAxis
         deltaAngularVelocity
-                .multiply(parent.getPhysicsProcessor().getDragForPhysTick() / inertiaScalarAlongAxis);
+            .multiply(
+                parent.getPhysicsCalculations().getDragForPhysTick() / inertiaScalarAlongAxis);
 
         double D = initialAngularVelocity.lengthSq();
         double E = 2 * deltaAngularVelocity.dot(initialAngularVelocity);
@@ -467,11 +473,11 @@ public class WorldPhysicsCollider {
         // The coefficients of energy as a function of energyScaleFactor in the form (A
         // + B * k + c * k^2)
         double firstCoefficient =
-                A * parent.getPhysicsProcessor().getMass() + D * inertiaScalarAlongAxis;
+            A * parent.getPhysicsCalculations().getMass() + D * inertiaScalarAlongAxis;
         double secondCoefficient =
-                B * parent.getPhysicsProcessor().getMass() + E * inertiaScalarAlongAxis;
+            B * parent.getPhysicsCalculations().getMass() + E * inertiaScalarAlongAxis;
         double thirdCoefficient =
-                C * parent.getPhysicsProcessor().getMass() + F * inertiaScalarAlongAxis;
+            C * parent.getPhysicsCalculations().getMass() + F * inertiaScalarAlongAxis;
 
         double scaleFactor = -secondCoefficient / (thirdCoefficient * 2);
 
@@ -499,11 +505,11 @@ public class WorldPhysicsCollider {
         // jiggling through the ground. God I can't wait for a new physics engine.
         final AxisAlignedBB collisionBB = currentPhysicsTransform.getShipBoundingBox().grow(3)
             .grow(AABB_EXPANSION).expand(
-                calculator.linearMomentum.x * calculator.getInvMass() * calculator
+                calculator.getLinearMomentum().x * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.linearMomentum.y * calculator.getInvMass() * calculator
+                calculator.getLinearMomentum().y * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.linearMomentum.z * calculator.getInvMass() * calculator
+                calculator.getLinearMomentum().z * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick()
                     * 5);
         final AxisAlignedBB shipBB = currentPhysicsTransform.getShipBoundingBox().grow(3);

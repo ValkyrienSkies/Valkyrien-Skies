@@ -25,8 +25,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager.DetectorIDs;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
@@ -37,8 +39,9 @@ import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
  * This entity's only purpose is to use the functionality of sending itself to nearby players, as
  * well as the functionality of automatically loading with the world; all other operations are
  * handled by the PhysicsObject class.
- *
+ * <p>
  * This is scheduled for deletion
+ *
  * @deprecated
  */
 @ParametersAreNonnullByDefault
@@ -46,15 +49,14 @@ import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpawnData {
 
     private final PhysicsObject physicsObject;
-    // TODO: Replace these raw types with something safer.
-    private double pitch;
-    private double yaw;
-    private double roll;
 
     public PhysicsWrapperEntity(World worldIn) {
         super(worldIn);
         this.physicsObject = new PhysicsObject(this);
     }
+
+    @Override
+    protected void entityInit() {}
 
     public static TickSyncCompletableFuture<PhysicsWrapperEntity> createWrapperEntity(
         TileEntityPhysicsInfuser te) {
@@ -90,9 +92,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     }
 
     @Override
-    public void updatePassenger(Entity passenger) { }
-
-    @Override
     public void setCustomNameTag(String name) {
         if (world.isRemote) {
             super.setCustomNameTag(name);
@@ -110,32 +109,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
                 super.setCustomNameTag(name);
             }
         }
-    }
-
-    @Override
-    public void setPositionAndUpdate(double x, double y, double z) {
-
-    }
-
-    @Override
-    protected void entityInit() {
-
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public AxisAlignedBB getRenderBoundingBox() {
-        return getPhysicsObject().getShipBoundingBox();
-    }
-
-    @Override
-    public void setPosition(double x, double y, double z) {
-
-    }
-
-    @Override
-    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
-
     }
 
     @Override
@@ -180,21 +153,25 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
      * @return the roll value being currently used by the game tick
      */
     public double getRoll() {
-        return roll;
+        return this.getPhysicsObject().getData().getTransform().getRoll();
     }
 
     /**
      * @return the yaw value being currently used by the game tick
      */
     public double getYaw() {
-        return yaw;
+        return this.getPhysicsObject().getData().getTransform().getYaw();
     }
 
     /**
      * @return the pitch value being currently used by the game tick
      */
     public double getPitch() {
-        return pitch;
+        return this.getPhysicsObject().getData().getTransform().getPitch();
+    }
+
+    public double getPosX() {
+        return this.getPhysicsObject().getData().getTransform().getPosX();
     }
 
     /**
@@ -208,19 +185,17 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
      * Sets the position and rotation of the PhysicsWrapperEntity, and updates the pseudo ship AABB
      * (not the same as the actual collision one).
      *
-     * @param posX
-     * @param posY
-     * @param posZ
      * @param pitch in degrees
      * @param yaw   in degrees
      * @param roll  in degrees
      */
     public void setPhysicsEntityPositionAndRotation(double posX, double posY, double posZ,
         double pitch, double yaw, double roll) {
-        this.posX = posX;
-        this.posY = posY;
-        this.posZ = posZ;
-        setPhysicsEntityRotation(pitch, yaw, roll);
+        ShipIndexedData data = this.getPhysicsObject().getData();
+        ShipTransform newTransform = new ShipTransform(posX, posY, posZ, pitch, yaw, roll,
+            this.getPhysicsObject().getCenterCoord());
+
+        QueryableShipData.get(this.world).updateShip(data, data.withTransform(newTransform));
     }
 
     @Override
@@ -246,8 +221,6 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
      * @param roll  in degrees
      */
     public void setPhysicsEntityRotation(double pitch, double yaw, double roll) {
-        this.pitch = pitch;
-        this.yaw = yaw;
-        this.roll = roll;
+        setPhysicsEntityPositionAndRotation(this.posX, this.posY, this.posZ, pitch, yaw, roll);
     }
 }

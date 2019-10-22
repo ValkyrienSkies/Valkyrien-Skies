@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mod.common.multithreaded;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -28,11 +32,6 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
@@ -167,12 +166,12 @@ public class VSThread extends Thread {
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {
                 // Update the physics simulation
-                wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPreCol(newPhysSpeed);
+                wrapper.getPhysicsObject().getPhysicsCalculations().rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
-                wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
+                wrapper.getPhysicsObject().getPhysicsCalculations().getWorldCollision()
                     .tickUpdatingTheCollisionCache();
                 // Take the big collision and split into tiny ones
-                wrapper.getPhysicsObject().getPhysicsProcessor().getWorldCollision()
+                wrapper.getPhysicsObject().getPhysicsCalculations().getWorldCollision()
                     .splitIntoCollisionTasks(collisionTasks);
             }
         }
@@ -201,7 +200,7 @@ public class VSThread extends Thread {
         for (PhysicsWrapperEntity wrapper : shipsWithPhysics) {
             if (!wrapper.firstUpdate) {
                 try {
-                    wrapper.getPhysicsObject().getPhysicsProcessor().rawPhysTickPostCol();
+                    wrapper.getPhysicsObject().getPhysicsCalculations().rawPhysTickPostCol();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

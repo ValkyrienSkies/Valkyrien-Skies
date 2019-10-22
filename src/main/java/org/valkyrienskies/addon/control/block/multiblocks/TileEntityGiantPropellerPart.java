@@ -111,7 +111,7 @@ public class TileEntityGiantPropellerPart extends
                         IRotationNodeWorld nodeWorld;
                         if (physicsObjectOptional.isPresent()) {
                             nodeWorld = physicsObjectOptional.get()
-                                .getPhysicsProcessor().getPhysicsRotationNodeWorld();
+                                .getPhysicsCalculations().getPhysicsRotationNodeWorld();
                         } else {
                             IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
                             nodeWorld = provider.getPhysicsRotationNodeWorld();

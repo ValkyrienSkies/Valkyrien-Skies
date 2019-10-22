@@ -57,7 +57,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
 
     @Override
     public final void onStartTileUsage(EntityPlayer player) {
-        getParentPhysicsEntity().getPhysicsProcessor().actAsArchimedes = true;
+        getParentPhysicsEntity().getPhysicsCalculations().actAsArchimedes = true;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
         // Sanity check, sometimes we can be piloting something that's been destroyed so there's nothing to change physics on.
         if (getParentPhysicsEntity() != null) {
             getParentPhysicsEntity()
-                .getPhysicsProcessor().actAsArchimedes = false;
+                .getPhysicsCalculations().actAsArchimedes = false;
         }
     }
 
@@ -73,7 +73,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
             PhysicsObject controlledShip, PilotControlsMessage message, IBlockState state) {
         BlockPos chairPosition = getPos();
 
-        if (controlledShip.getShipAligningToGrid()) {
+        if (controlledShip.isShipAligningToGrid()) {
             return;
         }
 
@@ -148,7 +148,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
         shipUpRotationVector.multiply(shipUpTheta);
 
         idealAngularDirection.add(shipUpRotationVector);
-        idealLinearVelocity.multiply(20D * controlledShip.getPhysicsProcessor().getMass());
+        idealLinearVelocity.multiply(20D * controlledShip.getPhysicsCalculations().getMass());
 
         // Move the ship faster if the player holds the sprint key.
         if (message.airshipSprinting) {
@@ -157,15 +157,15 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
 
         double lerpFactor = .2D;
         Vector linearMomentumDif = idealLinearVelocity
-            .getSubtraction(controlledShip.getPhysicsProcessor().linearMomentum);
+            .getSubtraction(controlledShip.getPhysicsCalculations().getLinearMomentum());
         Vector angularVelocityDif = idealAngularDirection
-            .getSubtraction(controlledShip.getPhysicsProcessor().angularVelocity);
+            .getSubtraction(controlledShip.getPhysicsCalculations().getAngularVelocity());
 
         linearMomentumDif.multiply(lerpFactor);
         angularVelocityDif.multiply(lerpFactor);
 
-        controlledShip.getPhysicsProcessor().linearMomentum.subtract(linearMomentumDif);
-        controlledShip.getPhysicsProcessor().angularVelocity.subtract(angularVelocityDif);
+        controlledShip.getPhysicsCalculations().getLinearMomentum().subtract(linearMomentumDif);
+        controlledShip.getPhysicsCalculations().getAngularVelocity().subtract(angularVelocityDif);
     }
 
 }

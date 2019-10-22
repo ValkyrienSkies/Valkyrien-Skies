@@ -17,10 +17,13 @@
 package org.valkyrienskies.mod.common.coordinates;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.With;
 import lombok.experimental.Accessors;
+import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -33,7 +36,6 @@ import org.joml.Matrix4dc;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
@@ -49,32 +51,28 @@ import valkyrienwarfare.api.TransformType;
  * @author thebest108
  */
 @Immutable
+@With
+@Value
 @Log4j2
+@Builder(toBuilder = true)
+@NonFinal
 @Accessors(fluent = false)
+@AllArgsConstructor
 public class ShipTransform {
 
-    @JsonDeserialize(as = Matrix4d.class)
-    private final Matrix4dc subspaceToGlobal;
-    @JsonDeserialize(as = Matrix4d.class)
-    private final Matrix4dc globalToSubspace;
-
-    @Getter
-    double posX, posY, posZ, pitch, yaw, roll;
-    @Getter
-    Vector centerCoord;
-
     /**
-     * Don't use, we're planning on moving the math to a proper library eventually.
+     * A transformation matrix used to convert 'subspace' coordinates into 'global' coordinates.
      */
-    @Deprecated
-    public ShipTransform(double[] doubleMatrix) {
-        this(VSMath.convertArrayMatrix4d(doubleMatrix));
-    }
+    @JsonDeserialize(as = Matrix4d.class)
+    Matrix4dc subspaceToGlobal;
+    /**
+     * A transformation matrix used to convert 'global' coordinates into 'subspace coordinates'
+     */
+    @JsonDeserialize(as = Matrix4d.class)
+    Matrix4dc globalToSubspace;
 
-    public ShipTransform(Matrix4d sToG) {
-        this.subspaceToGlobal = sToG;
-        this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
-    }
+    double posX, posY, posZ, pitch, yaw, roll;
+    Vector centerCoord;
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
         double roll, Vector centerCoord) {
@@ -84,13 +82,15 @@ public class ShipTransform {
         this.pitch = pitch;
         this.yaw = yaw;
         this.roll = roll;
+        this.centerCoord = centerCoord;
 
         this.subspaceToGlobal = new Matrix4d()
-            // First we translate the coordinates to where they are in the world.
+            // Finally we translate the coordinates to where they are in the world.
             .translate(posX, posY, posZ)
-            // Then we rotate the coordinates based on the pitch/yaw/roll.
+            // Then we rotate about the coordinate origin based on the pitch/yaw/roll.
             .rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll))
-            // Then translate the block coordinates to coordinates where center of mass is <0,0,0>
+            // First translate the block coordinates to coordinates where center of mass is <0,0,0>
+            // E.g., move the coordinate origin to <0,0,0>
             .translate(-centerCoord.x, -centerCoord.y, -centerCoord.z);
 
         this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
@@ -98,31 +98,6 @@ public class ShipTransform {
 
     public static Matrix4d createTransform(ShipTransform prev, ShipTransform current) {
         return current.subspaceToGlobal.mul(prev.globalToSubspace, new Matrix4d());
-    }
-
-    public ShipTransform(double translateX, double translateY, double translateZ) {
-        this(new Matrix4d().setTranslation(translateX, translateY, translateZ));
-    }
-
-    /**
-     * Initializes an empty ShipTransform that does no translation or rotation.
-     */
-    public ShipTransform() {
-        this.subspaceToGlobal = new Matrix4d();
-        this.globalToSubspace = new Matrix4d();
-    }
-
-    @Nullable
-    public static ShipTransform readFromNBT(NBTTagCompound compound, String name) {
-        byte[] localToGlobalAsBytes = compound.getByteArray(name);
-        if (localToGlobalAsBytes.length == 0) {
-            log.error(
-                "Loading from the ShipTransform has failed, now we are forced to fallback on " +
-                    "Vanilla MC positions. This probably won't go well at all!");
-            return null;
-        }
-        double[] localToGlobalInternalArray = ValkyrienNBTUtils.toDoubleArray(localToGlobalAsBytes);
-        return new ShipTransform(new Matrix4d().set(localToGlobalInternalArray));
     }
 
     public void transformPosition(Vector3d position, TransformType transformType) {
@@ -195,14 +170,17 @@ public class ShipTransform {
     }
 
     /**
-     * Returns the same matrix this object has (not a copy). For that reason please <h1>DO NOT
-     * CAST THIS</h1> to Matrix4d. Doing so would violate the contract that the internal
-     * transform never changes, so DO NOT DO IT! You would be worse than Thanos! You wouldn't break
-     * half the mod, you would break EVERYTHING. Your computer would explode, your house would burn
-     * down, your dog will die, you'll be exiled from your home country, and your parents will
-     * disown you. Even if you so much as think about casting this back to a Matrix4d you'll likely
-     * get struck by an asteroid. You've been warned.
+     * Returns the same matrix this object has (not a copy). For that reason please <h1>DO NOT CAST
+     * THIS</h1> to Matrix4d. Doing so would violate the contract that the internal transform never
+     * changes, so DO NOT DO IT! You would be worse than Thanos! You wouldn't break half the mod,
+     * you would break EVERYTHING. Your computer would explode, your house would burn down, your dog
+     * will die, you'll be exiled from your home country, and your parents will disown you. Even if
+     * you so much as think about casting this back to a Matrix4d you'll likely get struck by an
+     * asteroid. You've been warned.
+     *
+     * @deprecated use {@link #getSubspaceToGlobal()} and {@link #getGlobalToSubspace()} instead
      */
+    @Deprecated
     public Matrix4dc getTransformMatrix(TransformType transformType) {
         switch (transformType) {
             case SUBSPACE_TO_GLOBAL:

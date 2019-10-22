@@ -58,7 +58,7 @@ public class WrapperPositionMessage implements IMessage {
     }
 
     public WrapperPositionMessage(PhysicsShipTransform transformData, int entityID,
-                                  int relativeTick) {
+        int relativeTick) {
         this.setEntityID(entityID);
         this.setRelativeTick(relativeTick);
         this.setShipBB(transformData.getShipBoundingBox());
@@ -85,15 +85,17 @@ public class WrapperPositionMessage implements IMessage {
     }
 
     public WrapperPositionMessage(PhysicsObject toRunLocally) {
-        setPosX(toRunLocally.getWrapperEntity().posX);
-        setPosY(toRunLocally.getWrapperEntity().posY);
-        setPosZ(toRunLocally.getWrapperEntity().posZ);
+        ShipTransform transform = toRunLocally.getTransform();
 
-        setPitch(toRunLocally.getWrapperEntity().getPitch());
-        setYaw(toRunLocally.getWrapperEntity().getYaw());
-        setRoll(toRunLocally.getWrapperEntity().getRoll());
+        setPosX(transform.getPosX());
+        setPosY(transform.getPosY());
+        setPosZ(transform.getPosZ());
 
-        setCenterOfMass(toRunLocally.getCenterCoord());
+        setPitch(transform.getPitch());
+        setYaw(transform.getYaw());
+        setRoll(transform.getRoll());
+
+        setCenterOfMass(transform.getCenterCoord());
         setShipBB(toRunLocally.getShipBoundingBox());
     }
 
@@ -114,7 +116,7 @@ public class WrapperPositionMessage implements IMessage {
     }
 
     public WrapperPositionMessage(WrapperPositionMessage[] transformations,
-                                  double[] weights) {
+        double[] weights) {
         double x = 0;
         double y = 0;
         double z = 0;
@@ -161,8 +163,8 @@ public class WrapperPositionMessage implements IMessage {
 
         setCenterOfMass(new Vector(buf.readDouble(), buf.readDouble(), buf.readDouble()));
         setShipBB(new AxisAlignedBB(buf.readDouble(), buf.readDouble(), buf.readDouble(),
-                buf.readDouble(),
-                buf.readDouble(), buf.readDouble()));
+            buf.readDouble(),
+            buf.readDouble(), buf.readDouble()));
     }
 
     @Override
@@ -201,26 +203,33 @@ public class WrapperPositionMessage implements IMessage {
     public void applySmoothLerp(PhysicsObject physObj, double lerpFactor) {
         Vector CMDif = centerOfMass.getSubtraction(physObj.getCenterCoord());
         physObj.getShipTransformationManager().getCurrentTickTransform()
-                .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
+            .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
         // CMDif.multiply(lerpFactor);
 
-        physObj.getWrapperEntity().posX -= CMDif.x;
-        physObj.getWrapperEntity().posY -= CMDif.y;
-        physObj.getWrapperEntity().posZ -= CMDif.z;
+        ShipTransform transform = physObj.getTransform();
+        ShipTransform newTransform = transform.toBuilder()
+            .posX((transform.getPosX() - CMDif.x) -
+                (posX - (transform.getPosX() - CMDif.x)) * lerpFactor)
+            .posY((transform.getPosX() - CMDif.x) -
+                (posY - (transform.getPosX() - CMDif.x)) * lerpFactor)
+            .posZ((transform.getPosX() - CMDif.x) -
+                (posZ - (transform.getPosX() - CMDif.x)) * lerpFactor)
+            .build();
+        physObj.updateTransform(newTransform);
 
-        physObj.getWrapperEntity().lastTickPosX = physObj.getWrapperEntity().posX;
+        // Supposedly removing this should cause no trouble
+        /*physObj.getWrapperEntity().lastTickPosX = physObj.getWrapperEntity().posX;
         physObj.getWrapperEntity().lastTickPosY = physObj.getWrapperEntity().posY;
-        physObj.getWrapperEntity().lastTickPosZ = physObj.getWrapperEntity().posZ;
-
-        physObj.getWrapperEntity().posX += (posX - physObj.getWrapperEntity().posX) * lerpFactor;
-        physObj.getWrapperEntity().posY += (posY - physObj.getWrapperEntity().posY) * lerpFactor;
-        physObj.getWrapperEntity().posZ += (posZ - physObj.getWrapperEntity().posZ) * lerpFactor;
+        physObj.getWrapperEntity().lastTickPosZ = physObj.getWrapperEntity().posZ;*/
 
         // Create the quaternion for the next physics tick
-        Matrix4d newRotationTransform = new Matrix4d().rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll));
+        Matrix4d newRotationTransform = new Matrix4d()
+            .rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll));
 
         Quaterniond preRotation = new Quaterniond();
-        preRotation.setFromUnnormalized(physObj.getShipTransformationManager().getCurrentTickTransform().getTransformMatrix(TransformType.SUBSPACE_TO_GLOBAL));
+        preRotation.setFromUnnormalized(
+            physObj.getShipTransformationManager().getCurrentTickTransform()
+                .getTransformMatrix(TransformType.SUBSPACE_TO_GLOBAL));
 
         Quaterniond nextRotation = new Quaterniond();
         newRotationTransform.getNormalizedRotation(nextRotation);
@@ -233,9 +242,8 @@ public class WrapperPositionMessage implements IMessage {
 
         slerp.getEulerAnglesXYZ(rotAngles);
 
-        physObj.getWrapperEntity()
-                .setPhysicsEntityRotation(Math.toDegrees(rotAngles.x),
-                        Math.toDegrees(rotAngles.y), Math.toDegrees(rotAngles.z));
+        physObj.setRotation(Math.toDegrees(rotAngles.x),
+                Math.toDegrees(rotAngles.y), Math.toDegrees(rotAngles.z));
 
         physObj.setCenterCoord(centerOfMass);
         // Update the ship bounding box

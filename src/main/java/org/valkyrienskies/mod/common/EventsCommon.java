@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mod.common;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -26,8 +30,6 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemNameTag;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +44,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
@@ -73,11 +74,6 @@ import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class EventsCommon {
 
@@ -98,28 +94,6 @@ public class EventsCommon {
                 player.sendMessage(new TextComponentString("Spawn Point Set!"));
                 player.setSpawnPoint(pos, true);
                 event.setResult(SleepResult.NOT_POSSIBLE_HERE);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onRightClickBlock(RightClickBlock event) {
-        if (!event.getWorld().isRemote) {
-            ItemStack stack = event.getItemStack();
-            if (stack.getItem() instanceof ItemNameTag) {
-                BlockPos posAt = event.getPos();
-                EntityPlayer player = event.getEntityPlayer();
-                World world = event.getWorld();
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                    .getPhysicsObject(world, posAt);
-
-                if (physicsObject.isPresent()) {
-                    physicsObject.get()
-                        .getWrapperEntity()
-                        .setCustomNameTag(stack.getDisplayName());
-                    --stack.stackSize;
-                    event.setCanceled(true);
-                }
             }
         }
     }

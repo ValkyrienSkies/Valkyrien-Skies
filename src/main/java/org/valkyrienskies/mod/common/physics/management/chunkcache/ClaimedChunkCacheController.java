@@ -1,7 +1,5 @@
 package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
-import java.util.Map.Entry;
-import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -15,6 +13,9 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
+
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * The ClaimedChunkCacheController is a chunk cache controller used by the {@link PhysicsObject}. It
@@ -42,7 +43,7 @@ public class ClaimedChunkCacheController {
         this.world = parent.getWorld();
         this.parent = parent;
 
-        int dimension = parent.getOwnedChunks().dimension();
+        int dimension = parent.getData().getChunkClaim().dimension();
 
         if (loaded) {
             loadLoadedChunks();
@@ -59,7 +60,7 @@ public class ClaimedChunkCacheController {
      * @return The chunk from the cache
      */
     public Chunk getChunkAt(int chunkX, int chunkZ) {
-        VSChunkClaim claim = parent.getOwnedChunks();
+        VSChunkClaim claim = parent.getData().getChunkClaim();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
 
@@ -96,7 +97,7 @@ public class ClaimedChunkCacheController {
      * @param chunk  The chunk to cache.
      */
     public void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
-        VSChunkClaim claim = parent.getOwnedChunks();
+        VSChunkClaim claim = parent.getData().getChunkClaim();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
 
@@ -121,7 +122,7 @@ public class ClaimedChunkCacheController {
      * Loads chunks that have been generated before into the cache
      */
     private void loadLoadedChunks() {
-        VSChunkClaim chunkClaim = parent.getOwnedChunks();
+        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
 
         claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
             (chunkClaim.getRadius() * 2) + 1];
@@ -151,7 +152,7 @@ public class ClaimedChunkCacheController {
      * the game thread. Running it on a separate thread will lead to data races.
      */
     private void loadNewChunks() {
-        VSChunkClaim chunkClaim = parent.getOwnedChunks();
+        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
 
         claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
             (chunkClaim.getRadius() * 2) + 1];
@@ -166,7 +167,7 @@ public class ClaimedChunkCacheController {
     }
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
-        VSChunkClaim chunkClaim = parent.getOwnedChunks();
+        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
         chunk.generateSkylightMap();
         chunk.checkLight();
 

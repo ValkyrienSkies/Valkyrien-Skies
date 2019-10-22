@@ -18,14 +18,6 @@ package org.valkyrienskies.mod.common.physics;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.experimental.Delegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -33,13 +25,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.AxisAngle4d;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Quaterniond;
-import org.joml.Quaterniondc;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import org.joml.*;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
@@ -56,6 +42,10 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipPhysicsData;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.lang.Math;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @JsonAutoDetect(fieldVisibility = Visibility.NONE) // Do not autodetect fields
 public class PhysicsCalculations implements IRotationNodeWorldProvider {
@@ -110,11 +100,15 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         this.physMOITensor = new Matrix3d();
         this.physInvMOITensor = new Matrix3d();
 
+        this.gameTickCenterOfMass = new Vector();
         this.physCenterOfMass = new Vector();
         this.torque = new Vector();
         // We need thread safe access to this.
         this.activeForcePositions = ConcurrentHashMap.newKeySet();
         this.physicsRotationNodeWorld = new ImplRotationNodeWorld(this.parent);
+
+        linearMomentum = new Vector();
+        angularVelocity = new Vector();
     }
 
     public void writeToNBTTag(NBTTagCompound compound) {

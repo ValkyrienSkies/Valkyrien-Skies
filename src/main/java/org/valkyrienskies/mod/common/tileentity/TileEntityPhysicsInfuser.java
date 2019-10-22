@@ -1,9 +1,5 @@
 package org.valkyrienskies.mod.common.tileentity;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import mcp.MethodsReturnNonnullByDefault;
@@ -32,12 +28,16 @@ import org.valkyrienskies.mod.client.gui.IVSTileGui;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.container.EnumInfuserButton;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.multithreaded.VSExecutors;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
     IVSTileGui {
@@ -110,10 +110,11 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 if (!ShipChunkAllocator
                     .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
-                        PhysicsWrapperEntity.createWrapperEntity(this)
+                        ValkyrienUtils.assembleShipAsOrderedByPlayer(getWorld(), getPos())
                             .thenAcceptAsync(ship -> {
                                 System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
-                                getWorld().spawnEntity(ship);
+                                // TODO: Hmmmmmmmm
+                                // getWorld().spawnEntity(ship);
                             }, VSExecutors.forWorld((WorldServer) world));
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -306,11 +307,17 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         return oldState.getBlock() != newSate.getBlock();
     }
 
+    /**
+     * If the infuser is in a ship then we return true if this tile is the center of the ship. If the infuser isn't
+     * in a ship then we just retard true regardless.
+     *
+     * @return
+     */
     public boolean isCenterOfShip() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+                .getPhysicsObject(getWorld(), getPos());
         return !physicsObject.isPresent() ||
-            physicsObject.get().getPhysicsInfuserPos().equals(getPos());
+                getPos().equals(physicsObject.get().getData().getPhysInfuserPos());
     }
 
     @SideOnly(Side.CLIENT)

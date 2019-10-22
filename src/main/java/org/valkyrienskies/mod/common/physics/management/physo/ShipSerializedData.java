@@ -6,12 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
 
 @Data
 @Accessors(fluent = false)
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true) // For Jackson
+@NoArgsConstructor(access = AccessLevel.PACKAGE, force = true) // For Jackson
 public class ShipSerializedData {
 
     @JsonBackReference
@@ -33,5 +34,10 @@ public class ShipSerializedData {
      * Whether or not physics are enabled on this physo
      */
     private boolean physicsEnabled;
+
+    /**
+     * The position of the physics infuser this ship has.
+     */
+    private BlockPos physInfuserPos;
 
 }

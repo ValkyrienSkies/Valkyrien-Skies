@@ -20,13 +20,6 @@ import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -45,7 +38,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -58,16 +50,8 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.coordinates.ISubspace;
-import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
-import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
-import org.valkyrienskies.mod.common.multithreaded.VSExecutors;
 import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
@@ -77,8 +61,6 @@ import org.valkyrienskies.mod.common.physics.management.ShipTransformationManage
 import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
-import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager.DetectorIDs;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -88,17 +70,14 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
- * The heart and soul of this mod. The physics object does everything from custom collision, block
- * interactions, physics, networking, rendering, and more!
- *
- * @author thebest108
+ * The heart and soul of this mod, and now its broken lol.
  */
 @Accessors(fluent = false)
-public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
-
-    @Getter
-    private final PhysicsWrapperEntity wrapperEntity;
+public class PhysicsObject implements IPhysicsEntity {
 
     @Getter
     private ShipIndexedData data;
@@ -107,27 +86,26 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     @Getter
     private final List<EntityPlayerMP> watchingPlayers;
-    private final ISubspace shipSubspace;
     private final Set<INodeController> physicsControllers;
     private final Set<INodeController> physicsControllersImmutable;
     // Used to iterate over the ship blocks extremely quickly by taking advantage of the cache
     @Getter
     private final TIntArrayList blockPositionsGameTick;
     @Getter
-    private PhysObjectRenderManager shipRenderer;
+    private final PhysObjectRenderManager shipRenderer;
     /**
      * Just a random block position in the ship. Used to correct floating point errors and keep
      * track of the ship.
      */
     @Getter
     @Setter
-    private BlockPos referenceBlockPos;
+    private final BlockPos referenceBlockPos;
     @Getter
     @Setter
-    private ShipTransformationManager shipTransformationManager;
+    private final ShipTransformationManager shipTransformationManager;
     @Getter
     @Setter
-    private PhysicsCalculations physicsCalculations;
+    private final PhysicsCalculations physicsCalculations;
     /**
      * Has to be concurrent, only exists properly on the server. Do not use this for anything client
      * side! Contains all of the non-air block positions on the ship. This is used for generating
@@ -135,20 +113,15 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      */
     @Getter
     private Set<BlockPos> blockPositions;
-    @Getter
-    @Setter
-    private DetectorIDs detectorID;
+
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
-    // TODO: Make for re-organizing these to make Ship sizes Dynamic
-    @Getter
-    @Setter
-    private VSChunkClaim ownedChunks;
+
     /**
      * Used for faster memory access to the Chunks this object 'owns'
      */
     @Getter
-    private ClaimedChunkCacheController claimedChunkCache;
+    private final ClaimedChunkCacheController claimedChunkCache;
     @Getter
     @Setter
     private AxisAlignedBB shipBoundingBox;
@@ -158,14 +131,12 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     @Setter
     @Getter
     private boolean needsCollisionCacheUpdate = true;
-    @Getter
-    @Setter
-    private BlockPos physicsInfuserPos = null;
+
     private boolean shipAligningToGrid = false;
     @Getter
     private boolean isFullyLoaded = false;
     @Getter
-    private IVoxelFieldAABBMaker voxelFieldAABBMaker; // Used to quickly make aabb's
+    private final IVoxelFieldAABBMaker voxelFieldAABBMaker; // Used to quickly make aabb's
     @Getter
     private final World world;
 
@@ -173,38 +144,44 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     // region Methods
 
-    public PhysicsObject(PhysicsWrapperEntity host) {
-        this.wrapperEntity = host;
-        this.world = host.world;
-        if (host.world.isRemote) {
+    public PhysicsObject(World world, ShipIndexedData data) {
+        this.world = world;
+        this.data = data;
+        if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this);
+        } else {
+            this.shipRenderer = null;
         }
         // We need safe access to this across multiple threads.
         this.blockPositions = ConcurrentHashMap.newKeySet();
         this.shipBoundingBox = Entity.ZERO_AABB;
         this.watchingPlayers = new ArrayList<>();
-        this.shipSubspace = new ImplSubspace(this);
         this.physicsControllers = Sets.newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.blockPositionsGameTick = new TIntArrayList();
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
-        this.voxelFieldAABBMaker = null;
+        this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
+        this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
+                referenceBlockPos.getZ());
+        this.claimedChunkCache = new ClaimedChunkCacheController(this, false);
+        this.shipTransformationManager = new ShipTransformationManager(this);
+        this.physicsCalculations = new PhysicsCalculations(this);
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
         // If the world is remote, or the block is not within the claimed chunks, ignore it!
-        if (getWorld().isRemote || !getOwnedChunks().containsBlock(posAt)) {
+        if (getWorld().isRemote || !getData().getChunkClaim().containsBlock(posAt)) {
             return;
         }
 
         // If the block here is not to be made with physics, just treat it like you'd
         // treat AIR blocks.
         if (oldState != null && BlockPhysicsDetails.blocksToNotPhysicsInfuse
-            .contains(oldState.getBlock())) {
+                .contains(oldState.getBlock())) {
             oldState = Blocks.AIR.getDefaultState();
         }
         if (newState != null && BlockPhysicsDetails.blocksToNotPhysicsInfuse
-            .contains(newState.getBlock())) {
+                .contains(newState.getBlock())) {
             newState = Blocks.AIR.getDefaultState();
         }
 
@@ -225,13 +202,11 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             if (isAdded) {
                 this.blockPositionsGameTick.add(this.getBlockPosToIntRelToShip(posAt));
             }
-
-            int chunkRelativeX = (posAt.getX() >> 4) - getOwnedChunks().minX();
-            int chunkRelativeZ = (posAt.getZ() >> 4) - getOwnedChunks().minZ();
         }
 
         if (getBlockPositions().isEmpty()) {
-            destroy();
+            // TODO: Maybe?
+            // destroy();
         }
 
         if (getPhysicsCalculations() != null) {
@@ -239,103 +214,21 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         }
     }
 
-    public void destroy() {
-        getWrapperEntity().setDead();
-        List<EntityPlayerMP> watchersCopy = new ArrayList<>(getWatchingPlayers());
-        for (int x = getOwnedChunks().minX(); x <= getOwnedChunks().maxX(); x++) {
-            for (int z = getOwnedChunks().minZ(); z <= getOwnedChunks().maxZ(); z++) {
-                SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
-                for (EntityPlayerMP wachingPlayer : watchersCopy) {
-                    wachingPlayer.connection.sendPacket(unloadPacket);
-                }
-            }
-            // NOTICE: This method isnt being called to avoid the
-            // watchingPlayers.remove(player) call, which is a waste of CPU time
-            // onPlayerUntracking(wachingPlayer);
-        }
-        getWatchingPlayers().clear();
-        ValkyrienUtils.getQueryableData(getWorld()).removeShip(this.getData());
-        ValkyrienSkiesMod.VS_PHYSICS_MANAGER.onShipUnload(getWrapperEntity());
-    }
-
-    public void claimNewChunks() {
-        setOwnedChunks(ValkyrienUtils.getShipChunkAllocator(getWorld()).allocateNextChunkClaim());
-        ValkyrienUtils.getQueryableData(getWorld()).addShip(wrapperEntity);
-    }
-
-    /**
-     * Generates the new chunks
-     */
-    public TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(EntityPlayer player) {
-        if (getWorld().isRemote) {
-            throw new IllegalStateException("This method cannot be invoked on client side!");
-        }
-        if (!(getWorld() instanceof WorldServer)) {
-            throw new IllegalStateException(
-                "The world " + getWorld() + " wasn't an instance of WorldServer");
-        }
-
-        BlockPos centerInWorld = new BlockPos(getWrapperEntity().posX,
-            getWrapperEntity().posY, getWrapperEntity().posZ);
-
-        System.out.println("E!");
-        return TickSyncCompletableFuture
-            .supplyAsync(
-                () -> DetectorManager.getDetectorFor(getDetectorID(), centerInWorld, getWorld(),
-                    VSConfig.maxShipSize + 1, true))
-            .thenAcceptAsync(detector -> {
-                System.out.println("Hello! " + Thread.currentThread().getName() );
-                if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
-                    System.err.println("Ship too big or bedrock detected!");
-                    if (player != null) {
-                        player.sendMessage(new TextComponentString(
-                            "Ship construction canceled because its exceeding the ship size limit; "
-                                +
-                                "or because it's attached to bedrock. " +
-                                "Raise it with /physsettings maxshipsize [number]"));
-                    }
-                    getWrapperEntity().setDead();
-                    return;
-                }
-                assembleShip(player, detector, centerInWorld);
-
-                markFullyLoaded();
-            }, VSExecutors.forWorld((WorldServer) getWorld()));
-    }
-
-    /**
-     * Creates the PhysicsProcessor object before any data gets loaded into it; can be overridden to
-     * change the class of the Object
-     */
-    private void createPhysicsCalculations() {
-        if (getPhysicsCalculations() == null) {
-            setPhysicsCalculations(new PhysicsCalculations(this));
-        }
-    }
-
     private void assembleShip(EntityPlayer player, SpatialDetector detector,
-        BlockPos centerInWorld) {
+                              BlockPos centerInWorld) {
 
         MutableBlockPos pos = new MutableBlockPos();
 
-        claimNewChunks();
 
-        claimedChunkCache = new ClaimedChunkCacheController(this, false);
+        BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
 
-        assignChunkPhysicObject();
-
-        setReferenceBlockPos(getOwnedChunks().getRegionCenter());
-        voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
-            referenceBlockPos.getZ());
 
         setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5,
-            getReferenceBlockPos().getY() + .5,
-            getReferenceBlockPos().getZ() + .5));
-
-        createPhysicsCalculations();
+                getReferenceBlockPos().getY() + .5,
+                getReferenceBlockPos().getZ() + .5));
 
         TIntIterator iter = detector.foundSet.iterator();
-        BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
+
 
         MutableBlockPos oldPos = new MutableBlockPos();
         MutableBlockPos newPos = new MutableBlockPos();
@@ -346,8 +239,8 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, oldPos);
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, newPos);
             newPos.setPos(newPos.getX() + centerDifference.getX(),
-                newPos.getY() + centerDifference.getY(),
-                newPos.getZ() + centerDifference.getZ());
+                    newPos.getY() + centerDifference.getY(),
+                    newPos.getZ() + centerDifference.getZ());
 
             MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.of(this));
             voxelFieldAABBMaker.addVoxel(newPos.getX(), newPos.getY(), newPos.getZ());
@@ -396,7 +289,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         // Some extra ship crap at the end.
         detectBlockPositions();
-        setShipTransformationManager(new ShipTransformationManager(this));
 
         getPhysicsCalculations().updateParentCenterOfMass();
     }
@@ -409,7 +301,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 for (EntityPlayerMP player : newWatchers) {
                     player.connection.sendPacket(data);
                     ((WorldServer) getWorld()).getEntityTracker()
-                        .sendLeashedEntitiesInChunk(player, chunk);
+                            .sendLeashedEntitiesInChunk(player, chunk);
                 }
             }
         }
@@ -452,9 +344,10 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     private Set<EntityPlayerMP> getPlayersThatJustWatched() {
         Set<EntityPlayerMP> newPlayers = new HashSet<>();
-        for (Object o : ((WorldServer) getWorld()).getEntityTracker()
-            .getTrackingPlayers(getWrapperEntity())) {
-            EntityPlayerMP player = (EntityPlayerMP) o;
+        // for (Object o : ((WorldServer) getWorld()).getEntityTracker()
+        //  .getTrackingPlayers(getWrapperEntity())) {
+        for (EntityPlayer playerLol : getWorld().playerEntities) {
+            EntityPlayerMP player = (EntityPlayerMP) playerLol;
             if (!getWatchingPlayers().contains(player)) {
                 newPlayers.add(player);
                 getWatchingPlayers().add(player);
@@ -471,11 +364,11 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                 TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
                 // Mark for deconstruction
                 shouldDeconstructShip =
-                    !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
+                        !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
                 shipAligningToGrid =
-                    !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
+                        !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
                 getData().setPhysicsEnabled(!physicsCore.canMaintainShip() ||
-                    physicsCore.isPhysicsEnabled());
+                        physicsCore.isPhysicsEnabled());
             } else {
                 // Mark for deconstruction
                 shipAligningToGrid = true;
@@ -492,7 +385,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     }
 
     public void onPostTick() {
-        if (!getWrapperEntity().isDead && !getWrapperEntity().world.isRemote) {
+        if (!world.isRemote) {
             ValkyrienUtils.getQueryableData(getWorld()).updateShipPosition(this.getWrapperEntity());
         }
     }
@@ -503,7 +396,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
      */
     public void onPostTickClient() {
         WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
-            .pollForClientTransform();
+                .pollForClientTransform();
         if (toUse != null) {
             toUse.applySmoothLerp(this, .6D);
         }
@@ -521,7 +414,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         assignChunkPhysicObject();
         setReferenceBlockPos(getOwnedChunks().getRegionCenter());
         voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
-            referenceBlockPos.getZ());
+                referenceBlockPos.getZ());
         setShipTransformationManager(new ShipTransformationManager(this));
         if (!getWorld().isRemote) {
             createPhysicsCalculations();
@@ -554,20 +447,20 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
                                 for (x = 0; x < 16; x++) {
                                     for (z = 0; z < 16; z++) {
                                         if (storage.data.storage
-                                            .getAt(y << 8 | z << 4 | x)
-                                            != airStateIndex) {
+                                                .getAt(y << 8 | z << 4 | x)
+                                                != airStateIndex) {
                                             BlockPos pos = new BlockPos(chunk.x * 16 + x,
-                                                index * 16 + y,
-                                                chunk.z * 16 + z);
+                                                    index * 16 + y,
+                                                    chunk.z * 16 + z);
                                             getBlockPositions().add(pos);
                                             blockPositionsGameTick
-                                                .add(this.getBlockPosToIntRelToShip(pos));
+                                                    .add(this.getBlockPosToIntRelToShip(pos));
                                             voxelFieldAABBMaker
-                                                .addVoxel(pos.getX(), pos.getY(), pos.getZ());
+                                                    .addVoxel(pos.getX(), pos.getY(), pos.getZ());
                                             if (BlockPhysicsDetails.isBlockProvidingForce(
-                                                getWorld().getBlockState(pos), pos, getWorld())) {
+                                                    getWorld().getBlockState(pos), pos, getWorld())) {
                                                 getPhysicsCalculations()
-                                                    .addPotentialActiveForcePos(pos);
+                                                        .addPotentialActiveForcePos(pos);
                                             }
                                         }
                                     }
@@ -593,7 +486,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         getOwnedChunks().writeToNBT(compound);
         ValkyrienNBTUtils.writeVectorToNBT("c", getCenterCoord(), compound);
         getShipTransformationManager().getCurrentTickTransform()
-            .writeToNBT(compound, "current_tick_transform");
+                .writeToNBT(compound, "current_tick_transform");
 
         getPhysicsCalculations().writeToNBTTag(compound);
 
@@ -633,7 +526,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
         setOwnedChunks(new VSChunkClaim(compound));
         ShipTransform savedTransform = null;
-            //.readFromNBT(compound, "current_tick_transform");
+        //.readFromNBT(compound, "current_tick_transform");
 
         if (savedTransform != null) {
             Vector centerOfMassInGlobal = new Vector(getCenterCoord());
@@ -644,13 +537,13 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
             getWrapperEntity().posZ = centerOfMassInGlobal.z;
 
             Quaterniondc rotationQuaternion = savedTransform
-                .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+                    .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
 
             Vector3dc angles = rotationQuaternion.getEulerAnglesXYZ(new Vector3d());
 
             getWrapperEntity()
-                .setPhysicsEntityRotation(Math.toDegrees(angles.x()), Math.toDegrees(angles.y()),
-                    Math.toDegrees(angles.z()));
+                    .setPhysicsEntityRotation(Math.toDegrees(angles.x()), Math.toDegrees(angles.y()),
+                            Math.toDegrees(angles.z()));
         }
 
         loadClaimedChunks();
@@ -669,7 +562,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         PacketBuffer modifiedBuffer = new PacketBuffer(additionalData);
 
         setOwnedChunks(new VSChunkClaim(modifiedBuffer.readInt(), modifiedBuffer.readInt(),
-            modifiedBuffer.readInt()));
+                modifiedBuffer.readInt()));
 
         double posX = modifiedBuffer.readDouble();
         double posY = modifiedBuffer.readDouble();
@@ -687,7 +580,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         getShipRenderer().updateOffsetPos(getReferenceBlockPos());
 
         getShipTransformationManager().serverBuffer
-            .pushMessage(new WrapperPositionMessage(this));
+                .pushMessage(new WrapperPositionMessage(this));
 
         if (modifiedBuffer.readBoolean()) {
             setPhysicsInfuserPos(modifiedBuffer.readBlockPos());
@@ -750,11 +643,6 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         return cachedSurroundingChunks.cachedChunks();
     }
 
-    @Override
-    public ISubspace getSubspace() {
-        return this.shipSubspace;
-    }
-
     // ===== Keep track of all Node Processors in a concurrent Set =====
     public void onSetTileEntity(BlockPos pos, TileEntity tileentity) {
         if (tileentity instanceof INodeController) {
@@ -773,7 +661,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
 
     private int getBlockPosToIntRelToShip(BlockPos pos) {
         return SpatialDetector
-            .getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), this.referenceBlockPos);
+                .getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), this.referenceBlockPos);
     }
 
     void setBlockPosFromIntRelToShop(int pos, MutableBlockPos toSet) {
@@ -787,7 +675,7 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     public boolean canShipBeDeconstructed() {
         // The quaternion with the ship's orientation
         Quaterniondc shipQuat = getShipTransformationManager().getCurrentTickTransform()
-            .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+                .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         // Only allow a ship to be deconstructed if the angle between the grid and its orientation is less than half a degree.
         return Math.toDegrees(shipQuat.angle()) < .5;
     }
@@ -801,14 +689,14 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
         // We're pretty close to the grid; time 2 go.
         MutableBlockPos newPos = new MutableBlockPos();
         BlockPos centerDifference = new BlockPos(
-            Math.round(getCenterCoord().x - getWrapperEntity().posX),
-            Math.round(getCenterCoord().y - getWrapperEntity().posY),
-            Math.round(getCenterCoord().z - getWrapperEntity().posZ));
+                Math.round(getCenterCoord().x - getWrapperEntity().posX),
+                Math.round(getCenterCoord().y - getWrapperEntity().posY),
+                Math.round(getCenterCoord().z - getWrapperEntity().posZ));
         // First copy all the blocks from ship to world.
 
         for (BlockPos oldPos : this.blockPositions) {
             newPos.setPos(oldPos.getX() - centerDifference.getX(),
-                oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
+                    oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
             MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.empty());
         }
 
@@ -836,8 +724,12 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     }
 
     public void setCenterCoord(Vector centerCoord) {
-        this.updateData(this.getData().withTransform(
-                getTransform().withCenterCoord(centerCoord)));
+        try {
+            ShipTransform updatedTransform = getTransform().withCenterCoord(centerCoord);
+            this.updateData(this.getData().withTransform(updatedTransform));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isShipAligningToGrid() {
@@ -848,15 +740,15 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     @Override
     public Vec3d rotateVector(Vec3d vector, TransformType transformType) {
         return this.getShipTransformationManager()
-            .getCurrentTickTransform()
-            .rotate(vector, transformType);
+                .getCurrentTickTransform()
+                .rotate(vector, transformType);
     }
 
     @Override
     public Vec3d transformVector(Vec3d vector, TransformType transformType) {
         return this.getShipTransformationManager()
-            .getCurrentTickTransform()
-            .transform(vector, transformType);
+                .getCurrentTickTransform()
+                .transform(vector, transformType);
     }
     // endregion
 
@@ -871,16 +763,16 @@ public class PhysicsObject implements ISubspaceProvider, IPhysicsEntity {
     }
 
     public void setPositionAndRotation(double posX, double posY, double posZ,
-        double pitch, double yaw, double roll) {
+                                       double pitch, double yaw, double roll) {
         ShipTransform newTransform = new ShipTransform(posX, posY, posZ, pitch, yaw, roll,
-            this.getCenterCoord());
+                this.getCenterCoord());
 
         this.updateTransform(newTransform);
     }
 
     public void setRotation(double pitch, double yaw, double roll) {
         setPositionAndRotation(getTransform().getPosX(),
-            getTransform().getPosY(), getTransform().getPosZ(), pitch, yaw, roll);
+                getTransform().getPosY(), getTransform().getPosZ(), pitch, yaw, roll);
     }
 
     // endregion

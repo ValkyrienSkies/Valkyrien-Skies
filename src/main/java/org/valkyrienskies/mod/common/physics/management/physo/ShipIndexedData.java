@@ -1,26 +1,21 @@
 package org.valkyrienskies.mod.common.physics.management.physo;
 
-import static com.googlecode.cqengine.query.QueryFactory.attribute;
-import static com.googlecode.cqengine.query.QueryFactory.nullableAttribute;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.googlecode.cqengine.query.option.QueryOptions;
-import java.util.Set;
-import java.util.UUID;
-import javax.annotation.Nullable;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.Delegate;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
+
+import javax.annotation.Nullable;
+import java.util.Set;
+import java.util.UUID;
+
+import static com.googlecode.cqengine.query.QueryFactory.attribute;
+import static com.googlecode.cqengine.query.QueryFactory.nullableAttribute;
 
 /**
  * One of these objects will represent a ship. You can obtain a physics object for that ship (if one
@@ -65,7 +60,6 @@ public class ShipIndexedData {
     /**
      * The (unique) name of the physo as displayed to players
      */
-    @Nullable
     private final String name;
 
     /**
@@ -73,14 +67,13 @@ public class ShipIndexedData {
      */
     private final ShipTransform transform;
 
-
-    @Deprecated
-    public static ShipIndexedDataBuilder fromWrapperEntity(PhysicsWrapperEntity entity) {
+    public static ShipIndexedDataBuilder createData(String name, VSChunkClaim chunkClaim, UUID shipID, ShipTransform transform) {
         return ShipIndexedData.builder()
-            .name(entity.getCustomNameTag())
-            .physo(entity.getPhysicsObject())
-            .chunkClaim(entity.getPhysicsObject().getOwnedChunks())
-            .uuid(entity.getPersistentID());
+                .name(name)
+                .chunkClaim(chunkClaim)
+                .uuid(shipID)
+                .transform(transform)
+                .mut(new ShipSerializedData());
     }
 
     public static final Attribute<ShipIndexedData, Boolean> HAS_PHYSO = attribute(

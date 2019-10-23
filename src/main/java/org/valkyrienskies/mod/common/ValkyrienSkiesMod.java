@@ -180,7 +180,10 @@ public class ValkyrienSkiesMod {
                 .registerMessage(ShipIndexDataMessageHandler.class, ShipIndexDataMessage.class, 1,
                         Side.CLIENT);
         physWrapperNetwork
-                .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 2, Side.SERVER);
+                .registerMessage(SpawnPhysObjMessageHandler.class, SpawnPhysObjMessage.class, 2,
+                        Side.CLIENT);
+        physWrapperNetwork
+                .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 3, Side.SERVER);
     }
 
     void registerBlocks(RegistryEvent.Register<Block> event) {

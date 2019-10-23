@@ -19,14 +19,6 @@ package org.valkyrienskies.mod.common.physics.management.physo;
 import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -52,8 +44,10 @@ import org.joml.Quaterniondc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
 import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
@@ -70,6 +64,9 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -137,7 +134,14 @@ public class PhysicsObject implements IPhysicsEntity {
 
     // region Methods
 
-    public PhysicsObject(World world, UUID dataID) {
+    /**
+     * Creates a new PhysicsObject.
+     *
+     * @param world            The world this object exists in.
+     * @param dataID           The UUID of the ShipData this ship will be based on.
+     * @param firstTimeCreated True if this ship was just created through a physics infuser, false if it was loaded in from the world save.
+     */
+    public PhysicsObject(World world, UUID dataID, boolean firstTimeCreated) {
         this.world = world;
         this.shipDataUUID = dataID;
         if (world.isRemote) {
@@ -151,7 +155,7 @@ public class PhysicsObject implements IPhysicsEntity {
         this.physicsControllers = Sets.newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.blockPositionsGameTick = new TIntArrayList();
-        this.claimedChunkCache = new ClaimedChunkCacheController(this, false);
+        this.claimedChunkCache = new ClaimedChunkCacheController(this, !firstTimeCreated);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
         this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
@@ -169,6 +173,8 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
+        // Inefficient? Yes. However this prevents the getBlockPositions() from having duplicates.
+        posAt = new BlockPos(posAt);
         // If the world is remote, or the block is not within the claimed chunks, ignore it!
         if (getWorld().isRemote || !getData().getChunkClaim().containsBlock(posAt)) {
             return;
@@ -312,6 +318,11 @@ public class PhysicsObject implements IPhysicsEntity {
                 }
             }
         }
+        SpawnPhysObjMessage physObjMessage = new SpawnPhysObjMessage();
+        physObjMessage.initializeData(getData());
+        for (EntityPlayerMP player : newWatchers) {
+            ValkyrienSkiesMod.physWrapperNetwork.sendTo(physObjMessage, player);
+        }
     }
 
     /**
@@ -451,7 +462,7 @@ public class PhysicsObject implements IPhysicsEntity {
                                             BlockPos pos = new BlockPos(chunk.x * 16 + x,
                                                     index * 16 + y,
                                                     chunk.z * 16 + z);
-                                            getBlockPositions().add(pos);
+                                            getBlockPositions().add(new BlockPos(pos));
                                             blockPositionsGameTick
                                                     .add(this.getBlockPosToIntRelToShip(pos));
                                             voxelFieldAABBMaker

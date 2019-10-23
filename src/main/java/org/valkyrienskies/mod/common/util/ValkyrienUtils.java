@@ -1,9 +1,5 @@
 package org.valkyrienskies.mod.common.util;
 
-import java.util.Optional;
-import java.util.UUID;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -34,6 +30,11 @@ import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * This class contains various helper functions for Valkyrien Skies.
@@ -199,7 +200,7 @@ public class ValkyrienUtils {
                     }
 
                     QueryableShipData.get(world).addShip(shipData);
-                    PhysicsObject physicsObject = new PhysicsObject(world, shipData.getUuid());
+                    PhysicsObject physicsObject = new PhysicsObject(world, shipData.getUuid(), true);
                     shipData.setPhyso(physicsObject);
 
                     physicsObject.assembleShip(creator, detector, physicsInfuserPos);

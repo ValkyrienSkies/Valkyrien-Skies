@@ -1,27 +1,29 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import static com.googlecode.cqengine.query.QueryFactory.equal;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
+import lombok.extern.log4j.Log4j2;
+import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
+import org.valkyrienskies.mod.common.util.cqengine.UpdatableHashIndex;
+import org.valkyrienskies.mod.common.util.cqengine.UpdatableUniqueIndex;
+
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import lombok.extern.log4j.Log4j2;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
-import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
-import org.valkyrienskies.mod.common.util.cqengine.UpdatableHashIndex;
-import org.valkyrienskies.mod.common.util.cqengine.UpdatableUniqueIndex;
+
+import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 /**
  * A class that keeps track of ship data
@@ -145,9 +147,23 @@ public class QueryableShipData implements Iterable<ShipData> {
         allShips.add(ship);
     }
 
-    public void addOrUpdateShip(ShipData ship) {
+    /**
+     * Adds the ship data if it doesn't exist, or replaces the old ship data with the new ship data, while preserving
+     * the physics object attached to the old data if there was one.
+     *
+     * @param ship
+     */
+    public void addOrUpdateShipPreservingPhysObj(ShipData ship) {
         Optional<ShipData> old = getShip(ship.getUuid());
+        PhysicsObject physicsObject = null;
+        if (old.isPresent()) {
+            physicsObject = old.get().getPhyso();
+            this.removeShip(old.get());
+        }
         old.ifPresent(this::removeShip);
+        if (physicsObject != null) {
+            ship.setPhyso(physicsObject);
+        }
         this.addShip(ship);
     }
 

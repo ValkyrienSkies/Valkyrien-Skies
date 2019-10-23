@@ -3,6 +3,11 @@ package org.valkyrienskies.mod.common.capability.framework;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
+import java.io.IOException;
+import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -11,15 +16,9 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
-import org.valkyrienskies.mod.common.network.AABBMixinSerializer;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.IOException;
-import java.util.function.Supplier;
+import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
+import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
 
 /**
  * Implement as follows
@@ -73,7 +72,8 @@ public abstract class VSDefaultCapability<K> {
             .withIsGetterVisibility(Visibility.NONE)
             .withSetterVisibility(Visibility.NONE));
 
-        mapper.addMixIn(AxisAlignedBB.class, AABBMixinSerializer.class);
+        mapper.registerModule(new MinecraftSerializationModule());
+        mapper.registerModule(new JOMLSerializationModule());
 
         return mapper;
     }

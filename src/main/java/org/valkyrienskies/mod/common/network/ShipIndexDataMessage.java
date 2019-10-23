@@ -5,13 +5,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
+import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
 
 public class ShipIndexDataMessage implements IMessage {
 
@@ -31,7 +31,8 @@ public class ShipIndexDataMessage implements IMessage {
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE));
 
-        mapper.addMixIn(AxisAlignedBB.class, AABBMixinSerializer.class);
+        mapper.registerModule(new MinecraftSerializationModule());
+        mapper.registerModule(new JOMLSerializationModule());
 
         return mapper;
     }

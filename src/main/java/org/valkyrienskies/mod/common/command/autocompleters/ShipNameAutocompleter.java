@@ -4,7 +4,7 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 public class ShipNameAutocompleter implements Iterable<String> {
@@ -13,7 +13,7 @@ public class ShipNameAutocompleter implements Iterable<String> {
 
     ShipNameAutocompleter(ICommandSender sender) {
         World world = sender.getEntityWorld();
-        this.data = QueryableShipData.get(world).stream().map(ShipIndexedData::getName).iterator();
+        this.data = QueryableShipData.get(world).stream().map(ShipData::getName).iterator();
     }
 
     @Override

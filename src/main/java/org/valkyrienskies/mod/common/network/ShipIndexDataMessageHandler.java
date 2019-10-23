@@ -8,7 +8,8 @@ public class ShipIndexDataMessageHandler implements IMessageHandler<ShipIndexDat
 
     @Override
     public IMessage onMessage(ShipIndexDataMessage message, MessageContext ctx) {
-        System.out.println("Lol" + message.indexedData.size());
+        System.out.println("Receiving message with length " + message.indexedData.size());
+        // TODO: does nothing
         return null;
     }
 }

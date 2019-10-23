@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 
 /**
  * Allows a TileEntity to intelligently copy themselves when being moved; for example, during ship
@@ -24,5 +24,5 @@ public interface IRelocationAwareTile {
      * IRelocationAwareTile}</strong>
      */
     @Nonnull
-    TileEntity createRelocatedTile(BlockPos newPos, @Nullable ShipIndexedData copiedBy);
+    TileEntity createRelocatedTile(BlockPos newPos, @Nullable ShipData copiedBy);
 }

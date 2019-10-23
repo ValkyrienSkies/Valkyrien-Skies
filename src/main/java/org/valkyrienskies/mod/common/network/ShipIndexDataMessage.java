@@ -9,14 +9,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
 import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
 
 public class ShipIndexDataMessage implements IMessage {
 
     private static final ObjectMapper serializer = createMapper();
-    protected final List<ShipIndexedData> indexedData;
+    protected final List<ShipData> indexedData;
 
     public ShipIndexDataMessage() {
         indexedData = new ArrayList<>();
@@ -37,10 +37,8 @@ public class ShipIndexDataMessage implements IMessage {
         return mapper;
     }
 
-    public void addDataToMessage(Iterable<ShipIndexedData> indices) {
-        for (ShipIndexedData data : indices) {
-            indexedData.add(data);
-        }
+    public void addDataToMessage(Iterable<ShipData> indices) {
+        indices.forEach(indexedData::add);
     }
 
     @Override
@@ -52,7 +50,8 @@ public class ShipIndexDataMessage implements IMessage {
             byte[] bytes = new byte[bytesSize];
             buf.readBytes(bytes);
             try {
-                ShipIndexedData data = serializer.readValue(bytes, ShipIndexedData.class);
+                ShipData data = serializer.readValue(bytes, ShipData.class);
+                this.indexedData.add(data);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -62,7 +61,7 @@ public class ShipIndexDataMessage implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(indexedData.size());
-        for (ShipIndexedData data : indexedData) {
+        for (ShipData data : indexedData) {
             // Write index data to the byte buffer.
             try {
                 byte[] dataBytes = serializer.writeValueAsBytes(data);

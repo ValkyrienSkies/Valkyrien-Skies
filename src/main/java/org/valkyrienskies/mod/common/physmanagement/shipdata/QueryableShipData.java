@@ -1,13 +1,13 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import static com.googlecode.cqengine.query.QueryFactory.equal;
-import static com.googlecode.cqengine.query.QueryFactory.startsWith;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
-import com.googlecode.cqengine.index.hash.HashIndex;
-import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -17,10 +17,11 @@ import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
+import org.valkyrienskies.mod.common.util.cqengine.UpdatableHashIndex;
+import org.valkyrienskies.mod.common.util.cqengine.UpdatableUniqueIndex;
 
 /**
  * A class that keeps track of ship data
@@ -28,27 +29,45 @@ import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCol
 @MethodsReturnNonnullByDefault
 @Log4j2
 @SuppressWarnings("WeakerAccess")
-public class QueryableShipData implements Iterable<ShipIndexedData> {
-
-    /**
-     * The key used to store/read the allShips collection from Kryo
-     */
-    private static final String NBT_KEY_KRYO = ValkyrienSkiesMod.MOD_ID + "QueryableShipDataNBT";
-    /**
-     * The key used to store/read allShips from jackson protobuf
-     */
-    private static final String NBT_KEY_JACKSON_PROTOBUF = ValkyrienSkiesMod.MOD_ID +
-        "QueryableShipDataNBT-JacksonProtobuf";
+public class QueryableShipData implements Iterable<ShipData> {
 
     // Where every ship data instance is stored, regardless if the corresponding PhysicsObject is
     // loaded in the World or not.
-    private ConcurrentUpdatableIndexedCollection<ShipIndexedData> allShips =
-        new ConcurrentUpdatableIndexedCollection<>();
+    private ConcurrentUpdatableIndexedCollection<ShipData> allShips;
 
     public QueryableShipData() {
-        allShips.addIndex(HashIndex.onAttribute(ShipIndexedData.NAME));
-        allShips.addIndex(UniqueIndex.onAttribute(ShipIndexedData.UUID));
-        allShips.addIndex(UniqueIndex.onAttribute(ShipIndexedData.CHUNKS));
+        this(new ConcurrentUpdatableIndexedCollection<>());
+    }
+
+    @JsonCreator // This tells Jackson to pass in allShips when serializing
+    // The default thing that is passed in will be 'null' if none exists
+    public QueryableShipData(
+        @JsonProperty("allShips") ConcurrentUpdatableIndexedCollection<ShipData> ships) {
+
+        if (ships == null) {
+            ships = new ConcurrentUpdatableIndexedCollection<>();
+        }
+
+        this.allShips = ships;
+
+        // For every ship data, set the 'owner' field to us -- kinda hacky but what can I do
+        // I don't want to serialize a billion references to this
+        // This probably only needs to be done once per world, so this is fine
+        this.allShips.forEach(data -> {
+            try {
+                Field owner = ShipData.class.getDeclaredField("owner");
+                owner.setAccessible(true);
+                owner.set(data, this.allShips);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        });
+
+        this.allShips.addIndex(UpdatableHashIndex.onAttribute(ShipData.NAME));
+        this.allShips.addIndex(UpdatableUniqueIndex.onAttribute(ShipData.UUID));
+        this.allShips.addIndex(UpdatableUniqueIndex.onAttribute(ShipData.CHUNKS));
+
     }
 
     /**
@@ -59,43 +78,27 @@ public class QueryableShipData implements Iterable<ShipIndexedData> {
     }
 
     /**
-     * @param oldData    The ship to be renamed
-     * @param newName The new name of the ship
-     * @return True of the rename was successful, false if it wasn't.
+     * @deprecated Do not use -- thinking of better API choices
      */
-    public boolean renameShip(ShipIndexedData oldData, String newName) {
-        Query<ShipIndexedData> query = equal(ShipIndexedData.NAME, newName);
-        if (allShips.retrieve(query).isEmpty()) {
-            ShipIndexedData newData = oldData.withName(newName);
-
-            allShips.remove(oldData);
-            allShips.add(newData);
-
-            return true;
-        }
-        return false;
-    }
-
-    public Stream<ShipIndexedData> getShipsFromNameStartingWith(String startsWith) {
-        Query<ShipIndexedData> query = startsWith(ShipIndexedData.NAME, startsWith);
-
-        return allShips.retrieve(query).stream();
+    @Deprecated
+    public ConcurrentUpdatableIndexedCollection<ShipData> getAllShips() {
+        return allShips;
     }
 
     /**
      * Retrieves a list of all ships.
      */
-    public List<ShipIndexedData> getShips() {
+    public List<ShipData> getShips() {
         return ImmutableList.copyOf(allShips);
     }
 
-    public Optional<ShipIndexedData> getShipFromChunk(int chunkX, int chunkZ) {
+    public Optional<ShipData> getShipFromChunk(int chunkX, int chunkZ) {
         return getShipFromChunk(ChunkPos.asLong(chunkX, chunkZ));
     }
 
-    public Optional<ShipIndexedData> getShipFromChunk(long chunkLong) {
-        Query<ShipIndexedData> query = equal(ShipIndexedData.CHUNKS, chunkLong);
-        ResultSet<ShipIndexedData> resultSet = allShips.retrieve(query);
+    public Optional<ShipData> getShipFromChunk(long chunkLong) {
+        Query<ShipData> query = equal(ShipData.CHUNKS, chunkLong);
+        ResultSet<ShipData> resultSet = allShips.retrieve(query);
 
         if (resultSet.size() > 1) {
             throw new IllegalStateException(
@@ -108,9 +111,9 @@ public class QueryableShipData implements Iterable<ShipIndexedData> {
         }
     }
 
-    public Optional<ShipIndexedData> getShip(UUID uuid) {
-        Query<ShipIndexedData> query = equal(ShipIndexedData.UUID, uuid);
-        ResultSet<ShipIndexedData> resultSet = allShips.retrieve(query);
+    public Optional<ShipData> getShip(UUID uuid) {
+        Query<ShipData> query = equal(ShipData.UUID, uuid);
+        ResultSet<ShipData> resultSet = allShips.retrieve(query);
 
         if (resultSet.isEmpty()) {
             return Optional.empty();
@@ -119,9 +122,9 @@ public class QueryableShipData implements Iterable<ShipIndexedData> {
         }
     }
 
-    public Optional<ShipIndexedData> getShipFromName(String name) {
-        Query<ShipIndexedData> query = equal(ShipIndexedData.NAME, name);
-        ResultSet<ShipIndexedData> shipDataResultSet = allShips.retrieve(query);
+    public Optional<ShipData> getShipFromName(String name) {
+        Query<ShipData> query = equal(ShipData.NAME, name);
+        ResultSet<ShipData> shipDataResultSet = allShips.retrieve(query);
 
         if (shipDataResultSet.isEmpty()) {
             return Optional.empty();
@@ -134,26 +137,26 @@ public class QueryableShipData implements Iterable<ShipIndexedData> {
         getShip(uuid).ifPresent(ship -> allShips.remove(ship));
     }
 
-    public void removeShip(ShipIndexedData data) {
+    public void removeShip(ShipData data) {
         allShips.remove(data);
     }
 
-    public void addShip(ShipIndexedData ship) {
+    public void addShip(ShipData ship) {
         allShips.add(ship);
     }
 
-    // TODO: this isn't threadsafe? Use TransactionalIndexedCollection
-    public void updateShip(ShipIndexedData oldData, ShipIndexedData newData) {
-        allShips.remove(oldData);
-        allShips.add(newData);
+    public void addOrUpdateShip(ShipData ship) {
+        Optional<ShipData> old = getShip(ship.getUuid());
+        old.ifPresent(this::removeShip);
+        this.addShip(ship);
     }
 
     @Override
-    public Iterator<ShipIndexedData> iterator() {
+    public Iterator<ShipData> iterator() {
         return allShips.iterator();
     }
 
-    public Stream<ShipIndexedData> stream() {
+    public Stream<ShipData> stream() {
         return allShips.stream();
     }
 }

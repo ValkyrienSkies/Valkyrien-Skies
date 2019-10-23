@@ -19,11 +19,14 @@ package org.valkyrienskies.mod.common.math;
 import java.util.List;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
 import org.joml.Matrix4d;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 /**
@@ -36,6 +39,14 @@ public class VSMath {
 
     public static final int AABB_MERGE_PASSES = 5;
     public static final double STANDING_TOLERANCE = .42D;
+
+    public Vector3d toVector3d(Vec3i vec) {
+        return new Vector3d(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    public Vector3d toVector3d(Vec3d vec) {
+        return new Vector3d(vec.x, vec.y, vec.z);
+    }
 
     /**
      * Converts a double-array matrix to a JOML {@link Matrix4d}

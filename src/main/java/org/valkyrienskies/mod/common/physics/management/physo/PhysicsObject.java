@@ -19,6 +19,14 @@ package org.valkyrienskies.mod.common.physics.management.physo;
 import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -62,9 +70,6 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -146,17 +151,17 @@ public class PhysicsObject implements IPhysicsEntity {
         this.physicsControllers = Sets.newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.blockPositionsGameTick = new TIntArrayList();
+        this.claimedChunkCache = new ClaimedChunkCacheController(this, false);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
         this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
                 referenceBlockPos.getZ());
-        this.claimedChunkCache = new ClaimedChunkCacheController(this, false);
         this.shipTransformationManager = new ShipTransformationManager(this, getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
     }
 
-    public ShipIndexedData getData() {
-        Optional<ShipIndexedData> shipIndexedData = QueryableShipData.get(world).getShip(shipDataUUID);
+    public ShipData getData() {
+        Optional<ShipData> shipIndexedData = QueryableShipData.get(world).getShip(shipDataUUID);
         if (!shipIndexedData.isPresent()) {
             throw new IllegalStateException("No Ship Data for UUID " + shipDataUUID);
         }

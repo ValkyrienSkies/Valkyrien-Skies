@@ -1,5 +1,9 @@
 package org.valkyrienskies.mod.common.util;
 
+import java.util.Optional;
+import java.util.UUID;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -9,7 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
@@ -18,23 +21,19 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
+import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
 import org.valkyrienskies.mod.common.multithreaded.VSExecutors;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * This class contains various helper functions for Valkyrien Skies.
@@ -151,31 +150,22 @@ public class ValkyrienUtils {
 
     /**
      * Creates a new ShipIndexedData based on the inputs provided by the physics infuser block.
-     *
-     * @param world
-     * @param physInfuserPos
-     * @return
      */
-    public static ShipIndexedData createNewShip(World world, BlockPos physInfuserPos) {
+    public static ShipData createNewShip(World world, BlockPos physInfuserPos) {
         String name = NounListNameGenerator.instance().generateName();
         UUID shipID = UUID.randomUUID();
         // Create ship chunk claims
         VSChunkClaim chunkClaim = ValkyrienUtils.getShipChunkAllocator(world).allocateNextChunkClaim();
-        Vector3dc centerOfMassInitial = new Vector(chunkClaim.getRegionCenter()).toVector3d();
-        Vector3dc shipPosInitial = new Vector3d(physInfuserPos.getX() + .5, physInfuserPos.getY() + .5, physInfuserPos.getZ() + .5);
-        ShipTransform initial = new ShipTransform(shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z(), 0, 0, 0, centerOfMassInitial);
-        AxisAlignedBB axisAlignedBB = new AxisAlignedBB(shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z(), shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z());
-        ShipIndexedData data = ShipIndexedData.createData(name, chunkClaim, shipID, initial, axisAlignedBB);
-        // This is fine because we are not indexing by physInfuserPos.
-        data.setPhysInfuserPos(physInfuserPos);
+        Vector3dc centerOfMassInitial = VSMath.toVector3d(chunkClaim.getRegionCenter());
+        Vector3dc shipPosInitial = VSMath.toVector3d(physInfuserPos).add(0.5, 0.5, 0.5);
+        ShipTransform initial = new ShipTransform(shipPosInitial, centerOfMassInitial);
+        AxisAlignedBB axisAlignedBB = new AxisAlignedBB(shipPosInitial.x(), shipPosInitial.y(),
+            shipPosInitial.z(), shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z());
+        ShipData data = ShipData.createData(QueryableShipData.get(world).getAllShips(),
+            name, chunkClaim, shipID, initial, axisAlignedBB, physInfuserPos);
         return data;
     }
 
-    /**
-     * @param world
-     * @param physicsInfuserPos
-     * @return
-     */
     public static TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(World world, EntityPlayerMP creator, BlockPos physicsInfuserPos) {
         if (world.isRemote) {
             throw new IllegalStateException("This method cannot be invoked on client side!");
@@ -186,7 +176,7 @@ public class ValkyrienUtils {
         }
 
         // Create the ship data that we will use to make the ship with later.
-        ShipIndexedData shipData = createNewShip(world, physicsInfuserPos);
+        ShipData shipData = createNewShip(world, physicsInfuserPos);
         BlockPos centerInWorld = physicsInfuserPos;
 
         System.out.println("E!");
@@ -207,10 +197,10 @@ public class ValkyrienUtils {
                         }
                         return;
                     }
+
                     QueryableShipData.get(world).addShip(shipData);
                     PhysicsObject physicsObject = new PhysicsObject(world, shipData.getUuid());
-                    ShipIndexedData withPhysicsObject = shipData.withPhyso(physicsObject);
-                    QueryableShipData.get(world).updateShip(shipData, withPhysicsObject);
+                    shipData.setPhyso(physicsObject);
 
                     physicsObject.assembleShip(creator, detector, physicsInfuserPos);
 

@@ -1,5 +1,8 @@
 package org.valkyrienskies.mod.common.command;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
@@ -10,17 +13,18 @@ import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocomplete
 import org.valkyrienskies.mod.common.command.autocompleters.WorldAutocompleter;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import picocli.CommandLine.*;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.HelpCommand;
+import picocli.CommandLine.Model;
 import picocli.CommandLine.Model.CommandSpec;
-
-import javax.inject.Inject;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 @Command(name = "valkyrienskies", aliases = "vs",
     synopsisSubcommandLabel = "COMMAND", mixinStandardHelpOptions = true,
@@ -64,7 +68,7 @@ public class MainCommand implements Runnable {
 
             World world = sender.getEntityWorld();
             QueryableShipData data = QueryableShipData.get(world);
-            Optional<ShipIndexedData> oTargetShipData = data.getShipFromName(shipName);
+            Optional<ShipData> oTargetShipData = data.getShipFromName(shipName);
 
             if (!oTargetShipData.isPresent()) {
                 sender.sendMessage(new TextComponentString(
@@ -138,7 +142,7 @@ public class MainCommand implements Runnable {
         public void run() {
             World world = sender.getEntityWorld();
             QueryableShipData data = QueryableShipData.get(world);
-            Optional<ShipIndexedData> oTargetShipData = data.getShipFromName(shipName);
+            Optional<ShipData> oTargetShipData = data.getShipFromName(shipName);
 
             if (!oTargetShipData.isPresent()) {
                 sender.sendMessage(new TextComponentString(
@@ -146,7 +150,7 @@ public class MainCommand implements Runnable {
                 return;
             }
 
-            ShipIndexedData targetShipData = oTargetShipData.get();
+            ShipData targetShipData = oTargetShipData.get();
 
             /*
             Optional<Entity> oEntity = world.getLoadedEntityList().stream()
@@ -227,7 +231,7 @@ public class MainCommand implements Runnable {
             } else {
                 listOfShips = data.getShips()
                     .stream()
-                    .map(ShipIndexedData::getName)
+                    .map(ShipData::getName)
                     .collect(Collectors.joining(",\n"));
             }
 

@@ -1,5 +1,10 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -7,19 +12,13 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class WorldServerShipManager implements IPhysObjectWorld {
 
     private transient World world;
-    private transient Map<EntityPlayer, List<ShipIndexedData>> playerToWatchingShips;
+    private transient Map<EntityPlayer, List<ShipData>> playerToWatchingShips;
     private transient VSThread physicsThread;
 
     public WorldServerShipManager(World world) {
@@ -38,17 +37,17 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     @Override
-    public PhysicsObject createPhysObjectFromData(ShipIndexedData data) {
+    public PhysicsObject createPhysObjectFromData(ShipData data) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removePhysObject(ShipIndexedData data) {
+    public boolean removePhysObject(ShipData data) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public PhysicsObject getPhysObjectFromData(ShipIndexedData data) {
+    public PhysicsObject getPhysObjectFromData(ShipData data) {
         throw new UnsupportedOperationException();
     }
 
@@ -56,7 +55,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     @Override
     public List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck) {
         List<PhysicsObject> nearby = new ArrayList<>();
-        for (ShipIndexedData data : QueryableShipData.get(world)) {
+        for (ShipData data : QueryableShipData.get(world)) {
             if (data.getPhyso() != null) {
                 if (toCheck.intersects(data.getShipBB())) {
                     nearby.add(data.getPhyso());
@@ -68,13 +67,14 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     public void tick() {
         // Does nothing for now, will eventually be used when ships are no longer entities.
-        for (ShipIndexedData data : QueryableShipData.get(world)) {
+        for (ShipData data : QueryableShipData.get(world)) {
             if (data.getPhyso() != null) {
                 data.getPhyso().onTick();
             }
         }
         // Send all players in this world ship data.
         ShipIndexDataMessage indexDataMessage = new ShipIndexDataMessage();
+        System.out.println("Sending message with length " + QueryableShipData.get(world).stream().count());
         indexDataMessage.addDataToMessage(QueryableShipData.get(world));
         ValkyrienSkiesMod.physWrapperNetwork.sendToDimension(indexDataMessage, world.provider.getDimension());
     }

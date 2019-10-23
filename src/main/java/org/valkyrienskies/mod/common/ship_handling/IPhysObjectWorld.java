@@ -1,13 +1,12 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 
 /**
  * This maps ShipData to their respective PhysicsObjects. Everything in here is designed to be transient. Anything
@@ -33,7 +32,7 @@ public interface IPhysObjectWorld {
      * @return
      */
     @Nonnull
-    PhysicsObject createPhysObjectFromData(ShipIndexedData data) throws IllegalArgumentException;
+    PhysicsObject createPhysObjectFromData(ShipData data) throws IllegalArgumentException;
 
     /**
      * Removes the PhysicsObject with the ShipData.
@@ -41,14 +40,14 @@ public interface IPhysObjectWorld {
      * @param data
      * @return True if there was a PhysicsObject with ShipData of data, false if there wasn't.
      */
-    boolean removePhysObject(ShipIndexedData data);
+    boolean removePhysObject(ShipData data);
 
     /**
      * @param data
      * @return Null if there wasn't a PhysicsObject for the given data.
      */
     @Nullable
-    PhysicsObject getPhysObjectFromData(ShipIndexedData data);
+    PhysicsObject getPhysObjectFromData(ShipData data);
 
     /**
      * @param toCheck

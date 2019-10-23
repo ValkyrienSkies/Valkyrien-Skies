@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.entity.player;
 
+import java.util.Optional;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -29,11 +30,9 @@ import org.valkyrienskies.addon.control.piloting.IShipPilot;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 /**
  * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.
@@ -59,7 +58,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
 
-        Optional<ShipIndexedData> shipData = ValkyrienUtils.getQueryableData(worldIn).getShipFromChunk(chunkX, chunkZ);
+        Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn).getShipFromChunk(chunkX, chunkZ);
 
         if (shipData.isPresent()) {
             ShipTransform positionData = shipData.get().getShipTransform();

@@ -1,22 +1,26 @@
 package org.valkyrienskies.mod.common.physics.management.physo;
 
+import static com.googlecode.cqengine.query.QueryFactory.attribute;
+import static com.googlecode.cqengine.query.QueryFactory.nullableAttribute;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.googlecode.cqengine.query.option.QueryOptions;
-import lombok.*;
+import java.util.Set;
+import java.util.UUID;
+import javax.annotation.Nullable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.With;
 import lombok.experimental.Accessors;
 import lombok.experimental.Delegate;
 import net.minecraft.util.math.AxisAlignedBB;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-
-import javax.annotation.Nullable;
-import java.util.Set;
-import java.util.UUID;
-
-import static com.googlecode.cqengine.query.QueryFactory.attribute;
-import static com.googlecode.cqengine.query.QueryFactory.nullableAttribute;
 
 /**
  * One of these objects will represent a ship. You can obtain a physics object for that ship (if one
@@ -87,7 +91,6 @@ public class ShipIndexedData {
     };
 
     private interface Excludes {
-
         ShipIndexedData getIndexed();
     }
 }

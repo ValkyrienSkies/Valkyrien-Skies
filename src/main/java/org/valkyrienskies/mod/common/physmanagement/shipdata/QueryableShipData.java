@@ -1,11 +1,18 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
+import static com.googlecode.cqengine.query.QueryFactory.equal;
+import static com.googlecode.cqengine.query.QueryFactory.startsWith;
+
 import com.google.common.collect.ImmutableList;
-import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.ChunkPos;
@@ -13,15 +20,7 @@ import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Stream;
-
-import static com.googlecode.cqengine.query.QueryFactory.equal;
-import static com.googlecode.cqengine.query.QueryFactory.startsWith;
+import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
 
 /**
  * A class that keeps track of ship data
@@ -43,7 +42,8 @@ public class QueryableShipData implements Iterable<ShipIndexedData> {
 
     // Where every ship data instance is stored, regardless if the corresponding PhysicsObject is
     // loaded in the World or not.
-    private ConcurrentIndexedCollection<ShipIndexedData> allShips = new ConcurrentIndexedCollection<>();
+    private ConcurrentUpdatableIndexedCollection<ShipIndexedData> allShips =
+        new ConcurrentUpdatableIndexedCollection<>();
 
     public QueryableShipData() {
         allShips.addIndex(HashIndex.onAttribute(ShipIndexedData.NAME));

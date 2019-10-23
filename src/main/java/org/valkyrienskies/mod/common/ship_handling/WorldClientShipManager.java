@@ -22,8 +22,9 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Override
     public void tick() {
-        // Do ship stuff
-        
+        for (PhysicsObject physicsObject : getAllLoadedPhysObj()) {
+            physicsObject.getShipTransformationManager().updateAllTransforms(physicsObject.getData().getShipTransform(), false, false);
+        }
     }
 
     @Override
@@ -60,6 +61,18 @@ public class WorldClientShipManager implements IPhysObjectWorld {
             }
         }
         return nearby;
+    }
+
+    @Nonnull
+    @Override
+    public Iterable<PhysicsObject> getAllLoadedPhysObj() {
+        List<PhysicsObject> allLoaded = new ArrayList<>();
+        for (ShipData data : QueryableShipData.get(world)) {
+            if (data.getPhyso() != null) {
+                allLoaded.add(data.getPhyso());
+            }
+        }
+        return allLoaded;
     }
 
     @Nonnull

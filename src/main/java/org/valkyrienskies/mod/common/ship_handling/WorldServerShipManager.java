@@ -69,6 +69,12 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     public void tick() {
         // Does nothing for now, will eventually be used when ships are no longer entities.
         for (ShipData data : QueryableShipData.get(world)) {
+            // TODO: Temp code. We should only be spawning in ships once a player gets close, and de-spawn them when
+            //  players are far.
+            if (data.getPhyso() == null) {
+                PhysicsObject physicsObject = new PhysicsObject(world, data.getUuid(), false);
+                data.setPhyso(physicsObject);
+            }
             if (data.getPhyso() != null) {
                 data.getPhyso().onTick();
                 // Add players to the thing
@@ -80,6 +86,18 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         System.out.println("Sending message with length " + QueryableShipData.get(world).stream().count());
         indexDataMessage.addDataToMessage(QueryableShipData.get(world));
         ValkyrienSkiesMod.physWrapperNetwork.sendToDimension(indexDataMessage, world.provider.getDimension());
+    }
+
+    @Nonnull
+    @Override
+    public Iterable<PhysicsObject> getAllLoadedPhysObj() {
+        List<PhysicsObject> allLoaded = new ArrayList<>();
+        for (ShipData data : QueryableShipData.get(world)) {
+            if (data.getPhyso() != null) {
+                allLoaded.add(data.getPhyso());
+            }
+        }
+        return allLoaded;
     }
 
     public World getWorld() {

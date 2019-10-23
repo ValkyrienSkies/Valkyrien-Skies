@@ -34,6 +34,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -43,6 +44,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.proxy.ClientProxy;
 
@@ -74,7 +77,7 @@ public abstract class MixinRenderGlobal {
 
     @Shadow
     public static void drawSelectionBoundingBox(AxisAlignedBB box, float red, float green,
-        float blue, float alpha) {
+                                                float blue, float alpha) {
     }
 
     @Shadow
@@ -90,7 +93,7 @@ public abstract class MixinRenderGlobal {
      */
     @Overwrite
     public void drawBlockDamageTexture(Tessellator tessellatorIn, BufferBuilder worldRendererIn,
-        Entity entityIn, float partialTicks) {
+                                       Entity entityIn, float partialTicks) {
         double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * partialTicks;
         double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * partialTicks;
         double d2 = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * partialTicks;
@@ -112,36 +115,36 @@ public abstract class MixinRenderGlobal {
                 Block block = this.world.getBlockState(blockpos).getBlock();
                 TileEntity te = this.world.getTileEntity(blockpos);
                 boolean hasBreak = block instanceof BlockChest || block instanceof BlockEnderChest
-                    || block instanceof BlockSign || block instanceof BlockSkull;
+                        || block instanceof BlockSign || block instanceof BlockSkull;
                 if (!hasBreak) {
                     hasBreak = te != null && te.canRenderBreaking();
                 }
 
                 if (!hasBreak) {
                     Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                        .getPhysicsObject(world, blockpos);
+                            .getPhysicsObject(world, blockpos);
                     if (!physicsObject.isPresent() && (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0D)) {
                         iterator.remove();
                     } else {
                         IBlockState iblockstate = this.world.getBlockState(blockpos);
                         if (physicsObject.isPresent()) {
                             physicsObject.get()
-                                .getShipRenderer()
-                                .applyRenderTransform(partialTicks);
+                                    .getShipRenderer()
+                                    .applyRenderTransform(partialTicks);
                             worldRendererIn.setTranslation(-physicsObject.get()
-                                .getShipRenderer().offsetPos.getX(), -physicsObject.get()
-                                .getShipRenderer().offsetPos.getY(), -physicsObject.get()
-                                .getShipRenderer().offsetPos.getZ());
+                                    .getShipRenderer().offsetPos.getX(), -physicsObject.get()
+                                    .getShipRenderer().offsetPos.getY(), -physicsObject.get()
+                                    .getShipRenderer().offsetPos.getZ());
                         }
                         if (iblockstate.getMaterial() != Material.AIR) {
                             int i = destroyblockprogress.getPartialBlockDamage();
                             TextureAtlasSprite textureatlassprite = this.destroyBlockIcons[i];
                             BlockRendererDispatcher blockrendererdispatcher = this.mc
-                                .getBlockRendererDispatcher();
+                                    .getBlockRendererDispatcher();
                             try {
                                 blockrendererdispatcher
-                                    .renderBlockDamage(iblockstate, blockpos, textureatlassprite,
-                                        this.world);
+                                        .renderBlockDamage(iblockstate, blockpos, textureatlassprite,
+                                                this.world);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -152,8 +155,8 @@ public abstract class MixinRenderGlobal {
                             tessellatorIn.draw();
                             worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
                             physicsObject.get()
-                                .getShipRenderer()
-                                .inverseTransform(partialTicks);
+                                    .getShipRenderer()
+                                    .inverseTransform(partialTicks);
                         }
                     }
                 }
@@ -172,26 +175,26 @@ public abstract class MixinRenderGlobal {
      */
     @Overwrite
     public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn,
-        int execute, float partialTicks) {
+                                 int execute, float partialTicks) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(player.world, movingObjectPositionIn.getBlockPos());
+                .getPhysicsObject(player.world, movingObjectPositionIn.getBlockPos());
         if (physicsObject.isPresent()) {
             physicsObject.get()
-                .getShipRenderer()
-                .applyRenderTransform(partialTicks);
+                    .getShipRenderer()
+                    .applyRenderTransform(partialTicks);
 
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder BufferBuilder = tessellator.getBuffer();
 
             double xOff = (player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks)
-                - physicsObject.get()
-                .getShipRenderer().offsetPos.getX();
+                    - physicsObject.get()
+                    .getShipRenderer().offsetPos.getX();
             double yOff = (player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks)
-                - physicsObject.get()
-                .getShipRenderer().offsetPos.getY();
+                    - physicsObject.get()
+                    .getShipRenderer().offsetPos.getY();
             double zOff = (player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks)
-                - physicsObject.get()
-                .getShipRenderer().offsetPos.getZ();
+                    - physicsObject.get()
+                    .getShipRenderer().offsetPos.getZ();
 
             BufferBuilder.xOffset += xOff;
             BufferBuilder.yOffset += yOff;
@@ -204,21 +207,21 @@ public abstract class MixinRenderGlobal {
             BufferBuilder.zOffset -= zOff;
 
             physicsObject.get()
-                .getShipRenderer()
-                .inverseTransform(partialTicks);
+                    .getShipRenderer()
+                    .inverseTransform(partialTicks);
         } else {
             this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
         }
     }
 
     private void drawSelectionBoxOriginal(EntityPlayer player,
-        RayTraceResult movingObjectPositionIn,
-        int execute, float partialTicks) {
+                                          RayTraceResult movingObjectPositionIn,
+                                          int execute, float partialTicks) {
         if (execute == 0 && movingObjectPositionIn.typeOfHit == RayTraceResult.Type.BLOCK) {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO);
+                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
+                    GlStateManager.DestFactor.ZERO);
             GlStateManager.glLineWidth(2.0F);
             GlStateManager.disableTexture2D();
             GlStateManager.depthMask(false);
@@ -226,15 +229,15 @@ public abstract class MixinRenderGlobal {
             IBlockState iblockstate = this.world.getBlockState(blockpos);
 
             if (iblockstate.getMaterial() != Material.AIR && this.world.getWorldBorder()
-                .contains(blockpos)) {
+                    .contains(blockpos)) {
                 double d0 =
-                    player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
+                        player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
                 double d1 =
-                    player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
+                        player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
                 double d2 =
-                    player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
+                        player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
                 drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(this.world, blockpos)
-                    .grow(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
+                        .grow(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
             }
 
             GlStateManager.depthMask(true);
@@ -245,29 +248,25 @@ public abstract class MixinRenderGlobal {
 
     @Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
     private void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks,
-        CallbackInfo callbackInfo) {
+                                   CallbackInfo callbackInfo) {
         ClientProxy.lastCamera = camera;
     }
 
     @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
     private void preRenderBlockLayer(BlockRenderLayer blockLayerIn, double partialTicks, int pass,
-        Entity entityIn, CallbackInfoReturnable callbackInfo) {
+                                     Entity entityIn, CallbackInfoReturnable callbackInfo) {
         RenderHelper.disableStandardItemLighting();
 
-        /*
-        for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-            .getManagerForWorld(this.world)
-            .getTickablePhysicsEntities()) {
+        IPhysObjectWorld physObjectWorld = ((IHasShipManager) Minecraft.getMinecraft().world).getManager();
+        for (PhysicsObject wrapper : physObjectWorld.getAllLoadedPhysObj()) {
             GL11.glPushMatrix();
-            if (wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject()
-                .getShipRenderer().shouldRender()) {
-                wrapper.getPhysicsObject().getShipRenderer()
-                    .renderBlockLayer(blockLayerIn, partialTicks, pass);
+            if (wrapper.getShipRenderer() != null && wrapper
+                    .getShipRenderer().shouldRender()) {
+                wrapper.getShipRenderer()
+                        .renderBlockLayer(blockLayerIn, partialTicks, pass);
             }
             GL11.glPopMatrix();
         }
-
-         */
 
         GlStateManager.resetColor();
     }

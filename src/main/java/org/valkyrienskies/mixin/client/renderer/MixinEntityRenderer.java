@@ -26,24 +26,20 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.BlockPos;
-import org.joml.*;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.lang.Math;
 
 /**
  * This used to be one giant overwrite, and has now been cleaned up to be a mess of various mixins.
@@ -90,8 +86,7 @@ public abstract class MixinEntityRenderer {
                             ? 0.7d : 0.0d), 0.0d);
         }
 
-        if (this.mountData != null
-                && this.mountData.getMountedShip().getShipRenderer().offsetPos != null) {
+        if (this.mountData != null) {
 
             mountData.getMountedShip().getShipTransformationManager().getRenderTransform().rotate(this.eyeVector, TransformType.SUBSPACE_TO_GLOBAL);
 
@@ -125,7 +120,6 @@ public abstract class MixinEntityRenderer {
             ))
     private double offsetXIfMounted(double oldVal) {
         return (this.mountData != null
-                && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
                 ? this.cachedPosition.x : oldVal) + this.eyeVector.x;
     }
 
@@ -141,7 +135,6 @@ public abstract class MixinEntityRenderer {
             ))
     private double offsetYIfMounted(double oldVal) {
         return (this.mountData != null
-                && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
                 ? this.cachedPosition.y : oldVal) + this.eyeVector.y;
     }
 
@@ -157,7 +150,6 @@ public abstract class MixinEntityRenderer {
             ))
     private double offsetZIfMounted(double oldVal) {
         return (this.mountData != null
-                && this.mountData.getMountedShip().getShipRenderer().offsetPos != null
                 ? this.cachedPosition.z : oldVal) + this.eyeVector.z;
     }
 
@@ -192,8 +184,7 @@ public abstract class MixinEntityRenderer {
         if (!settings.debugCamEnable) {
             Entity entity = this.mc.getRenderViewEntity();
 
-            if (this.mountData != null
-                    && this.mountData.getMountedShip().getShipRenderer().offsetPos != null) {
+            if (this.mountData != null) {
                 Vector playerPosInLocal = new Vector(this.mountData.getMountPos());
 
                 playerPosInLocal.subtract(0.5d, 0.6875d, 0.5d);

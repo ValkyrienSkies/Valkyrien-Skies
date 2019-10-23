@@ -144,11 +144,7 @@ public class PhysicsObject implements IPhysicsEntity {
     public PhysicsObject(World world, UUID dataID, boolean firstTimeCreated) {
         this.world = world;
         this.shipDataUUID = dataID;
-        if (world.isRemote) {
-            this.shipRenderer = new PhysObjectRenderManager(this);
-        } else {
-            this.shipRenderer = null;
-        }
+        this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
         // We need safe access to this across multiple threads.
         this.blockPositions = ConcurrentHashMap.newKeySet();
         this.watchingPlayers = new ArrayList<>();
@@ -157,11 +153,16 @@ public class PhysicsObject implements IPhysicsEntity {
         this.blockPositionsGameTick = new TIntArrayList();
         this.claimedChunkCache = new ClaimedChunkCacheController(this, !firstTimeCreated);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
-        this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
                 referenceBlockPos.getZ());
         this.shipTransformationManager = new ShipTransformationManager(this, getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
+        // Note how this is last.
+        if (world.isRemote) {
+            this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
+        } else {
+            this.shipRenderer = null;
+        }
     }
 
     public ShipData getData() {

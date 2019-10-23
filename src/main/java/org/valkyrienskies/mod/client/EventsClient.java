@@ -77,19 +77,16 @@ public class EventsClient {
         switch (event.phase) {
             case START:
                 // Nothing for now
-                /*
-                for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                    .getManagerForWorld(world)
-                    .getTickablePhysicsEntities()) {
+
+                for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
                     // This is necessary because Minecraft will run a raytrace right after this
                     // event to determine what the player is looking at for interaction purposes.
                     // That raytrace will use the render transform, so we must have the render
                     // transform set to a partialTick of 1.0.
-                    wrapper.getPhysicsObject().getShipTransformationManager()
+                    wrapper.getShipTransformationManager()
                         .updateRenderTransform(1.0);
                 }
 
-                 */
                 break;
             case END:
                 // Tick the IShipManager on the world client.
@@ -246,15 +243,10 @@ public class EventsClient {
         }
 
         if (event.phase == Phase.START) {
-            /*
-            for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                .getManagerForWorld(world)
-                .getTickablePhysicsEntities()) {
-                wrapper.getPhysicsObject().getShipTransformationManager()
-                    .updateRenderTransform(partialTicks);
+            for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
+                wrapper.getShipTransformationManager()
+                        .updateRenderTransform(partialTicks);
             }
-
-             */
         }
     }
 }

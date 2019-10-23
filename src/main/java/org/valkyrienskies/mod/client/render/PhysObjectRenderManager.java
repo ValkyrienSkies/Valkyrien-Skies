@@ -31,52 +31,39 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.proxy.ClientProxy;
 import valkyrienwarfare.api.TransformType;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * Object owned by each physObject responsible for handling all rendering operations
  *
  * @author thebest108
  */
+@ParametersAreNonnullByDefault
 public class PhysObjectRenderManager {
 
     // This pos is used to prevent Z-Buffer Errors D:
     // It's actual value is completely irrelevant as long as it's close to the
     // Ship's centerBlockPos
-    public BlockPos offsetPos;
-    private int glCallListSolid;
-    private int glCallListTranslucent;
-    private int glCallListCutout;
-    private int glCallListCutoutMipped;
-    private PhysicsObject parent;
-    private PhysRenderChunk[][] renderChunks;
+    public final BlockPos offsetPos;
+    private final PhysicsObject parent;
+    private final PhysRenderChunk[][] renderChunks;
 
-    public PhysObjectRenderManager(PhysicsObject toRender) {
+    public PhysObjectRenderManager(PhysicsObject toRender, BlockPos offsetPos) {
         this.parent = toRender;
-        this.glCallListSolid = -1;
-        this.glCallListTranslucent = -1;
-        this.glCallListCutout = -1;
-        this.glCallListCutoutMipped = -1;
-        this.offsetPos = null;
-        this.renderChunks = null;
-    }
-
-    public void updateOffsetPos(BlockPos newPos) {
-        offsetPos = newPos;
+        this.offsetPos = offsetPos;
+        this.renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent
+                .getOwnedChunks()
+                .getChunkLengthZ()];
+        for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
+            for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
+                renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
+                        .getChunkAt(xChunk + parent.getOwnedChunks().minX(),
+                                zChunk + parent.getOwnedChunks().minZ()));
+            }
+        }
     }
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
-        if (renderChunks == null) {
-            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent
-                .getOwnedChunks()
-                .getChunkLengthZ()];
-            for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
-                for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
-                    renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
-                        .getChunkAt(xChunk + parent.getOwnedChunks().minX(),
-                            zChunk + parent.getOwnedChunks().minZ()));
-                }
-            }
-        }
-
         GL11.glPushMatrix();
         Minecraft.getMinecraft().entityRenderer.enableLightmap();
         // int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
@@ -191,17 +178,15 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(angles.y());
         double moddedRoll = Math.toDegrees(angles.z());
         // Offset pos is used to prevent floating point errors when rendering stuff thats very far away.
-        if (offsetPos != null) {
-            double offsetX = offsetPos.getX() - centerOfRotation.x;
-            double offsetY = offsetPos.getY() - centerOfRotation.y;
-            double offsetZ = offsetPos.getZ() - centerOfRotation.z;
+        double offsetX = offsetPos.getX() - centerOfRotation.x;
+        double offsetY = offsetPos.getY() - centerOfRotation.y;
+        double offsetZ = offsetPos.getZ() - centerOfRotation.z;
 
-            GlStateManager.translate(-p0 + moddedX, -p1 + moddedY, -p2 + moddedZ);
-            GL11.glRotated(moddedPitch, 1D, 0, 0);
-            GL11.glRotated(moddedYaw, 0, 1D, 0);
-            GL11.glRotated(moddedRoll, 0, 0, 1D);
-            GL11.glTranslated(offsetX, offsetY, offsetZ);
-        }
+        GlStateManager.translate(-p0 + moddedX, -p1 + moddedY, -p2 + moddedZ);
+        GL11.glRotated(moddedPitch, 1D, 0, 0);
+        GL11.glRotated(moddedYaw, 0, 1D, 0);
+        GL11.glRotated(moddedRoll, 0, 0, 1D);
+        GL11.glTranslated(offsetX, offsetY, offsetZ);
     }
 
     public void inverseTransform(double partialTicks) {
@@ -233,17 +218,15 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(angles.y());
         double moddedRoll = Math.toDegrees(angles.z());
 
-        if (offsetPos != null) {
-            double offsetX = offsetPos.getX() - centerOfRotation.x;
-            double offsetY = offsetPos.getY() - centerOfRotation.y;
-            double offsetZ = offsetPos.getZ() - centerOfRotation.z;
+        double offsetX = offsetPos.getX() - centerOfRotation.x;
+        double offsetY = offsetPos.getY() - centerOfRotation.y;
+        double offsetZ = offsetPos.getZ() - centerOfRotation.z;
 
-            GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
-            GL11.glRotated(-moddedRoll, 0, 0, 1D);
-            GL11.glRotated(-moddedYaw, 0, 1D, 0);
-            GL11.glRotated(-moddedPitch, 1D, 0, 0);
-            GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
-        }
+        GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
+        GL11.glRotated(-moddedRoll, 0, 0, 1D);
+        GL11.glRotated(-moddedYaw, 0, 1D, 0);
+        GL11.glRotated(-moddedPitch, 1D, 0, 0);
+        GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
     }
 
 }

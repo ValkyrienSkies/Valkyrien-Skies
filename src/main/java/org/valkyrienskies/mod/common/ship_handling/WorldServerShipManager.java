@@ -3,7 +3,9 @@ package org.valkyrienskies.mod.common.ship_handling;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipIndexedData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -68,9 +70,13 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         // Does nothing for now, will eventually be used when ships are no longer entities.
         for (ShipIndexedData data : QueryableShipData.get(world)) {
             if (data.getPhyso() != null) {
-                // data.getPhyso().onTick();
+                data.getPhyso().onTick();
             }
         }
+        // Send all players in this world ship data.
+        ShipIndexDataMessage indexDataMessage = new ShipIndexDataMessage();
+        indexDataMessage.addDataToMessage(QueryableShipData.get(world));
+        ValkyrienSkiesMod.physWrapperNetwork.sendToDimension(indexDataMessage, world.provider.getDimension());
     }
 
     public World getWorld() {

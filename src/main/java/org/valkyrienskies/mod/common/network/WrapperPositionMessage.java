@@ -96,7 +96,7 @@ public class WrapperPositionMessage implements IMessage {
         setYaw(transform.getYaw());
         setRoll(transform.getRoll());
 
-        setCenterOfMass(transform.getCenterCoord());
+        setCenterOfMass(new Vector(transform.getCenterCoord()));
         setShipBB(toRunLocally.getShipBoundingBox());
     }
 

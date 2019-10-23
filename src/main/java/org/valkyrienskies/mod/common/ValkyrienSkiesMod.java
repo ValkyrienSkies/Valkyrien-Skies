@@ -55,10 +55,7 @@ import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilitySto
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
-import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
-import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
-import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
+import org.valkyrienskies.mod.common.network.*;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
@@ -175,12 +172,15 @@ public class ValkyrienSkiesMod {
     }
 
     private void registerNetworks(FMLStateEvent event) {
-        physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
+        physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies");
         physWrapperNetwork
-            .registerMessage(PhysWrapperPositionHandler.class, WrapperPositionMessage.class, 0,
-                Side.CLIENT);
+                .registerMessage(PhysWrapperPositionHandler.class, WrapperPositionMessage.class, 0,
+                        Side.CLIENT);
         physWrapperNetwork
-            .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 3, Side.SERVER);
+                .registerMessage(ShipIndexDataMessageHandler.class, ShipIndexDataMessage.class, 1,
+                        Side.CLIENT);
+        physWrapperNetwork
+                .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 2, Side.SERVER);
     }
 
     void registerBlocks(RegistryEvent.Register<Block> event) {

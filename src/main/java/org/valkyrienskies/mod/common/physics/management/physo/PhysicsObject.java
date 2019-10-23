@@ -391,25 +391,19 @@ public class PhysicsObject implements IPhysicsEntity {
         }
 
         this.setNeedsCollisionCacheUpdate(false);
-    }
 
-    public void onPostTick() {
+
         if (!world.isRemote) {
             getData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
+        } else {
+            WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
+                    .pollForClientTransform();
+            if (toUse != null) {
+                toUse.applySmoothLerp(this, .6D);
+            }
         }
     }
 
-    /**
-     * Updates the position and orientation of the client according to the data sent from the
-     * server.
-     */
-    public void onPostTickClient() {
-        WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
-                .pollForClientTransform();
-        if (toUse != null) {
-            toUse.applySmoothLerp(this, .6D);
-        }
-    }
 
     public void updateChunkCache() {
         cachedSurroundingChunks.updateChunkCache();
@@ -550,7 +544,7 @@ public class PhysicsObject implements IPhysicsEntity {
         MutableBlockPos newPos = new MutableBlockPos();
 
         ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
-        Vector centerCoord = currentTransform.getCenterCoord();
+        Vector centerCoord = new Vector(currentTransform.getCenterCoord());
         Vector position = new Vector(currentTransform.getPosX(), currentTransform.getPosY(), currentTransform.getPosZ());
 
         BlockPos centerDifference = new BlockPos(
@@ -585,12 +579,12 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public Vector getCenterCoord() {
-        return this.getData().getShipTransform().getCenterCoord();
+        return new Vector(this.getData().getShipTransform().getCenterCoord());
     }
 
     public void setCenterCoord(Vector centerCoord) {
         try {
-            ShipTransform updatedTransform = getTransform().withCenterCoord(centerCoord);
+            ShipTransform updatedTransform = getTransform().withCenterCoord(centerCoord.toVector3d());
             this.getData().setShipTransform(updatedTransform);
         } catch (Exception e) {
             e.printStackTrace();
@@ -630,7 +624,7 @@ public class PhysicsObject implements IPhysicsEntity {
     public void setPositionAndRotation(double posX, double posY, double posZ,
                                        double pitch, double yaw, double roll) {
         ShipTransform newTransform = new ShipTransform(posX, posY, posZ, pitch, yaw, roll,
-                this.getCenterCoord());
+                this.getCenterCoord().toVector3d());
 
         this.updateTransform(newTransform);
     }

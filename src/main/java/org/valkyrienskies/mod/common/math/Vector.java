@@ -122,6 +122,10 @@ public class Vector {
         }
     }
 
+    public Vector(Vector3dc vector3dc) {
+        this(vector3dc.x(), vector3dc.y(), vector3dc.z());
+    }
+
     public static Vector[] generateAxisAlignedNorms() {
         return new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
             new Vector(0.0D, 0.0D, 1.0D)};

@@ -17,11 +17,7 @@
 package org.valkyrienskies.mod.common.coordinates;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import javax.annotation.concurrent.Immutable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.With;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
@@ -29,16 +25,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Matrix4d;
-import org.joml.Matrix4dc;
-import org.joml.Quaterniond;
-import org.joml.Vector3d;
+import org.joml.*;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.concurrent.Immutable;
+import java.lang.Math;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
@@ -58,6 +52,7 @@ import valkyrienwarfare.api.TransformType;
 @NonFinal
 @Accessors(fluent = false)
 @AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class ShipTransform {
 
     /**
@@ -72,10 +67,10 @@ public class ShipTransform {
     Matrix4dc globalToSubspace;
 
     double posX, posY, posZ, pitch, yaw, roll;
-    Vector centerCoord;
+    Vector3dc centerCoord;
 
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
-        double roll, Vector centerCoord) {
+                         double roll, Vector3dc centerCoord) {
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
@@ -91,7 +86,7 @@ public class ShipTransform {
             .rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll))
             // First translate the block coordinates to coordinates where center of mass is <0,0,0>
             // E.g., move the coordinate origin to <0,0,0>
-            .translate(-centerCoord.x, -centerCoord.y, -centerCoord.z);
+                .translate(-centerCoord.x(), -centerCoord.y(), -centerCoord.z());
 
         this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
     }

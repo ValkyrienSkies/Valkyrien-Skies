@@ -78,7 +78,7 @@ public class TileEntityRudderPart extends
             Vector directionFacing = this.getForcePosRelativeToAxleInShipSpace();
             Vector forcePosRelativeToShipCenter = this.getForcePositionInShipSpace();
             forcePosRelativeToShipCenter
-                    .subtract(physicsObject.getTransform().getCenterCoord());
+                    .subtract(new Vector(physicsObject.getTransform().getCenterCoord()));
             physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
                 .rotate(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
 

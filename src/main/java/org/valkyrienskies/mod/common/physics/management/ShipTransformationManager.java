@@ -280,7 +280,7 @@ public class ShipTransformationManager {
         renderTransform = new ShipTransform(partialPos.x, partialPos.y,
             partialPos.z, Math.toDegrees(angles.x()), Math.toDegrees(angles.y()),
             Math.toDegrees(angles.z()),
-            parent.getCenterCoord());
+                parent.getCenterCoord().toVector3d());
     }
 
 }

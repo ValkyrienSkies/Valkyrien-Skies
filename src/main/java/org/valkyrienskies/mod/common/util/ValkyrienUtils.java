@@ -161,7 +161,7 @@ public class ValkyrienUtils {
         UUID shipID = UUID.randomUUID();
         // Create ship chunk claims
         VSChunkClaim chunkClaim = ValkyrienUtils.getShipChunkAllocator(world).allocateNextChunkClaim();
-        Vector centerOfMassInitial = new Vector(chunkClaim.getRegionCenter());
+        Vector3dc centerOfMassInitial = new Vector(chunkClaim.getRegionCenter()).toVector3d();
         Vector3dc shipPosInitial = new Vector3d(physInfuserPos.getX() + .5, physInfuserPos.getY() + .5, physInfuserPos.getZ() + .5);
         ShipTransform initial = new ShipTransform(shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z(), 0, 0, 0, centerOfMassInitial);
         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z(), shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z());

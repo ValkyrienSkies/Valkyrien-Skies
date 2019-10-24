@@ -25,7 +25,7 @@ public class SpawnPhysObjMessageHandler implements IMessageHandler<SpawnPhysObjM
                     throw new IllegalStateException("Wtf you can't spawn a ship twice!");
                 }
                 // Create a new PhysicsObject based on the ShipData.
-                PhysicsObject physicsObject = new PhysicsObject(world, toSpawn.getUuid(), false);
+                PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, false);
                 toSpawn.setPhyso(physicsObject);
                 queryableShipData.addOrUpdateShipPreservingPhysObj(toSpawn);
             }

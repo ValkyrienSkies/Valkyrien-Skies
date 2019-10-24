@@ -1,5 +1,10 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -9,12 +14,6 @@ import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class WorldServerShipManager implements IPhysObjectWorld {
 
@@ -72,7 +71,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             // TODO: Temp code. We should only be spawning in ships once a player gets close, and de-spawn them when
             //  players are far.
             if (data.getPhyso() == null) {
-                PhysicsObject physicsObject = new PhysicsObject(world, data.getUuid(), false);
+                PhysicsObject physicsObject = new PhysicsObject(world, data, false);
                 data.setPhyso(physicsObject);
             }
             if (data.getPhyso() != null) {

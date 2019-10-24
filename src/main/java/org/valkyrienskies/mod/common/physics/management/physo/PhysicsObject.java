@@ -19,6 +19,13 @@ package org.valkyrienskies.mod.common.physics.management.physo;
 import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -64,9 +71,6 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -129,7 +133,11 @@ public class PhysicsObject implements IPhysicsEntity {
     @Getter
     private final World world;
 
-    private final UUID shipDataUUID;
+    /**
+     * Please never manually update this
+     */
+    private ShipData shipData;
+
     // endregion
 
     // region Methods
@@ -138,12 +146,14 @@ public class PhysicsObject implements IPhysicsEntity {
      * Creates a new PhysicsObject.
      *
      * @param world            The world this object exists in.
-     * @param dataID           The UUID of the ShipData this ship will be based on.
-     * @param firstTimeCreated True if this ship was just created through a physics infuser, false if it was loaded in from the world save.
+     * @param initial          The ShipData this PhysicsObject will be created with
+     * @param firstTimeCreated True if this ship was just created through a physics infuser, false
+     *                         if it was loaded in from the world save.
      */
-    public PhysicsObject(World world, UUID dataID, boolean firstTimeCreated) {
+    public PhysicsObject(World world, ShipData initial, boolean firstTimeCreated) {
+        QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
         this.world = world;
-        this.shipDataUUID = dataID;
+        this.shipData = initial;
         this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
         // We need safe access to this across multiple threads.
         this.blockPositions = ConcurrentHashMap.newKeySet();
@@ -154,23 +164,48 @@ public class PhysicsObject implements IPhysicsEntity {
         this.claimedChunkCache = new ClaimedChunkCacheController(this, !firstTimeCreated);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
-                referenceBlockPos.getZ());
-        this.shipTransformationManager = new ShipTransformationManager(this, getData().getShipTransform());
+            referenceBlockPos.getZ());
+        this.shipTransformationManager = new ShipTransformationManager(this,
+            getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
+            //this.shipRenderer = null;
         } else {
             this.shipRenderer = null;
         }
     }
 
-    public ShipData getData() {
-        Optional<ShipData> shipIndexedData = QueryableShipData.get(world).getShip(shipDataUUID);
-        if (!shipIndexedData.isPresent()) {
-            throw new IllegalStateException("No Ship Data for UUID " + shipDataUUID);
+    private void shipDataUpdateListener(Iterable<ShipData> oldDataIterable,
+        Iterable<ShipData> newDataIterable) {
+
+        ShipData thisOldData = null, thisNewData = null;
+
+        for (ShipData oldData : oldDataIterable) {
+            if (oldData.getUuid().equals(shipData.getUuid())) {
+                thisOldData = oldData;
+            }
         }
-        return shipIndexedData.get();
+
+        for (ShipData newData : newDataIterable) {
+            if (newData.getUuid().equals(shipData.getUuid())) {
+                thisNewData = newData;
+            }
+        }
+
+        if (thisOldData == null || thisNewData == null) {
+            throw new IllegalStateException("It appears that the ShipData for this PhysicsObject"
+                + " was removed or added during an update operation - this is a bug!");
+        }
+
+        this.shipData = thisNewData;
+    }
+
+    public ShipData getData() {
+        // Theoretically, this should be fine thanks to #shipDataUpdateListener, but keep an eye
+        // on it
+        return this.shipData;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -184,11 +219,11 @@ public class PhysicsObject implements IPhysicsEntity {
         // If the block here is not to be made with physics, just treat it like you'd
         // treat AIR blocks.
         if (oldState != null && BlockPhysicsDetails.blocksToNotPhysicsInfuse
-                .contains(oldState.getBlock())) {
+            .contains(oldState.getBlock())) {
             oldState = Blocks.AIR.getDefaultState();
         }
         if (newState != null && BlockPhysicsDetails.blocksToNotPhysicsInfuse
-                .contains(newState.getBlock())) {
+            .contains(newState.getBlock())) {
             newState = Blocks.AIR.getDefaultState();
         }
 
@@ -222,20 +257,17 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public void assembleShip(EntityPlayer player, SpatialDetector detector,
-                             BlockPos centerInWorld) {
+        BlockPos centerInWorld) {
 
         MutableBlockPos pos = new MutableBlockPos();
 
-
         BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
 
-
         setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5,
-                getReferenceBlockPos().getY() + .5,
-                getReferenceBlockPos().getZ() + .5));
+            getReferenceBlockPos().getY() + .5,
+            getReferenceBlockPos().getZ() + .5));
 
         TIntIterator iter = detector.foundSet.iterator();
-
 
         MutableBlockPos oldPos = new MutableBlockPos();
         MutableBlockPos newPos = new MutableBlockPos();
@@ -246,8 +278,8 @@ public class PhysicsObject implements IPhysicsEntity {
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, oldPos);
             SpatialDetector.setPosWithRespectTo(i, centerInWorld, newPos);
             newPos.setPos(newPos.getX() + centerDifference.getX(),
-                    newPos.getY() + centerDifference.getY(),
-                    newPos.getZ() + centerDifference.getZ());
+                newPos.getY() + centerDifference.getY(),
+                newPos.getZ() + centerDifference.getZ());
 
             MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.of(this));
             voxelFieldAABBMaker.addVoxel(newPos.getX(), newPos.getY(), newPos.getZ());
@@ -303,7 +335,9 @@ public class PhysicsObject implements IPhysicsEntity {
 
         // Create a starter ship AABB.
         AxisAlignedBB bbInShipSpace = voxelFieldAABBMaker.makeVoxelFieldAABB();
-        Polygon polygon = new Polygon(bbInShipSpace, getShipTransformationManager().getCurrentTickTransform(), TransformType.SUBSPACE_TO_GLOBAL);
+        Polygon polygon = new Polygon(bbInShipSpace,
+            getShipTransformationManager().getCurrentTickTransform(),
+            TransformType.SUBSPACE_TO_GLOBAL);
         getData().setShipBB(polygon.getEnclosedAABB());
     }
 
@@ -315,7 +349,7 @@ public class PhysicsObject implements IPhysicsEntity {
                 for (EntityPlayerMP player : newWatchers) {
                     player.connection.sendPacket(data);
                     ((WorldServer) getWorld()).getEntityTracker()
-                            .sendLeashedEntitiesInChunk(player, chunk);
+                        .sendLeashedEntitiesInChunk(player, chunk);
                 }
             }
         }
@@ -388,11 +422,11 @@ public class PhysicsObject implements IPhysicsEntity {
                 TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
                 // Mark for deconstruction
                 shouldDeconstructShip =
-                        !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
+                    !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
                 shipAligningToGrid =
-                        !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
+                    !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
                 getData().setPhysicsEnabled(!physicsCore.canMaintainShip() ||
-                        physicsCore.isPhysicsEnabled());
+                    physicsCore.isPhysicsEnabled());
             } else {
                 // Mark for deconstruction
                 shipAligningToGrid = true;
@@ -409,12 +443,11 @@ public class PhysicsObject implements IPhysicsEntity {
 
         this.setNeedsCollisionCacheUpdate(false);
 
-
         if (!world.isRemote) {
             getData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
         } else {
             WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
-                    .pollForClientTransform();
+                .pollForClientTransform();
             if (toUse != null) {
                 toUse.applySmoothLerp(this, .6D);
             }
@@ -458,20 +491,20 @@ public class PhysicsObject implements IPhysicsEntity {
                                 for (x = 0; x < 16; x++) {
                                     for (z = 0; z < 16; z++) {
                                         if (storage.data.storage
-                                                .getAt(y << 8 | z << 4 | x)
-                                                != airStateIndex) {
+                                            .getAt(y << 8 | z << 4 | x)
+                                            != airStateIndex) {
                                             BlockPos pos = new BlockPos(chunk.x * 16 + x,
-                                                    index * 16 + y,
-                                                    chunk.z * 16 + z);
+                                                index * 16 + y,
+                                                chunk.z * 16 + z);
                                             getBlockPositions().add(new BlockPos(pos));
                                             blockPositionsGameTick
-                                                    .add(this.getBlockPosToIntRelToShip(pos));
+                                                .add(this.getBlockPosToIntRelToShip(pos));
                                             voxelFieldAABBMaker
-                                                    .addVoxel(pos.getX(), pos.getY(), pos.getZ());
+                                                .addVoxel(pos.getX(), pos.getY(), pos.getZ());
                                             if (BlockPhysicsDetails.isBlockProvidingForce(
-                                                    getWorld().getBlockState(pos), pos, getWorld())) {
+                                                getWorld().getBlockState(pos), pos, getWorld())) {
                                                 getPhysicsCalculations()
-                                                        .addPotentialActiveForcePos(pos);
+                                                    .addPotentialActiveForcePos(pos);
                                             }
                                         }
                                     }
@@ -532,7 +565,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
     private int getBlockPosToIntRelToShip(BlockPos pos) {
         return SpatialDetector
-                .getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), this.referenceBlockPos);
+            .getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), this.referenceBlockPos);
     }
 
     void setBlockPosFromIntRelToShop(int pos, MutableBlockPos toSet) {
@@ -546,7 +579,7 @@ public class PhysicsObject implements IPhysicsEntity {
     public boolean canShipBeDeconstructed() {
         // The quaternion with the ship's orientation
         Quaterniondc shipQuat = getShipTransformationManager().getCurrentTickTransform()
-                .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+            .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         // Only allow a ship to be deconstructed if the angle between the grid and its orientation is less than half a degree.
         return Math.toDegrees(shipQuat.angle()) < .5;
     }
@@ -562,17 +595,18 @@ public class PhysicsObject implements IPhysicsEntity {
 
         ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
         Vector centerCoord = new Vector(currentTransform.getCenterCoord());
-        Vector position = new Vector(currentTransform.getPosX(), currentTransform.getPosY(), currentTransform.getPosZ());
+        Vector position = new Vector(currentTransform.getPosX(), currentTransform.getPosY(),
+            currentTransform.getPosZ());
 
         BlockPos centerDifference = new BlockPos(
-                Math.round(getCenterCoord().x - position.x),
-                Math.round(getCenterCoord().y - position.y),
-                Math.round(getCenterCoord().z - position.z));
+            Math.round(getCenterCoord().x - position.x),
+            Math.round(getCenterCoord().y - position.y),
+            Math.round(getCenterCoord().z - position.z));
         // First copy all the blocks from ship to world.
 
         for (BlockPos oldPos : this.blockPositions) {
             newPos.setPos(oldPos.getX() - centerDifference.getX(),
-                    oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
+                oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
             MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.empty());
         }
 
@@ -601,7 +635,8 @@ public class PhysicsObject implements IPhysicsEntity {
 
     public void setCenterCoord(Vector centerCoord) {
         try {
-            ShipTransform updatedTransform = getTransform().withCenterCoord(centerCoord.toVector3d());
+            ShipTransform updatedTransform = getTransform()
+                .withCenterCoord(centerCoord.toVector3d());
             this.getData().setShipTransform(updatedTransform);
         } catch (Exception e) {
             e.printStackTrace();
@@ -616,15 +651,15 @@ public class PhysicsObject implements IPhysicsEntity {
     @Override
     public Vec3d rotateVector(Vec3d vector, TransformType transformType) {
         return this.getShipTransformationManager()
-                .getCurrentTickTransform()
-                .rotate(vector, transformType);
+            .getCurrentTickTransform()
+            .rotate(vector, transformType);
     }
 
     @Override
     public Vec3d transformVector(Vec3d vector, TransformType transformType) {
         return this.getShipTransformationManager()
-                .getCurrentTickTransform()
-                .transform(vector, transformType);
+            .getCurrentTickTransform()
+            .transform(vector, transformType);
     }
     // endregion
 
@@ -639,16 +674,16 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public void setPositionAndRotation(double posX, double posY, double posZ,
-                                       double pitch, double yaw, double roll) {
+        double pitch, double yaw, double roll) {
         ShipTransform newTransform = new ShipTransform(posX, posY, posZ, pitch, yaw, roll,
-                this.getCenterCoord().toVector3d());
+            this.getCenterCoord().toVector3d());
 
         this.updateTransform(newTransform);
     }
 
     public void setRotation(double pitch, double yaw, double roll) {
         setPositionAndRotation(getTransform().getPosX(),
-                getTransform().getPosY(), getTransform().getPosZ(), pitch, yaw, roll);
+            getTransform().getPosY(), getTransform().getPosZ(), pitch, yaw, roll);
     }
 
     // endregion

@@ -115,7 +115,7 @@ public class ShipData {
 
     public ShipData setName(String name) {
         this.name = name;
-        owner.update(this, NAME);
+        owner.updateObjectIndices(this, NAME);
         return this;
     }
 

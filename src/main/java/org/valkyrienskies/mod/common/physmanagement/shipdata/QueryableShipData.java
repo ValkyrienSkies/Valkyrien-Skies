@@ -101,38 +101,39 @@ public class QueryableShipData implements Iterable<ShipData> {
 
     public Optional<ShipData> getShipFromChunk(long chunkLong) {
         Query<ShipData> query = equal(ShipData.CHUNKS, chunkLong);
-        ResultSet<ShipData> resultSet = allShips.retrieve(query);
-
-        if (resultSet.size() > 1) {
-            throw new IllegalStateException(
-                "How the heck did we get 2 or more ships both managing the chunk at " + chunkLong);
-        }
-        if (resultSet.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(resultSet.uniqueResult());
+        try (ResultSet<ShipData> resultSet = allShips.retrieve(query)) {
+            if (resultSet.size() > 1) {
+                throw new IllegalStateException(
+                    "How the heck did we get 2 or more ships both managing the chunk at "
+                        + chunkLong);
+            }
+            if (resultSet.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(resultSet.uniqueResult());
+            }
         }
     }
 
     public Optional<ShipData> getShip(UUID uuid) {
         Query<ShipData> query = equal(ShipData.UUID, uuid);
-        ResultSet<ShipData> resultSet = allShips.retrieve(query);
-
-        if (resultSet.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(resultSet.uniqueResult());
+        try (ResultSet<ShipData> resultSet = allShips.retrieve(query)) {
+            if (resultSet.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(resultSet.uniqueResult());
+            }
         }
     }
 
     public Optional<ShipData> getShipFromName(String name) {
         Query<ShipData> query = equal(ShipData.NAME, name);
-        ResultSet<ShipData> shipDataResultSet = allShips.retrieve(query);
-
-        if (shipDataResultSet.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(shipDataResultSet.uniqueResult());
+        try (ResultSet<ShipData> shipDataResultSet = allShips.retrieve(query)) {
+            if (shipDataResultSet.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(shipDataResultSet.uniqueResult());
+            }
         }
     }
 
@@ -154,15 +155,13 @@ public class QueryableShipData implements Iterable<ShipData> {
      */
     public void addOrUpdateShipPreservingPhysObj(ShipData ship) {
         Optional<ShipData> old = getShip(ship.getUuid());
-        PhysicsObject physicsObject = null;
         if (old.isPresent()) {
-            physicsObject = old.get().getPhyso();
-            this.removeShip(old.get());
+            this.updateShipData(old.get(), ship);
+            PhysicsObject oldPhyso = old.get().getPhyso();
+            if (oldPhyso != null) {
+                ship.setPhyso(oldPhyso);
+            }
         }
-        if (physicsObject != null) {
-            ship.setPhyso(physicsObject);
-        }
-        this.addShip(ship);
     }
 
     public void registerUpdateListener(BiConsumer<Iterable<ShipData>,

@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.experimental.Delegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -94,13 +95,10 @@ public class PhysicsObject implements IPhysicsEntity {
      * track of the ship.
      */
     @Getter
-    @Setter
     private final BlockPos referenceBlockPos;
     @Getter
-    @Setter
     private final ShipTransformationManager shipTransformationManager;
     @Getter
-    @Setter
     private final PhysicsCalculations physicsCalculations;
     /**
      * Has to be concurrent, only exists properly on the server. Do not use this for anything client
@@ -136,6 +134,7 @@ public class PhysicsObject implements IPhysicsEntity {
     /**
      * Please never manually update this
      */
+    @Delegate
     private ShipData shipData;
 
     // endregion
@@ -179,6 +178,8 @@ public class PhysicsObject implements IPhysicsEntity {
 
     private void shipDataUpdateListener(Iterable<ShipData> oldDataIterable,
         Iterable<ShipData> newDataIterable) {
+
+        System.out.println("Called update listener!");
 
         ShipData thisOldData = null, thisNewData = null;
 
@@ -248,7 +249,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
         if (getBlockPositions().isEmpty()) {
             // TODO: Maybe?
-            // destroy();
+            destroy();
         }
 
         if (getPhysicsCalculations() != null) {
@@ -585,7 +586,7 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public void tryToDeconstructShip() {
-        // First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
+        /*// First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
         if (!canShipBeDeconstructed()) {
             return;
         }
@@ -626,7 +627,24 @@ public class PhysicsObject implements IPhysicsEntity {
             }
         }
         // TODO:
-        // this.destroy();
+        this.destroy();*/
+    }
+
+    @Deprecated
+    public void destroy() {
+        List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(getWatchingPlayers());
+        for (int x = getOwnedChunks().minX(); x <= getOwnedChunks().maxX(); x++) {
+            for (int z = getOwnedChunks().minZ(); z <= getOwnedChunks().maxZ(); z++) {
+                SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
+                for (EntityPlayerMP wachingPlayer : watchersCopy) {
+                    wachingPlayer.connection.sendPacket(unloadPacket);
+                }
+            }
+            // NOTICE: This method isnt being called to avoid the
+            // watchingPlayers.remove(player) call, which is a waste of CPU time
+            // onPlayerUntracking(wachingPlayer);
+        }
+        getWatchingPlayers().clear();
     }
 
     public Vector getCenterCoord() {

@@ -1,5 +1,7 @@
 package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
+import java.util.Map.Entry;
+import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -13,9 +15,6 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-
-import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * The ClaimedChunkCacheController is a chunk cache controller used by the {@link PhysicsObject}. It
@@ -122,6 +121,7 @@ public class ClaimedChunkCacheController {
      * Loads chunks that have been generated before into the cache
      */
     private void loadLoadedChunks() {
+        System.out.println("Loading chunks");
         VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
 
         claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
@@ -152,6 +152,7 @@ public class ClaimedChunkCacheController {
      * the game thread. Running it on a separate thread will lead to data races.
      */
     private void loadNewChunks() {
+        System.out.println("Loading new chunks");
         VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
 
         claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][

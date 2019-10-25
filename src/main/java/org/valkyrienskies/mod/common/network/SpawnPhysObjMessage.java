@@ -5,12 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
 import io.netty.buffer.ByteBuf;
+import java.io.IOException;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.util.jackson.CQEngineSerializationModule;
 import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
 import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
-
-import java.io.IOException;
 
 /**
  * Sending this message gets the client to spawn a PhysicsObject from a ShipData.
@@ -33,8 +33,9 @@ public class SpawnPhysObjMessage implements IMessage {
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE));
 
-        mapper.registerModule(new MinecraftSerializationModule());
-        mapper.registerModule(new JOMLSerializationModule());
+        mapper.registerModule(new MinecraftSerializationModule())
+            .registerModule(new JOMLSerializationModule())
+            .registerModule(new CQEngineSerializationModule<>(ShipData.class));
 
         return mapper;
     }

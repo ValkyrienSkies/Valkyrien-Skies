@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -21,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
  * </p>
  */
 @Log4j2
+@NonNull
 public class ShipChunkAllocator {
 
     /**

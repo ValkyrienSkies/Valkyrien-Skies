@@ -1,5 +1,9 @@
 package org.valkyrienskies.mod.common.tileentity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import mcp.MethodsReturnNonnullByDefault;
@@ -33,11 +37,6 @@ import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
     IVSTileGui {
@@ -111,7 +110,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                     .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
                         ValkyrienUtils.assembleShipAsOrderedByPlayer(getWorld(), null, getPos())
-                            .thenAcceptAsync(ship -> {
+                            .thenRunAsync(() -> {
                                 System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
                                 // TODO: Hmmmmmmmm
                                 // getWorld().spawnEntity(ship);

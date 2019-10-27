@@ -295,10 +295,15 @@ public class TransactionalUpdatableIndexedCollection<O> extends
                 incrementVersion(Collections.<O>emptySet());
 
                 if (modified) {
-                    updateListeners.forEach(consumer -> consumer.accept(objectsToRemove, objectsToAdd));
+                    for (BiConsumer<Iterable<O>, Iterable<O>> updateListener : updateListeners) {
+                        updateListener.accept(objectsToRemove, objectsToAdd);
+                    }
                 }
 
                 return modified;
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
             } finally {
                 closeRequestScopeResourcesIfNecessary(queryOptions);
             }

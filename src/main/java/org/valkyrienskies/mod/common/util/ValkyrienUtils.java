@@ -166,7 +166,8 @@ public class ValkyrienUtils {
         return data;
     }
 
-    public static TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(World world, EntityPlayerMP creator, BlockPos physicsInfuserPos) {
+    public static TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(World world,
+        @Nullable EntityPlayerMP creator, BlockPos physicsInfuserPos) {
         if (world.isRemote) {
             throw new IllegalStateException("This method cannot be invoked on client side!");
         }
@@ -181,8 +182,8 @@ public class ValkyrienUtils {
 
         System.out.println("E!");
         return TickSyncCompletableFuture
-                .supplyAsync(
-                        () -> DetectorManager.getDetectorFor(DetectorManager.DetectorIDs.ShipSpawnerGeneral, centerInWorld, world,
+                .supplyAsync(() -> DetectorManager.getDetectorFor(
+                    DetectorManager.DetectorIDs.ShipSpawnerGeneral, centerInWorld, world,
                                 VSConfig.maxShipSize + 1, true))
                 .thenAcceptAsync(detector -> {
                     System.out.println("Hello! " + Thread.currentThread().getName());
@@ -197,13 +198,16 @@ public class ValkyrienUtils {
                         }
                         return;
                     }
-
+                    System.out.println("Hello1! " + Thread.currentThread().getName());
                     QueryableShipData.get(world).addShip(shipData);
+                    System.out.println("Hello2! " + Thread.currentThread().getName());
                     PhysicsObject physicsObject = new PhysicsObject(world, shipData, true);
+                    System.out.println("Hello3! " + Thread.currentThread().getName());
                     shipData.setPhyso(physicsObject);
+                    System.out.println("Hello4! " + Thread.currentThread().getName());
 
                     physicsObject.assembleShip(creator, detector, physicsInfuserPos);
-
+                    System.out.println("Executed!");
                     int i = 1;
                     // TODO: Do something with this?
                 }, VSExecutors.forWorld((WorldServer) world));

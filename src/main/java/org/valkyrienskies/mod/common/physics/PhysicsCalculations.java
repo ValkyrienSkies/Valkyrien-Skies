@@ -18,6 +18,14 @@ package org.valkyrienskies.mod.common.physics;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.experimental.Delegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -25,7 +33,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.*;
+import org.joml.AxisAngle4d;
+import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
@@ -43,10 +57,6 @@ import org.valkyrienskies.mod.common.physics.management.physo.ShipPhysicsData;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.lang.Math;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 @JsonAutoDetect(fieldVisibility = Visibility.NONE) // Do not autodetect fields
 public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
@@ -63,9 +73,13 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
     private final IRotationNodeWorld physicsRotationNodeWorld;
+
+    // THE BELOW NEED TO BE MOVED TO #data
     private Vector gameTickCenterOfMass;
     private Vector linearMomentum;
     private Vector angularVelocity;
+    private Matrix3dc gameMoITensor;
+    // END
 
     public void setData(ShipPhysicsData data) {
         this.data = data;
@@ -79,7 +93,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // private double physMass;
     // The time occurring on each PhysTick
     private double physTickTimeDelta;
-    private Matrix3dc gameMoITensor;
     private Matrix3dc physMOITensor;
     private Matrix3dc physInvMOITensor;
     private double physRoll, physPitch, physYaw;

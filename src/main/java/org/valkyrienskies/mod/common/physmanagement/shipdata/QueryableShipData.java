@@ -146,6 +146,7 @@ public class QueryableShipData implements Iterable<ShipData> {
     }
 
     public void addShip(ShipData ship) {
+        System.out.println(ship.getName());
         allShips.add(ship);
     }
 

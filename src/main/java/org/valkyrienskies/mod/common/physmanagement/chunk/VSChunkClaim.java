@@ -22,6 +22,7 @@ import com.google.common.collect.Streams;
 import java.beans.ConstructorProperties;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import javax.annotation.concurrent.Immutable;
 import lombok.AllArgsConstructor;
@@ -40,7 +41,7 @@ import net.minecraft.util.math.ChunkPos;
 @Accessors(fluent = false)
 @Value
 @AllArgsConstructor
-public final class VSChunkClaim {
+public final class VSChunkClaim implements Iterable<ChunkPos> {
 
     private final int centerX;
     private final int centerZ;
@@ -110,13 +111,6 @@ public final class VSChunkClaim {
     }
 
     /**
-     * @return A stream of the {@link ChunkPos} of every chunk inside of this claim.
-     */
-    public Stream<ChunkPos> stream() {
-        return Streams.stream(new ChunkPosIterator());
-    }
-
-    /**
      * @return the maxX
      */
     public int maxX() {
@@ -170,6 +164,26 @@ public final class VSChunkClaim {
             .collect(ImmutableSet.toImmutableSet());
     }
 
+    /**
+     * @return A stream of the {@link ChunkPos} of every chunk inside of this claim.
+     */
+    public Stream<ChunkPos> stream() {
+        return Streams.stream(this);
+    }
+
+    /**
+     * Convenience function to decompose a {@link ChunkPos} from the iterator into an X and Z
+     * @param consumer BiConsumer&lt;x, z&gt;
+     */
+    public void forEach(BiConsumer<Integer, Integer> consumer) {
+        this.forEach(pos -> consumer.accept(pos.x, pos.z));
+    }
+
+    @Override
+    public Iterator<ChunkPos> iterator() {
+        return new ChunkPosIterator();
+    }
+
     class ChunkPosIterator implements Iterator<ChunkPos> {
         int index = 0;
 
@@ -182,8 +196,8 @@ public final class VSChunkClaim {
         public ChunkPos next() {
             if (!hasNext()) throw new NoSuchElementException();
 
-            int x = (index % dimension()) + minX();
-            int z = (index / dimension()) + minZ();
+            int x = (index / dimension()) + minX();
+            int z = (index % dimension()) + minZ();
             index++;
             return new ChunkPos(x, z);
         }

@@ -58,7 +58,8 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
 
-        Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn).getShipFromChunk(chunkX, chunkZ);
+        Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn)
+            .getShipFromChunk(chunkX, chunkZ);
 
         if (shipData.isPresent()) {
             ShipTransform positionData = shipData.get().getShipTransform();

@@ -25,7 +25,6 @@ public class ShipIndexDataMessageHandler implements IMessageHandler<ShipIndexDat
             }
         });
 
-        System.out.println("Receiving message with length " + message.indexedData.size());
         // TODO: does nothing
         return null;
     }

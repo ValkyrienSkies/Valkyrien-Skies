@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -26,6 +27,7 @@ import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCol
  * is available), by calling {@link #getPhyso()}.
  */
 @Getter
+@NonNull
 @Accessors(fluent = false)
 @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)// For Jackson
 public class ShipData {
@@ -86,11 +88,11 @@ public class ShipData {
 
     // endregion
 
-    public ShipData(PhysicsObject physo,
-        ConcurrentUpdatableIndexedCollection<ShipData> owner,
-        ShipPhysicsData physicsData, ShipTransform shipTransform, AxisAlignedBB shipBB,
-        boolean physicsEnabled, BlockPos physInfuserPos, VSChunkClaim chunkClaim, UUID uuid,
-        String name) {
+    public ShipData(@Nullable PhysicsObject physo,
+        @NonNull ConcurrentUpdatableIndexedCollection<ShipData> owner,
+        ShipPhysicsData physicsData, @NonNull ShipTransform shipTransform, @NonNull AxisAlignedBB shipBB,
+        boolean physicsEnabled, @NonNull BlockPos physInfuserPos, @NonNull VSChunkClaim chunkClaim, @NonNull UUID uuid,
+        @NonNull String name) {
         this.physo = physo;
         this.owner = owner;
         this.physicsData = physicsData;
@@ -104,7 +106,8 @@ public class ShipData {
     }
 
     public static ShipData createData(ConcurrentUpdatableIndexedCollection<ShipData> owner,
-        String name, VSChunkClaim chunkClaim, UUID shipID, ShipTransform shipTransform,
+        String name, VSChunkClaim chunkClaim, UUID shipID,
+        ShipTransform shipTransform,
         AxisAlignedBB aabb, BlockPos physInfuserPos) {
 
         return new ShipData(null, owner, null, shipTransform, aabb,
@@ -123,8 +126,6 @@ public class ShipData {
 
     // region Attributes
 
-    public static final Attribute<ShipData, Boolean> HAS_PHYSO =
-        attribute(data -> data.physo != null);
     public static final Attribute<ShipData, String> NAME = nullableAttribute(ShipData::getName);
     public static final Attribute<ShipData, UUID> UUID = attribute(ShipData::getUuid);
     public static final Attribute<ShipData, Long> CHUNKS = new MultiValueAttribute<ShipData, Long>() {

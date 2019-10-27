@@ -82,7 +82,6 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         }
         // Send all players in this world ship data.
         ShipIndexDataMessage indexDataMessage = new ShipIndexDataMessage();
-        System.out.println("Sending message with length " + QueryableShipData.get(world).stream().count());
         indexDataMessage.addDataToMessage(QueryableShipData.get(world));
         ValkyrienSkiesMod.physWrapperNetwork.sendToDimension(indexDataMessage, world.provider.getDimension());
     }

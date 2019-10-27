@@ -20,7 +20,6 @@ public class SpawnPhysObjMessageHandler implements IMessageHandler<SpawnPhysObjM
                 World world = Minecraft.getMinecraft().world;
                 QueryableShipData queryableShipData = QueryableShipData.get(world);
                 ShipData toSpawn = message.shipToSpawnData;
-                queryableShipData.addOrUpdateShipPreservingPhysObj(toSpawn);
                 if (toSpawn.getPhyso() != null) {
                     throw new IllegalStateException("Wtf you can't spawn a ship twice!");
                 }

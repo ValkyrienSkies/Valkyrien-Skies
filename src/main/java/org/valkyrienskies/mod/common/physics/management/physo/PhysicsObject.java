@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.common.physics.management.physo;
 
-import com.google.common.collect.Sets;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import java.util.ArrayList;
@@ -82,12 +81,12 @@ public class PhysicsObject implements IPhysicsEntity {
     // region Fields
 
     @Getter
-    private final List<EntityPlayerMP> watchingPlayers;
-    private final Set<INodeController> physicsControllers;
+    private final List<EntityPlayerMP> watchingPlayers = new ArrayList<>();
+    private final Set<INodeController> physicsControllers = ConcurrentHashMap.newKeySet();
     private final Set<INodeController> physicsControllersImmutable;
     // Used to iterate over the ship blocks extremely quickly by taking advantage of the cache
     @Getter
-    private final TIntArrayList blockPositionsGameTick;
+    private final TIntArrayList blockPositionsGameTick = new TIntArrayList();
     @Getter
     private final PhysObjectRenderManager shipRenderer;
     /**
@@ -100,13 +99,14 @@ public class PhysicsObject implements IPhysicsEntity {
     private final ShipTransformationManager shipTransformationManager;
     @Getter
     private final PhysicsCalculations physicsCalculations;
+
     /**
      * Has to be concurrent, only exists properly on the server. Do not use this for anything client
      * side! Contains all of the non-air block positions on the ship. This is used for generating
      * AABBs and deconstructing the ship.
      */
     @Getter
-    private Set<BlockPos> blockPositions;
+    private final Set<BlockPos> blockPositions = ConcurrentHashMap.newKeySet();
 
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
@@ -154,12 +154,7 @@ public class PhysicsObject implements IPhysicsEntity {
         this.world = world;
         this.shipData = initial;
         this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
-        // We need safe access to this across multiple threads.
-        this.blockPositions = ConcurrentHashMap.newKeySet();
-        this.watchingPlayers = new ArrayList<>();
-        this.physicsControllers = Sets.newConcurrentHashSet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
-        this.blockPositionsGameTick = new TIntArrayList();
         this.claimedChunkCache = new ClaimedChunkCacheController(this, !firstTimeCreated);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
@@ -178,9 +173,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
     private void shipDataUpdateListener(Iterable<ShipData> oldDataIterable,
         Iterable<ShipData> newDataIterable) {
-
         System.out.println("Called update listener!");
-
         ShipData thisOldData = null, thisNewData = null;
 
         for (ShipData oldData : oldDataIterable) {
@@ -195,12 +188,12 @@ public class PhysicsObject implements IPhysicsEntity {
             }
         }
 
-        if (thisOldData == null || thisNewData == null) {
+        if ((thisOldData != null) && (thisNewData != null)) {
+            this.shipData = thisNewData;
+        } else if ((thisOldData == null) ^ (thisNewData == null)) { // ^ is XOR
             throw new IllegalStateException("It appears that the ShipData for this PhysicsObject"
                 + " was removed or added during an update operation - this is a bug!");
         }
-
-        this.shipData = thisNewData;
     }
 
     public ShipData getData() {

@@ -160,7 +160,7 @@ public class PhysObjectRenderManager {
             return false;
         }
         ICamera camera = ClientProxy.lastCamera;
-        return camera == null || camera.isBoundingBoxInFrustum(parent.shipBoundingBox());
+        return true; // camera == null || camera.isBoundingBoxInFrustum(parent.shipBoundingBox());
     }
 
     public void applyRenderTransform(double partialTicks) {

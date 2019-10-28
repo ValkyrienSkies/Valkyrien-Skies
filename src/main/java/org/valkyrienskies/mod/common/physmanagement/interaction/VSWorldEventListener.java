@@ -69,11 +69,6 @@ public class VSWorldEventListener implements IWorldEventListener {
     @Override
     public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY,
         int maxZ) {
-        Optional<PhysicsObject> physicsObject =
-            ValkyrienUtils.getPhysicsObject(worldObj, new BlockPos(minX, minY, minZ));
-        physicsObject.ifPresent(p ->
-            p.shipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, false));
-        // this.markBlocksForUpdate(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1, false);
     }
 
     @Override

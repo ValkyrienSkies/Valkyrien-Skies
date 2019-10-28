@@ -282,4 +282,13 @@ public abstract class MixinRenderGlobal {
         GlStateManager.resetColor();
     }
 
+    @Inject(method = "markBlocksForUpdate", at = @At("HEAD"))
+    private void preMarkBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
+        boolean updateImmediately, CallbackInfo ci) {
+
+        Optional<PhysicsObject> physicsObject =
+            ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
+        physicsObject.ifPresent(p ->
+            p.shipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
+    }
 }

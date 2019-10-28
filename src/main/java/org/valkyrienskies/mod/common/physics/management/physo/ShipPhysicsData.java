@@ -19,5 +19,6 @@ public class ShipPhysicsData {
     Vector angularVelocity = new Vector();
     double gameTickMass = 0;
     Matrix3dc gameMoITensor = new Matrix3d();
+    Vector gameTickCenterOfMass = new Vector();
 
 }

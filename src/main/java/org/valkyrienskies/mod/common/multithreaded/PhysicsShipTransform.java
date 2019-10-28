@@ -27,6 +27,7 @@ import valkyrienwarfare.api.TransformType;
  *
  * @author thebest108
  */
+@Deprecated
 public class PhysicsShipTransform extends ShipTransform {
 
     private final double posX;

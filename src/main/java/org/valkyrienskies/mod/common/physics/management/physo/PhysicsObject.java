@@ -18,13 +18,6 @@ package org.valkyrienskies.mod.common.physics.management.physo;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -71,6 +64,10 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -257,10 +254,6 @@ public class PhysicsObject implements IPhysicsEntity {
 
         BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
 
-        setCenterCoord(new Vector(getReferenceBlockPos().getX() + .5,
-            getReferenceBlockPos().getY() + .5,
-            getReferenceBlockPos().getZ() + .5));
-
         TIntIterator iter = detector.foundSet.iterator();
 
         MutableBlockPos oldPos = new MutableBlockPos();
@@ -408,6 +401,7 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public void onTick() {
+        updateChunkCache();
         if (!getWorld().isRemote) {
             TileEntity te = getWorld().getTileEntity(getData().getPhysInfuserPos());
             boolean shouldDeconstructShip;
@@ -431,7 +425,7 @@ public class PhysicsObject implements IPhysicsEntity {
             getData().setPhysicsEnabled(false);
 
             if (shouldDeconstructShip) {
-                this.tryToDeconstructShip();
+                // this.tryToDeconstructShip();
             }
         }
 
@@ -447,7 +441,6 @@ public class PhysicsObject implements IPhysicsEntity {
             }
         }
     }
-
 
     public void updateChunkCache() {
         cachedSurroundingChunks.updateChunkCache();
@@ -714,5 +707,16 @@ public class PhysicsObject implements IPhysicsEntity {
 
     public void setShipBoundingBox(AxisAlignedBB shipBoundingBox) {
         getData().setShipBB(shipBoundingBox);
+    }
+
+    @Nullable
+    public Chunk getNearbyChunk(int x, int z) {
+        int minChunkX = cachedSurroundingChunks.cachedChunks().chunkX;
+        int minChunkZ = cachedSurroundingChunks.cachedChunks().chunkZ;
+        Chunk[][] chunks = cachedSurroundingChunks.cachedChunks().chunkArray;
+        if (x < minChunkX || x >= minChunkX + chunks.length || z < minChunkZ || z >= minChunkZ + chunks[0].length) {
+            return null;
+        }
+        return chunks[x - minChunkX][z - minChunkZ];
     }
 }

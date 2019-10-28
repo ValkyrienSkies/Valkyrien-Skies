@@ -58,6 +58,6 @@ public interface IPhysObjectWorld {
     List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck);
 
     @Nonnull
-    Iterable<PhysicsObject> getAllLoadedPhysObj();
+    List<PhysicsObject> getAllLoadedPhysObj();
 
 }

@@ -8,16 +8,17 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorldClientShipManager implements IPhysObjectWorld {
 
     private final World world;
-    private final Map<UUID, ShipData> ships;
+    // private final Map<UUID, ShipData> ships;
 
     public WorldClientShipManager(World world) {
         this.world = world;
-        this.ships = new HashMap<>();
+        // this.ships = new HashMap<>();
     }
 
     @Override
@@ -65,7 +66,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Nonnull
     @Override
-    public Iterable<PhysicsObject> getAllLoadedPhysObj() {
+    public List<PhysicsObject> getAllLoadedPhysObj() {
         List<PhysicsObject> allLoaded = new ArrayList<>();
         for (ShipData data : QueryableShipData.get(world)) {
             if (data.getPhyso() != null) {

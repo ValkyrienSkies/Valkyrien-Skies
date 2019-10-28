@@ -1,9 +1,5 @@
 package org.valkyrienskies.mod.common.util;
 
-import java.util.Optional;
-import java.util.UUID;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -34,6 +30,11 @@ import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * This class contains various helper functions for Valkyrien Skies.
@@ -157,7 +158,7 @@ public class ValkyrienUtils {
         // Create ship chunk claims
         VSChunkClaim chunkClaim = ValkyrienUtils.getShipChunkAllocator(world).allocateNextChunkClaim();
         Vector3dc centerOfMassInitial = VSMath.toVector3d(chunkClaim.getRegionCenter());
-        Vector3dc shipPosInitial = VSMath.toVector3d(physInfuserPos).add(0.5, 0.5, 0.5);
+        Vector3dc shipPosInitial = VSMath.toVector3d(physInfuserPos);
         ShipTransform initial = new ShipTransform(shipPosInitial, centerOfMassInitial);
         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(shipPosInitial.x(), shipPosInitial.y(),
             shipPosInitial.z(), shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z());

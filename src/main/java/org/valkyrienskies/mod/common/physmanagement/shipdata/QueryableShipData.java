@@ -1,30 +1,26 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import static com.googlecode.cqengine.query.QueryFactory.equal;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.common.util.cqengine.TransactionalUpdatableIndexedCollection;
 import org.valkyrienskies.mod.common.util.cqengine.UpdatableHashIndex;
 import org.valkyrienskies.mod.common.util.cqengine.UpdatableUniqueIndex;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
+import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 /**
  * A class that keeps track of ship data
@@ -157,11 +153,18 @@ public class QueryableShipData implements Iterable<ShipData> {
     public void addOrUpdateShipPreservingPhysObj(ShipData ship) {
         Optional<ShipData> old = getShip(ship.getUuid());
         if (old.isPresent()) {
-            this.updateShipData(old.get(), ship);
-            PhysicsObject oldPhyso = old.get().getPhyso();
-            if (oldPhyso != null) {
-                ship.setPhyso(oldPhyso);
-            }
+            old.get().setShipTransform(ship.getShipTransform());
+            // old.get().setName(ship.getName());
+            old.get().setPhysInfuserPos(ship.getPhysInfuserPos());
+            old.get().setShipBB(ship.getShipBB());
+            old.get().setPhysicsEnabled(ship.isPhysicsEnabled());
+            // this.updateShipData(old.get(), ship);
+            // PhysicsObject oldPhyso = old.get().getPhyso();
+            // if (oldPhyso != null) {
+            // ship.setPhyso(oldPhyso);
+            // }
+        } else {
+            this.allShips.add(ship);
         }
     }
 

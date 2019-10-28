@@ -27,6 +27,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +151,7 @@ public class VSThread extends Thread {
         // TODO: Temporary fix:
 //        WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
 //            .getManagerForWorld(hostWorld);
-        List<PhysicsObject> physicsEntities = new ArrayList<>(); // manager.getTickablePhysicsEntities();
+        List<PhysicsObject> physicsEntities = ((IHasShipManager) hostWorld).getManager().getAllLoadedPhysObj();
         // Tick ship physics here
         tickThePhysicsAndCollision(physicsEntities);
         tickSendUpdatesToPlayers(physicsEntities);
@@ -166,13 +167,17 @@ public class VSThread extends Thread {
         for (PhysicsObject wrapper : shipsWithPhysics) {
 //            if (!wrapper.firstUpdate) {
                 // Update the physics simulation
-            wrapper.getPhysicsCalculations().rawPhysTickPreCol(newPhysSpeed);
+            try {
+                wrapper.getPhysicsCalculations().rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
-            wrapper.getPhysicsCalculations().getWorldCollision()
-                    .tickUpdatingTheCollisionCache();
+                wrapper.getPhysicsCalculations().getWorldCollision()
+                        .tickUpdatingTheCollisionCache();
                 // Take the big collision and split into tiny ones
-            wrapper.getPhysicsCalculations().getWorldCollision()
-                    .splitIntoCollisionTasks(collisionTasks);
+                wrapper.getPhysicsCalculations().getWorldCollision()
+                        .splitIntoCollisionTasks(collisionTasks);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 //            }
         }
 

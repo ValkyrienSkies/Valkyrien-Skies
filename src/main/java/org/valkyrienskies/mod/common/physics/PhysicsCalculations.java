@@ -18,28 +18,12 @@ package org.valkyrienskies.mod.common.physics;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.experimental.Delegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.AxisAngle4d;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Quaterniond;
-import org.joml.Quaterniondc;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import org.joml.*;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
@@ -54,8 +38,11 @@ import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipPhysicsData;
-import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.lang.Math;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @JsonAutoDetect(fieldVisibility = Visibility.NONE) // Do not autodetect fields
 public class PhysicsCalculations implements IRotationNodeWorldProvider {
@@ -73,13 +60,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
     private final IRotationNodeWorld physicsRotationNodeWorld;
-
-    // THE BELOW NEED TO BE MOVED TO #data
-    private Vector gameTickCenterOfMass;
-    private Vector linearMomentum;
-    private Vector angularVelocity;
-    private Matrix3dc gameMoITensor;
-    // END
 
     public void setData(ShipPhysicsData data) {
         this.data = data;
@@ -102,7 +82,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         this(parent, parent.getData().getPhysicsData());
     }
 
-
     public PhysicsCalculations(PhysicsObject parent, ShipPhysicsData data) {
         this.parent = parent;
         this.worldCollision = new WorldPhysicsCollider(this);
@@ -113,41 +92,11 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         this.physMOITensor = new Matrix3d();
         this.physInvMOITensor = new Matrix3d();
 
-        this.gameTickCenterOfMass = new Vector();
         this.physCenterOfMass = new Vector();
         this.torque = new Vector();
         // We need thread safe access to this.
         this.activeForcePositions = ConcurrentHashMap.newKeySet();
         this.physicsRotationNodeWorld = new ImplRotationNodeWorld(this.parent);
-
-        linearMomentum = new Vector();
-        angularVelocity = new Vector();
-    }
-
-    public void writeToNBTTag(NBTTagCompound compound) {
-        compound.setDouble("mass", gameTickMass);
-
-        ValkyrienNBTUtils.writeVectorToNBT("linear", linearMomentum, compound);
-        ValkyrienNBTUtils.writeVectorToNBT("angularVelocity", angularVelocity, compound);
-        ValkyrienNBTUtils.writeVectorToNBT("CM", gameTickCenterOfMass, compound);
-
-        ValkyrienNBTUtils.write3x3MatrixToNBT("MOI", gameMoITensor, compound);
-
-        physicsRotationNodeWorld.writeToNBTTag(compound);
-        compound.setString("block_mass_ver", BlockPhysicsDetails.BLOCK_MASS_VERSION);
-    }
-
-    public void readFromNBTTag(NBTTagCompound compound) {
-        linearMomentum = ValkyrienNBTUtils.readVectorFromNBT("linear", compound);
-        angularVelocity = ValkyrienNBTUtils.readVectorFromNBT("angularVelocity", compound);
-        gameTickCenterOfMass = ValkyrienNBTUtils.readVectorFromNBT("CM", compound);
-        gameTickMass = compound.getDouble("mass");
-        gameMoITensor = ValkyrienNBTUtils.read3x3MatrixFromNBT("MOI", compound);
-        physicsRotationNodeWorld.readFromNBTTag(compound);
-
-        if (!BlockPhysicsDetails.BLOCK_MASS_VERSION.equals(compound.getString("block_mass_ver"))) {
-            this.recalculateShipInertia();
-        }
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
@@ -183,6 +132,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     private void addMassAt(double x, double y, double z, double addedMass) {
+        final org.valkyrienskies.mod.common.math.Vector gameTickCenterOfMass = getGameTickCenterOfMass();
+        final Matrix3dc gameMoITensor = getGameMoITensor();
         org.valkyrienskies.mod.common.math.Vector prevCenterOfMass = new org.valkyrienskies.mod.common.math.Vector(
                 gameTickCenterOfMass);
         if (gameTickMass > .0001D) {
@@ -191,8 +142,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                     .add(new org.valkyrienskies.mod.common.math.Vector(x, y, z).getProduct(addedMass));
             gameTickCenterOfMass.multiply(1.0D / (gameTickMass + addedMass));
         } else {
-            gameTickCenterOfMass = new org.valkyrienskies.mod.common.math.Vector(x, y, z);
-            gameMoITensor = new Matrix3d();
+            setGameTickCenterOfMass(new org.valkyrienskies.mod.common.math.Vector(x, y, z));
+            setGameMoITensor(new Matrix3d());
         }
         double cmShiftX = prevCenterOfMass.x - gameTickCenterOfMass.x;
         double cmShiftY = prevCenterOfMass.y - gameTickCenterOfMass.y;
@@ -225,7 +176,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                         + (rx * rx + ry * ry) * addedMass;
 
 
-        gameMoITensor = copy;
+        setGameMoITensor(copy);
 
         // Do this to avoid a mass of zero, which runs the risk of dividing by zero and
         // crashing the program.
@@ -246,7 +197,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         physX = parentTransform.getPosX();
         physY = parentTransform.getPosY();
         physZ = parentTransform.getPosZ();
-        physCenterOfMass.setValue(gameTickCenterOfMass);
+        physCenterOfMass.setValue(getGameTickCenterOfMass());
         ShipTransform physicsTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch,
                 physYaw, physRoll,
                 physCenterOfMass, getParent().getShipBoundingBox(),
@@ -292,8 +243,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             }
         } else {
             getParent().getData().setPhysicsEnabled(false);
-            linearMomentum.zero();
-            angularVelocity.zero();
+            getLinearMomentum().zero();
+            getAngularVelocity().zero();
         }
 
         PhysicsShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ,
@@ -310,9 +261,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // If the ship is moving at these speeds, its likely something in the physics
     // broke. This method helps detect that.
     private boolean isPhysicsBroken() {
-        if (angularVelocity.lengthSq() > 50000
-                || linearMomentum.lengthSq() * getInvMass() * getInvMass() > 50000 || angularVelocity
-                .isNaN() || linearMomentum.isNaN()) {
+        if (getAngularVelocity().lengthSq() > 50000
+                || getLinearMomentum().lengthSq() * getInvMass() * getInvMass() > 50000 || getAngularVelocity()
+                .isNaN() || getLinearMomentum().isNaN()) {
             System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
             return true;
         }
@@ -323,8 +274,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // changes.
     public void updateParentCenterOfMass() {
         Vector parentCM = getParent().getCenterCoord();
-        if (!getParent().getCenterCoord().equals(gameTickCenterOfMass)) {
-            Vector CMDif = gameTickCenterOfMass
+        if (!getParent().getCenterCoord().equals(getGameTickCenterOfMass())) {
+            Vector CMDif = getGameTickCenterOfMass()
                     .getSubtraction(parentCM);
 
             if (getParent().getShipTransformationManager()
@@ -344,7 +295,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
             getParent().updateTransform(newTransform);
 
-            getParent().getCenterCoord().setValue(gameTickCenterOfMass);
+            getParent().getCenterCoord().setValue(getGameTickCenterOfMass());
         }
     }
 
@@ -353,9 +304,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * updates on its own.
      */
     private void updatePhysCenterOfMass() {
-        if (!physCenterOfMass.equals(gameTickCenterOfMass)) {
+        if (!physCenterOfMass.equals(getGameTickCenterOfMass())) {
             Vector CMDif = physCenterOfMass
-                    .getSubtraction(gameTickCenterOfMass);
+                    .getSubtraction(getGameTickCenterOfMass());
 
             getParent().getShipTransformationManager().getCurrentPhysicsTransform()
                     .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
@@ -363,7 +314,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             physY += CMDif.y;
             physZ += CMDif.z;
 
-            physCenterOfMass.setValue(gameTickCenterOfMass);
+            physCenterOfMass.setValue(getGameTickCenterOfMass());
         }
     }
 
@@ -378,7 +329,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         Matrix3dc rotationMatrix = getParent().getShipTransformationManager()
                 .getCurrentPhysicsTransform().createRotationMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
-        Matrix3dc inertiaBodyFrame = gameMoITensor;
+        Matrix3dc inertiaBodyFrame = getGameMoITensor();
 
         Matrix3d rotationMatrixTranspose = new Matrix3d();
         rotationMatrix.transpose(rotationMatrixTranspose);
@@ -541,24 +492,24 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         idealAngularVelocity.multiply(idealAngularVelocityMultiple);
 
         Vector angularVelocityDif = idealAngularVelocity
-                .getSubtraction(angularVelocity);
+                .getSubtraction(getAngularVelocity());
         // Larger values converge faster, but sacrifice collision accuracy
         angularVelocityDif.multiply(.01);
 
-        angularVelocity.subtract(angularVelocityDif);
+        getAngularVelocity().subtract(angularVelocityDif);
     }
 
     private void applyAirDrag() {
         double drag = getDragForPhysTick();
-        linearMomentum.multiply(drag);
-        angularVelocity.multiply(drag);
+        getLinearMomentum().multiply(drag);
+        getAngularVelocity().multiply(drag);
     }
 
     public void convertTorqueToVelocity() {
         if (!torque.isZero()) {
             Vector3d torqueTransformed = torque.toVector3d();
             getPhysInvMOITensor().transform(torqueTransformed);
-            angularVelocity.add(torqueTransformed.x, torqueTransformed.y, torqueTransformed.z);
+            getAngularVelocity().add(torqueTransformed.x, torqueTransformed.y, torqueTransformed.z);
             torque.zero();
         }
     }
@@ -566,7 +517,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     public void addForceAtPoint(Vector inBodyWO,
                                 Vector forceToApply) {
         torque.add(inBodyWO.cross(forceToApply));
-        linearMomentum.add(forceToApply);
+        getLinearMomentum().add(forceToApply);
     }
 
     public void addForceAtPoint(Vector inBodyWO,
@@ -574,7 +525,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                                 Vector crossVector) {
         crossVector.setCross(inBodyWO, forceToApply);
         torque.add(crossVector);
-        linearMomentum.add(forceToApply);
+        getLinearMomentum().add(forceToApply);
     }
 
     public void updatePhysSpeedAndIters(double newPhysSpeed) {
@@ -586,6 +537,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      */
     private void integrateAngularVelocity() {
         ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
+        Vector angularVelocity = getAngularVelocity();
 
         AxisAngle4d axisAngle4d = new AxisAngle4d(angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick(), angularVelocity.x, angularVelocity.y, angularVelocity.z);
         axisAngle4d.normalize();
@@ -612,35 +564,20 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private void integrateLinearVelocity() {
         double momentMod = getPhysicsTimeDeltaPerPhysTick() * getInvMass();
 
-        physX += (linearMomentum.x * momentMod);
-        physY += (linearMomentum.y * momentMod);
-        physZ += (linearMomentum.z * momentMod);
+        physX += (getLinearMomentum().x * momentMod);
+        physY += (getLinearMomentum().y * momentMod);
+        physZ += (getLinearMomentum().z * momentMod);
         physY = Math.min(Math.max(physY, VSConfig.shipLowerLimit), VSConfig.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(
             Vector inBodyWO) {
-        Vector speed = angularVelocity.cross(inBodyWO);
+        Vector speed = getAngularVelocity().cross(inBodyWO);
         double invMass = getInvMass();
-        speed.x += (linearMomentum.x * invMass);
-        speed.y += (linearMomentum.y * invMass);
-        speed.z += (linearMomentum.z * invMass);
+        speed.x += (getLinearMomentum().x * invMass);
+        speed.y += (getLinearMomentum().y * invMass);
+        speed.z += (getLinearMomentum().z * invMass);
         return speed;
-    }
-
-    // Called upon a Ship being created from the World, and generates the physics
-    // data for it
-    public void recalculateShipInertia() {
-        linearMomentum.zero();
-        angularVelocity.zero();
-        gameTickCenterOfMass.zero();
-        gameTickMass = 0;
-        gameMoITensor = new Matrix3d();
-        IBlockState air = Blocks.AIR.getDefaultState();
-        for (BlockPos pos : getParent().getBlockPositions()) {
-            onSetBlockState(air, getParent().getChunkAt(pos.getX() >> 4, pos.getZ() >> 4)
-                    .getBlockState(pos), pos);
-        }
     }
 
     // These getter methods guarantee that only code within this class can modify

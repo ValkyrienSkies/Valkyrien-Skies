@@ -34,6 +34,7 @@ import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
 import org.valkyrienskies.fixes.MixinWorldIntrinsicMethods;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
@@ -344,12 +345,10 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 
-        return vanillaTrace;
 
-        /*
-        WorldPhysObjectManager physManager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-            .getManagerForWorld(world);
-        if (physManager == null) {
+        IPhysObjectWorld physObjectWorld = ((IHasShipManager) (this)).getManager();
+
+        if (physObjectWorld == null) {
             return vanillaTrace;
         }
 
@@ -358,7 +357,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
         AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y,
             vec32.z);
 
-        List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
+        List<PhysicsObject> nearbyShips = physObjectWorld.getNearbyPhysObjects(playerRangeBB);
         // Get rid of the Ship that we're not supposed to be RayTracing for
         nearbyShips.remove(toIgnore);
 
@@ -368,11 +367,11 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
             worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
         }
 
-        for (PhysicsWrapperEntity wrapper : nearbyShips) {
+        for (PhysicsObject wrapper : nearbyShips) {
             Vec3d playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
 
-            ShipTransform shipTransform = wrapper.getPhysicsObject().getShipTransformationManager()
+            ShipTransform shipTransform = wrapper.getShipTransformationManager()
                 .getRenderTransform();
 
             playerEyesPos = shipTransform.transform(playerEyesPos,
@@ -400,8 +399,6 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
 
         this.dontIntercept.set(false);
         return vanillaTrace;
-
-         */
     }
 
     @Override

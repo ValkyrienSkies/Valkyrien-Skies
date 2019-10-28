@@ -1,10 +1,5 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -14,6 +9,12 @@ import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WorldServerShipManager implements IPhysObjectWorld {
 
@@ -88,7 +89,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     @Nonnull
     @Override
-    public Iterable<PhysicsObject> getAllLoadedPhysObj() {
+    public List<PhysicsObject> getAllLoadedPhysObj() {
         List<PhysicsObject> allLoaded = new ArrayList<>();
         for (ShipData data : QueryableShipData.get(world)) {
             if (data.getPhyso() != null) {

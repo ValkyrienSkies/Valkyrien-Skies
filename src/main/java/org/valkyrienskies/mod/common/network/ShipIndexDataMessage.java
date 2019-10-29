@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
-import org.valkyrienskies.mod.common.util.jackson.CQEngineSerializationModule;
 import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
 import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
 
@@ -33,8 +32,7 @@ public class ShipIndexDataMessage implements IMessage {
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE));
 
         mapper.registerModule(new MinecraftSerializationModule())
-            .registerModule(new JOMLSerializationModule())
-            .registerModule(new CQEngineSerializationModule<>(ShipData.class));
+            .registerModule(new JOMLSerializationModule());
 
         return mapper;
     }

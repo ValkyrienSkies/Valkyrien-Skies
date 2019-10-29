@@ -8,7 +8,6 @@ import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
-import org.valkyrienskies.mod.common.util.jackson.CQEngineSerializationModule;
 import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
 import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
 
@@ -34,8 +33,7 @@ public class SpawnPhysObjMessage implements IMessage {
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE));
 
         mapper.registerModule(new MinecraftSerializationModule())
-            .registerModule(new JOMLSerializationModule())
-            .registerModule(new CQEngineSerializationModule<>(ShipData.class));
+            .registerModule(new JOMLSerializationModule());
 
         return mapper;
     }

@@ -1,26 +1,29 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
+import static com.googlecode.cqengine.query.QueryFactory.equal;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import org.valkyrienskies.mod.common.util.cqengine.TransactionalUpdatableIndexedCollection;
+import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
 import org.valkyrienskies.mod.common.util.cqengine.UpdatableHashIndex;
 import org.valkyrienskies.mod.common.util.cqengine.UpdatableUniqueIndex;
-
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
-
-import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 /**
  * A class that keeps track of ship data
@@ -32,19 +35,19 @@ public class QueryableShipData implements Iterable<ShipData> {
 
     // Where every ship data instance is stored, regardless if the corresponding PhysicsObject is
     // loaded in the World or not.
-    private TransactionalUpdatableIndexedCollection<ShipData> allShips;
+    private ConcurrentUpdatableIndexedCollection<ShipData> allShips;
 
     public QueryableShipData() {
-        this(new TransactionalUpdatableIndexedCollection<>(ShipData.class));
+        this(new ConcurrentUpdatableIndexedCollection<>());
     }
 
     @JsonCreator // This tells Jackson to pass in allShips when serializing
     // The default thing that is passed in will be 'null' if none exists
     public QueryableShipData(
-        @JsonProperty("allShips") TransactionalUpdatableIndexedCollection<ShipData> ships) {
+        @JsonProperty("allShips") ConcurrentUpdatableIndexedCollection<ShipData> ships) {
 
         if (ships == null) {
-            ships = new TransactionalUpdatableIndexedCollection<>(ShipData.class);
+            ships = new ConcurrentUpdatableIndexedCollection<>();
         }
 
         this.allShips = ships;
@@ -80,7 +83,7 @@ public class QueryableShipData implements Iterable<ShipData> {
      * @deprecated Do not use -- thinking of better API choices
      */
     @Deprecated
-    public TransactionalUpdatableIndexedCollection<ShipData> getAllShips() {
+    public ConcurrentUpdatableIndexedCollection<ShipData> getAllShips() {
         return allShips;
     }
 
@@ -168,8 +171,8 @@ public class QueryableShipData implements Iterable<ShipData> {
         }
     }
 
-    public void registerUpdateListener(BiConsumer<Iterable<ShipData>,
-        Iterable<ShipData>> updateListener) {
+    public void registerUpdateListener(
+        BiConsumer<Iterable<ShipData>, Iterable<ShipData>> updateListener) {
         allShips.registerUpdateListener(updateListener);
     }
 

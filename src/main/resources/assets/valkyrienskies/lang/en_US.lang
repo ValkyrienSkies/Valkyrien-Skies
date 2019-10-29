@@ -26,4 +26,4 @@ gui.stop_align_ship=Stop Alignment
 
 ## Commands
 commands.valkyrienskies.list-ships.noships=This world contains no ships!
-commands.valkyrienskies.list-ships.ships=This world contains the following ships: %s \n.
+commands.valkyrienskies.list-ships.ships=This world contains the following ships:\n%s

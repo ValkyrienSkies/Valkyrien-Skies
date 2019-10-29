@@ -11,6 +11,7 @@ import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 public class SpawnPhysObjMessageHandler implements IMessageHandler<SpawnPhysObjMessage, IMessage> {
+
     @Override
     public IMessage onMessage(SpawnPhysObjMessage message, MessageContext ctx) {
         IThreadListener mainThread = Minecraft.getMinecraft();

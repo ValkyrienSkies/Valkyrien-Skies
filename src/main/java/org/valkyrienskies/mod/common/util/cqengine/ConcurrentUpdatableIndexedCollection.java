@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.util.cqengine;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
@@ -34,16 +35,12 @@ public class ConcurrentUpdatableIndexedCollection<O> implements IndexedCollectio
 
     protected final Set<Consumer<Collection<O>>> addListeners = new HashSet<>();
     protected final Set<Consumer<Collection<O>>> removeListeners = new HashSet<>();
+    protected final Set<BiConsumer<Iterable<O>, Iterable<O>>> updateListeners = new HashSet<>();
+
 
     /**
      * @param addListener To be executed whenever {@link #add} is called. Does not trigger if the
      *                    collection was not modified (e.g. duplicate item)
-     *
-     *
-     * This method has slightly different behaviour than one might think when used with a
-     * TransactionalUpdatableIndexedCollection
-     *
-     * @see TransactionalUpdatableIndexedCollection#registerUpdateListener(BiConsumer)
      */
     public void registerAddListener(Consumer<Collection<O>> addListener) {
         addListeners.add(addListener);
@@ -52,14 +49,18 @@ public class ConcurrentUpdatableIndexedCollection<O> implements IndexedCollectio
     /**
      * @param addListener To be executed whenever {@link #remove} is called. Does not trigger if the
      *                    collection was not modified (e.g. duplicate item)
-     *
-     * This method has slightly different behaviour than one might think when used with a
-     * TransactionalUpdatableIndexedCollection
-     *
-     * @see TransactionalUpdatableIndexedCollection#registerUpdateListener(BiConsumer)
      */
     public void registerRemoveListener(Consumer<Collection<O>> addListener) {
         removeListeners.add(addListener);
+    }
+
+    /**
+     * @param updateListener To be executed whenever {@link #remove}, {@link #add}, or {@link
+     *                       #update} is called. Does not trigger if the collection was not modified
+     *                       (e.g. duplicate item)
+     */
+    public void registerUpdateListener(BiConsumer<Iterable<O>, Iterable<O>> updateListener) {
+        updateListeners.add(updateListener);
     }
 
     /**
@@ -381,6 +382,7 @@ public class ConcurrentUpdatableIndexedCollection<O> implements IndexedCollectio
 
             if (modified) {
                 addListeners.forEach(consumer -> consumer.accept(oSet));
+                updateListeners.forEach(consumer -> consumer.accept(emptyList(), oSet));
             }
 
             return modified;
@@ -405,6 +407,7 @@ public class ConcurrentUpdatableIndexedCollection<O> implements IndexedCollectio
 
             if (modified) {
                 removeListeners.forEach(consumer -> consumer.accept(oSet));
+                updateListeners.forEach(consumer -> consumer.accept(oSet, emptyList()));
             }
 
             return modified;
@@ -434,6 +437,7 @@ public class ConcurrentUpdatableIndexedCollection<O> implements IndexedCollectio
 
             if (!silent && modified) {
                 addListeners.forEach(consumer -> consumer.accept(objects));
+                updateListeners.forEach(consumer -> consumer.accept(emptyList(), objects));
             }
 
             return modified;
@@ -462,6 +466,7 @@ public class ConcurrentUpdatableIndexedCollection<O> implements IndexedCollectio
 
             if (!silent && modified) {
                 removeListeners.forEach(consumer -> consumer.accept(objects));
+                updateListeners.forEach(consumer -> consumer.accept(objects, emptyList()));
             }
 
             return modified;

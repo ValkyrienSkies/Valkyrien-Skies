@@ -18,6 +18,14 @@ package org.valkyrienskies.mod.common.physics.management.physo;
 
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -60,14 +68,9 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingCh
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -147,7 +150,7 @@ public class PhysicsObject implements IPhysicsEntity {
      *                         if it was loaded in from the world save.
      */
     public PhysicsObject(World world, ShipData initial, boolean firstTimeCreated) {
-        QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
+        //QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
         this.world = world;
         this.shipData = initial;
         this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
@@ -196,7 +199,7 @@ public class PhysicsObject implements IPhysicsEntity {
     public ShipData getData() {
         // Theoretically, this should be fine thanks to #shipDataUpdateListener, but keep an eye
         // on it
-        return this.shipData;
+        return shipData;
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
@@ -239,7 +242,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
         if (getBlockPositions().isEmpty()) {
             // TODO: Maybe?
-            destroy();
+            //destroy();
         }
 
         if (getPhysicsCalculations() != null) {

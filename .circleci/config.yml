@@ -30,6 +30,7 @@ jobs:
           destination: /
       - slack/status:
           success_message: Branch $CIRCLE_BRANCH, build $CIRCLE_BUILD_NUM passed. Download at $CIRCLE_BUILD_URL#artifacts/containers/0
+          only_for_branches: master,breaking/1.0
 
 workflows:
   version: 2

@@ -17,15 +17,8 @@
 package org.valkyrienskies.mod.common.physics.management.physo;
 
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.list.array.TIntArrayList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -61,7 +54,6 @@ import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
-import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
@@ -71,6 +63,10 @@ import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -85,8 +81,6 @@ public class PhysicsObject implements IPhysicsEntity {
     private final Set<INodeController> physicsControllers = ConcurrentHashMap.newKeySet();
     private final Set<INodeController> physicsControllersImmutable;
     // Used to iterate over the ship blocks extremely quickly by taking advantage of the cache
-    @Getter
-    private final TIntArrayList blockPositionsGameTick = new TIntArrayList();
     @Getter
     private final PhysObjectRenderManager shipRenderer;
     /**
@@ -106,7 +100,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * AABBs and deconstructing the ship.
      */
     @Getter
-    private final Set<BlockPos> blockPositions = ConcurrentHashMap.newKeySet();
+    private final TIntSet blockPositions = new TIntHashSet();
 
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
@@ -225,19 +219,13 @@ public class PhysicsObject implements IPhysicsEntity {
         boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
         if (isNewAir) {
-            boolean removed = getBlockPositions().remove(posAt);
+            getBlockPositions().remove(getBlockPosToIntRelToShip(posAt));
             voxelFieldAABBMaker.removeVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
-            if (removed) {
-                this.blockPositionsGameTick.remove(this.getBlockPosToIntRelToShip(posAt));
-            }
         }
 
         if (isOldAir && !isNewAir) {
-            boolean isAdded = getBlockPositions().add(posAt);
+            getBlockPositions().add(getBlockPosToIntRelToShip(posAt));
             voxelFieldAABBMaker.addVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
-            if (isAdded) {
-                this.blockPositionsGameTick.add(this.getBlockPosToIntRelToShip(posAt));
-            }
         }
 
         if (getBlockPositions().isEmpty()) {
@@ -321,14 +309,17 @@ public class PhysicsObject implements IPhysicsEntity {
         // Some extra ship crap at the end.
         detectBlockPositions();
 
+        // Note that this updates the ShipData transform.
         getPhysicsCalculations().updateParentCenterOfMass();
-
-        // Create a starter ship AABB.
-        AxisAlignedBB bbInShipSpace = voxelFieldAABBMaker.makeVoxelFieldAABB();
+        // This puts the updated ShipData transform into the transformation manager. It also creates the ship bounding
+        // box (Which is stored into ShipData).
+        this.getShipTransformationManager().updateAllTransforms(this.getData().getShipTransform(), true, true);
+        /*
         Polygon polygon = new Polygon(bbInShipSpace,
             getShipTransformationManager().getCurrentTickTransform(),
             TransformType.SUBSPACE_TO_GLOBAL);
         getData().setShipBB(polygon.getEnclosedAABB());
+        */
     }
 
     public void preloadNewPlayers() {
@@ -486,9 +477,7 @@ public class PhysicsObject implements IPhysicsEntity {
                                             BlockPos pos = new BlockPos(chunk.x * 16 + x,
                                                 index * 16 + y,
                                                 chunk.z * 16 + z);
-                                            getBlockPositions().add(new BlockPos(pos));
-                                            blockPositionsGameTick
-                                                .add(this.getBlockPosToIntRelToShip(pos));
+                                            getBlockPositions().add(getBlockPosToIntRelToShip(pos));
                                             voxelFieldAABBMaker
                                                 .addVoxel(pos.getX(), pos.getY(), pos.getZ());
                                             if (BlockPhysicsDetails.isBlockProvidingForce(

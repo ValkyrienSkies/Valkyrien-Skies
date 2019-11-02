@@ -68,7 +68,7 @@ public class VSWorldEventListener implements IWorldEventListener {
 
     @Override
     public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY,
-                                              int maxZ) {
+        int maxZ) {
         // this.markBlocksForUpdate(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1, false);
     }
 

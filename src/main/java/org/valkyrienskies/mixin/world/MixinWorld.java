@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.Interface.Remap;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
@@ -61,10 +62,9 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     private static final double BOUNDING_BOX_EDGE_LIMIT = 100000D;
     // TODO: This is going to lead to a multithreaded disaster. Replace this with something sensible!
     // I made this threadlocal to prevent disaster for now, but its still really bad code.
-    private final ThreadLocal<Boolean> dontIntercept = ThreadLocal.withInitial(() -> false);
+    private boolean dontIntercept = false;
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
-    private final ThreadLocal<PhysicsObject> dontInterceptShip = ThreadLocal
-        .withInitial(() -> null);
+    private PhysicsObject dontInterceptShip = null;
 
     private final World world = World.class.cast(this);
     // The IWorldShipManager
@@ -311,28 +311,28 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
 
     @Override
     public void excludeShipFromRayTracer(PhysicsObject entity) {
-        if (this.dontInterceptShip.get() != null) {
+        if (this.dontInterceptShip != null) {
             throw new IllegalStateException("excluded ship is already set!");
         }
-        this.dontInterceptShip.set(entity);
+        this.dontInterceptShip = entity;
     }
 
     @Override
     public void unexcludeShipFromRayTracer(PhysicsObject entity) {
-        if (this.dontInterceptShip.get() != entity) {
+        if (this.dontInterceptShip != entity) {
             throw new IllegalStateException("must exclude the same ship!");
         }
-        this.dontInterceptShip.set(null);
+        this.dontInterceptShip = null;
     }
 
     @Inject(method = "rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;ZZZ)Lnet/minecraft/util/math/RayTraceResult;", at = @At("HEAD"), cancellable = true)
     private void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
         boolean ignoreBlockWithoutBoundingBox,
         boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
-        if (!this.dontIntercept.get()) {
+        if (!this.dontIntercept) {
             callbackInfo.setReturnValue(rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock,
-                this.dontInterceptShip.get()));
+                this.dontInterceptShip));
         }
     }
 
@@ -340,7 +340,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
                                                    boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
                                                    PhysicsObject toIgnore) {
-        this.dontIntercept.set(true);
+        this.dontIntercept = true;
         RayTraceResult vanillaTrace = world
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
@@ -397,7 +397,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
             }
         }
 
-        this.dontIntercept.set(false);
+        this.dontIntercept = false;
         return vanillaTrace;
     }
 
@@ -419,5 +419,26 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     public IRotationNodeWorld getPhysicsRotationNodeWorld() {
         return rotationNodeWorld;
     }
+
+
+    /**
+     * Fixes World.getBlockDensity() creating huge amounts of lag by telling it not to look for
+     * ships when ray-tracing.
+     */
+    @Redirect(method = "getBlockDensity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
+    private RayTraceResult rayTraceBlocksForGetBlockDensity(World world, Vec3d start, Vec3d end) {
+        // Don't look for ships when ray tracing.
+        this.dontIntercept = true;
+        RayTraceResult result = rayTraceBlocks(start, end);
+        // Ok, now we can look for ships again.
+        this.dontIntercept = false;
+        return result;
+    }
+
+    /**
+     * A shadow of the method getBlockDensity() uses to do ray-tracing.
+     */
+    @Shadow
+    public abstract RayTraceResult rayTraceBlocks(Vec3d start, Vec3d end);
 
 }

@@ -20,6 +20,13 @@ import gnu.trove.TCollections;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
+import java.util.Random;
+import java.util.function.Consumer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -44,9 +51,6 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollision
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Handles the task of finding and processing collisions between a PhysicsObject and the game
@@ -608,9 +612,9 @@ public class WorldPhysicsCollider {
             || arrayChunkX > cache.chunkArray.length - 1
             || arrayChunkZ > cache.chunkArray[0].length - 1)) {
 
-            org.valkyrienskies.mod.common.math.Vector temp1 = new org.valkyrienskies.mod.common.math.Vector();
-            org.valkyrienskies.mod.common.math.Vector temp2 = new org.valkyrienskies.mod.common.math.Vector();
-            org.valkyrienskies.mod.common.math.Vector temp3 = new org.valkyrienskies.mod.common.math.Vector();
+            Vector temp1 = new Vector();
+            Vector temp2 = new Vector();
+            Vector temp3 = new Vector();
 
             Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
             for (int storageY = minY >> 4; storageY <= maxY >> 4; storageY++) {
@@ -716,9 +720,9 @@ public class WorldPhysicsCollider {
             || arrayChunkZ > cache.chunkArray[0].length - 1)
             && cache.chunkArray[arrayChunkX][arrayChunkZ] != null) {
 
-            org.valkyrienskies.mod.common.math.Vector temp1 = new org.valkyrienskies.mod.common.math.Vector();
-            org.valkyrienskies.mod.common.math.Vector temp2 = new org.valkyrienskies.mod.common.math.Vector();
-            org.valkyrienskies.mod.common.math.Vector temp3 = new org.valkyrienskies.mod.common.math.Vector();
+            Vector temp1 = new Vector();
+            Vector temp2 = new Vector();
+            Vector temp3 = new Vector();
 
             Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
             for (int storageY = minY >> 4; storageY <= maxY >> 4; storageY++) {
@@ -813,9 +817,9 @@ public class WorldPhysicsCollider {
     }
 
     private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage,
-        IBitOctree octree, org.valkyrienskies.mod.common.math.Vector inLocal,
-        org.valkyrienskies.mod.common.math.Vector inBody,
-        org.valkyrienskies.mod.common.math.Vector speedInBody, AxisAlignedBB shipBB) {
+        IBitOctree octree, Vector inLocal,
+        Vector inBody,
+        Vector speedInBody, AxisAlignedBB shipBB) {
         if (octree.get(x & 15, y & 15, z & 15)) {
             inLocal.x = x + .5D;
             inLocal.y = y + .5D;
@@ -945,8 +949,8 @@ public class WorldPhysicsCollider {
     }
 
     private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage,
-        IBitOctree octree, org.valkyrienskies.mod.common.math.Vector inLocal,
-        org.valkyrienskies.mod.common.math.Vector inBody, Vector speedInBody,
+        IBitOctree octree, Vector inLocal,
+        Vector inBody, Vector speedInBody,
         Collection<Integer> collection) {
         if (octree.get(x & 15, y & 15, z & 15)) {
             inLocal.x = x + .5D;

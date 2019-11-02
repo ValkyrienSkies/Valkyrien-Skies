@@ -2,7 +2,6 @@ package org.valkyrienskies.mod.common.util.jackson.minecraft;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -25,7 +24,7 @@ public class BlockPosSerialization {
 
         @Override
         public BlockPos deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+            throws IOException {
             JsonNode node = jp.getCodec().readTree(jp);
 
             double x = node.get("x").doubleValue();
@@ -45,7 +44,6 @@ public class BlockPosSerialization {
         public Serializer(Class<BlockPos> vc) {
             super(vc);
         }
-
 
         @Override
         public void serialize(BlockPos value, JsonGenerator gen, SerializerProvider provider)

@@ -2,7 +2,6 @@ package org.valkyrienskies.mod.common.util.jackson.minecraft;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -25,7 +24,7 @@ public class AxisAlignedBBSerialization {
 
         @Override
         public AxisAlignedBB deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+            throws IOException {
             JsonNode node = jp.getCodec().readTree(jp);
 
             double minX = node.get("minX").doubleValue();

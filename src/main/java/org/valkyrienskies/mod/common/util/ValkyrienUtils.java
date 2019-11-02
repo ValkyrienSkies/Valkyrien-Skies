@@ -1,5 +1,9 @@
 package org.valkyrienskies.mod.common.util;
 
+import java.util.Optional;
+import java.util.UUID;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -30,11 +34,6 @@ import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * This class contains various helper functions for Valkyrien Skies.
@@ -153,7 +152,7 @@ public class ValkyrienUtils {
      * Creates a new ShipIndexedData based on the inputs provided by the physics infuser block.
      */
     public static ShipData createNewShip(World world, BlockPos physInfuserPos) {
-        String name = NounListNameGenerator.instance().generateName();
+        String name = NounListNameGenerator.getInstance().generateName();
         UUID shipID = UUID.randomUUID();
         // Create ship chunk claims
         VSChunkClaim chunkClaim = ValkyrienUtils.getShipChunkAllocator(world).allocateNextChunkClaim();

@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.mod.common;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -62,10 +65,6 @@ import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class EventsCommon {
@@ -211,7 +210,7 @@ public class EventsCommon {
     public static void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
         event.addCapability(
             new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vs_world_data_capability"),
-            new VSDefaultCapabilityProvider<>(ValkyrienSkiesMod.VS_WOR_DATA()));
+            new VSDefaultCapabilityProvider<>(ValkyrienSkiesMod.getVS_WOR_DATA()));
     }
 
     @SubscribeEvent

@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mod.common.multithreaded;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -28,11 +32,6 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
@@ -188,7 +187,7 @@ public class VSThread extends Thread {
         try {
             // The individual collision tasks will sort through a lot of data to find
             // collision points
-            ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR().invokeAll(collisionTasks);
+            ValkyrienSkiesMod.getPHYSICS_THREADS_EXECUTOR().invokeAll(collisionTasks);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

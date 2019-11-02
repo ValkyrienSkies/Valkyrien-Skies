@@ -16,12 +16,25 @@
 
 package org.valkyrienskies.mixin.client.renderer;
 
-import net.minecraft.block.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.DestroyBlockProgress;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -48,10 +61,6 @@ import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.proxy.ClientProxy;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
 
 @Mixin(RenderGlobal.class)
 public abstract class MixinRenderGlobal {
@@ -278,6 +287,6 @@ public abstract class MixinRenderGlobal {
         Optional<PhysicsObject> physicsObject =
             ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
         physicsObject.ifPresent(p ->
-            p.shipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
+            p.getShipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
     }
 }

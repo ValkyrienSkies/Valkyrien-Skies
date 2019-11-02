@@ -523,7 +523,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * @return the cachedSurroundingChunks
      */
     public ChunkCache getCachedSurroundingChunks() {
-        return cachedSurroundingChunks.cachedChunks();
+        return cachedSurroundingChunks.getCachedChunks();
     }
 
     // ===== Keep track of all Node Processors in a concurrent Set =====
@@ -703,9 +703,9 @@ public class PhysicsObject implements IPhysicsEntity {
 
     @Nullable
     public Chunk getNearbyChunk(int x, int z) {
-        int minChunkX = cachedSurroundingChunks.cachedChunks().chunkX;
-        int minChunkZ = cachedSurroundingChunks.cachedChunks().chunkZ;
-        Chunk[][] chunks = cachedSurroundingChunks.cachedChunks().chunkArray;
+        int minChunkX = cachedSurroundingChunks.getCachedChunks().chunkX;
+        int minChunkZ = cachedSurroundingChunks.getCachedChunks().chunkZ;
+        Chunk[][] chunks = cachedSurroundingChunks.getCachedChunks().chunkArray;
         if (x < minChunkX || x >= minChunkX + chunks.length || z < minChunkZ || z >= minChunkZ + chunks[0].length) {
             return null;
         }

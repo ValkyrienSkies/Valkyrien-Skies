@@ -119,8 +119,6 @@ public class PhysicsObject implements IPhysicsEntity {
 
     private boolean shipAligningToGrid = false;
     @Getter
-    private boolean isFullyLoaded = false;
-    @Getter
     private final IVoxelFieldAABBMaker voxelFieldAABBMaker; // Used to quickly make aabb's
     @Getter
     private final World world;

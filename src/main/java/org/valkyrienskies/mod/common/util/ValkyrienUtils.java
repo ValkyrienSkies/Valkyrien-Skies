@@ -1,9 +1,5 @@
 package org.valkyrienskies.mod.common.util;
 
-import java.util.Optional;
-import java.util.UUID;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -35,6 +31,11 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * This class contains various helper functions for Valkyrien Skies.
  */
@@ -53,20 +54,12 @@ public class ValkyrienUtils {
      */
     public static Optional<PhysicsObject> getPhysicsObject(@Nullable World world,
                                                            @Nullable BlockPos pos) {
-        return getPhysicsObject(world, pos, false);
-    }
-
-    public static Optional<PhysicsObject> getPhysicsObject(@Nullable World world,
-                                                           @Nullable BlockPos pos, boolean includePartiallyLoaded) {
         // No physics object manages a null world or a null pos.
         if (world != null && pos != null && world.isBlockLoaded(pos)) {
             IPhysicsChunk physicsChunk = (IPhysicsChunk) world.getChunk(pos);
             Optional<PhysicsObject> physicsObject = physicsChunk.getPhysicsObjectOptional();
             if (physicsObject.isPresent()) {
-                if (includePartiallyLoaded || physicsObject.get()
-                        .isFullyLoaded()) {
-                    return physicsObject;
-                }
+                return physicsObject;
             }
         }
         return Optional.empty();

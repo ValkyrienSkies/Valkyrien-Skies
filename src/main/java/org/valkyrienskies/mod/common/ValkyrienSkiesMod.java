@@ -51,6 +51,9 @@ import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
+import org.valkyrienskies.mod.common.capability.entity_backup.ICapabilityEntityBackup;
+import org.valkyrienskies.mod.common.capability.entity_backup.ImplCapabilityEntityBackup;
+import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityNullStorage;
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityStorage;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
@@ -90,6 +93,9 @@ public class ValkyrienSkiesMod {
     @Getter
     @CapabilityInject(VSWorldDataCapability.class)
     public static final Capability<VSWorldDataCapability> VS_WOR_DATA = null;
+
+    @CapabilityInject(ICapabilityEntityBackup.class)
+    public static final Capability<ICapabilityEntityBackup> VS_ENTITY_BACKUP = null;
 
     @SidedProxy(
         clientSide = "org.valkyrienskies.mod.proxy.ClientProxy",
@@ -249,6 +255,12 @@ public class ValkyrienSkiesMod {
             VSWorldDataCapability.class,
             new VSDefaultCapabilityStorage<>(),
             VSWorldDataCapability::new
+        );
+
+        CapabilityManager.INSTANCE.register(
+                ICapabilityEntityBackup.class,
+                new VSDefaultCapabilityNullStorage<>(),
+                ImplCapabilityEntityBackup::new
         );
     }
 

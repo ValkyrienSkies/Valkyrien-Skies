@@ -16,9 +16,6 @@
 
 package org.valkyrienskies.mod.common;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -55,6 +52,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityProvider;
+import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityProviderNoNBT;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
@@ -65,6 +63,10 @@ import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class EventsCommon {
@@ -209,8 +211,15 @@ public class EventsCommon {
     @SubscribeEvent
     public static void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
         event.addCapability(
-            new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vs_world_data_capability"),
-            new VSDefaultCapabilityProvider<>(ValkyrienSkiesMod.getVS_WOR_DATA()));
+                new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vs_world_data_capability"),
+                new VSDefaultCapabilityProvider<>(ValkyrienSkiesMod.getVS_WOR_DATA()));
+    }
+
+    @SubscribeEvent
+    public static void attachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
+        event.addCapability(
+                new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vs_entity_backup"),
+                new VSDefaultCapabilityProviderNoNBT<>(ValkyrienSkiesMod.VS_ENTITY_BACKUP));
     }
 
     @SubscribeEvent

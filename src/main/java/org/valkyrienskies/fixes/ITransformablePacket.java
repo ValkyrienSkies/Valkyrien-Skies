@@ -4,7 +4,10 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import org.valkyrienskies.mod.common.MixinLoadManager;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.capability.entity_backup.ICapabilityEntityBackup;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import valkyrienwarfare.api.TransformType;
 
 /**
  * Used to indicate when a packet must be transformed into ship space to work properly (Digging
@@ -36,12 +39,13 @@ public interface ITransformablePacket {
             PhysicsObject physicsObject = getPacketParent(serverHandler);
             if (physicsObject != null
                     && physicsObject.getShipTransformationManager() != null) {
-//                ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
-//                ISubspace worldSubspace = worldProvider.getSubspace();
-//                worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
-//                physicsObject.getShipTransformationManager()
-//                    .getCurrentTickTransform().transform(player,
-//                    TransformType.GLOBAL_TO_SUBSPACE);
+                // First make a backup of the player position
+                ICapabilityEntityBackup entityBackup = player.getCapability(ValkyrienSkiesMod.VS_ENTITY_BACKUP, null);
+                entityBackup.backupEntityPosition(player);
+                // Then put the player into ship coordinates.
+                physicsObject.getShipTransformationManager()
+                        .getCurrentTickTransform().transform(player,
+                        TransformType.GLOBAL_TO_SUBSPACE);
             }
 
         }
@@ -54,21 +58,11 @@ public interface ITransformablePacket {
         if (isPacketOnMainThread(server, callingFromSponge)) {
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
-            // I don't care what happened to that ship in the time between, we must restore
-            // the player to their proper coordinates.
-//            ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
-//            ISubspace worldSubspace = worldProvider.getSubspace();
-//            ISubspacedEntity subspacedEntity = (ISubspacedEntity) player;
-//            ISubspacedEntityRecord record = worldSubspace
-//                .getRecordForSubspacedEntity(subspacedEntity);
-            // System.out.println(player.getPosition());
-//            if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {
-//                subspacedEntity.restoreSubspacedEntityStateToRecord(record);
-//                player.setPosition(player.posX, player.posY, player.posZ);
-//            }
-            // System.out.println(player.getPosition());
-            // We need this because Sponge Mixins prevent this from properly working. This
-            // won't be necessary on client however.
+            // If we made a backup in doPreProcessing(), then restore from that backup.
+            ICapabilityEntityBackup entityBackup = player.getCapability(ValkyrienSkiesMod.VS_ENTITY_BACKUP, null);
+            if (entityBackup.hasBackupPosition()) {
+                entityBackup.restoreEntityToBackup(player);
+            }
         }
     }
 

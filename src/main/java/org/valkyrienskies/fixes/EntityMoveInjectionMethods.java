@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.fixes;
 
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,8 +27,6 @@ import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.I
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 /**
  * This class used to do more (We made Entity.java extend this class in the past); but after tons of
@@ -50,7 +49,7 @@ public class EntityMoveInjectionMethods {
             double newZ = this_.posZ + dz;
             BlockPos newPosInBlock = new BlockPos(newX, newY, newZ);
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(this_.world, newPosInBlock);
+                .getPhysoManagingBlock(this_.world, newPosInBlock);
 
             if (!physicsObject.isPresent()) {
                 return null;

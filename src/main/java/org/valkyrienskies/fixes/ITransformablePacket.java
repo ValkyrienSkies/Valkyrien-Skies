@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import org.valkyrienskies.mod.common.MixinLoadManager;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.entity_backup.ICapabilityEntityBackup;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
@@ -40,7 +40,7 @@ public interface ITransformablePacket {
             if (physicsObject != null
                     && physicsObject.getShipTransformationManager() != null) {
                 // First make a backup of the player position
-                ICapabilityEntityBackup entityBackup = player.getCapability(ValkyrienSkiesMod.VS_ENTITY_BACKUP, null);
+                ICapabilityEntityBackup entityBackup = player.getCapability(VSCapabilityRegistry.VS_ENTITY_BACKUP, null);
                 entityBackup.backupEntityPosition(player);
                 // Then put the player into ship coordinates.
                 physicsObject.getShipTransformationManager()
@@ -59,7 +59,7 @@ public interface ITransformablePacket {
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
             // If we made a backup in doPreProcessing(), then restore from that backup.
-            ICapabilityEntityBackup entityBackup = player.getCapability(ValkyrienSkiesMod.VS_ENTITY_BACKUP, null);
+            ICapabilityEntityBackup entityBackup = player.getCapability(VSCapabilityRegistry.VS_ENTITY_BACKUP, null);
             if (entityBackup.hasBackupPosition()) {
                 entityBackup.restoreEntityToBackup(player);
             }

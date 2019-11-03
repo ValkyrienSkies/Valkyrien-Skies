@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.client;
 
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -50,8 +51,6 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 public class EventsClient {
 
@@ -103,7 +102,7 @@ public class EventsClient {
             BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
 
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+                .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
             if (physicsObject.isPresent()) {
                 Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(),
                     sound.getZPosF());
@@ -145,7 +144,7 @@ public class EventsClient {
         GL11.glPushMatrix();
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
         if (physicsObject.isPresent()) {
             RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
             if (objectOver != null && objectOver.hitVec != null) {
@@ -169,7 +168,7 @@ public class EventsClient {
     public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
         if (physicsObject.isPresent()) {
             RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
             if (objectOver != null && objectOver.hitVec != null) {

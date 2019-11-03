@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.entity;
 
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.BlockPos;
@@ -35,8 +36,6 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
@@ -193,7 +192,7 @@ public abstract class MixinEntity implements IDraggable {
             return vanilla;
         } else {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(world, new BlockPos(x, y, z));
+                .getPhysoManagingBlock(world, new BlockPos(x, y, z));
             if (physicsObject.isPresent()) {
                 Vector posVec = new Vector(x, y, z);
                 physicsObject.get()
@@ -221,7 +220,7 @@ public abstract class MixinEntity implements IDraggable {
         if (vanilla < 64.0D) {
             return vanilla;
         } else {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
             if (physicsObject.isPresent()) {
                 Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
                 physicsObject.get()

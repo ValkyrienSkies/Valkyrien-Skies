@@ -56,7 +56,7 @@ public abstract class MixinTileEntityRendererDispatcher {
         if (!hasChanged) {
             BlockPos pos = tileentityIn.getPos();
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(tileentityIn.getWorld(), tileentityIn.getPos());
+                .getPhysoManagingBlock(tileentityIn.getWorld(), tileentityIn.getPos());
 
             if (physicsObject.isPresent()) {
                 try {

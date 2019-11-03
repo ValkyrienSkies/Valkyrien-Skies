@@ -1,17 +1,18 @@
 package org.valkyrienskies.mod.common.capability.framework;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-import javax.annotation.Nullable;
-
-public class VSDefaultCapabilityProviderNoNBT<K> implements ICapabilityProvider {
+@ParametersAreNonnullByDefault
+public class VSDefaultCapabilityProviderTransient<K> implements ICapabilityProvider {
 
     private final Capability<K> thisCapability;
     private final K inst;
 
-    public VSDefaultCapabilityProviderNoNBT(Capability<K> capability) {
+    public VSDefaultCapabilityProviderTransient(Capability<K> capability) {
         this.thisCapability = capability;
         this.inst = capability.getDefaultInstance();
     }

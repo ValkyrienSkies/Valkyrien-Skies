@@ -63,7 +63,7 @@ public abstract class MixinChunkPos {
         }
 
         try {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(entityIn.world,
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(entityIn.world,
                 new BlockPos(d0, 127, d1));
 
             if (physicsObject.isPresent()) {

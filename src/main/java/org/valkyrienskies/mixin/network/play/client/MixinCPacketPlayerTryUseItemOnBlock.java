@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.network.play.client;
 
+import java.util.Optional;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
@@ -27,8 +28,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.fixes.ITransformablePacket;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-
-import java.util.Optional;
 
 @Mixin(value = CPacketPlayerTryUseItemOnBlock.class)
 public class MixinCPacketPlayerTryUseItemOnBlock implements ITransformablePacket {
@@ -50,7 +49,7 @@ public class MixinCPacketPlayerTryUseItemOnBlock implements ITransformablePacket
     public PhysicsObject getPacketParent(NetHandlerPlayServer server) {
         World world = server.player.getEntityWorld();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(world, thisPacketTryUse.getPos());
+            .getPhysoManagingBlock(world, thisPacketTryUse.getPos());
         if (physicsObject.isPresent()) {
             return physicsObject.get();
         } else {

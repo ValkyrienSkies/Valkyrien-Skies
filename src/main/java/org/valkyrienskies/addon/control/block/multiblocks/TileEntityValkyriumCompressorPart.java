@@ -64,7 +64,7 @@ public class TileEntityValkyriumCompressorPart extends
 
     @Override
     public double getCurrentValkyriumEfficiency() {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
         if (physicsObject.isPresent()) {
             Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D,
                 getPos().getZ() + .5D);

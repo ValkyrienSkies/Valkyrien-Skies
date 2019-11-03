@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
+import java.util.Map.Entry;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -10,12 +11,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
-import org.valkyrienskies.fixes.IPhysicsChunk;
+import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
+import org.valkyrienskies.mod.common.capability.VSChunkPhysoCapability;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-
-import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * The ClaimedChunkCacheController is a chunk cache controller used by the {@link PhysicsObject}. It
@@ -42,8 +41,6 @@ public class ClaimedChunkCacheController {
     public ClaimedChunkCacheController(PhysicsObject parent, boolean loaded) {
         this.world = parent.getWorld();
         this.parent = parent;
-
-        int dimension = parent.getData().getChunkClaim().dimension();
 
         if (loaded) {
             loadLoadedChunks();
@@ -125,36 +122,37 @@ public class ClaimedChunkCacheController {
         System.out.println("Loading chunks");
         VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
 
-        claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
-            (chunkClaim.getRadius() * 2) + 1];
-        for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
-            for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
-                // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
-                try {
-                    Chunk chunk = world.getChunk(x, z);
+        claimedChunks =
+            new Chunk[(chunkClaim.getRadius() * 2) + 1][(chunkClaim.getRadius() * 2) + 1];
 
-                    // Do this to get it re-integrated into the world
-                    if (!world.isRemote) {
-                        injectChunkIntoWorldServer(chunk, x, z, false);
-                    } else {
-                        // Make sure this chunk knows we own it.
-                        ((IPhysicsChunk) chunk).setParentPhysicsObject(Optional.of(this.parent));
-                    }
-                    for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
-                        parent.onSetTileEntity(entry.getKey(), entry.getValue());
-                    }
-                    claimedChunks[x - chunkClaim.minX()][z - chunkClaim
-                        .minZ()] = chunk;
-                } catch (Exception e) {
-                    e.printStackTrace();
+        chunkClaim.forEach((x, z) -> {
+            // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
+            try {
+                Chunk chunk = world.getChunk(x, z);
+
+                // Do this to get it re-integrated into the world
+                if (!world.isRemote) {
+                    injectChunkIntoWorldServer(chunk, x, z, false);
+                } else {
+                    // Make sure this chunk knows we own it.
+                    VSChunkPhysoCapability physoCapability =
+                        chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null);
+                    physoCapability.set(parent);
                 }
+                for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
+                    parent.onSetTileEntity(entry.getKey(), entry.getValue());
+                }
+                claimedChunks[x - chunkClaim.minX()][z - chunkClaim.minZ()] = chunk;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
+        });
     }
 
     /**
-     * Loads chunks that haven't been generated before into the cache. At the moment make sure to only call this from
-     * the game thread. Running it on a separate thread will lead to data races.
+     * Loads chunks that haven't been generated before into the cache. At the moment make sure to
+     * only call this from the game thread. Running it on a separate thread will lead to data
+     * races.
      */
     private void loadNewChunks() {
         System.out.println("Loading new chunks");
@@ -177,7 +175,10 @@ public class ClaimedChunkCacheController {
         chunk.generateSkylightMap();
         chunk.checkLight();
 
-        ((IPhysicsChunk) chunk).setParentPhysicsObject(Optional.of(this.parent));
+        // Make sure this chunk knows we own it
+        VSChunkPhysoCapability physoCapability =
+            chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null);
+        physoCapability.set(parent);
 
         ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
         chunk.dirty = true;

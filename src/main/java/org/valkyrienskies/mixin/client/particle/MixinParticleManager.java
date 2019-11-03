@@ -40,7 +40,7 @@ public abstract class MixinParticleManager {
         }
 
         BlockPos pos = new BlockPos(effect.posX, effect.posY, effect.posZ);
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(effect.world, pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(effect.world, pos);
         if (physicsObject.isPresent()) {
             Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
             Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);

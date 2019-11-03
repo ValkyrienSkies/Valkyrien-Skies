@@ -1,5 +1,11 @@
 package org.valkyrienskies.mod.common.util;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -9,9 +15,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import org.joml.Vector3dc;
-import org.valkyrienskies.fixes.IPhysicsChunk;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
@@ -31,11 +37,6 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
-import java.util.UUID;
-
 /**
  * This class contains various helper functions for Valkyrien Skies.
  */
@@ -45,6 +46,18 @@ import java.util.UUID;
 public class ValkyrienUtils {
 
     /**
+     * Gets the VS_CHUNK_PHYSO capability from the specified chunk, e.g., the {@link PhysicsObject}
+     * that is managing it, if present
+     *
+     * @param chunk The chunk to get the physics object for
+     * @return The physics object managing that chunk, if present
+     */
+    public static Optional<PhysicsObject> getPhysoManagingChunk(@Nonnull Chunk chunk) {
+        return Objects.requireNonNull(
+            chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null)).get();
+    }
+
+    /**
      * The liver of this mod. Returns the PhysicsObject that managed the given pos in the given
      * world.
      *
@@ -52,15 +65,11 @@ public class ValkyrienUtils {
      * @param pos   A BlockPos within the physics object space.
      * @return The PhysicsObject that owns the chunk at pos within the given world.
      */
-    public static Optional<PhysicsObject> getPhysicsObject(@Nullable World world,
+    public static Optional<PhysicsObject> getPhysoManagingBlock(@Nullable World world,
                                                            @Nullable BlockPos pos) {
         // No physics object manages a null world or a null pos.
         if (world != null && pos != null && world.isBlockLoaded(pos)) {
-            IPhysicsChunk physicsChunk = (IPhysicsChunk) world.getChunk(pos);
-            Optional<PhysicsObject> physicsObject = physicsChunk.getPhysicsObjectOptional();
-            if (physicsObject.isPresent()) {
-                return physicsObject;
-            }
+            return getPhysoManagingChunk(world.getChunk(pos));
         }
         return Optional.empty();
     }
@@ -71,7 +80,7 @@ public class ValkyrienUtils {
      */
     public static AxisAlignedBB getAABBInGlobal(AxisAlignedBB axisAlignedBB,
                                                 @Nullable World world, @Nullable BlockPos pos) {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
         if (physicsObject.isPresent()) {
             // We're in a physics object; convert the bounding box to a polygon; put its coordinates
             // in global space, and then return the bounding box that encloses all the points.
@@ -107,7 +116,7 @@ public class ValkyrienUtils {
 
     private static VSWorldDataCapability getWorldDataCapability(World world) {
         VSWorldDataCapability worldData = world
-                .getCapability(ValkyrienSkiesMod.VS_WOR_DATA, null);
+                .getCapability(VSCapabilityRegistry.VS_WORLD_DATA, null);
         if (worldData == null) {
             // I hate it when other mods add their custom worlds without calling the forge world
             // load events, so I don't feel bad crashing the game here. Although we could also get
@@ -205,4 +214,5 @@ public class ValkyrienUtils {
                     // TODO: Do something with this?
                 }, VSExecutors.forWorld((WorldServer) world));
     }
+
 }

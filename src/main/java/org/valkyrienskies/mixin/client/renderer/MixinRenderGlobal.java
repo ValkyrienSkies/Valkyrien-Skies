@@ -131,7 +131,7 @@ public abstract class MixinRenderGlobal {
 
                 if (!hasBreak) {
                     Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                            .getPhysicsObject(world, blockpos);
+                            .getPhysoManagingBlock(world, blockpos);
                     if (!physicsObject.isPresent() && (d3 * d3 + d4 * d4 + d5 * d5 > 1024.0D)) {
                         iterator.remove();
                     } else {
@@ -186,7 +186,7 @@ public abstract class MixinRenderGlobal {
     public void drawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn,
                                  int execute, float partialTicks) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(player.world, movingObjectPositionIn.getBlockPos());
+                .getPhysoManagingBlock(player.world, movingObjectPositionIn.getBlockPos());
         if (physicsObject.isPresent()) {
             physicsObject.get()
                     .getShipRenderer()
@@ -285,7 +285,7 @@ public abstract class MixinRenderGlobal {
         boolean updateImmediately, CallbackInfo ci) {
 
         Optional<PhysicsObject> physicsObject =
-            ValkyrienUtils.getPhysicsObject(world, new BlockPos(minX, minY, minZ));
+            ValkyrienUtils.getPhysoManagingBlock(world, new BlockPos(minX, minY, minZ));
         physicsObject.ifPresent(p ->
             p.getShipRenderer().updateRange(minX, minY, minZ, maxX, maxY, maxZ, updateImmediately));
     }

@@ -60,7 +60,7 @@ public class TileEntityPassengerChair extends TileEntity /*implements IRelocatio
         if (isChairEmpty) {
             // Chair is guaranteed empty.
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(getWorld(), getPos());
+                .getPhysoManagingBlock(getWorld(), getPos());
             CoordinateSpaceType mountCoordType =
                 physicsObject.isPresent() ? CoordinateSpaceType.SUBSPACE_COORDINATES
                     : CoordinateSpaceType.GLOBAL_COORDINATES;

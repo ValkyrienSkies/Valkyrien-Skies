@@ -75,7 +75,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         // Check if we have to create a ship
         if (!getWorld().isRemote) {
             Optional<PhysicsObject> parentShip = ValkyrienUtils
-                .getPhysicsObject(getWorld(), getPos());
+                .getPhysoManagingBlock(getWorld(), getPos());
             // Set the physics and align value to false if we're not in a ship
             if (!parentShip.isPresent()) {
                 if (isPhysicsEnabled || isTryingToAlignShip) {
@@ -246,7 +246,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
     public boolean isCurrentlyInShip() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         return physicsObject.isPresent();
     }
 
@@ -295,7 +295,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
      */
     public boolean canShipBeDeconstructed() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         return !physicsObject.isPresent() || physicsObject.get()
             .canShipBeDeconstructed();
     }
@@ -314,7 +314,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
      */
     public boolean isCenterOfShip() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(getWorld(), getPos());
+                .getPhysoManagingBlock(getWorld(), getPos());
         return !physicsObject.isPresent() ||
                 getPos().equals(physicsObject.get().getData().getPhysInfuserPos());
     }

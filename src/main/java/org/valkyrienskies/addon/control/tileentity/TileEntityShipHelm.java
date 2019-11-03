@@ -129,7 +129,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
         compassPoint.add(1D, 2D, 1D);
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         if (physicsObject.isPresent()) {
             physicsObject.get()
                 .getShipTransformationManager()

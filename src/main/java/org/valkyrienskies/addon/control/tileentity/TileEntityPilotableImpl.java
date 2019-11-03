@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.addon.control.tileentity;
 
+import java.util.Optional;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,8 +35,6 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 /**
  * A basic implementation of the ITileEntityPilotable interface, other tile entities can extend this
@@ -91,7 +90,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
 
     @Override
     public final PhysicsObject getParentPhysicsEntity() {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
         if (physicsObject.isPresent()) {
             return physicsObject.get();
         } else {

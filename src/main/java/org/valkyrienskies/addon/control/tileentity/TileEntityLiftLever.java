@@ -63,7 +63,7 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl {
         } else {
             if (!hasHeightBeenSet) {
                 Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                    .getPhysicsObject(getWorld(), getPos());
+                    .getPhysoManagingBlock(getWorld(), getPos());
                 if (physicsObject.isPresent()) {
                     Vector currentPos = new Vector(getPos().getX() + .5, getPos().getY() + .5,
                         getPos().getZ() + .5);
@@ -90,7 +90,7 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl {
 
             VSNode_TileEntity thisNode = this.getNode();
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(getWorld(), getPos());
+                .getPhysoManagingBlock(getWorld(), getPos());
 
             if (physicsObject.isPresent()) {
                 // The linear velocity of the ship

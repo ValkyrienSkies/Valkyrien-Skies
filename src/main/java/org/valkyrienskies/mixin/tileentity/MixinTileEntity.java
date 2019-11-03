@@ -56,7 +56,7 @@ public abstract class MixinTileEntity {
             //Assume on Ship
             if (tileWorld.isRemote && toReturn > 9999999D) {
                 BlockPos pos = this.pos;
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
 
                 if (physicsObject.isPresent()) {
                     Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D,

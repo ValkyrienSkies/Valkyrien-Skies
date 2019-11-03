@@ -1,6 +1,8 @@
 package org.valkyrienskies.mod.common.entity;
 
 import io.netty.buffer.ByteBuf;
+import java.util.Optional;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -15,9 +17,6 @@ import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
 
 /**
  * A simple entity whose only purpose is to allow mounting onto chairs, as well as fixing entities
@@ -197,7 +196,7 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
 
     public Optional<PhysicsObject> getMountedShip() {
         if (referencePos != null) {
-            return ValkyrienUtils.getPhysicsObject(world, referencePos);
+            return ValkyrienUtils.getPhysoManagingBlock(world, referencePos);
         } else {
             return Optional.empty();
         }

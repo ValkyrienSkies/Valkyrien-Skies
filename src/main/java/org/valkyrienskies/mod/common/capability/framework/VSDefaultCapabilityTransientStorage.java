@@ -1,15 +1,14 @@
 package org.valkyrienskies.mod.common.capability.framework;
 
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 
-import javax.annotation.Nullable;
-
 /**
  * Does nothing, used for capabilities that aren't meant to be persistent.
  */
-public class VSDefaultCapabilityNullStorage<K> implements Capability.IStorage<K> {
+public class VSDefaultCapabilityTransientStorage<K> implements Capability.IStorage<K> {
 
     @Nullable
     @Override
@@ -18,7 +17,5 @@ public class VSDefaultCapabilityNullStorage<K> implements Capability.IStorage<K>
     }
 
     @Override
-    public void readNBT(Capability<K> capability, K instance, EnumFacing side, NBTBase nbt) {
-
-    }
+    public void readNBT(Capability<K> capability, K instance, EnumFacing side, NBTBase nbt) {}
 }

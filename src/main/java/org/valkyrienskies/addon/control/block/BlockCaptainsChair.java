@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.addon.control.block;
 
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -40,10 +43,6 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-
 public class BlockCaptainsChair extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
@@ -62,7 +61,7 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
         EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(worldIn, pos);
             if (physicsObject.isPresent()) {
                     TileEntity tileEntity = worldIn.getTileEntity(pos);
                     if (tileEntity instanceof TileEntityCaptainsChair) {

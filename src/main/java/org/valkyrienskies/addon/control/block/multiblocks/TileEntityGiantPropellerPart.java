@@ -105,7 +105,7 @@ public class TileEntityGiantPropellerPart extends
 
             if (this.isPartOfAssembledMultiblock()) {
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
-                    .getPhysicsObject(getWorld(), getPos());
+                    .getPhysoManagingBlock(getWorld(), getPos());
                 if (this.isMaster()) {
                     if (!rotationNode.hasBeenPlacedIntoNodeWorld()) {
                         IRotationNodeWorld nodeWorld;
@@ -146,7 +146,7 @@ public class TileEntityGiantPropellerPart extends
     public void dissembleMultiblockLocal() {
         super.dissembleMultiblockLocal();
 
-        Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> object = ValkyrienUtils.getPhysoManagingBlock(getWorld(), getPos());
         object.ifPresent(obj -> this.rotationNode.queueTask(rotationNode::resetNodeData));
     }
 

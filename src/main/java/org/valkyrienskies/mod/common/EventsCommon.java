@@ -16,6 +16,9 @@
 
 package org.valkyrienskies.mod.common;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -24,14 +27,12 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -50,9 +51,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.valkyrienskies.fixes.IPhysicsChunk;
-import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityProvider;
-import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityProviderNoNBT;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
@@ -63,10 +61,6 @@ import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class EventsCommon {
@@ -80,11 +74,10 @@ public class EventsCommon {
         EntityPlayer player = event.getEntityPlayer();
         BlockPos pos = event.getPos();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(player.getEntityWorld(), pos);
+            .getPhysoManagingBlock(player.getEntityWorld(), pos);
 
         if (physicsObject.isPresent()) {
             if (player instanceof EntityPlayerMP) {
-                EntityPlayerMP playerMP = (EntityPlayerMP) player;
                 player.sendMessage(new TextComponentString("Spawn Point Set!"));
                 player.setSpawnPoint(pos, true);
                 event.setResult(SleepResult.NOT_POSSIBLE_HERE);
@@ -99,7 +92,7 @@ public class EventsCommon {
         World world = entity.world;
         BlockPos posAt = new BlockPos(entity);
 
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, posAt);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, posAt);
         if (!event.getWorld().isRemote && physicsObject.isPresent()
             && !(entity instanceof EntityFallingBlock)) {
             if (entity instanceof EntityArmorStand
@@ -202,24 +195,10 @@ public class EventsCommon {
         BlockPos pos = event.getPos();
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(event.getWorld(), pos);
+            .getPhysoManagingBlock(event.getWorld(), pos);
         if (physicsObject.isPresent()) {
             event.setResult(Result.ALLOW);
         }
-    }
-
-    @SubscribeEvent
-    public static void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
-        event.addCapability(
-                new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vs_world_data_capability"),
-                new VSDefaultCapabilityProvider<>(ValkyrienSkiesMod.getVS_WOR_DATA()));
-    }
-
-    @SubscribeEvent
-    public static void attachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
-        event.addCapability(
-                new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "vs_entity_backup"),
-                new VSDefaultCapabilityProviderNoNBT<>(ValkyrienSkiesMod.VS_ENTITY_BACKUP));
     }
 
     @SubscribeEvent
@@ -259,11 +238,9 @@ public class EventsCommon {
         BlockPos pos = event.getPos();
         Chunk chunk = event.getWorld()
             .getChunk(pos);
-        IPhysicsChunk physicsChunk = (IPhysicsChunk) chunk;
-        if (physicsChunk.getPhysicsObjectOptional()
-            .isPresent()) {
-            event.setResult(Result.ALLOW);
-        }
+
+        ValkyrienUtils.getPhysoManagingChunk(chunk)
+            .ifPresent(physicsObject -> event.setResult(Result.ALLOW));
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

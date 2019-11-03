@@ -44,7 +44,7 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
     @Optional.Method(modid = "opencomputers")
     public Object[] getPosition(Context context, Arguments args) {
         java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
             BlockPos pos = physicsObjectOptional.get().getTransform().toBlockPos();
             return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
@@ -56,7 +56,7 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
     @Optional.Method(modid = "opencomputers")
     public Object[] getRotation(Context context, Arguments args) {
         java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
             ShipTransform transform = physicsObjectOptional.get().getTransform();
             return new Object[]{transform.getYaw(), transform.getPitch(), transform.getRoll()};

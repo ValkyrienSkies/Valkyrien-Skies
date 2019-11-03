@@ -61,7 +61,7 @@ public abstract class MixinNetHandlerPlayServer {
                 callbackInfo.cancel();
                 redirectingSetPlayerLocation = true;
                 World world = player.getEntityWorld();
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
                 if (physicsObject.isPresent()) {
                     Vector tpPos = new Vector(x, y, z);
                     physicsObject.get()

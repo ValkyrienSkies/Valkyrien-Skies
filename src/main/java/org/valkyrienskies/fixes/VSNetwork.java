@@ -42,7 +42,7 @@ public class VSNetwork {
         } else {
             worldIn = except.world;
         }
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(worldIn, pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(worldIn, pos);
         Vector packetPosition = new Vector(x, y, z);
         if (physicsObject.isPresent()) {
             physicsObject.get()

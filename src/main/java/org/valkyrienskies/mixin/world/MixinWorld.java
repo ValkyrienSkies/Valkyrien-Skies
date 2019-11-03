@@ -26,7 +26,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -73,10 +72,9 @@ import valkyrienwarfare.api.TransformType;
 public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShipManager,
     IRotationNodeWorldProvider {
 
-    private static final double MAX_ENTITY_RADIUS_ALT = 2.0D;
-    private static final double BOUNDING_BOX_EDGE_LIMIT = 100000D;
-    // TODO: This is going to lead to a multithreaded disaster. Replace this with something sensible!
-    // I made this threadlocal to prevent disaster for now, but its still really bad code.
+    private static final double MAX_ENTITY_RADIUS_ALT = 2;
+    private static final double BOUNDING_BOX_EDGE_LIMIT = 10000;
+    private static final double BOUNDING_BOX_SIZE_LIMIT = 10000;
     private boolean dontIntercept = false;
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
     private PhysicsWrapperEntity dontInterceptShip = null;
@@ -116,6 +114,10 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     private static boolean isBoundingBoxTooLarge(AxisAlignedBB alignedBB) {
+        if ((alignedBB.maxX - alignedBB.minX) * (alignedBB.maxY - alignedBB.minY) * (alignedBB.maxZ
+            - alignedBB.minZ) > BOUNDING_BOX_SIZE_LIMIT) {
+            return true;
+        }
         if (alignedBB.maxX - alignedBB.minX > BOUNDING_BOX_EDGE_LIMIT ||
             alignedBB.maxY - alignedBB.minY > BOUNDING_BOX_EDGE_LIMIT ||
             alignedBB.maxZ - alignedBB.minZ > BOUNDING_BOX_EDGE_LIMIT) {
@@ -277,27 +279,6 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn,
         AxisAlignedBB boundingBox,
         @Nullable Predicate<? super Entity> predicate) {
-        if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxZ - boundingBox.minZ)
-            > 1000000D) {
-            return new ArrayList<>();
-        }
-
-        // Prevents the players item pickup AABB from merging with a
-        // PhysicsWrapperEntity AABB
-        if (entityIn instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entityIn;
-            if (player.getRidingEntity() != null &&
-                !player.getRidingEntity().isDead &&
-                player.getRidingEntity() instanceof PhysicsWrapperEntity) {
-                AxisAlignedBB axisalignedbb = player.getEntityBoundingBox()
-                    .union(player.getRidingEntity().getEntityBoundingBox())
-                    .expand(1.0D, 0.0D, 1.0D);
-
-                if (boundingBox.equals(axisalignedbb)) {
-                    boundingBox = player.getEntityBoundingBox().expand(1.0D, 0.5D, 1.0D);
-                }
-            }
-        }
 
         if (isBoundingBoxTooLarge(boundingBox)) {
             new Exception("Tried getting entities from giant bounding box of " + boundingBox)

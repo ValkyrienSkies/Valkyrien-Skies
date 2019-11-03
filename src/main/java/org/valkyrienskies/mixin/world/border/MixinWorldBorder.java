@@ -34,7 +34,7 @@ public abstract class MixinWorldBorder {
         at = @At("HEAD"),
         cancellable = true)
     public void preContains(BlockPos pos, CallbackInfoReturnable<Boolean> callbackInfo) {
-        if (ShipChunkAllocator.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
+        if (ShipChunkAllocator.isBlockInShipyard(pos)) {
             callbackInfo.setReturnValue(true);
         }
     }

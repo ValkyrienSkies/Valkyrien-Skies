@@ -3,6 +3,8 @@ package org.valkyrienskies.mod.common.physmanagement.chunk;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 
 /**
  * <p>
@@ -23,18 +25,15 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 @NonNull
+@SuppressWarnings("WeakerAccess")
 public class ShipChunkAllocator {
 
     /**
      * The size of the square of chunks (default 256 x 256) that are allocated to a ship.
      */
-    @SuppressWarnings("WeakerAccess")
     public static final int MAX_CHUNK_LENGTH = 32;
-    @SuppressWarnings("WeakerAccess")
     public static final int MAX_CHUNK_RADIUS = (MAX_CHUNK_LENGTH / 2) - 1;
-    @SuppressWarnings("WeakerAccess")
     public static final int CHUNK_X_START = 320000;
-    @SuppressWarnings("WeakerAccess")
     public static final int CHUNK_Z_START = 0;
 
     @Getter
@@ -42,8 +41,32 @@ public class ShipChunkAllocator {
     @Getter
     private int lastChunkZ = CHUNK_Z_START;
 
-    public static boolean isLikelyShipChunk(int chunkX, int chunkZ) {
+    /**
+     * Determines whether or not a chunk is in the shipyard
+     * @param chunkX The z position of the chunk
+     * @param chunkZ The x position of the chunk
+     * @return True if the chunk is in the shipyard
+     */
+    public static boolean isChunkInShipyard(int chunkX, int chunkZ) {
         return chunkX >= CHUNK_X_START - MAX_CHUNK_RADIUS && chunkZ >= CHUNK_Z_START - MAX_CHUNK_RADIUS;
+    }
+
+    /**
+     * Determines whether or not a chunk is in the shipyard
+     * @param pos The position of the chunk
+     * @return True if the chunk is in the shipyard
+     */
+    public static boolean isChunkInShipyard(ChunkPos pos) {
+        return isChunkInShipyard(pos.x, pos.z);
+    }
+
+    /**
+     * Determines whether or not a block is in the shipyard
+     * @param pos The position of the block
+     * @return True if the block is in the shipyard
+     */
+    public static boolean isBlockInShipyard(BlockPos pos) {
+        return isChunkInShipyard(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     /**

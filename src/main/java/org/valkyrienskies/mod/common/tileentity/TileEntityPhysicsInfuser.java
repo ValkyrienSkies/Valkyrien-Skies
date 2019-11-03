@@ -106,8 +106,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             if (!parentShip.isPresent() && canMaintainShip() && isTryingToAssembleShip) {
                 // Create a ship with this physics infuser
                 // Make sure we don't try to create a ship when we're already in ship space.
-                if (!ShipChunkAllocator
-                    .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
+                if (!ShipChunkAllocator.isBlockInShipyard(getPos())) {
                     try {
                         ValkyrienUtils.assembleShipAsOrderedByPlayer(getWorld(), null, getPos())
                             .thenRunAsync(() -> {

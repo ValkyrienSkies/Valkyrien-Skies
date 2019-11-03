@@ -225,17 +225,11 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     }
 
     /**
-     * @param clazz
-     * @param aabb
-     * @param filter
-     * @param <T>
-     * @return
      * @author thebest108
      */
     @Overwrite
     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz,
-        AxisAlignedBB aabb,
-        @Nullable Predicate<? super T> filter) {
+        AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {
         List<T> toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D,
             (aabb.minZ + aabb.maxZ) / 2D);
@@ -260,8 +254,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
      */
     @Overwrite
     public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn,
-        AxisAlignedBB boundingBox,
-        @Nullable Predicate<? super Entity> predicate) {
+        AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
         if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxZ - boundingBox.minZ)
             > 1000000D) {
             return new ArrayList<>();

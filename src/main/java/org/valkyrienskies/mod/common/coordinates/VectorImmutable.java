@@ -12,8 +12,10 @@ import org.valkyrienskies.mod.common.math.Vector;
  * safe.
  *
  * @author thebest108
+ * @deprecated Use {@link org.joml.Vector3dc} instead
  */
 @Immutable
+@Deprecated
 @MethodsReturnNonnullByDefault
 public class VectorImmutable extends Vec3d {
 

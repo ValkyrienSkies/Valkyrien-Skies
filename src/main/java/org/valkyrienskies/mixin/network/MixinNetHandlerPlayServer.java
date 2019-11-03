@@ -57,7 +57,7 @@ public abstract class MixinNetHandlerPlayServer {
         if (!redirectingSetPlayerLocation) {
             BlockPos pos = new BlockPos(x, y, z);
             // If the player is being teleported to ship space then we have to stop it.
-            if (ShipChunkAllocator.isLikelyShipChunk(pos.getX() >> 4, pos.getZ() >> 4)) {
+            if (ShipChunkAllocator.isBlockInShipyard(pos)) {
                 callbackInfo.cancel();
                 redirectingSetPlayerLocation = true;
                 World world = player.getEntityWorld();

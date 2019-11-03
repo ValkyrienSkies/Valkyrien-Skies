@@ -1,10 +1,9 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
 import lombok.Getter;
-import lombok.experimental.Accessors;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 
-@Accessors(fluent = false)
+
 public class VSWorldData {
 
     @Getter

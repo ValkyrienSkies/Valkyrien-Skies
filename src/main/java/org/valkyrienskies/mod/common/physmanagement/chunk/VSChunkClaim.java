@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import javax.annotation.concurrent.Immutable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import lombok.experimental.Accessors;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -38,7 +37,7 @@ import net.minecraft.util.math.ChunkPos;
  * @author thebest108
  */
 @Immutable
-@Accessors(fluent = false)
+
 @Value
 @AllArgsConstructor
 public final class VSChunkClaim implements Iterable<ChunkPos> {

@@ -24,7 +24,6 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.With;
-import lombok.experimental.Accessors;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.entity.Entity;
@@ -59,7 +58,7 @@ import valkyrienwarfare.api.TransformType;
 @Log4j2
 @Builder(toBuilder = true)
 @NonFinal
-@Accessors(fluent = false)
+
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class ShipTransform {

@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTBase;
@@ -38,7 +37,7 @@ import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
  * @param <K> The type of object this capability should store
  * @see VSWorldDataCapability
  */
-@Accessors(fluent = false)
+
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @Log4j2

@@ -17,9 +17,9 @@
 package org.valkyrienskies.mod.common.network;
 
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.joml.Matrix4d;
@@ -31,8 +31,6 @@ import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.UUID;
-
 /**
  * This IMessage sends all the position rotation data of a PhysicsObject from the server to the
  * client. Usually the data sent from one of these packets is coming from the physics tick and isn't
@@ -43,7 +41,6 @@ import java.util.UUID;
  *
  * @author thebest108
  */
-@Accessors(fluent = false)
 @Getter
 @Setter
 public class WrapperPositionMessage implements IMessage {

@@ -75,7 +75,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         // Check if we have to create a ship
         if (!getWorld().isRemote) {
             Optional<PhysicsObject> parentShip = ValkyrienUtils
-                .getPhysicsObject(getWorld(), getPos(), false);
+                .getPhysicsObject(getWorld(), getPos());
             // Set the physics and align value to false if we're not in a ship
             if (!parentShip.isPresent()) {
                 if (isPhysicsEnabled || isTryingToAlignShip) {

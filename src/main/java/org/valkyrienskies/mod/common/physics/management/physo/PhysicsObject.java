@@ -43,7 +43,6 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.joml.Quaterniondc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
-import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
@@ -437,17 +436,7 @@ public class PhysicsObject implements IPhysicsEntity {
     public void updateChunkCache() {
         cachedSurroundingChunks.updateChunkCache();
     }
-
-    public void loadClaimedChunks() {
-        assignChunkPhysicObject();
-        if (!getWorld().isRemote) {
-            // The client doesn't need to keep track of this.
-            detectBlockPositions();
-        }
-
-        // getShipTransformationManager().updateAllTransforms(false, false);
-    }
-
+    
     // Generates the blockPos array; must be loaded DIRECTLY after the chunks are
     // setup
     public void detectBlockPositions() {
@@ -507,14 +496,6 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     public void resetConsecutiveProperTicks() {
         this.setNeedsCollisionCacheUpdate(true);
-    }
-
-    private void assignChunkPhysicObject() {
-        for (int x = this.getOwnedChunks().minX(); x <= this.getOwnedChunks().maxX(); x++) {
-            for (int z = this.getOwnedChunks().minZ(); z <= this.getOwnedChunks().maxZ(); z++) {
-                ((IPhysicsChunk) getChunkAt(x, z)).setParentPhysicsObject(Optional.of(this));
-            }
-        }
     }
 
     /**

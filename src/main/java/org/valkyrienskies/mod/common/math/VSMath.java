@@ -51,7 +51,7 @@ public class VSMath {
     /**
      * Converts a double-array matrix to a JOML {@link Matrix4d}
      *
-     * @param matrix A matrix 4x4 row-major double-array matrix
+     * @param matrix A 4x4 row-major double-array matrix
      * @return A {@link Matrix4d} representation
      */
     public static Matrix4d convertArrayMatrix4d(double[] matrix) {
@@ -246,11 +246,7 @@ public class VSMath {
 
     public static Matrix3dc createRotationMatrix(double pitchRadians, double yawRadians,
         double rollRadians) {
-        Matrix3d rotationMatrix = new Matrix3d();
-        rotationMatrix.rotate(pitchRadians, 1, 0, 0);
-        rotationMatrix.rotate(yawRadians, 0, 1, 0);
-        rotationMatrix.rotate(rollRadians, 0, 0, 1);
-        return rotationMatrix;
+        return new Matrix3d().rotateXYZ(pitchRadians, yawRadians, rollRadians);
     }
 
     public static Quaterniondc createRotationQuat(double pitchRadians, double yawRadians,

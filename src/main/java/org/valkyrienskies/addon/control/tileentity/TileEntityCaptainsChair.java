@@ -69,7 +69,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
         }
     }
 
-    private final void processCalculationsForControlMessageAndApplyCalculations(
+    private void processCalculationsForControlMessageAndApplyCalculations(
             PhysicsObject controlledShip, PilotControlsMessage message, IBlockState state) {
         BlockPos chairPosition = getPos();
 
@@ -78,8 +78,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
         }
 
         double pilotPitch = 0D;
-        double pilotYaw = ((BlockCaptainsChair) state.getBlock())
-            .getChairYaw(state, chairPosition);
+        double pilotYaw = ((BlockCaptainsChair) state.getBlock()).getChairYaw(state, chairPosition);
         double pilotRoll = 0D;
 
         double[] pilotRotationMatrix = RotationMatrices

@@ -26,6 +26,8 @@ import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 /**
  * This is getting deleted. Do NOT Use!
+ *
+ * @deprecated Use JOML matrices instead, which have these methods built in
  */
 @Deprecated
 public class RotationMatrices {

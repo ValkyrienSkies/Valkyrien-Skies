@@ -284,7 +284,7 @@ public class WorldPhysicsCollider {
     }
 
     // Tests two block positions directly against each other, and figures out
-    // whvalkyrium a collision is occuring or not
+    // whether a collision is occuring or not
     private boolean handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos,
         IBlockState inWorldState,
         IBlockState inLocalState) {

@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mod.common.physics.collision.optimization;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -28,12 +32,8 @@ import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
+import org.valkyrienskies.mod.common.util.VSIterationUtil;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 public class ShipCollisionTask implements Callable<Void> {
 
@@ -112,36 +112,8 @@ public class ShipCollisionTask implements Callable<Void> {
         int midZ = MathHelper.floor(inWorld.z + .5D);
 
         // Check the 27 possible positions
-        checkPosition(midX - 1, midY - 1, midZ - 1, integer);
-        checkPosition(midX - 1, midY - 1, midZ, integer);
-        checkPosition(midX - 1, midY - 1, midZ + 1, integer);
-        checkPosition(midX - 1, midY, midZ - 1, integer);
-        checkPosition(midX - 1, midY, midZ, integer);
-        checkPosition(midX - 1, midY, midZ + 1, integer);
-        checkPosition(midX - 1, midY + 1, midZ - 1, integer);
-        checkPosition(midX - 1, midY + 1, midZ, integer);
-        checkPosition(midX - 1, midY + 1, midZ + 1, integer);
-
-        checkPosition(midX, midY - 1, midZ - 1, integer);
-        checkPosition(midX, midY - 1, midZ, integer);
-        checkPosition(midX, midY - 1, midZ + 1, integer);
-        checkPosition(midX, midY, midZ - 1, integer);
-        checkPosition(midX, midY, midZ, integer);
-        checkPosition(midX, midY, midZ + 1, integer);
-        checkPosition(midX, midY + 1, midZ - 1, integer);
-        checkPosition(midX, midY + 1, midZ, integer);
-        checkPosition(midX, midY + 1, midZ + 1, integer);
-
-        checkPosition(midX + 1, midY - 1, midZ - 1, integer);
-        checkPosition(midX + 1, midY - 1, midZ, integer);
-        checkPosition(midX + 1, midY - 1, midZ + 1, integer);
-        checkPosition(midX + 1, midY, midZ - 1, integer);
-        checkPosition(midX + 1, midY, midZ, integer);
-        checkPosition(midX + 1, midY, midZ + 1, integer);
-        checkPosition(midX + 1, midY + 1, midZ - 1, integer);
-        checkPosition(midX + 1, midY + 1, midZ, integer);
-        checkPosition(midX + 1, midY + 1, midZ + 1, integer);
-
+        VSIterationUtil.expand3d(midX, midY, midZ,
+            (x, y, z) -> checkPosition(x, y, z, integer));
     }
 
     public void checkPosition(int x, int y, int z, int positionHash) {

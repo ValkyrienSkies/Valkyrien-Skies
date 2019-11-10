@@ -66,10 +66,9 @@ import valkyrienwarfare.api.TransformType;
 public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     IRotationNodeWorldProvider {
 
-    private static final double MAX_ENTITY_RADIUS_ALT = 2.0D;
-    private static final double BOUNDING_BOX_EDGE_LIMIT = 100000D;
-    // TODO: This is going to lead to a multithreaded disaster. Replace this with something sensible!
-    // I made this threadlocal to prevent disaster for now, but its still really bad code.
+    private static final double MAX_ENTITY_RADIUS_ALT = 2;
+    private static final double BOUNDING_BOX_EDGE_LIMIT = 10000;
+    private static final double BOUNDING_BOX_SIZE_LIMIT = 10000;
     private boolean dontIntercept = false;
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
     private PhysicsObject dontInterceptShip = null;
@@ -104,6 +103,10 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     }
 
     private static boolean isBoundingBoxTooLarge(AxisAlignedBB alignedBB) {
+        if ((alignedBB.maxX - alignedBB.minX) * (alignedBB.maxY - alignedBB.minY) * (alignedBB.maxZ
+            - alignedBB.minZ) > BOUNDING_BOX_SIZE_LIMIT) {
+            return true;
+        }
         if (alignedBB.maxX - alignedBB.minX > BOUNDING_BOX_EDGE_LIMIT ||
             alignedBB.maxY - alignedBB.minY > BOUNDING_BOX_EDGE_LIMIT ||
             alignedBB.maxZ - alignedBB.minZ > BOUNDING_BOX_EDGE_LIMIT) {
@@ -255,11 +258,6 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     @Overwrite
     public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn,
         AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
-        if ((boundingBox.maxX - boundingBox.minX) * (boundingBox.maxZ - boundingBox.minZ)
-            > 1000000D) {
-            return new ArrayList<>();
-        }
-
         if (isBoundingBoxTooLarge(boundingBox)) {
             new Exception("Tried getting entities from giant bounding box of " + boundingBox)
                 .printStackTrace();

@@ -192,16 +192,13 @@ public class ClaimedChunkCacheController {
         // We need to set these otherwise certain events like Sponge's PhaseTracker will refuse to work properly with ships!
         chunk.setTerrainPopulated(true);
         chunk.setLightPopulated(true);
-
+        // Inject the entry into the player chunk map.
+        // Sanity check first
+        if (!((WorldServer) world).isCallingFromMinecraftThread()) {
+            throw new IllegalThreadStateException("We cannot call this crap from another thread!");
+        }
         PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
-
-        PlayerChunkMapEntry entry = new PlayerChunkMapEntry(map, x, z);
-
-        long i = PlayerChunkMap.getIndex(x, z);
-
-        map.entryMap.put(i, entry);
-        map.entries.add(entry);
-
+        PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
         entry.sentToPlayers = true;
         entry.players = parent.getWatchingPlayers();
     }

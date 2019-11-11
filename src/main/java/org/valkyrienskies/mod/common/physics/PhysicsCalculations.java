@@ -246,26 +246,29 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * Reference: https://en.wikipedia.org/wiki/Moment_of_inertia#Inertia_matrix_in_different_reference_frames
      */
     private void calculateFramedMOITensor() {
+        physCenterOfMass = new Vector(parent.getCenterCoord());
+        physTickMass = parent.getInertiaData().getGameTickMass();
+
         // Copy the rotation matrix, ignore the translation and scaling parts.
         Matrix3dc rotationMatrix = getParent().getShipTransformationManager()
                 .getCurrentPhysicsTransform().createRotationMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
         Matrix3dc inertiaBodyFrame = parent.getInertiaData().getGameMoITensor();
-        physCenterOfMass = new Vector(parent.getCenterCoord());
-        physTickMass = parent.getInertiaData().getGameTickMass();
 
-        // The transpose of the rotation matrix.
+
         Matrix3d rotationMatrixTranspose = rotationMatrix.transpose(new Matrix3d());
 
-        Matrix3d finalInertia = new Matrix3d(inertiaBodyFrame);
-        finalInertia.mul(rotationMatrix);
+
+        Matrix3d finalInertia = new Matrix3d(rotationMatrix);
+        finalInertia.mul(inertiaBodyFrame);
         finalInertia.mul(rotationMatrixTranspose);
+
 
         physMOITensor = finalInertia;
         physInvMOITensor = physMOITensor.invert(new Matrix3d());
     }
 
-    private void calculateForces() {
+    protected void calculateForces() {
         applyAirDrag();
         applyGravity();
 

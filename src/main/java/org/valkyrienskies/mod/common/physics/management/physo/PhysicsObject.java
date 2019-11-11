@@ -58,7 +58,7 @@ import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.IBlockPosSet;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.NaiveBlockPosSet;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
@@ -99,7 +99,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * AABBs and deconstructing the ship.
      */
     @Getter
-    private final IBlockPosSet blockPositions = new NaiveBlockPosSet();
+    private final IBlockPosSet blockPositions;
 
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
@@ -164,6 +164,7 @@ public class PhysicsObject implements IPhysicsEntity {
                 this.getShipTransformationManager().updateAllTransforms(this.getData().getShipTransform(), true, true);
             }
         }
+        this.blockPositions = new SmallBlockPosSet(referenceBlockPos.getX(), referenceBlockPos.getZ());
     }
 
     private void shipDataUpdateListener(Iterable<ShipData> oldDataIterable,
@@ -234,8 +235,9 @@ public class PhysicsObject implements IPhysicsEntity {
 
         if (getPhysicsCalculations() != null) {
             getPhysicsCalculations().onSetBlockState(oldState, newState, posAt);
-            centerOfMassProvider.onSetBlockState(this, posAt, oldState, newState);
         }
+
+        centerOfMassProvider.onSetBlockState(this, posAt, oldState, newState);
     }
 
     public void assembleShip(EntityPlayer player, SpatialDetector detector,

@@ -4,7 +4,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
+import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipInertiaData;
@@ -54,51 +54,44 @@ public class BasicCenterOfMassProvider implements IPhysicsObjectCenterOfMassProv
      * inertia tensor equations. Reference http://www.kwon3d.com/theory/moi/triten.html eqs. 13 & 14.
      */
     private void addMassAt(PhysicsObject physicsObject, double x, double y, double z, double addedMass) {
-        final org.valkyrienskies.mod.common.math.Vector gameTickCenterOfMass = inertiaData.getGameTickCenterOfMass();
-        final Matrix3dc gameMoITensor = inertiaData.getGameMoITensor();
-        org.valkyrienskies.mod.common.math.Vector prevCenterOfMass = new org.valkyrienskies.mod.common.math.Vector(
-                gameTickCenterOfMass);
-        if (inertiaData.getGameTickMass() > .0001) {
-            gameTickCenterOfMass.multiply(inertiaData.getGameTickMass());
-            gameTickCenterOfMass
-                    .add(new org.valkyrienskies.mod.common.math.Vector(x, y, z).getProduct(addedMass));
-            gameTickCenterOfMass.multiply(1.0 / (inertiaData.getGameTickMass() + addedMass));
+        double[] gameMoITensor = new double[9];
+        Matrix3d transposed = inertiaData.getGameMoITensor().transpose(new Matrix3d());
+        transposed.get(gameMoITensor);
+
+        double gameTickMass = inertiaData.getGameTickMass();
+        Vector prevCenterOfMass = new Vector(inertiaData.getGameTickCenterOfMass());
+        if (gameTickMass > .0001D) {
+            inertiaData.getGameTickCenterOfMass().multiply(gameTickMass);
+            inertiaData.getGameTickCenterOfMass().add(new Vector(x, y, z).getProduct(addedMass));
+            inertiaData.getGameTickCenterOfMass().multiply(1.0D / (gameTickMass + addedMass));
         } else {
-            inertiaData.setGameTickCenterOfMass(new org.valkyrienskies.mod.common.math.Vector(x, y, z));
+            inertiaData.setGameTickCenterOfMass(new Vector(x, y, z));
             inertiaData.setGameMoITensor(new Matrix3d().zero());
         }
-        double cmShiftX = prevCenterOfMass.x - gameTickCenterOfMass.x;
-        double cmShiftY = prevCenterOfMass.y - gameTickCenterOfMass.y;
-        double cmShiftZ = prevCenterOfMass.z - gameTickCenterOfMass.z;
-        double rx = x - gameTickCenterOfMass.x;
-        double ry = y - gameTickCenterOfMass.y;
-        double rz = z - gameTickCenterOfMass.z;
 
-        // Calculate the new MoI tensor based on the previous values and the added mass.
-        Matrix3d newMoITensor = new Matrix3d(gameMoITensor);
+        // This code is pretty awful in hindsight, but it gets the job done.
+        double cmShiftX = prevCenterOfMass.x - inertiaData.getGameTickCenterOfMass().x;
+        double cmShiftY = prevCenterOfMass.y - inertiaData.getGameTickCenterOfMass().y;
+        double cmShiftZ = prevCenterOfMass.z - inertiaData.getGameTickCenterOfMass().z;
+        double rx = x - inertiaData.getGameTickCenterOfMass().x;
+        double ry = y - inertiaData.getGameTickCenterOfMass().y;
+        double rz = z - inertiaData.getGameTickCenterOfMass().z;
 
-        newMoITensor.m00 =
-                newMoITensor.m00() + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * inertiaData.getGameTickMass()
-                        + (ry * ry + rz * rz) * addedMass;
-        newMoITensor.m10 =
-                newMoITensor.m10() - cmShiftX * cmShiftY * inertiaData.getGameTickMass() - rx * ry * addedMass;
-        newMoITensor.m20 =
-                newMoITensor.m20() - cmShiftX * cmShiftZ * inertiaData.getGameTickMass() - rx * rz * addedMass;
-        newMoITensor.m01 = newMoITensor.m10();
-        newMoITensor.m11 =
-                newMoITensor.m11() + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * inertiaData.getGameTickMass()
-                        + (rx * rx + rz * rz) * addedMass;
-        newMoITensor.m21 =
-                newMoITensor.m21() - cmShiftY * cmShiftZ * inertiaData.getGameTickMass() - ry * rz * addedMass;
-        newMoITensor.m02 = newMoITensor.m20();
-        newMoITensor.m12 = newMoITensor.m21();
-        newMoITensor.m22 =
-                newMoITensor.m22() + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * inertiaData.getGameTickMass()
-                        + (rx * rx + ry * ry) * addedMass;
+        gameMoITensor[0] = gameMoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * gameTickMass
+                + (ry * ry + rz * rz) * addedMass;
+        gameMoITensor[1] = gameMoITensor[1] - cmShiftX * cmShiftY * gameTickMass - rx * ry * addedMass;
+        gameMoITensor[2] = gameMoITensor[2] - cmShiftX * cmShiftZ * gameTickMass - rx * rz * addedMass;
+        gameMoITensor[3] = gameMoITensor[1];
+        gameMoITensor[4] = gameMoITensor[4] + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * gameTickMass
+                + (rx * rx + rz * rz) * addedMass;
+        gameMoITensor[5] = gameMoITensor[5] - cmShiftY * cmShiftZ * gameTickMass - ry * rz * addedMass;
+        gameMoITensor[6] = gameMoITensor[2];
+        gameMoITensor[7] = gameMoITensor[5];
+        gameMoITensor[8] = gameMoITensor[8] + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * gameTickMass
+                + (rx * rx + ry * ry) * addedMass;
 
-        // Set the game MoI tensor to be that which we just calculated, we do this by updating the reference as opposed
-        // to updating the fields of the previous MoI matrix to avoid potential data races.
-        inertiaData.setGameMoITensor(newMoITensor);
+
+        inertiaData.setGameMoITensor(new Matrix3d().set(gameMoITensor).transpose());
 
         // Do this to avoid a mass of zero, which runs the risk of dividing by zero and
         // crashing the program.

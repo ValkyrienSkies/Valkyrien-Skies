@@ -16,10 +16,6 @@
 
 package org.valkyrienskies.mod.common.physics.collision.optimization;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -34,6 +30,11 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.util.VSIterationUtil;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 public class ShipCollisionTask implements Callable<Void> {
 
@@ -117,7 +118,7 @@ public class ShipCollisionTask implements Callable<Void> {
     }
 
     public void checkPosition(int x, int y, int z, int positionHash) {
-        final Chunk chunkIn = toTask.getParent().getNearbyChunk(x >> 4, z >> 4);
+        final Chunk chunkIn = toTask.getParent().getChunkAt(x >> 4, z >> 4);
         if (chunkIn == null) {
             return;
         }

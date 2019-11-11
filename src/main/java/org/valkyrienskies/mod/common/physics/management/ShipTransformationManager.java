@@ -30,13 +30,9 @@ import valkyrienwarfare.api.TransformType;
 
 /**
  * Stores various coordinates and transforms for the ship.
- *
- * @author thebest108
  */
 public class ShipTransformationManager {
 
-    // A buffer to hold ship transform data sent from server to the client.
-    public final ShipTransformationBuffer serverBuffer;
     private final PhysicsObject parent;
     public Vector[] normals;
     private ShipTransform currentTickTransform;
@@ -56,7 +52,6 @@ public class ShipTransformationManager {
         this.prevPhysicsTransform = initialTransform;
         // Create the normals.
         this.normals = createCollisionNormals(initialTransform);
-        this.serverBuffer = new ShipTransformationBuffer();
     }
 
     private static Vector[] createCollisionNormals(ShipTransform transform) {

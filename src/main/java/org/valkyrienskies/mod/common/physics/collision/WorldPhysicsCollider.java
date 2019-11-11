@@ -20,13 +20,6 @@ import gnu.trove.TCollections;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
-import java.util.Random;
-import java.util.function.Consumer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -51,6 +44,9 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollision
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Handles the task of finding and processing collisions between a PhysicsObject and the game
@@ -407,7 +403,7 @@ public class WorldPhysicsCollider {
             calculator.getPhysInvMOITensor().transform(thirdCrossTemp);
 
             thirdCross.setValue(thirdCrossTemp);
-            calculator.getLinearMomentum().add(thirdCross);
+            calculator.getAngularVelocity().add(thirdCross);
         }
     }
 

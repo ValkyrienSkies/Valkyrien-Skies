@@ -87,8 +87,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
         this.data = data;
 
-        this.physMOITensor = new Matrix3d();
-        this.physInvMOITensor = new Matrix3d();
+        this.physMOITensor = null;
+        this.physInvMOITensor = null;
 
         this.physCenterOfMass = new Vector();
         this.torque = new Vector();
@@ -254,18 +254,18 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         physCenterOfMass = new Vector(parent.getCenterCoord());
         physTickMass = parent.getInertiaData().getGameTickMass();
 
-        Matrix3d rotationMatrixTranspose = new Matrix3d();
-        rotationMatrix.transpose(rotationMatrixTranspose);
+        // The transpose of the rotation matrix.
+        Matrix3d rotationMatrixTranspose = rotationMatrix.transpose(new Matrix3d());
 
-        Matrix3d finalInertia = new Matrix3d(rotationMatrix);
-        finalInertia.mul(inertiaBodyFrame);
+        Matrix3d finalInertia = new Matrix3d(inertiaBodyFrame);
+        finalInertia.mul(rotationMatrix);
         finalInertia.mul(rotationMatrixTranspose);
 
         physMOITensor = finalInertia;
-        setPhysInvMOITensor(finalInertia.invert(new Matrix3d()));
+        physInvMOITensor = physMOITensor.invert(new Matrix3d());
     }
 
-    protected void calculateForces() {
+    private void calculateForces() {
         applyAirDrag();
         applyGravity();
 

@@ -33,7 +33,6 @@ import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
@@ -48,7 +47,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public static final double DRAG_CONSTANT = .99D;
-    public static final double INERTIA_OFFSET = .4D;
     public static final double EPSILON = .00000001;
 
     @Delegate
@@ -68,7 +66,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     public boolean actAsArchimedes = false;
     private Vector physCenterOfMass;
     private Vector torque;
-    private double gameTickMass;
+    private double physTickMass;
     // TODO: Get this in one day
     // private double physMass;
     // The time occurring on each PhysTick
@@ -102,89 +100,12 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
         World worldObj = getParent().getWorld();
         if (!newState.equals(oldState)) {
+            // TODO: Axe this too.
             if (BlockPhysicsDetails.isBlockProvidingForce(newState, pos, worldObj)) {
                 activeForcePositions.add(pos);
             } else {
                 activeForcePositions.remove(pos);
             }
-
-            double oldMass = BlockPhysicsDetails.getMassFromState(oldState, pos, worldObj);
-            double newMass = BlockPhysicsDetails.getMassFromState(newState, pos, worldObj);
-            double deltaMass = newMass - oldMass;
-            // Don't change anything if the mass is the same
-            if (Math.abs(deltaMass) > EPSILON) {
-                double x = pos.getX() + .5D;
-                double y = pos.getY() + .5D;
-                double z = pos.getZ() + .5D;
-
-                deltaMass /= 9D;
-                addMassAt(x, y, z, deltaMass);
-                addMassAt(x + INERTIA_OFFSET, y + INERTIA_OFFSET, z + INERTIA_OFFSET, deltaMass);
-                addMassAt(x + INERTIA_OFFSET, y + INERTIA_OFFSET, z - INERTIA_OFFSET, deltaMass);
-                addMassAt(x + INERTIA_OFFSET, y - INERTIA_OFFSET, z + INERTIA_OFFSET, deltaMass);
-                addMassAt(x + INERTIA_OFFSET, y - INERTIA_OFFSET, z - INERTIA_OFFSET, deltaMass);
-                addMassAt(x - INERTIA_OFFSET, y + INERTIA_OFFSET, z + INERTIA_OFFSET, deltaMass);
-                addMassAt(x - INERTIA_OFFSET, y + INERTIA_OFFSET, z - INERTIA_OFFSET, deltaMass);
-                addMassAt(x - INERTIA_OFFSET, y - INERTIA_OFFSET, z + INERTIA_OFFSET, deltaMass);
-                addMassAt(x - INERTIA_OFFSET, y - INERTIA_OFFSET, z - INERTIA_OFFSET, deltaMass);
-            }
-        }
-    }
-
-    private void addMassAt(double x, double y, double z, double addedMass) {
-        final org.valkyrienskies.mod.common.math.Vector gameTickCenterOfMass = getGameTickCenterOfMass();
-        final Matrix3dc gameMoITensor = getGameMoITensor();
-        org.valkyrienskies.mod.common.math.Vector prevCenterOfMass = new org.valkyrienskies.mod.common.math.Vector(
-                gameTickCenterOfMass);
-        if (gameTickMass > .0001D) {
-            gameTickCenterOfMass.multiply(gameTickMass);
-            gameTickCenterOfMass
-                    .add(new org.valkyrienskies.mod.common.math.Vector(x, y, z).getProduct(addedMass));
-            gameTickCenterOfMass.multiply(1.0D / (gameTickMass + addedMass));
-        } else {
-            setGameTickCenterOfMass(new org.valkyrienskies.mod.common.math.Vector(x, y, z));
-            setGameMoITensor(new Matrix3d());
-        }
-        double cmShiftX = prevCenterOfMass.x - gameTickCenterOfMass.x;
-        double cmShiftY = prevCenterOfMass.y - gameTickCenterOfMass.y;
-        double cmShiftZ = prevCenterOfMass.z - gameTickCenterOfMass.z;
-        double rx = x - gameTickCenterOfMass.x;
-        double ry = y - gameTickCenterOfMass.y;
-        double rz = z - gameTickCenterOfMass.z;
-
-
-        Matrix3d copy = new Matrix3d(gameMoITensor);
-
-
-        copy.m00 =
-                gameMoITensor.m00() + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * gameTickMass
-                        + (ry * ry + rz * rz) * addedMass;
-        copy.m10 =
-                gameMoITensor.m10() - cmShiftX * cmShiftY * gameTickMass - rx * ry * addedMass;
-        copy.m20 =
-                gameMoITensor.m20() - cmShiftX * cmShiftZ * gameTickMass - rx * rz * addedMass;
-        copy.m01 = gameMoITensor.m10();
-        copy.m11 =
-                gameMoITensor.m11() + (cmShiftX * cmShiftX + cmShiftZ * cmShiftZ) * gameTickMass
-                        + (rx * rx + rz * rz) * addedMass;
-        copy.m21 =
-                gameMoITensor.m21() - cmShiftY * cmShiftZ * gameTickMass - ry * rz * addedMass;
-        copy.m02 = gameMoITensor.m20();
-        copy.m12 = gameMoITensor.m21();
-        copy.m22 =
-                gameMoITensor.m22() + (cmShiftX * cmShiftX + cmShiftY * cmShiftY) * gameTickMass
-                        + (rx * rx + ry * ry) * addedMass;
-
-
-        setGameMoITensor(copy);
-
-        // Do this to avoid a mass of zero, which runs the risk of dividing by zero and
-        // crashing the program.
-        if (gameTickMass + addedMass < .0001D) {
-            gameTickMass = .0001D;
-            getParent().getData().setPhysicsEnabled(false);
-        } else {
-            gameTickMass += addedMass;
         }
     }
 
@@ -197,12 +118,10 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         physX = parentTransform.getPosX();
         physY = parentTransform.getPosY();
         physZ = parentTransform.getPosZ();
-        physCenterOfMass.setValue(getGameTickCenterOfMass());
-        ShipTransform physicsTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch,
+        physCenterOfMass.setValue(parentTransform.getCenterCoord());
+        ShipTransform physicsTransform = new ShipTransform(physX, physY, physZ, physPitch,
                 physYaw, physRoll,
-                physCenterOfMass, getParent().getShipBoundingBox(),
-                getParent().getShipTransformationManager()
-                        .getCurrentTickTransform());
+                physCenterOfMass.toVector3d());
         getParent().getShipTransformationManager()
                 .setCurrentPhysicsTransform(physicsTransform);
         // We're doing this afterwards to prevent from prevPhysicsTransform being null.
@@ -247,10 +166,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             getAngularVelocity().zero();
         }
 
-        PhysicsShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ,
+        ShipTransform finalPhysTransform = new ShipTransform(physX, physY, physZ,
                 physPitch, physYaw,
-                physRoll, physCenterOfMass, getParent().getShipBoundingBox(),
-                getParent().getShipTransformationManager().getCurrentTickTransform());
+                physRoll, physCenterOfMass.toVector3d());
 
         getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
         getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
@@ -272,11 +190,11 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     // The x/y/z variables need to be updated when the centerOfMass location
     // changes.
+    @Deprecated
     public void updateParentCenterOfMass() {
-        Vector parentCM = getParent().getCenterCoord();
-        if (!getParent().getCenterCoord().equals(getGameTickCenterOfMass())) {
-            Vector CMDif = getGameTickCenterOfMass()
-                    .getSubtraction(parentCM);
+        if (!getParent().getCenterCoord().equals(parent.getInertiaData().getGameTickCenterOfMass())) {
+            Vector CMDif = parent.getCenterCoord()
+                    .getSubtraction(parent.getInertiaData().getGameTickCenterOfMass());
 
             if (getParent().getShipTransformationManager()
                     .getCurrentPhysicsTransform() != null) {
@@ -288,14 +206,16 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
             ShipTransform transform = getParent().getTransform();
             ShipTransform newTransform = getParent().getTransform().toBuilder()
-                .posX(transform.getPosX() - CMDif.x)
-                .posY(transform.getPosY() - CMDif.y)
-                .posZ(transform.getPosZ() - CMDif.z)
+                    .posX(transform.getPosX() + CMDif.x)
+                    .posY(transform.getPosY() + CMDif.y)
+                    .posZ(transform.getPosZ() + CMDif.z)
+                    .centerCoord(parent.getInertiaData().getGameTickCenterOfMass().toVector3d())
                 .build();
 
             getParent().updateTransform(newTransform);
+            getParent().getShipTransformationManager().updateAllTransforms(newTransform, false, true);
 
-            getParent().getCenterCoord().setValue(getGameTickCenterOfMass());
+            getParent().getCenterCoord().setValue(parent.getCenterCoord());
         }
     }
 
@@ -303,10 +223,11 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * Updates the physics center of mass to the game center of mass; does not do any transformation
      * updates on its own.
      */
+    @Deprecated
     private void updatePhysCenterOfMass() {
-        if (!physCenterOfMass.equals(getGameTickCenterOfMass())) {
+        if (!physCenterOfMass.equals(parent.getCenterCoord())) {
             Vector CMDif = physCenterOfMass
-                    .getSubtraction(getGameTickCenterOfMass());
+                    .getSubtraction(parent.getCenterCoord());
 
             getParent().getShipTransformationManager().getCurrentPhysicsTransform()
                     .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
@@ -314,7 +235,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             physY += CMDif.y;
             physZ += CMDif.z;
 
-            physCenterOfMass.setValue(getGameTickCenterOfMass());
+            physCenterOfMass.setValue(parent.getCenterCoord());
         }
     }
 
@@ -329,7 +250,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         Matrix3dc rotationMatrix = getParent().getShipTransformationManager()
                 .getCurrentPhysicsTransform().createRotationMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
-        Matrix3dc inertiaBodyFrame = getGameMoITensor();
+        Matrix3dc inertiaBodyFrame = parent.getInertiaData().getGameMoITensor();
+        physCenterOfMass = new Vector(parent.getCenterCoord());
+        physTickMass = parent.getInertiaData().getGameTickMass();
 
         Matrix3d rotationMatrixTranspose = new Matrix3d();
         rotationMatrix.transpose(rotationMatrixTranspose);
@@ -460,7 +383,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private void applyGravity() {
         if (VSConfig.doGravity) {
             addForceAtPoint(new Vector(0, 0, 0),
-                    VSConfig.gravity().getProduct(gameTickMass * getPhysicsTimeDeltaPerPhysTick()));
+                    VSConfig.gravity().getProduct(physTickMass * getPhysicsTimeDeltaPerPhysTick()));
         }
     }
 
@@ -583,11 +506,11 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // These getter methods guarantee that only code within this class can modify
     // the mass, preventing outside code from breaking things
     public double getMass() {
-        return gameTickMass;
+        return physTickMass;
     }
 
     public double getInvMass() {
-        return 1D / getGameTickMass();
+        return 1D / physTickMass;
     }
 
     public double getPhysicsTimeDeltaPerPhysTick() {

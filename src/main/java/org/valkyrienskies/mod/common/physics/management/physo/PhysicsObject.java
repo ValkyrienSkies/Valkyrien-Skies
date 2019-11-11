@@ -17,16 +17,6 @@
 package org.valkyrienskies.mod.common.physics.management.physo;
 
 import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
@@ -55,20 +45,27 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
-import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
+import org.valkyrienskies.mod.common.physics.management.BasicCenterOfMassProvider;
+import org.valkyrienskies.mod.common.physics.management.IPhysicsObjectCenterOfMassProvider;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.IBlockPosSet;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.NaiveBlockPosSet;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -102,7 +99,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * AABBs and deconstructing the ship.
      */
     @Getter
-    private final TIntSet blockPositions = new TIntHashSet();
+    private final IBlockPosSet blockPositions = new NaiveBlockPosSet();
 
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
@@ -122,6 +119,7 @@ public class PhysicsObject implements IPhysicsEntity {
     private boolean shipAligningToGrid = false;
     @Getter
     private final IVoxelFieldAABBMaker voxelFieldAABBMaker; // Used to quickly make aabb's
+    private final IPhysicsObjectCenterOfMassProvider centerOfMassProvider;
     @Getter
     private final World world;
 
@@ -144,7 +142,7 @@ public class PhysicsObject implements IPhysicsEntity {
      *                         if it was loaded in from the world save.
      */
     public PhysicsObject(World world, ShipData initial, boolean firstTimeCreated) {
-        //QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
+        // QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
         this.world = world;
         this.shipData = initial;
         this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
@@ -153,15 +151,18 @@ public class PhysicsObject implements IPhysicsEntity {
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
             referenceBlockPos.getZ());
+        this.centerOfMassProvider = new BasicCenterOfMassProvider(initial.getInertiaData());
         this.shipTransformationManager = new ShipTransformationManager(this,
             getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
-            //this.shipRenderer = null;
         } else {
             this.shipRenderer = null;
+            if (!firstTimeCreated) {
+                this.getShipTransformationManager().updateAllTransforms(this.getData().getShipTransform(), true, true);
+            }
         }
     }
 
@@ -197,8 +198,6 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
-        // Inefficient? Yes. However this prevents the getBlockPositions() from having duplicates.
-        posAt = new BlockPos(posAt);
         // If the world is remote, or the block is not within the claimed chunks, ignore it!
         if (getWorld().isRemote || !getData().getChunkClaim().containsBlock(posAt)) {
             return;
@@ -219,12 +218,12 @@ public class PhysicsObject implements IPhysicsEntity {
         boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
         if (isNewAir) {
-            getBlockPositions().remove(getBlockPosToIntRelToShip(posAt));
+            getBlockPositions().removePos(posAt);
             voxelFieldAABBMaker.removeVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
         }
 
         if (isOldAir && !isNewAir) {
-            getBlockPositions().add(getBlockPosToIntRelToShip(posAt));
+            getBlockPositions().addPos(posAt);
             voxelFieldAABBMaker.addVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
         }
 
@@ -235,6 +234,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
         if (getPhysicsCalculations() != null) {
             getPhysicsCalculations().onSetBlockState(oldState, newState, posAt);
+            centerOfMassProvider.onSetBlockState(this, posAt, oldState, newState);
         }
     }
 
@@ -416,23 +416,28 @@ public class PhysicsObject implements IPhysicsEntity {
                 getData().setPhysicsEnabled(false);
             }
 
-            getData().setPhysicsEnabled(false);
+
+            // getData().setPhysicsEnabled(false);
 
             if (shouldDeconstructShip) {
                 // this.tryToDeconstructShip();
             }
         }
 
-        this.setNeedsCollisionCacheUpdate(false);
+        this.setNeedsCollisionCacheUpdate(true);
 
         if (!world.isRemote) {
+            ShipTransform physicsTransform = getShipTransformationManager().getCurrentPhysicsTransform();
+            getShipTransformationManager().updateAllTransforms(physicsTransform, false, true);
             getData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
         } else {
+            /*
             WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
                 .pollForClientTransform();
             if (toUse != null) {
                 toUse.applySmoothLerp(this, .6D);
             }
+             */
         }
     }
 
@@ -467,7 +472,7 @@ public class PhysicsObject implements IPhysicsEntity {
                                             BlockPos pos = new BlockPos(chunk.x * 16 + x,
                                                 index * 16 + y,
                                                 chunk.z * 16 + z);
-                                            getBlockPositions().add(getBlockPosToIntRelToShip(pos));
+                                            getBlockPositions().addPos(pos);
                                             voxelFieldAABBMaker
                                                 .addVoxel(pos.getX(), pos.getY(), pos.getZ());
                                             if (BlockPhysicsDetails.isBlockProvidingForce(
@@ -522,15 +527,6 @@ public class PhysicsObject implements IPhysicsEntity {
     // Do not allow anything external to modify the physics controllers Set.
     public Set<INodeController> getPhysicsControllersInShip() {
         return physicsControllersImmutable;
-    }
-
-    private int getBlockPosToIntRelToShip(BlockPos pos) {
-        return SpatialDetector
-            .getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), this.referenceBlockPos);
-    }
-
-    void setBlockPosFromIntRelToShop(int pos, MutableBlockPos toSet) {
-        SpatialDetector.setPosWithRespectTo(pos, this.referenceBlockPos, toSet);
     }
 
     /**

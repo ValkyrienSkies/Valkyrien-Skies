@@ -58,7 +58,7 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityGiantPropellerPart) {
-            ((TileEntityGiantPropellerPart) tile).dissembleMultiblock();
+            ((TileEntityGiantPropellerPart) tile).disassembleMultiblock();
         }
         super.breakBlock(worldIn, pos, state);
     }

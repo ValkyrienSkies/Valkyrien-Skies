@@ -79,7 +79,7 @@ public class BlockValkyriumCompressorPart extends Block implements ITileEntityPr
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityValkyriumCompressorPart) {
-            ((TileEntityValkyriumCompressorPart) tile).dissembleMultiblock();
+            ((TileEntityValkyriumCompressorPart) tile).disassembleMultiblock();
         }
         super.breakBlock(worldIn, pos, state);
     }

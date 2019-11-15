@@ -14,9 +14,9 @@ public interface ITileEntityMultiblockPart<E extends IMultiblockSchematic, F ext
 
     BlockPos getRelativePos();
 
-    void dissembleMultiblock();
+    void disassembleMultiblock();
 
-    void dissembleMultiblockLocal();
+    void disassembleMultiblockLocal();
 
     void assembleMultiblock(E schematic, BlockPos relativePos);
 

@@ -26,6 +26,7 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEng
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 
 public class ItemWrench extends Item {
+    public String mode = "construct";
 
     public ItemWrench() {
         this.setMaxStackSize(1);
@@ -37,6 +38,7 @@ public class ItemWrench extends Item {
         List<String> itemInformation,
         ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench"));
+        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench." + this->mode));
     }
 
 

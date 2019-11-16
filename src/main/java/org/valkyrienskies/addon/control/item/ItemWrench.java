@@ -24,10 +24,11 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropell
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEnginePart;
+import org.valkyrienskies.addon.control.item.EnumWrenchMode;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 
 public class ItemWrench extends Item {
-	public EnumWrenchMode mode = "construct";
+	private EnumWrenchMode mode = EnumWrench.CONSTRUCT;
 
 	public ItemWrench() {
 		this.setMaxStackSize(1);
@@ -38,10 +39,12 @@ public class ItemWrench extends Item {
 	public void addInformation(ItemStack stack, @Nullable World player,
 		List<String> itemInformation,
 		ITooltipFlag advanced) {
-		itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench"));
-		itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench." + this->mode.toString()));
+		itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench." + this.mode.toString()));
+		itemInformation.add(TextFormatting.GREEN + "" + TextFormatting.ITALIC + I18n.format("tooltip.vs_control.wrench_modes"));
 	}
 
+	// Construct potential multiblock if set to construct mode.
+	// Otherwise, try to deconstruct a multiblock.
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos,
 		EnumHand hand,
@@ -52,7 +55,7 @@ public class ItemWrench extends Item {
 
 		IBlockState clickedState = worldIn.getBlockState(pos);
 		TileEntity blockTile = worldIn.getTileEntity(pos);
-		if (mode == EnumWrenchMode.CONSTRUCT) {
+		if (this.mode == EnumWrenchMode.CONSTRUCT) {
 			if (blockTile instanceof TileEntityValkyriumEnginePart) {
 				List<IMultiblockSchematic> valkyriumEngineMultiblockSchematics = MultiblockRegistry
 					.getSchematicsWithPrefix("multiblock_valkyrium_engine");
@@ -106,12 +109,16 @@ public class ItemWrench extends Item {
 				((TileEntityGearbox) blockTile)
 					.setInputFacing(!player.isSneaking() ? facing : facing.getOpposite());
 			}
-		} else if (this->mode == EnumWrenchMode.DECONSTRUCT) {
+		} else if (this.mode == EnumWrenchMode.DECONSTRUCT) {
 			if (blockTile instanceof ITileEntityMultiblockPart) {
-				blockTile.deconstruct();
+				((ITileEntityMultiblockPart) blockTile).deconstruct();
 			}
 		}
 
 		return EnumActionResult.PASS;
+	}
+
+	public EnumWrenchMode getMode() {
+		return this.mode;
 	}
 }

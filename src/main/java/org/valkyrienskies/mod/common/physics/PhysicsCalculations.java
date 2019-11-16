@@ -410,7 +410,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                             float velX = (float) -(blockForce.X / particleMass);
                             float velY = (float) -(blockForce.Y / particleMass);
                             float velZ = (float) -(blockForce.Z / particleMass);
-                            // Half a second
+                            //.HALF a second
                             float particleLife = .5f;
                             // System.out.println(blockForce);
                             // System.out.println(posX + ":" + posY + ":" + posZ);

@@ -21,7 +21,7 @@ public class ValkyriumEngineMultiblockSchematic implements IMultiblockSchematic 
     public ValkyriumEngineMultiblockSchematic() {
         this.structureRelativeToCenter = new ArrayList<BlockPosBlockPair>();
         this.schematicID = MultiblockRegistry.EMPTY_SCHEMATIC_ID;
-        this.multiblockRotation = EnumMultiblockRotation.None;
+        this.multiblockRotation = EnumMultiblockRotation.NONE;
     }
 
     @Override

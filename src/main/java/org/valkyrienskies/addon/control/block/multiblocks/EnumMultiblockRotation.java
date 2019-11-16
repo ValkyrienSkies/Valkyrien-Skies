@@ -4,7 +4,7 @@ import net.minecraft.util.math.BlockPos;
 
 public enum EnumMultiblockRotation {
 
-    None(0), Quarter(90), Half(180), ThreeFourths(270);
+    NONE(0), QUARTER(90), HALF(180), THREE_FOURTHS(270);
 
     private int yaw;
 

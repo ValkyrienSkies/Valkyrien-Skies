@@ -62,7 +62,7 @@ public class BlockRudderPart extends Block implements ITileEntityProvider, IBloc
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityRudderPart) {
-            ((TileEntityRudderPart) tile).dissembleMultiblock();
+            ((TileEntityRudderPart) tile).disassembleMultiblock();
         }
         super.breakBlock(worldIn, pos, state);
     }

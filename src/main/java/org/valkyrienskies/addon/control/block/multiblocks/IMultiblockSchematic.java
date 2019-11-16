@@ -105,6 +105,6 @@ public interface IMultiblockSchematic {
     List<IMultiblockSchematic> generateAllVariants();
 
     default EnumMultiblockRotation getMultiblockRotation() {
-        return EnumMultiblockRotation.None;
+        return EnumMultiblockRotation.NONE;
     }
 }

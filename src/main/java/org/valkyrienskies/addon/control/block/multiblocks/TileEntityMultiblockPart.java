@@ -64,20 +64,20 @@ public abstract class TileEntityMultiblockPart<E extends IMultiblockSchematic, F
     }
 
     @Override
-    public void dissembleMultiblock() {
+    public void disassembleMultiblock() {
         if (multiblockSchematic != null) {
             for (BlockPosBlockPair pair : multiblockSchematic.getStructureRelativeToCenter()) {
                 BlockPos posToBreak = pair.getPos().add(getMultiblockOrigin());
                 TileEntity tileToBreak = this.getWorld().getTileEntity(posToBreak);
                 if (tileToBreak instanceof ITileEntityMultiblockPart) {
-                    ((ITileEntityMultiblockPart) tileToBreak).dissembleMultiblockLocal();
+                    ((ITileEntityMultiblockPart) tileToBreak).disassembleMultiblockLocal();
                 }
             }
         }
     }
 
     @Override
-    public void dissembleMultiblockLocal() {
+    public void disassembleMultiblockLocal() {
         this.isAssembled = false;
         this.isMaster = false;
         this.multiblockSchematic = null;

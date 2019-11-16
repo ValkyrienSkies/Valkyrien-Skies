@@ -143,8 +143,8 @@ public class TileEntityGiantPropellerPart extends
     }
 
     @Override
-    public void dissembleMultiblockLocal() {
-        super.dissembleMultiblockLocal();
+    public void disassembleMultiblockLocal() {
+        super.disassembleMultiblockLocal();
 
         Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         object.ifPresent(obj -> this.rotationNode.queueTask(rotationNode::resetNodeData));

@@ -158,7 +158,7 @@ public class TileEntityValkyriumEnginePart extends
         if (this.getWorld() == null || !this.getWorld().isRemote) {
             rotationNode.readFromNBT(compound);
         }
-//		rotationNode.markInitialized();
+//        rotationNode.markInitialized();
     }
 
     @Override

@@ -90,7 +90,7 @@ public abstract class MixinRenderManager {
                         if (player.ridingEntity instanceof PhysicsWrapperEntity) {
                             shipRidden = (PhysicsWrapperEntity) player.ridingEntity;
                         }
-//					shipRidden = ValkyrienSkiesMod.physicsManager.getShipFixedOnto(entityIn);
+//                    shipRidden = ValkyrienSkiesMod.physicsManager.getShipFixedOnto(entityIn);
 
                         if (shipRidden != null) {
                             player.ridingEntity = null;
@@ -110,14 +110,14 @@ public abstract class MixinRenderManager {
 
                             float angleYaw = 0;
 
-//	                	player.setRenderOffsetForSleep(EnumFacing.SOUTH);
+//                        player.setRenderOffsetForSleep(EnumFacing.SOUTH);
 
                             if (block != null && block
                                 .isBed(state, entityIn.world, bedPos, entityIn)) {
                                 angleYaw = (float) (
                                     block.getBedDirection(state, entityIn.world, bedPos)
                                         .getHorizontalIndex() * 90);
-//	                    	angleYaw += 180;
+//                            angleYaw += 180;
                             }
                             GL11.glRotatef(angleYaw, 0, 1F, 0);
                         }

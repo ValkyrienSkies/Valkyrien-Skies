@@ -57,7 +57,7 @@ public class ItemWrench extends Item {
             return EnumActionResult.SUCCESS;
         }
 
-        if (player.isSneaking()) {
+        if (player.isSneaking() && !VSConfig.wrenchModeless) {
             this.mode = EnumWrenchMode.values()[(this.mode.ordinal() + 1) % EnumWrenchMode.values().length]; // Switch to the next mode
             player.sendMessage(new TextComponentString(
                 TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench_switched", this.mode.toString()))); // Say in chat

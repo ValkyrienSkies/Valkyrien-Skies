@@ -52,11 +52,6 @@ public class TileEntityValkyriumEnginePart extends
             }
 
             if (this.isPartOfAssembledMultiblock()) {
-				ValkyriumEngineMultiblockSchematic schem = this.getMultiBlockSchematic();
-				if (schem == null) {
-					return;
-				}
-
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
                     .getPhysicsObject(getWorld(), getPos());
 
@@ -70,12 +65,12 @@ public class TileEntityValkyriumEnginePart extends
                 }
                 if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld()
                     && this.getRelativePos()
-                    .equals(schem.getTorqueOutputPos())) {
+					.equals(this.getMultiBlockSchematic().getTorqueOutputPos())) {
                     nodeWorld.enqueueTaskOntoWorld(
                         () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
                 }
 
-                BlockPos torqueOutputPos = schem.getTorqueOutputPos()
+                BlockPos torqueOutputPos = this.getMultiBlockSchematic().getTorqueOutputPos()
                     .add(this.getPos());
                 TileEntity tileEntity = this.getWorld().getTileEntity(torqueOutputPos);
                 if (tileEntity instanceof TileEntityValkyriumEnginePart) {

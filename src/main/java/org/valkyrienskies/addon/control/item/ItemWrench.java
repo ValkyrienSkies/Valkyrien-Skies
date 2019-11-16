@@ -28,7 +28,7 @@ import org.valkyrienskies.addon.control.item.EnumWrenchMode;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 
 public class ItemWrench extends Item {
-	private EnumWrenchMode mode = EnumWrench.CONSTRUCT;
+	private EnumWrenchMode mode = EnumWrenchMode.CONSTRUCT;
 
 	public ItemWrench() {
 		this.setMaxStackSize(1);
@@ -109,10 +109,8 @@ public class ItemWrench extends Item {
 				((TileEntityGearbox) blockTile)
 					.setInputFacing(!player.isSneaking() ? facing : facing.getOpposite());
 			}
-		} else if (this.mode == EnumWrenchMode.DECONSTRUCT) {
-			if (blockTile instanceof ITileEntityMultiblockPart) {
-				((ITileEntityMultiblockPart) blockTile).deconstruct();
-			}
+		} else if (this.mode == EnumWrenchMode.DECONSTRUCT && blockTile instanceof ITileEntityMultiblockPart) {
+			((ITileEntityMultiblockPart) blockTile).disassembleMultiblock();
 		}
 
 		return EnumActionResult.PASS;

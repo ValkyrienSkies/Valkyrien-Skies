@@ -159,8 +159,8 @@ public class TileEntitySpeedTelegraph extends TileEntityPilotableImpl implements
 
     private enum ShipChadburnState {
 
-        FULL_AHEAD(-120, 4),.HALF_AHEAD(-80, 2), SLOW_AHEAD(-40, 1), STOP(0, 0), SLOW_ASTERN(40,
-            -1),.HALF_ASTERN(80, -2), FULL_ASTERN(120, -4);
+        FULL_AHEAD(-120, 4), HALF_AHEAD(-80, 2), SLOW_AHEAD(-40, 1), STOP(0, 0), SLOW_ASTERN(40,
+            -1), HALF_ASTERN(80, -2), FULL_ASTERN(120, -4);
 
         // The rotation in degrees in the clockwise direction relative to midnight.
         public final double renderRotation;

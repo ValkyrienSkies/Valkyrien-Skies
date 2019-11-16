@@ -7,6 +7,7 @@ message.vs_control.error_relay_wire_length=The wire is too short to connect thes
 item.vs_wrench.name=VS Wrench
 tooltip.vs_control.wrench_usage=A VS Wrench is needed to construct this.
 tooltip.vs_control.wrench_modes=Shift + Right-Click to change modes.
+tooltip.vs_control.wrench_switched=Switched VS Wrench to %sion mode.
 tooltip.vs_control.wrench.construct=Used to construct multi-blocks and orient the gearbox.
 tooltip.vs_control.wrench.deconstruct=Used to safely deconstruct multi-blocks.
 

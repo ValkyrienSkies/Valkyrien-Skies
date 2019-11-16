@@ -111,6 +111,7 @@ public class ItemWrench extends Item {
 			}
 		} else if (this.mode == EnumWrenchMode.DECONSTRUCT && blockTile instanceof ITileEntityMultiblockPart) {
 			((ITileEntityMultiblockPart) blockTile).disassembleMultiblock();
+			return EnumActionResult.SUCCESS;
 		}
 
 		return EnumActionResult.PASS;

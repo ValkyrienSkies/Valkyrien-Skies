@@ -133,8 +133,8 @@ public class TileEntityValkyriumEnginePart extends
     }
 
     @Override
-    public void dissembleMultiblockLocal() {
-        super.dissembleMultiblockLocal();
+    public void disassembleMultiblockLocal() {
+        super.disassembleMultiblockLocal();
         Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         if (object.isPresent()) {
             this.rotationNode.queueTask(rotationNode::resetNodeData);
@@ -158,7 +158,7 @@ public class TileEntityValkyriumEnginePart extends
         if (this.getWorld() == null || !this.getWorld().isRemote) {
             rotationNode.readFromNBT(compound);
         }
-//		rotationNode.markInitialized();
+//        rotationNode.markInitialized();
     }
 
     @Override

@@ -169,8 +169,8 @@ public class BlocksValkyrienSkiesControl {
             .setTranslationKey("dummy_telegraph")
             .setRegistryName(ValkyrienSkiesControl.MOD_ID, "dummy_telegraph");
         rudderPart = new BlockRudderPart(Material.IRON).setHardness(5f)
-            .setTranslationKey("rudder_axle_part")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "rudder_axle_part")
+            .setTranslationKey("rudder_part")
+            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "rudder_part")
             .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
         giantPropellerPart = new BlockGiantPropellerPart(Material.IRON).setHardness(5f)
             .setTranslationKey("giant_propeller_part")

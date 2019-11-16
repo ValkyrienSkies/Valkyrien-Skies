@@ -30,7 +30,7 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
         List<String> itemInformation,
         ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.giant_propeller_part"));
-				itemInformation.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + I18n.format("tooltip.vs_control.wrench_usage"));
+                itemInformation.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + I18n.format("tooltip.vs_control.wrench_usage"));
     }
 
     @Nullable
@@ -58,7 +58,7 @@ public class BlockGiantPropellerPart extends Block implements ITileEntityProvide
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         TileEntity tile = worldIn.getTileEntity(pos);
         if (tile instanceof TileEntityGiantPropellerPart) {
-            ((TileEntityGiantPropellerPart) tile).dissembleMultiblock();
+            ((TileEntityGiantPropellerPart) tile).disassembleMultiblock();
         }
         super.breakBlock(worldIn, pos, state);
     }

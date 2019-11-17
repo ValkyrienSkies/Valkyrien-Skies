@@ -52,7 +52,7 @@ public class DebugCommand implements Runnable {
             if (data.getShips().size() == 0) {
                 // There are no ships
                 sender.sendMessage(new TextComponentTranslation(
-                    "commands.valkyrienskies.list-ships.noships"));
+                    "commands.vs.list-ships.noships"));
                 return;
             }
 
@@ -73,7 +73,7 @@ public class DebugCommand implements Runnable {
                 .collect(Collectors.joining(",\n"));
 
             sender.sendMessage(new TextComponentTranslation(
-                "commands.valkyrienskies.list-ships.ships", listOfShips));
+                "commands.vs.list-ships.ships", listOfShips));
         }
     }
 

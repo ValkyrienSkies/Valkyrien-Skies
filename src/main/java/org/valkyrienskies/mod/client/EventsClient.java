@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.client;
 
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -25,12 +24,14 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.model.IModel;
@@ -51,6 +52,8 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 public class EventsClient {
 
@@ -245,6 +248,23 @@ public class EventsClient {
             for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
                 wrapper.getShipTransformationManager()
                         .updateRenderTransform(partialTicks);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderWorldLastEvent(RenderWorldLastEvent event) {
+        if (Minecraft.getMinecraft().getRenderManager().isDebugBoundingBox() && !Minecraft.getMinecraft().isReducedDebug()) {
+            float partialTicks = event.getPartialTicks();
+            World world = Minecraft.getMinecraft().world;
+            EntityPlayer entity = Minecraft.getMinecraft().player;
+
+            double playerX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) partialTicks;
+            double playerY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
+            double playerZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTicks;
+
+            for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
+                wrapper.getShipRenderer().renderDebugInfo(-playerX, -playerY, -playerZ, partialTicks);
             }
         }
     }

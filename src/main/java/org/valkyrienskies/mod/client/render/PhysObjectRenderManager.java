@@ -17,10 +17,14 @@
 package org.valkyrienskies.mod.client.render;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -227,6 +231,64 @@ public class PhysObjectRenderManager {
         GL11.glRotated(-moddedYaw, 0, 1D, 0);
         GL11.glRotated(-moddedPitch, 1D, 0, 0);
         GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
+    }
+
+    public void renderDebugInfo(double offsetX, double offsetY, double offsetZ, float partialTicks) {
+        GlStateManager.pushMatrix();
+
+        AxisAlignedBB shipBB = parent.getShipBB();
+        ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
+
+        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(renderTransform.getPosX(), renderTransform.getPosY(), renderTransform.getPosZ(), renderTransform.getPosX(), renderTransform.getPosY(), renderTransform.getPosZ()).grow(.1);
+
+        // renderDebugBoundingBox(renderBB, offsetX, offsetY, offsetZ);
+
+
+        GlStateManager.depthMask(false);
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.disableCull();
+        GlStateManager.disableBlend();
+
+        // Draw the bounding box for the ship.
+        RenderGlobal.drawBoundingBox(shipBB.minX + offsetX, shipBB.minY + offsetY, shipBB.minZ + offsetZ, shipBB.maxX + offsetX, shipBB.maxY + offsetY, shipBB.maxZ + offsetZ, 1.0F, 1.0F, 1.0F, 1.0F);
+
+        // Draw the center of mass bounding box.
+        GlStateManager.disableDepth();
+        RenderGlobal.drawBoundingBox(centerOfMassBB.minX + offsetX, centerOfMassBB.minY + offsetY, centerOfMassBB.minZ + offsetZ, centerOfMassBB.maxX + offsetX, centerOfMassBB.maxY + offsetY, centerOfMassBB.maxZ + offsetZ, 0, 0, 1.0F, 1.0F);
+        GlStateManager.enableDepth();
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableLighting();
+        GlStateManager.enableCull();
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+
+        // Draw a text box that shows the numerical value of the center of mass.
+        String centerOfMassStr = "Center of Mass: " + renderTransform.getCenterCoord().toString();
+        renderTextBox(centerOfMassStr, renderTransform.getPosX(), renderTransform.getPosY() + .5, renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
+
+        String massStr = "Mass: " + String.format("%.2f", parent.getData().getInertiaData().getGameTickMass());
+        renderTextBox(massStr, renderTransform.getPosX(), renderTransform.getPosY() + 1, renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
+
+
+        GlStateManager.popMatrix();
+    }
+
+    /**
+     * Renders a text box in the world at the position xyz, with the render offset provided. (Render offset not included
+     * in text box distance check).
+     */
+    private void renderTextBox(String str, double posX, double posY, double posZ, double offsetX, double offsetY, double offsetZ) {
+        final double maxDistance = 64;
+        double d0 = new Vec3d(posX, posY, posZ).squareDistanceTo(Minecraft.getMinecraft().getRenderManager().renderViewEntity.getPositionVector());
+
+        if (d0 <= maxDistance * maxDistance) {
+            float f = Minecraft.getMinecraft().getRenderManager().playerViewY; // player yaw
+            float f1 = Minecraft.getMinecraft().getRenderManager().playerViewX; // player pitch
+            boolean flag1 = Minecraft.getMinecraft().getRenderManager().options.thirdPersonView == 2;
+            EntityRenderer.drawNameplate(Minecraft.getMinecraft().getRenderManager().getFontRenderer(), str, (float) (posX + offsetX), (float) (posY + offsetY), (float) (posZ + offsetZ), 0, f, f1, flag1, false);
+        }
     }
 
 }

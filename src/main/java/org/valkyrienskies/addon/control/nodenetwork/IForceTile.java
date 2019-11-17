@@ -18,7 +18,7 @@ package org.valkyrienskies.addon.control.nodenetwork;
 
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public interface IForceTile {
 

@@ -24,10 +24,9 @@ import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockCaptainsChair;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
@@ -36,9 +35,9 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
     void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         IBlockState blockState = getWorld().getBlockState(getPos());
         if (blockState.getBlock() == ValkyrienSkiesControl.INSTANCE.vsControlBlocks.captainsChair) {
-            PhysicsWrapperEntity wrapper = getParentPhysicsEntity();
-            if (wrapper != null) {
-                processCalculationsForControlMessageAndApplyCalculations(wrapper, message,
+            PhysicsObject physicsObject = getParentPhysicsEntity();
+            if (physicsObject != null) {
+                processCalculationsForControlMessageAndApplyCalculations(physicsObject, message,
                     blockState);
             }
         } else {
@@ -58,30 +57,28 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
 
     @Override
     public final void onStartTileUsage(EntityPlayer player) {
-        getParentPhysicsEntity().getPhysicsObject().physicsProcessor().actAsArchimedes = true;
+        getParentPhysicsEntity().getPhysicsCalculations().actAsArchimedes = true;
     }
 
     @Override
     public final void onStopTileUsage() {
         // Sanity check, sometimes we can be piloting something that's been destroyed so there's nothing to change physics on.
         if (getParentPhysicsEntity() != null) {
-            getParentPhysicsEntity().getPhysicsObject()
-                .physicsProcessor().actAsArchimedes = false;
+            getParentPhysicsEntity()
+                .getPhysicsCalculations().actAsArchimedes = false;
         }
     }
 
-    private final void processCalculationsForControlMessageAndApplyCalculations(
-        PhysicsWrapperEntity wrapper, PilotControlsMessage message, IBlockState state) {
+    private void processCalculationsForControlMessageAndApplyCalculations(
+            PhysicsObject controlledShip, PilotControlsMessage message, IBlockState state) {
         BlockPos chairPosition = getPos();
-        PhysicsObject controlledShip = wrapper.getPhysicsObject();
 
-        if (controlledShip.getShipAligningToGrid()) {
+        if (controlledShip.isShipAligningToGrid()) {
             return;
         }
 
         double pilotPitch = 0D;
-        double pilotYaw = ((BlockCaptainsChair) state.getBlock())
-            .getChairYaw(state, chairPosition);
+        double pilotYaw = ((BlockCaptainsChair) state.getBlock()).getChairYaw(state, chairPosition);
         double pilotRoll = 0D;
 
         double[] pilotRotationMatrix = RotationMatrices
@@ -109,9 +106,9 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
             idealLinearVelocity.subtract(playerDirection);
         }
 
-        controlledShip.shipTransformationManager().getCurrentTickTransform()
+        controlledShip.getShipTransformationManager().getCurrentTickTransform()
             .rotate(idealLinearVelocity, TransformType.SUBSPACE_TO_GLOBAL);
-        controlledShip.shipTransformationManager().getCurrentTickTransform()
+        controlledShip.getShipTransformationManager().getCurrentTickTransform()
             .rotate(shipUp, TransformType.SUBSPACE_TO_GLOBAL);
 
         if (message.airshipUp_KeyDown) {
@@ -133,12 +130,12 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
         }
 
         Vector sidesRotationAxis = new Vector(playerDirection);
-        controlledShip.shipTransformationManager().getCurrentTickTransform()
+        controlledShip.getShipTransformationManager().getCurrentTickTransform()
             .rotate(sidesRotationAxis, TransformType.SUBSPACE_TO_GLOBAL);
 
         double[] rotationSidesTransform = RotationMatrices
-            .getRotationMatrix(sidesRotationAxis.X, sidesRotationAxis.Y,
-                sidesRotationAxis.Z, Math.toRadians(sidePitch));
+            .getRotationMatrix(sidesRotationAxis.x, sidesRotationAxis.y,
+                sidesRotationAxis.z, Math.toRadians(sidePitch));
         shipUpPosIdeal.transform(rotationSidesTransform);
 
         idealAngularDirection.multiply(2);
@@ -150,7 +147,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
         shipUpRotationVector.multiply(shipUpTheta);
 
         idealAngularDirection.add(shipUpRotationVector);
-        idealLinearVelocity.multiply(20D * controlledShip.physicsProcessor().getMass());
+        idealLinearVelocity.multiply(20D * controlledShip.getPhysicsCalculations().getMass());
 
         // Move the ship faster if the player holds the sprint key.
         if (message.airshipSprinting) {
@@ -159,15 +156,15 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
 
         double lerpFactor = .2D;
         Vector linearMomentumDif = idealLinearVelocity
-            .getSubtraction(controlledShip.physicsProcessor().linearMomentum);
+            .getSubtraction(controlledShip.getPhysicsCalculations().getLinearMomentum());
         Vector angularVelocityDif = idealAngularDirection
-            .getSubtraction(controlledShip.physicsProcessor().angularVelocity);
+            .getSubtraction(controlledShip.getPhysicsCalculations().getAngularVelocity());
 
         linearMomentumDif.multiply(lerpFactor);
         angularVelocityDif.multiply(lerpFactor);
 
-        controlledShip.physicsProcessor().linearMomentum.subtract(linearMomentumDif);
-        controlledShip.physicsProcessor().angularVelocity.subtract(angularVelocityDif);
+        controlledShip.getPhysicsCalculations().getLinearMomentum().subtract(linearMomentumDif);
+        controlledShip.getPhysicsCalculations().getAngularVelocity().subtract(angularVelocityDif);
     }
 
 }

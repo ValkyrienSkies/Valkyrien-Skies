@@ -11,7 +11,7 @@ import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.Tuple;
 import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
@@ -90,10 +90,10 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
             if (this.firstUpdate) {
                 // Inject the rotation node into the physics world.
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
-                    .getPhysicsObject(getWorld(), getPos());
+                    .getPhysoManagingBlock(getWorld(), getPos());
                 IRotationNodeWorld nodeWorld;
                 if (physicsObjectOptional.isPresent()) {
-                    nodeWorld = physicsObjectOptional.get().physicsProcessor()
+                    nodeWorld = physicsObjectOptional.get().getPhysicsCalculations()
                         .getPhysicsRotationNodeWorld();
                 } else {
                     IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();

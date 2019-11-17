@@ -20,6 +20,8 @@ import java.nio.ByteBuffer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
 import org.valkyrienskies.mod.common.math.Vector;
 
 /**
@@ -44,32 +46,34 @@ public class ValkyrienNBTUtils {
         return new BlockPos(x, y, z);
     }
 
-    public static void write3x3MatrixToNBT(String name, double[] matrix,
+    public static void write3x3MatrixToNBT(String name, Matrix3dc matrix3,
         NBTTagCompound compound) {
+        double[] matrix = new double[9];
+        matrix3.get(matrix);
         for (int i = 0; i < 9; i++) {
             compound.setDouble(name + i, matrix[i]);
         }
     }
 
-    public static double[] read3x3MatrixFromNBT(String name, NBTTagCompound compound) {
+    public static Matrix3dc read3x3MatrixFromNBT(String name, NBTTagCompound compound) {
         double[] matrix = new double[9];
         for (int i = 0; i < 9; i++) {
             matrix[i] = compound.getDouble(name + i);
         }
-        return matrix;
+        return new Matrix3d().set(matrix);
     }
 
     public static void writeVectorToNBT(String name, Vector vector, NBTTagCompound compound) {
-        compound.setDouble(name + "X", vector.X);
-        compound.setDouble(name + "Y", vector.Y);
-        compound.setDouble(name + "Z", vector.Z);
+        compound.setDouble(name + "X", vector.x);
+        compound.setDouble(name + "Y", vector.y);
+        compound.setDouble(name + "Z", vector.z);
     }
 
     public static Vector readVectorFromNBT(String name, NBTTagCompound compound) {
         Vector vector = new Vector();
-        vector.X = compound.getDouble(name + "X");
-        vector.Y = compound.getDouble(name + "Y");
-        vector.Z = compound.getDouble(name + "Z");
+        vector.x = compound.getDouble(name + "X");
+        vector.y = compound.getDouble(name + "Y");
+        vector.z = compound.getDouble(name + "Z");
         return vector;
     }
 

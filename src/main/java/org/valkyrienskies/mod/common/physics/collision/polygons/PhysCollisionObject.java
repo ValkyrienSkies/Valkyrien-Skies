@@ -89,8 +89,8 @@ public class PhysCollisionObject {
     }
 
     public void setResponse(Vector v) {
-        v.X = collision_normal.X * penetrationDistance;
-        v.Y = collision_normal.Y * penetrationDistance;
-        v.Z = collision_normal.Z * penetrationDistance;
+        v.x = collision_normal.x * penetrationDistance;
+        v.y = collision_normal.y * penetrationDistance;
+        v.z = collision_normal.z * penetrationDistance;
     }
 }

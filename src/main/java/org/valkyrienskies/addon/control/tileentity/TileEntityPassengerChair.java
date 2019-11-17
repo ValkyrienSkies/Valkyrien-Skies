@@ -14,13 +14,13 @@ import net.minecraft.world.WorldServer;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.EntityMountableChair;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.relocation.IRelocationAwareTile;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 @MethodsReturnNonnullByDefault
-public class TileEntityPassengerChair extends TileEntity implements IRelocationAwareTile {
+// TODO: FIX THIS CLASS
+public class TileEntityPassengerChair extends TileEntity /*implements IRelocationAwareTile*/ {
 
     // UUID of the mounting entity this chair is using to hold its passenger.
     private UUID chairEntityUUID;
@@ -60,7 +60,7 @@ public class TileEntityPassengerChair extends TileEntity implements IRelocationA
         if (isChairEmpty) {
             // Chair is guaranteed empty.
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(getWorld(), getPos());
+                .getPhysoManagingBlock(getWorld(), getPos());
             CoordinateSpaceType mountCoordType =
                 physicsObject.isPresent() ? CoordinateSpaceType.SUBSPACE_COORDINATES
                     : CoordinateSpaceType.GLOBAL_COORDINATES;
@@ -102,7 +102,6 @@ public class TileEntityPassengerChair extends TileEntity implements IRelocationA
         }
     }
 
-    @Override
     public TileEntity createRelocatedTile(BlockPos newPos, ShipTransform transform,
         CoordinateSpaceType coordinateSpaceType) {
         TileEntityPassengerChair relocatedTile = new TileEntityPassengerChair();

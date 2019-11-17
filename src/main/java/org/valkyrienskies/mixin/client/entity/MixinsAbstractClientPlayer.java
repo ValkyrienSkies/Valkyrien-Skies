@@ -23,7 +23,7 @@ import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.IShipPilotClient;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 /**
  * Todo: Replace this with a capability
@@ -40,8 +40,8 @@ public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
         }
     }
 
-    private void sendPilotKeysToServer(ControllerInputType type, PhysicsWrapperEntity shipPiloting,
-        BlockPos blockBeingControlled) {
+    private void sendPilotKeysToServer(ControllerInputType type, PhysicsObject shipPiloting,
+                                       BlockPos blockBeingControlled) {
         PilotControlsMessage keyMessage = new PilotControlsMessage();
         if (type == null) {
             System.out.println("This is totally wrong");

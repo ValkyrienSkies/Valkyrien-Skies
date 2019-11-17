@@ -142,21 +142,21 @@ public class VSConfigCommandBase extends CommandBase {
 
             if (currentNode instanceof ConfigCommandEndNode && i < args.length - 1) {
                 // setting the option
-                ((ConfigCommandEndNode) currentNode).setOption().accept(args[i + 1]);
+                ((ConfigCommandEndNode) currentNode).getOptionSetter().accept(args[i + 1]);
                 try {
                     sync.invoke(null);
                 } catch (Exception e) {
                     throw new RuntimeException(e); //blah blaah
                 }
-                sender.sendMessage(new TextComponentString("Set " + currentNode.name() +
-                    " = " + ((ConfigCommandEndNode) currentNode).getOption().get().toString()
+                sender.sendMessage(new TextComponentString("Set " + currentNode.getName() +
+                    " = " + ((ConfigCommandEndNode) currentNode).getOptionGetter().get().toString()
                 ));
 
                 break;
             } else if (currentNode instanceof ConfigCommandEndNode && i == args.length - 1) {
                 // getting the option
-                sender.sendMessage(new TextComponentString(currentNode.name() +
-                    " = " + ((ConfigCommandEndNode) currentNode).getOption().get().toString()
+                sender.sendMessage(new TextComponentString(currentNode.getName() +
+                    " = " + ((ConfigCommandEndNode) currentNode).getOptionGetter().get().toString()
                 ));
                 break;
             } else if (i == args.length - 1) {
@@ -194,7 +194,7 @@ public class VSConfigCommandBase extends CommandBase {
                 if (nextNode == null) {
                     return ((ConfigCommandParentNode) currentNode).getChildrenStartingWith(args[i])
                         .stream()
-                        .map(ConfigCommandNode::name)
+                        .map(ConfigCommandNode::getName)
                         .collect(Collectors.toList());
                 } else if (i == args.length - 1 && nextNode instanceof ConfigCommandParentNode) {
                     // We have reached the last argument, so the user must be looking for all the

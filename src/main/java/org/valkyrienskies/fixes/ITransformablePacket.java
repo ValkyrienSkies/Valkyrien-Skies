@@ -4,12 +4,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import org.valkyrienskies.mod.common.MixinLoadManager;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
-import org.valkyrienskies.mod.common.coordinates.ISubspace;
-import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
+import org.valkyrienskies.mod.common.capability.entity_backup.ICapabilityEntityBackup;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -39,15 +36,16 @@ public interface ITransformablePacket {
             // System.out.println("Pre packet process");
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
-            PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
-            if (wrapper != null
-                && wrapper.getPhysicsObject().shipTransformationManager() != null) {
-                ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
-                ISubspace worldSubspace = worldProvider.getSubspace();
-                worldSubspace.snapshotSubspacedEntity((ISubspacedEntity) player);
-                wrapper.getPhysicsObject().shipTransformationManager()
-                    .getCurrentTickTransform().transform(player,
-                    TransformType.GLOBAL_TO_SUBSPACE);
+            PhysicsObject physicsObject = getPacketParent(serverHandler);
+            if (physicsObject != null
+                    && physicsObject.getShipTransformationManager() != null) {
+                // First make a backup of the player position
+                ICapabilityEntityBackup entityBackup = player.getCapability(VSCapabilityRegistry.VS_ENTITY_BACKUP, null);
+                entityBackup.backupEntityPosition(player);
+                // Then put the player into ship coordinates.
+                physicsObject.getShipTransformationManager()
+                        .getCurrentTickTransform().transform(player,
+                        TransformType.GLOBAL_TO_SUBSPACE);
             }
 
         }
@@ -60,24 +58,13 @@ public interface ITransformablePacket {
         if (isPacketOnMainThread(server, callingFromSponge)) {
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
-            PhysicsWrapperEntity wrapper = getPacketParent(serverHandler);
-            // I don't care what happened to that ship in the time between, we must restore
-            // the player to their proper coordinates.
-            ISubspaceProvider worldProvider = (ISubspaceProvider) player.getServerWorld();
-            ISubspace worldSubspace = worldProvider.getSubspace();
-            ISubspacedEntity subspacedEntity = (ISubspacedEntity) player;
-            ISubspacedEntityRecord record = worldSubspace
-                .getRecordForSubspacedEntity(subspacedEntity);
-            // System.out.println(player.getPosition());
-            if (subspacedEntity.currentSubspaceType() == CoordinateSpaceType.SUBSPACE_COORDINATES) {
-                subspacedEntity.restoreSubspacedEntityStateToRecord(record);
-                player.setPosition(player.posX, player.posY, player.posZ);
+            // If we made a backup in doPreProcessing(), then restore from that backup.
+            ICapabilityEntityBackup entityBackup = player.getCapability(VSCapabilityRegistry.VS_ENTITY_BACKUP, null);
+            if (entityBackup.hasBackupPosition()) {
+                entityBackup.restoreEntityToBackup(player);
             }
-            // System.out.println(player.getPosition());
-            // We need this because Sponge Mixins prevent this from properly working. This
-            // won't be necessary on client however.
         }
     }
 
-    PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server);
+    PhysicsObject getPacketParent(NetHandlerPlayServer server);
 }

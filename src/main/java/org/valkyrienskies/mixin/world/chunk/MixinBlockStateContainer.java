@@ -50,6 +50,7 @@ public class MixinBlockStateContainer implements IBitOctreeProvider {
         }
         int i = this.palette.idFor(state);
         this.storage.setAt(index, i);
+
         // VS code starts here:
         int x = index & 0xF;
         int z = (index & 0xF0) >> 4;

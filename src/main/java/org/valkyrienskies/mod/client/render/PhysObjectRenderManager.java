@@ -17,64 +17,57 @@
 package org.valkyrienskies.mod.client.render;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.proxy.ClientProxy;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Object owned by each physObject responsible for handling all rendering operations
  *
  * @author thebest108
  */
+@ParametersAreNonnullByDefault
 public class PhysObjectRenderManager {
 
     // This pos is used to prevent Z-Buffer Errors D:
     // It's actual value is completely irrelevant as long as it's close to the
     // Ship's centerBlockPos
-    public BlockPos offsetPos;
-    private int glCallListSolid;
-    private int glCallListTranslucent;
-    private int glCallListCutout;
-    private int glCallListCutoutMipped;
-    private PhysicsObject parent;
-    private PhysRenderChunk[][] renderChunks;
+    public final BlockPos offsetPos;
+    private final PhysicsObject parent;
+    private final PhysRenderChunk[][] renderChunks;
 
-    public PhysObjectRenderManager(PhysicsObject toRender) {
+    public PhysObjectRenderManager(PhysicsObject toRender, BlockPos offsetPos) {
         this.parent = toRender;
-        this.glCallListSolid = -1;
-        this.glCallListTranslucent = -1;
-        this.glCallListCutout = -1;
-        this.glCallListCutoutMipped = -1;
-        this.offsetPos = null;
-        this.renderChunks = null;
-    }
-
-    public void updateOffsetPos(BlockPos newPos) {
-        offsetPos = newPos;
+        this.offsetPos = offsetPos;
+        this.renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent
+                .getOwnedChunks()
+                .getChunkLengthZ()];
+        for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
+            for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
+                renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
+                        .getChunkAt(xChunk + parent.getOwnedChunks().minX(),
+                                zChunk + parent.getOwnedChunks().minZ()));
+            }
+        }
     }
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
-        if (renderChunks == null) {
-            renderChunks = new PhysRenderChunk[parent.ownedChunks().chunkLengthX()][parent
-                .ownedChunks()
-                .chunkLengthZ()];
-            for (int xChunk = 0; xChunk < parent.ownedChunks().chunkLengthX(); xChunk++) {
-                for (int zChunk = 0; zChunk < parent.ownedChunks().chunkLengthZ(); zChunk++) {
-                    renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
-                        .getChunkAt(xChunk + parent.ownedChunks().minX(),
-                            zChunk + parent.ownedChunks().minZ()));
-                }
-            }
-        }
-
         GL11.glPushMatrix();
         Minecraft.getMinecraft().entityRenderer.enableLightmap();
         // int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
@@ -108,7 +101,7 @@ public class PhysObjectRenderManager {
 
     public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         boolean updateImmediately) {
-        if (renderChunks == null || parent == null || parent.ownedChunks() == null) {
+        if (renderChunks == null || parent == null || parent.getOwnedChunks() == null) {
             return;
         }
 
@@ -130,13 +123,13 @@ public class PhysObjectRenderManager {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 // TODO: Fix this render bug
                 try {
-                    if (chunkX >= parent.ownedChunks().minX() && chunkZ >= parent
-                        .ownedChunks().minZ()
-                        && chunkX - parent.ownedChunks().minX() < renderChunks.length
-                        && chunkZ - parent.ownedChunks().minZ() < renderChunks[0].length) {
-                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.ownedChunks()
+                    if (chunkX >= parent.getOwnedChunks().minX() && chunkZ >= parent
+                        .getOwnedChunks().minZ()
+                        && chunkX - parent.getOwnedChunks().minX() < renderChunks.length
+                        && chunkZ - parent.getOwnedChunks().minZ() < renderChunks[0].length) {
+                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.getOwnedChunks()
                             .minX()][chunkZ
-                            - parent.ownedChunks().minZ()];
+                            - parent.getOwnedChunks().minZ()];
                         if (renderChunk != null) {
                             renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
                         } else {
@@ -156,15 +149,12 @@ public class PhysObjectRenderManager {
     }
 
     public boolean shouldRender() {
-        if (parent.wrapperEntity().isDead) {
-            return false;
-        }
         ICamera camera = ClientProxy.lastCamera;
-        return true; // camera == null || camera.isBoundingBoxInFrustum(parent.shipBoundingBox());
+        return true; // camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 
     public void applyRenderTransform(double partialTicks) {
-        Vector centerOfRotation = parent.centerCoord();
+        Vector centerOfRotation = parent.getCenterCoord();
 
         double p0 = Minecraft.getMinecraft().player.lastTickPosX
             + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
@@ -176,46 +166,35 @@ public class PhysObjectRenderManager {
             + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
             * partialTicks;
 
-        ShipTransform renderTransform = parent.shipTransformationManager().getRenderTransform();
+        ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
         Vector renderPos = new Vector(centerOfRotation);
         renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
 
-        double moddedX = renderPos.X;
-        double moddedY = renderPos.Y;
-        double moddedZ = renderPos.Z;
+        double moddedX = renderPos.x;
+        double moddedY = renderPos.y;
+        double moddedZ = renderPos.z;
 
-        double[] radians = renderTransform
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL).toRadians();
+        Quaterniondc quaterniondc = renderTransform.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3dc angles = quaterniondc.getEulerAnglesXYZ(new Vector3d());
 
-        double moddedPitch = Math.toDegrees(radians[0]);
-        double moddedYaw = Math.toDegrees(radians[1]);
-        double moddedRoll = Math.toDegrees(radians[2]);
+        double moddedPitch = Math.toDegrees(angles.x());
+        double moddedYaw = Math.toDegrees(angles.y());
+        double moddedRoll = Math.toDegrees(angles.z());
         // Offset pos is used to prevent floating point errors when rendering stuff thats very far away.
-        if (offsetPos != null) {
-            double offsetX = offsetPos.getX() - centerOfRotation.X;
-            double offsetY = offsetPos.getY() - centerOfRotation.Y;
-            double offsetZ = offsetPos.getZ() - centerOfRotation.Z;
+        double offsetX = offsetPos.getX() - centerOfRotation.x;
+        double offsetY = offsetPos.getY() - centerOfRotation.y;
+        double offsetZ = offsetPos.getZ() - centerOfRotation.z;
 
-            GlStateManager.translate(-p0 + moddedX, -p1 + moddedY, -p2 + moddedZ);
-            GL11.glRotated(moddedPitch, 1D, 0, 0);
-            GL11.glRotated(moddedYaw, 0, 1D, 0);
-            GL11.glRotated(moddedRoll, 0, 0, 1D);
-            GL11.glTranslated(offsetX, offsetY, offsetZ);
-        }
-    }
-
-    @Deprecated
-    public Quaternion getSmoothRotationQuat(double partialTick) {
-        Quaternion oneTickBefore = parent.shipTransformationManager().getPrevTickTransform()
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion nextQuat = parent.shipTransformationManager().getCurrentTickTransform()
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        return Quaternion.slerpInterpolate(oneTickBefore, nextQuat, partialTick);
+        GlStateManager.translate(-p0 + moddedX, -p1 + moddedY, -p2 + moddedZ);
+        GL11.glRotated(moddedPitch, 1D, 0, 0);
+        GL11.glRotated(moddedYaw, 0, 1D, 0);
+        GL11.glRotated(moddedRoll, 0, 0, 1D);
+        GL11.glTranslated(offsetX, offsetY, offsetZ);
     }
 
     public void inverseTransform(double partialTicks) {
-        Vector centerOfRotation = parent.centerCoord();
+        Vector centerOfRotation = parent.getCenterCoord();
 
         double p0 = Minecraft.getMinecraft().player.lastTickPosX
             + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
@@ -227,32 +206,88 @@ public class PhysObjectRenderManager {
             + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
             * partialTicks;
 
-        ShipTransform renderTransform = parent.shipTransformationManager().getRenderTransform();
+        ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
         Vector renderPos = new Vector(centerOfRotation);
         renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
 
-        double moddedX = renderPos.X;
-        double moddedY = renderPos.Y;
-        double moddedZ = renderPos.Z;
+        double moddedX = renderPos.x;
+        double moddedY = renderPos.y;
+        double moddedZ = renderPos.z;
 
-        double[] radians = renderTransform
-            .createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL).toRadians();
+        Quaterniondc quaterniondc = renderTransform.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3dc angles = quaterniondc.getEulerAnglesXYZ(new Vector3d());
 
-        double moddedPitch = Math.toDegrees(radians[0]);
-        double moddedYaw = Math.toDegrees(radians[1]);
-        double moddedRoll = Math.toDegrees(radians[2]);
+        double moddedPitch = Math.toDegrees(angles.x());
+        double moddedYaw = Math.toDegrees(angles.y());
+        double moddedRoll = Math.toDegrees(angles.z());
 
-        if (offsetPos != null) {
-            double offsetX = offsetPos.getX() - centerOfRotation.X;
-            double offsetY = offsetPos.getY() - centerOfRotation.Y;
-            double offsetZ = offsetPos.getZ() - centerOfRotation.Z;
+        double offsetX = offsetPos.getX() - centerOfRotation.x;
+        double offsetY = offsetPos.getY() - centerOfRotation.y;
+        double offsetZ = offsetPos.getZ() - centerOfRotation.z;
 
-            GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
-            GL11.glRotated(-moddedRoll, 0, 0, 1D);
-            GL11.glRotated(-moddedYaw, 0, 1D, 0);
-            GL11.glRotated(-moddedPitch, 1D, 0, 0);
-            GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
+        GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
+        GL11.glRotated(-moddedRoll, 0, 0, 1D);
+        GL11.glRotated(-moddedYaw, 0, 1D, 0);
+        GL11.glRotated(-moddedPitch, 1D, 0, 0);
+        GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
+    }
+
+    public void renderDebugInfo(double offsetX, double offsetY, double offsetZ, float partialTicks) {
+        GlStateManager.pushMatrix();
+
+        AxisAlignedBB shipBB = parent.getShipBB();
+        ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
+
+        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(renderTransform.getPosX(), renderTransform.getPosY(), renderTransform.getPosZ(), renderTransform.getPosX(), renderTransform.getPosY(), renderTransform.getPosZ()).grow(.1);
+
+        // renderDebugBoundingBox(renderBB, offsetX, offsetY, offsetZ);
+
+
+        GlStateManager.depthMask(false);
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.disableCull();
+        GlStateManager.disableBlend();
+
+        // Draw the bounding box for the ship.
+        RenderGlobal.drawBoundingBox(shipBB.minX + offsetX, shipBB.minY + offsetY, shipBB.minZ + offsetZ, shipBB.maxX + offsetX, shipBB.maxY + offsetY, shipBB.maxZ + offsetZ, 1.0F, 1.0F, 1.0F, 1.0F);
+
+        // Draw the center of mass bounding box.
+        GlStateManager.disableDepth();
+        RenderGlobal.drawBoundingBox(centerOfMassBB.minX + offsetX, centerOfMassBB.minY + offsetY, centerOfMassBB.minZ + offsetZ, centerOfMassBB.maxX + offsetX, centerOfMassBB.maxY + offsetY, centerOfMassBB.maxZ + offsetZ, 0, 0, 1.0F, 1.0F);
+        GlStateManager.enableDepth();
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableLighting();
+        GlStateManager.enableCull();
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+
+        // Draw a text box that shows the numerical value of the center of mass.
+        String centerOfMassStr = "Center of Mass: " + renderTransform.getCenterCoord().toString();
+        renderTextBox(centerOfMassStr, renderTransform.getPosX(), renderTransform.getPosY() + .5, renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
+
+        String massStr = "Mass: " + String.format("%.2f", parent.getData().getInertiaData().getGameTickMass());
+        renderTextBox(massStr, renderTransform.getPosX(), renderTransform.getPosY() + 1, renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
+
+
+        GlStateManager.popMatrix();
+    }
+
+    /**
+     * Renders a text box in the world at the position xyz, with the render offset provided. (Render offset not included
+     * in text box distance check).
+     */
+    private void renderTextBox(String str, double posX, double posY, double posZ, double offsetX, double offsetY, double offsetZ) {
+        final double maxDistance = 64;
+        double d0 = new Vec3d(posX, posY, posZ).squareDistanceTo(Minecraft.getMinecraft().getRenderManager().renderViewEntity.getPositionVector());
+
+        if (d0 <= maxDistance * maxDistance) {
+            float f = Minecraft.getMinecraft().getRenderManager().playerViewY; // player yaw
+            float f1 = Minecraft.getMinecraft().getRenderManager().playerViewX; // player pitch
+            boolean flag1 = Minecraft.getMinecraft().getRenderManager().options.thirdPersonView == 2;
+            EntityRenderer.drawNameplate(Minecraft.getMinecraft().getRenderManager().getFontRenderer(), str, (float) (posX + offsetX), (float) (posY + offsetY), (float) (posZ + offsetZ), 0, f, f1, flag1, false);
         }
     }
 

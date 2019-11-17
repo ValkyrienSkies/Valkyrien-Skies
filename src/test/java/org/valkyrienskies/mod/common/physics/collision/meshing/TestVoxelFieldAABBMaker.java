@@ -1,19 +1,18 @@
 package org.valkyrienskies.mod.common.physics.collision.meshing;
 
-import net.minecraft.util.math.BlockPos;
-import org.junit.jupiter.api.RepeatedTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import net.minecraft.util.math.BlockPos;
+import org.junit.jupiter.api.RepeatedTest;
 
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"})
 public class TestVoxelFieldAABBMaker {
 
-    @RepeatedTest(250)
+    @RepeatedTest(25)
     public void naiveTest1() {
         NaiveVoxelFieldAABBMaker naive = new NaiveVoxelFieldAABBMaker(0, 0);
         ExtremelyNaiveVoxelFieldAABBMaker extreme = new ExtremelyNaiveVoxelFieldAABBMaker(0, 0);
@@ -60,7 +59,7 @@ public class TestVoxelFieldAABBMaker {
         }
     }
 
-    @RepeatedTest(1000)
+    @RepeatedTest(100)
     public void naiveTest2() {
         Random random = new Random();
         BlockPos centerPos = new BlockPos(random.nextInt() / 100, 0, random.nextInt() / 100);

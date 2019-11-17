@@ -24,7 +24,7 @@ class ConfigCommandParentNode extends ConfigCommandNode {
     ConfigCommandParentNode(String name, List<ConfigCommandNode> children) {
         super(name);
         this.children = new HashMap<>(
-            children.stream().collect(Collectors.toMap(c -> c.name().toLowerCase(), c -> c))
+            children.stream().collect(Collectors.toMap(c -> c.getName().toLowerCase(), c -> c))
         );
     }
 
@@ -57,7 +57,7 @@ class ConfigCommandParentNode extends ConfigCommandNode {
      * @param node The node to add as a child.
      */
     void addChild(ConfigCommandNode node) {
-        children.put(node.name().toLowerCase(), node);
+        children.put(node.getName().toLowerCase(), node);
     }
 
     /**
@@ -75,7 +75,7 @@ class ConfigCommandParentNode extends ConfigCommandNode {
      * @return the name of the child nodes as a list
      */
     List<String> childrenNames() {
-        return children.values().stream().map(ConfigCommandNode::name).collect(Collectors.toList());
+        return children.values().stream().map(ConfigCommandNode::getName).collect(Collectors.toList());
     }
 
     /**
@@ -86,7 +86,7 @@ class ConfigCommandParentNode extends ConfigCommandNode {
      */
     List<ConfigCommandNode> getChildrenStartingWith(String prefix) {
         return children.values().stream()
-            .filter(c -> c.name().toLowerCase().startsWith(prefix.toLowerCase()))
+            .filter(c -> c.getName().toLowerCase().startsWith(prefix.toLowerCase()))
             .collect(Collectors.toList());
     }
 }

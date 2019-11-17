@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 /**
  * The same as a normal engine, but says speed in the tooltip

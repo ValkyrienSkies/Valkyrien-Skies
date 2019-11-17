@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -40,22 +40,22 @@ public abstract class MixinParticleManager {
         }
 
         BlockPos pos = new BlockPos(effect.posX, effect.posY, effect.posZ);
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(effect.world, pos);
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(effect.world, pos);
         if (physicsObject.isPresent()) {
             Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
             Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .fromLocalToGlobal(posVec);
 //            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, velocity);
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform()
                 .rotate(velocity, TransformType.SUBSPACE_TO_GLOBAL);
-            effect.setPosition(posVec.X, posVec.Y, posVec.Z);
-            effect.motionX = velocity.X;
-            effect.motionY = velocity.Y;
-            effect.motionZ = velocity.Z;
+            effect.setPosition(posVec.x, posVec.y, posVec.z);
+            effect.motionX = velocity.x;
+            effect.motionY = velocity.y;
+            effect.motionZ = velocity.z;
         }
         //vanilla code follows
     }

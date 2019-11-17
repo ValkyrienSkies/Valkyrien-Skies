@@ -17,7 +17,7 @@
 package org.valkyrienskies.addon.control.piloting;
 
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 /**
  * Todo: Convert to a forge capability.
@@ -25,9 +25,9 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 @Deprecated
 public interface IShipPilot {
 
-    PhysicsWrapperEntity getPilotedShip();
+    PhysicsObject getPilotedShip();
 
-    void setPilotedShip(PhysicsWrapperEntity wrapper);
+    void setPilotedShip(PhysicsObject physicsObject);
 
     boolean isPilotingShip();
 

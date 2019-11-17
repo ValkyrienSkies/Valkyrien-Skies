@@ -1,7 +1,7 @@
 package org.valkyrienskies.addon.control.block.torque.custom_torque_functions;
 
 import org.valkyrienskies.addon.control.block.torque.IRotationNode;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 /**
  * Torque functions are used by the rotation nodes to determine their torque each physics tick. They

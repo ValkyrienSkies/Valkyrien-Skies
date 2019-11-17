@@ -13,7 +13,6 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-
 buildscript {
     repositories {
         jcenter()
@@ -30,6 +29,9 @@ buildscript {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
         classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
+}
+plugins {
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 ext.configFile = file "project.properties"
@@ -100,11 +102,12 @@ repositories {
 ext {
     cqengineVersion = "3.4.0"
     graphlibVersion = "1.4.0"
-    lombokVersion = "1.18.8"
+    lombokVersion = "1.18.10"
     mixinVersion = "0.7.11-SNAPSHOT"
     opencomputersVersion = "MC1.12.1-1.7.1.+"
     spongeVersion = "1.12.2-2825-7.1.6"
     vsApiVersion = "master-SNAPSHOT"
+    jacksonVersion = "2.10.0"
 }
 
 dependencies {
@@ -145,6 +148,15 @@ dependencies {
         //exclude module: "typetools" //23.5 KB
     }
 
+    // JOML
+    shade 'org.joml:joml:1.9.19' // 663 KB
+
+    // Jackson
+    shade "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    shade "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$jacksonVersion"
+    shade "com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion"
+    shade "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
+
     // Include all dependencies in the /dependencies folder
     shade fileTree(include: ["*.jar"], dir: "dependencies")
 
@@ -154,6 +166,7 @@ dependencies {
 
     // junit tests
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
 
@@ -184,10 +197,54 @@ mixin {
     add sourceSets.main, "mixins.valkyrienskies.refmap.json"
 }
 
+shadowJar {
+    configurations = [project.configurations.shade]
+    relocate 'com.fasterxml', 'org.valkyrienskies.deps.com.fasterxml'
+    mergeServiceFiles() // https://github.com/johnrengelman/shadow/issues/304
+}
+
+reobf {
+    shadowJar{}
+}
+
+// https://forums.spongepowered.org/t/mcp-reobfuscation-doesnt-work/21779
+tasks.build.dependsOn reobfShadowJar
+
 reobf.jar {
     mappingType = "SEARGE"
     classpath = sourceSets.main.compileClasspath
 }
+
+// region Shaded Dependencies Size Calculation (./gradlew depsize)
+// source: https://gist.github.com/medvedev/968119d7786966d9ed4442ae17aca279
+
+tasks.create("depsize") {
+    listConfigurationDependencies(configurations.default)
+}
+
+def listConfigurationDependencies(Configuration configuration) {
+    def formatStr = "%,10.2f"
+
+    def size = configuration.collect { it.length() / (1024 * 1024) }.sum()
+
+    def out = new StringBuffer()
+    out << "\nConfiguration name: \"${configuration.name}\"\n"
+    if (size) {
+        out << 'Total dependencies size:'.padRight(65)
+        out << "${String.format(formatStr, size)} Mb\n\n"
+
+        configuration.sort { -it.length() }
+                .each {
+                    out << "${it.name}".padRight(65)
+                    out << "${String.format(formatStr, (it.length() / 1024))} kb\n"
+                }
+    } else {
+        out << 'No dependencies found';
+    }
+    println(out)
+}
+
+// endregion
 
 /*allprojects {
     // Re-obfuscate only after creating the shadowDevJar
@@ -195,17 +252,6 @@ reobf.jar {
 }*/
 
 jar {
-    from {
-        configurations.shade.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }.unique(true)
-    } {
-        /*exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"*/
-        exclude "META-INF/*"
-    }
-
     manifest.attributes(
             "MixinConfigs": "mixins.valkyrienskies.json",
             "tweakClass": "org.spongepowered.asm.launch.MixinTweaker",

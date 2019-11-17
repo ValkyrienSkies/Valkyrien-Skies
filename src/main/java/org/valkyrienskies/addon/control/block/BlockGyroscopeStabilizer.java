@@ -55,7 +55,7 @@ public class BlockGyroscopeStabilizer extends Block implements ITileEntityProvid
 
     @Override
     public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
-        TileEntity thisTile = physicsCalculations.getParent().world().getTileEntity(pos);
+        TileEntity thisTile = physicsCalculations.getParent().getWorld().getTileEntity(pos);
         if (thisTile instanceof TileEntityGyroscopeStabilizer) {
             TileEntityGyroscopeStabilizer tileGyroscope = (TileEntityGyroscopeStabilizer) thisTile;
             return tileGyroscope.getTorqueInGlobal(physicsCalculations, pos);

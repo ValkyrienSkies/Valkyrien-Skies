@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.common;
 
-import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
@@ -30,7 +29,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.entity.EntityMountableChair;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+
+import javax.annotation.Nonnull;
 
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class RegisterEvents {
@@ -60,34 +60,29 @@ public class RegisterEvents {
      */
     @SubscribeEvent
     public static void onRegisterEntitiesEvent(
-        @Nonnull final RegistryEvent.Register<EntityEntry> event) {
+            @Nonnull final RegistryEvent.Register<EntityEntry> event) {
         final ResourceLocation physicsWrapperEntity = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "PhysWrapper");
+                "PhysWrapper");
         final ResourceLocation entityMountable = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "entity_mountable");
+                "entity_mountable");
         final ResourceLocation entityMountableChair = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "entity_mountable_chair");
+                "entity_mountable_chair");
         // Used to ensure no duplicates of entity network id's
         int entityId = 0;
         event.getRegistry()
-            .registerAll(EntityEntryBuilder.create()
-                    .entity(PhysicsWrapperEntity.class)
-                    .id(physicsWrapperEntity, entityId++)
-                    .name(physicsWrapperEntity.getPath())
-                    .tracker(ValkyrienSkiesMod.VS_ENTITY_LOAD_DISTANCE, 1, false)
-                    .build(),
-                EntityEntryBuilder.create()
-                    .entity(EntityMountable.class)
-                    .id(entityMountable, entityId++)
-                    .name(entityMountable.getPath())
-                    .tracker(ValkyrienSkiesMod.VS_ENTITY_LOAD_DISTANCE, 1, false)
-                    .build(),
-                EntityEntryBuilder.create()
-                    .entity(EntityMountableChair.class)
-                    .id(entityMountableChair, entityId++)
-                    .name(entityMountableChair.getPath())
-                    .tracker(ValkyrienSkiesMod.VS_ENTITY_LOAD_DISTANCE, 1, false)
-                    .build()
-            );
+                .registerAll(
+                        EntityEntryBuilder.create()
+                                .entity(EntityMountable.class)
+                                .id(entityMountable, entityId++)
+                                .name(entityMountable.getPath())
+                                .tracker(ValkyrienSkiesMod.VS_ENTITY_LOAD_DISTANCE, 1, false)
+                                .build(),
+                        EntityEntryBuilder.create()
+                                .entity(EntityMountableChair.class)
+                                .id(entityMountableChair, entityId++)
+                                .name(entityMountableChair.getPath())
+                                .tracker(ValkyrienSkiesMod.VS_ENTITY_LOAD_DISTANCE, 1, false)
+                                .build()
+                );
     }
 }

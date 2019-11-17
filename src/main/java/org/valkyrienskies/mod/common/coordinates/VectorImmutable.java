@@ -12,8 +12,10 @@ import org.valkyrienskies.mod.common.math.Vector;
  * safe.
  *
  * @author thebest108
+ * @deprecated Use {@link org.joml.Vector3dc} instead
  */
 @Immutable
+@Deprecated
 @MethodsReturnNonnullByDefault
 public class VectorImmutable extends Vec3d {
 
@@ -24,7 +26,7 @@ public class VectorImmutable extends Vec3d {
     }
 
     public VectorImmutable(Vector vectorData) {
-        this(vectorData.X, vectorData.Y, vectorData.Z);
+        this(vectorData.x, vectorData.y, vectorData.z);
     }
 
     public static VectorImmutable readFromByteBuf(ByteBuf bufToRead) {

@@ -226,16 +226,13 @@ public class TileEntityRudderPart extends
 
     @Override
     public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
-        List<IMultiblockSchematic> schematics = MultiblockRegistry
-            .getSchematicsWithPrefix("multiblock_rudder_axle");
+        List<IMultiblockSchematic> schematics = MultiblockRegistry.getSchematicsWithPrefix("multiblock_rudder_axle");
         for (IMultiblockSchematic schematic : schematics) {
             RudderAxleMultiblockSchematic rudderSchem = (RudderAxleMultiblockSchematic) schematic;
-            if (facing.getAxis() != rudderSchem.getAxleAxisDirection().getAxis()) {
-                if (rudderSchem.getAxleFacingDirection() == facing) {
-                    if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
-                        return true;
-                    }
-                }
+            if (facing.getAxis() != rudderSchem.getAxleAxisDirection().getAxis()
+                && rudderSchem.getAxleFacingDirection() == facing
+                && schematic.attemptToCreateMultiblock(worldIn, pos)) {
+                return true;
             }
         }
         return false;

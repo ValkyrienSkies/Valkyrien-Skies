@@ -148,14 +148,11 @@ public class TileEntityGiantPropellerPart extends
 
     @Override
     public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
-        List<IMultiblockSchematic> schematics = MultiblockRegistry
-        .getSchematicsWithPrefix("multiblock_giant_propeller");
+        List<IMultiblockSchematic> schematics = MultiblockRegistry.getSchematicsWithPrefix("multiblock_giant_propeller");
         for (IMultiblockSchematic schematic : schematics) {
             GiantPropellerMultiblockSchematic propSchem = (GiantPropellerMultiblockSchematic) schematic;
-            if (propSchem.getPropellerFacing() == facing) {
-                if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
-                    return true;
-                }
+            if (propSchem.getPropellerFacing() == facing && schematic.attemptToCreateMultiblock(worldIn, pos)) {
+                return true;
             }
         }
         return false;

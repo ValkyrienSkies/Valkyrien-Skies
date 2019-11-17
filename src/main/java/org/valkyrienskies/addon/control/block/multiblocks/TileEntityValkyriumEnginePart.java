@@ -135,8 +135,7 @@ public class TileEntityValkyriumEnginePart extends
 
     @Override
     public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
-        List<IMultiblockSchematic> schematics = MultiblockRegistry
-            .getSchematicsWithPrefix("multiblock_valkyrium_engine");
+        List<IMultiblockSchematic> schematics = MultiblockRegistry.getSchematicsWithPrefix("multiblock_valkyrium_engine");
         for (IMultiblockSchematic schematic : schematics) {
             if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
                 return true;

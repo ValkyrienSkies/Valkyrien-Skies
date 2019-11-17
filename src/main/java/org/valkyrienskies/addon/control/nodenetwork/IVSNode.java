@@ -12,7 +12,7 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 /**
  * The nodes that form the graphs of control elements.
  *
- * @author thebest108
+ * @author thebest108, DeltaNedas
  */
 public interface IVSNode extends GraphObject {
 
@@ -24,7 +24,7 @@ public interface IVSNode extends GraphObject {
      */
     Iterable<IVSNode> getDirectlyConnectedNodes();
 
-    void makeConnection(IVSNode other);
+    void makeConnection(IVSNode other, EnumWireType wireType);
 
     void breakConnection(IVSNode other);
 
@@ -84,6 +84,8 @@ public interface IVSNode extends GraphObject {
     List<GraphObject> getNeighbours();
 
     TileEntity getParentTile();
+
+	EnumWireType getWireType();
 
     int getMaximumConnections();
 

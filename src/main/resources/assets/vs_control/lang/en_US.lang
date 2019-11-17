@@ -3,6 +3,10 @@ item.relay_wire.name=Relay Wire
 tooltip.vs_control.relay_wire=Used to connect relays to components and other relays.
 message.vs_control.error_relay_wire_limit=One of the connections is maxed out. Relay Nodes can make %d connections, all other objects can only make 1 connection.
 message.vs_control.error_relay_wire_length=The wire is too short to connect these nodes!
+message.vs_control.error_already_linked=These nodes are already linked!
+
+item.vanishing_wire.name=Vanishing Wire
+tooltip.vs_control.vanishing_wire=Works like Relay Wire, but it's invisible when not held.
 
 item.vs_wrench.name=VS Wrench
 tooltip.vs_control.wrench_usage=A VS Wrench is needed to construct this.

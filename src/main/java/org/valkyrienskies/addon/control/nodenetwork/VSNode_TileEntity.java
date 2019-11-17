@@ -28,6 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.valkyrienskies.addon.control.nodenetwork.EnumWireType;
 import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
@@ -43,6 +44,7 @@ public class VSNode_TileEntity implements IVSNode {
     private boolean isValid;
     private PhysicsObject parentPhysicsObject;
     private Graph nodeGraph;
+    private EnumWireType wireType;
 
     public VSNode_TileEntity(TileEntity parent, int maximumConnections) {
         this.parentTile = parent;
@@ -63,9 +65,8 @@ public class VSNode_TileEntity implements IVSNode {
         }
         boolean isChunkLoaded = world.isBlockLoaded(pos);
         if (!isChunkLoaded) {
+            // throw new IllegalStateException("VSNode_TileEntity wasn't loaded in the world!");
             return null;
-            // throw new IllegalStateException("VSNode_TileEntity wasn't loaded in the
-            // world!");
         }
         TileEntity entity = world.getTileEntity(pos);
         if (entity == null) {
@@ -100,18 +101,17 @@ public class VSNode_TileEntity implements IVSNode {
     }
 
     @Override
-    public void makeConnection(IVSNode other) {
+    public void makeConnection(IVSNode other, EnumWireType wireType) {
         assertValidity();
         boolean contains = linkedNodesPos.contains(other.getNodePos());
         if (!contains) {
             linkedNodesPos.add(other.getNodePos());
             parentTile.markDirty();
-            other.makeConnection(this);
+            other.makeConnection(this, wireType);
             sendNodeUpdates();
             List stupid = Collections.singletonList(other);
             getGraph().addNeighours(this, stupid);
-            // System.out.println("Connections: " + getGraph().getObjects().size());
-            // getNodeGraph().addNode(other);
+            this.wireType = wireType;
         }
     }
 
@@ -282,8 +282,13 @@ public class VSNode_TileEntity implements IVSNode {
 
     @Override
     public TileEntity getParentTile() {
-        return parentTile;
+        return this.parentTile;
     }
+
+    @Override
+    public EnumWireType getWireType() {
+		return this.wireType;
+	}
 
     @Override
     public int getMaximumConnections() {

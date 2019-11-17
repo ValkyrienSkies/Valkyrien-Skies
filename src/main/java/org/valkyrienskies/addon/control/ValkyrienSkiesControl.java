@@ -51,7 +51,8 @@ import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.ImplCapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.StorageLastRelay;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
-import org.valkyrienskies.addon.control.item.ItemWrench;
+import org.valkyrienskies.addon.control.item.ItemVanishingWire;
+import org.valkyrienskies.addon.control.item.ItemVSWrench;
 import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPiloting;
 import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPilotingHandler;
 import org.valkyrienskies.addon.control.network.MessageStartPiloting;
@@ -107,6 +108,7 @@ public class ValkyrienSkiesControl {
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienSkiesControl vsControlBlocks = new BlocksValkyrienSkiesControl();
     public Item relayWire;
+    public Item vanishingWire;
     public Item vsWrench;
 
     @SubscribeEvent
@@ -119,7 +121,10 @@ public class ValkyrienSkiesControl {
         INSTANCE.relayWire = new ItemRelayWire().setTranslationKey("relay_wire")
             .setRegistryName(MOD_ID, "relay_wire")
             .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        INSTANCE.vsWrench = new ItemWrench().setTranslationKey("vs_wrench")
+        INSTANCE.vanishingWire = new ItemVanishingWire().setTranslationKey("vanishing_wire")
+            .setRegistryName(MOD_ID, "vanishing_wire")
+            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
+        INSTANCE.vsWrench = new ItemVSWrench().setTranslationKey("vs_wrench")
             .setRegistryName(MOD_ID, "vs_wrench")
             .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
 
@@ -191,6 +196,13 @@ public class ValkyrienSkiesControl {
             " I ",
             'I', relayWireIngot,
             'S', Items.STICK);
+        Module.registerRecipe(event, "recipe_vanishing_wire", // Valkyrium makes stuff invisible sometimes its canon
+            new ItemStack(INSTANCE.vanishingWire, 8),
+            "WWW",
+            "WVW",
+            "WWW",
+            'W', INSTANCE.relayWire,
+            'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
         Module.registerRecipe(event, "recipe_compacted_valkyrium",
             new ItemStack(INSTANCE.vsControlBlocks.compactedValkyrium, 1),

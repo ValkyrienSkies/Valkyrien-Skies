@@ -60,15 +60,15 @@ public class ShipTransformationBuffer {
     // Doesn't really do anything yet.
     private WrapperPositionMessage generateSmoothTransform() {
         return transformations.pollFirst();
-    	/*
-    	double[] weights = new double[TRANSFORMS_SMOOTHED];
-    	ShipTransformationPacketHolder[] transforms = new ShipTransformationPacketHolder[TRANSFORMS_SMOOTHED];
-    	for (int i = 0; i < TRANSFORMS_SMOOTHED; i++) {
-    		weights[i] = weightGenerator.getTermWeight(.5, i);
-    		transforms[i] = transformations.get(i);
-    	}
-    	return transforms[0]; // new ShipTransformationPacketHolder(transforms, weights);
-    	*/
+        /*
+        double[] weights = new double[TRANSFORMS_SMOOTHED];
+        ShipTransformationPacketHolder[] transforms = new ShipTransformationPacketHolder[TRANSFORMS_SMOOTHED];
+        for (int i = 0; i < TRANSFORMS_SMOOTHED; i++) {
+            weights[i] = weightGenerator.getTermWeight(.5, i);
+            transforms[i] = transformations.get(i);
+        }
+        return transforms[0]; // new ShipTransformationPacketHolder(transforms, weights);
+        */
     }
 
     private static class BezierWeightGenerator {

@@ -1,14 +1,17 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.fixes.VSNetwork;
+import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -221,4 +224,17 @@ public class TileEntityRudderPart extends
         }
     }
 
+    @Override
+    public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
+        List<IMultiblockSchematic> schematics = MultiblockRegistry.getSchematicsWithPrefix("multiblock_rudder_axle");
+        for (IMultiblockSchematic schematic : schematics) {
+            RudderAxleMultiblockSchematic rudderSchem = (RudderAxleMultiblockSchematic) schematic;
+            if (facing.getAxis() != rudderSchem.getAxleAxisDirection().getAxis()
+                && rudderSchem.getAxleFacingDirection() == facing
+                && schematic.attemptToCreateMultiblock(worldIn, pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -7,6 +8,8 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.block.torque.IRotationNode;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeProvider;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
@@ -62,7 +65,7 @@ public class TileEntityValkyriumEnginePart extends
                 }
                 if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld()
                     && this.getRelativePos()
-                    .equals(getMultiBlockSchematic().getTorqueOutputPos())) {
+                    .equals(this.getMultiBlockSchematic().getTorqueOutputPos())) {
                     nodeWorld.enqueueTaskOntoWorld(
                         () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
                 }
@@ -127,9 +130,18 @@ public class TileEntityValkyriumEnginePart extends
             });
             nodeWorld
                 .enqueueTaskOntoWorld(() -> nodeWorld.setNodeFromPos(pos, this.rotationNode));
-
-
         }
+    }
+
+    @Override
+    public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
+        List<IMultiblockSchematic> schematics = MultiblockRegistry.getSchematicsWithPrefix("multiblock_valkyrium_engine");
+        for (IMultiblockSchematic schematic : schematics) {
+            if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -138,7 +150,6 @@ public class TileEntityValkyriumEnginePart extends
         Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
         if (object.isPresent()) {
             this.rotationNode.queueTask(rotationNode::resetNodeData);
-
         }
     }
 

@@ -1,11 +1,15 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.block.torque.IRotationNode;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeProvider;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
@@ -140,6 +144,18 @@ public class TileEntityGiantPropellerPart extends
             }
             this.propellerAngle = this.propellerAngle + increment * .75;
         }
+    }
+
+    @Override
+    public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
+        List<IMultiblockSchematic> schematics = MultiblockRegistry.getSchematicsWithPrefix("multiblock_giant_propeller");
+        for (IMultiblockSchematic schematic : schematics) {
+            GiantPropellerMultiblockSchematic propSchem = (GiantPropellerMultiblockSchematic) schematic;
+            if (propSchem.getPropellerFacing() == facing && schematic.attemptToCreateMultiblock(worldIn, pos)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

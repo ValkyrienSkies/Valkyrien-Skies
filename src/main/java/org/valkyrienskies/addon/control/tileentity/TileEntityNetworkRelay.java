@@ -22,7 +22,7 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 
 public class TileEntityNetworkRelay extends BasicNodeTileEntity {
 
-	public TileEntityNetworkRelay() {
+    public TileEntityNetworkRelay() {
         super();
     }
 

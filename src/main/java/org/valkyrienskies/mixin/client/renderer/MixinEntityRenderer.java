@@ -371,9 +371,9 @@ public abstract class MixinEntityRenderer {
             d1 = playerPosition.Y;
             d2 = playerPosition.Z;
 
-            //			entity.posX = entity.prevPosX = entity.lastTickPosX = d0;
-            //			entity.posY = entity.prevPosY = entity.lastTickPosY = d1;
-            //			entity.posZ = entity.prevPosZ = entity.lastTickPosZ = d2;
+            //            entity.posX = entity.prevPosX = entity.lastTickPosX = d0;
+            //            entity.posY = entity.prevPosY = entity.lastTickPosY = d1;
+            //            entity.posZ = entity.prevPosZ = entity.lastTickPosZ = d2;
         }
 
         d0 += eyeVector.X;

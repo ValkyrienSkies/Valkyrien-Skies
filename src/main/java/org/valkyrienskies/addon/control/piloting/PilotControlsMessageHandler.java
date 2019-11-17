@@ -36,7 +36,7 @@ public class PilotControlsMessageHandler implements
             public void run() {
                 World worldObj = ctx.getServerHandler().player.world;
                 if (ValkyrienSkiesMod.VS_PHYSICS_MANAGER.getManagerForWorld(worldObj) != null) {
-//                	UUID shipId = message.shipFor;
+//                    UUID shipId = message.shipFor;
                     BlockPos posFor = message.controlBlockPos;
                     TileEntity tile = worldObj.getTileEntity(posFor);
 

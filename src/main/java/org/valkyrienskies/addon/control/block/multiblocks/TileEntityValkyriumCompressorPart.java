@@ -1,6 +1,11 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
+import java.util.List;
 import java.util.Optional;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.fuel.IValkyriumEngine;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -87,4 +92,14 @@ public class TileEntityValkyriumCompressorPart extends
         return prevKeyframe + (increment * partialTick) + 1;
     }
 
+    @Override
+    public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
+        List<IMultiblockSchematic> valkyriumEngineMultiblockSchematics = MultiblockRegistry.getSchematicsWithPrefix("multiblock_valkyrium_compressor");
+        for (IMultiblockSchematic schematic : valkyriumEngineMultiblockSchematics) {
+            if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

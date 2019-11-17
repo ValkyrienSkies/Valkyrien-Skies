@@ -107,7 +107,7 @@ public class ValkyrienSkiesControl {
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienSkiesControl vsControlBlocks = new BlocksValkyrienSkiesControl();
     public Item relayWire;
-    public Item multiBlockWrench;
+    public Item vsWrench;
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -119,14 +119,14 @@ public class ValkyrienSkiesControl {
         INSTANCE.relayWire = new ItemRelayWire().setTranslationKey("relay_wire")
             .setRegistryName(MOD_ID, "relay_wire")
             .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        INSTANCE.multiBlockWrench = new ItemWrench().setTranslationKey("vs_wrench")
+        INSTANCE.vsWrench = new ItemWrench().setTranslationKey("vs_wrench")
             .setRegistryName(MOD_ID, "vs_wrench")
             .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
 
         event.getRegistry()
             .register(INSTANCE.relayWire);
         event.getRegistry()
-            .register(INSTANCE.multiBlockWrench);
+            .register(INSTANCE.vsWrench);
 
         INSTANCE.vsControlBlocks.registerBlockItems(event);
         // This doesn't really belong here, but whatever.

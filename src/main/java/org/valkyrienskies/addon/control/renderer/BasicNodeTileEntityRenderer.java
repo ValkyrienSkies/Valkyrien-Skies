@@ -43,8 +43,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
                 TileEntity otherTile = getWorld().getTileEntity(otherPos);
                 if (otherTile instanceof TileEntityNetworkRelay) {
                     // Don't render the same connection twice.
-                    if (otherTile.getPos()
-                        .compareTo(te.getPos()) < 0) {
+                    if (otherTile.getPos().compareTo(te.getPos()) < 0) {
                         continue;
                     }
                 }

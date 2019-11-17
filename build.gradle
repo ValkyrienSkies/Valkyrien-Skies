@@ -1,14 +1,14 @@
 /*
  * Adapted from the Wizardry License
  *
- * Copyright (c) 2015-2018 the Valkyrien Warfare team
+ * Copyright (c) 2015-2019 the Valkyrien Skies team
  *
  * Permission is hereby granted to any persons and/or organizations using this software to copy, modify, merge, publish, and distribute it.
  * Said persons and/or organizations are not allowed to use the software or any derivatives of the work for commercial use or any other means to generate income unless it is to be used as a part of a larger project (IE: "modpacks"), nor are they allowed to claim this software as their own.
  *
- * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Warfare team.
+ * The persons and/or organizations are also disallowed from sub-licensing and/or trademarking this software without explicit permission from the Valkyrien Skies team.
  *
- * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Warfare team), as well as provide a link to the original project.
+ * Any persons and/or organizations using this software must disclose their source code and have it publicly available, include this license, provide sufficient credit to the original authors of the project (IE: The Valkyrien Skies team), as well as provide a link to the original project.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
@@ -22,108 +22,139 @@ buildscript {
             url = "http://files.minecraftforge.net/maven"
         }
         maven {
-            name = 'SpongePowered'
-            url = 'http://repo.spongepowered.org/maven'
+            name = "SpongePowered"
+            url = "http://repo.spongepowered.org/maven"
         }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
-        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
 }
 
 ext.configFile = file "project.properties"
 apply plugin: "net.minecraftforge.gradle.forge"
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'maven-publish'
-apply plugin: 'java'
+apply plugin: "org.spongepowered.mixin"
+apply plugin: "maven-publish"
+apply plugin: "java"
 
-configFile.withReader { 
+configFile.withReader {
     // read config.  it shall from now on be referenced as simply config or as project.config 
-    def prop = new Properties() 
-    prop.load(it) 
-    project.ext.config = new ConfigSlurper().parse prop 
-} 
- 
-version = "${config.minecraft_version}-${config.mod_version}" 
-if (hasProperty('appendBuildNumber')) { 
-    version = version + "-" + appendBuildNumber.toString() 
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
 }
- 
+
+version = "${config.minecraft_version}-${config.mod_version}"
+if (hasProperty("appendBuildNumber")) {
+    version = version + "-" + appendBuildNumber.toString()
+}
+
 group = "${config.group_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "${config.mod_id_cap}"
+
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+}
 
 minecraft {
     version = project.forgeVersion
     runDir = "run"
     mappings = project.mcpVersion
-    coreMod = "valkyrienwarfare.mixin.MixinLoaderForge"
+    coreMod = "org.valkyrienskies.mixin.MixinLoaderForge"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
-configurations.all {
-    resolutionStrategy {
-        force("com.google.guava:guava:21.0")
+configurations {
+    shade
+    compile.extendsFrom shade
+
+    all {
+        resolutionStrategy {
+            force("com.google.guava:guava:21.0")
+        }
     }
 }
 
 repositories {
     mavenLocal()
     maven {
-        name = 'spongepowered-repo'
-        url = 'http://repo.spongepowered.org/maven/'
+        name = "spongepowered-repo"
+        url = "http://repo.spongepowered.org/maven/"
     }
     maven {
         name = "OpenComputers"
         url = "http://maven.cil.li/"
     }
-    // This one is for porky datastructures.
-    maven {
-        url 'https://maven.daporkchop.net/'
-    }
     // This one is for graph datastructures.
     maven {
-        url 'http://dogforce-games.com/maven'
+        name = "Dogforce Games"
+        url = "http://dogforce-games.com/maven"
     }
-    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+    jcenter()
 }
 
-compileJava {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
+ext {
+    cqengineVersion = "3.4.0"
+    graphlibVersion = "1.4.0"
+    lombokVersion = "1.18.8"
+    mixinVersion = "0.7.11-SNAPSHOT"
+    opencomputersVersion = "MC1.12.1-1.7.1.+"
+    spongeVersion = "1.12.2-2825-7.1.6"
+    vsApiVersion = "master-SNAPSHOT"
 }
 
 dependencies {
     // mixin needs to be distributed with the mod, very important
-    compile("org.spongepowered:mixin:0.7.5-SNAPSHOT") {
+    shade("org.spongepowered:mixin:$mixinVersion") {
+        exclude module: "commons-io"
+        exclude module: "guava"
+        exclude module: "gson"
         exclude module: "launchwrapper"
     }
-    // We want to prevent any conflicts with SpongeForge
-    compile("org.spongepowered:spongeforge:1.12.2-2825-7.1.6:dev")  {
-        exclude group: "org.apache.logging.log4j"
+    // mixin as annotation processor
+    annotationProcessor("org.spongepowered:mixin:$mixinVersion")
+
+    // Needs to be present at compile-time because we mix in to spongeforge, however marking it as
+    // compile makes forge load it as a mod in a dev environment, which is very annoying
+    compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
+        transitive = false
     }
-    compileOnly "li.cil.oc:OpenComputers:MC1.12.1-1.7.1.+:api"
-    // Porky datastructures
-    compile 'net.daporkchop.lib:primitive:0.0.5'
-    compile 'gigaherz.graph:GraphLib:1.4.0'
-    compile 'valkyrienwarfare:api:1.0'
 
-    // Kryo for serialization
-    compile group: 'com.esotericsoftware', name: 'kryo', version: '5.0.0-RC4'
+    compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
 
-    // Contains UUID serializer
-    compile 'de.javakaffee:kryo-serializers:0.45'
+    shade "gigaherz.graph:GraphLib:$graphlibVersion"
+    shade "com.github.ValkyrienSkies:Valkyrien-Skies-API:$vsApiVersion"
+
+    // ODE4j physics engine (https://mvnrepository.com/artifact/org.ode4j/core)
+    // shade group: 'org.ode4j', name: 'core', version: '0.4.0' // 800KB
+    // shade group: 'org.ode4j', name: 'demo', version: '0.4.0'
+
+    // javax inject annotation
+    shade group: 'javax.inject', name: 'javax.inject', version: '1' // 2KB
 
     // CQEngine for in-memory nonpersistent database
-    compile 'com.googlecode.cqengine:cqengine:3.4.0'
-
-    // Guice Injector (included already, but this is an explicity declaration of the dependency)
-    compile group: 'com.google.inject', name: 'guice', version: '4.2.2'
+    // Provides Kryo
+    shade("com.googlecode.cqengine:cqengine:$cqengineVersion") {
+        exclude module: "sqlite-jdbc" //11.1 MB
+        exclude module: "antlr4-runtime" //648.0 KB
+        exclude module: "javassist" //1.5 MB
+        //exclude module: "typetools" //23.5 KB
+    }
 
     // Include all dependencies in the /dependencies folder
-    compile fileTree(include: ['*.jar'], dir: 'dependencies')
+    shade fileTree(include: ["*.jar"], dir: "dependencies")
+
+    // lombok
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    // junit tests
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
 
 processResources {
@@ -150,81 +181,55 @@ processResources {
 
 mixin {
     defaultObfuscationEnv searge
-    add sourceSets.main, "mixins.valkyrienwarfare.refmap.json"
+    add sourceSets.main, "mixins.valkyrienskies.refmap.json"
 }
 
-reobf {
-    shadowJar {
-        mappingType = 'SEARGE'
-        classpath = sourceSets.main.compileClasspath
-    }
+reobf.jar {
+    mappingType = "SEARGE"
+    classpath = sourceSets.main.compileClasspath
 }
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-task shadowDevJar(type: ShadowJar) {
-    classifier = 'dev-shaded'
-
-    from sourceSets.main.output
-    //from sourceSets.java8.output
-
-    // Default settings for shadow tasks
-    configurations = [project.configurations.runtime]
-    manifest.inheritFrom tasks.jar.manifest
-    exclude 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
-}
-
-//shadowDevJar shadowConfiguration
-
-// Upload shadowDevJar to Maven repository
-artifacts {
-    archives shadowDevJar
-}
-
-allprojects {
+/*allprojects {
     // Re-obfuscate only after creating the shadowDevJar
-    tasks.findByName('reobfJar')?.mustRunAfter rootProject.tasks.shadowDevJar
-}
-
-shadowJar {
-    dependencies {
-        exclude(dependency("org.spongepowered:spongeforge:1.12.2-2825-7.1.6:dev"))
-    }
-    exclude 'dummyThing'
-    exclude 'LICENSE.txt'
-    classifier = 'full'
-}
-
-build.dependsOn(shadowJar)
+    tasks.findByName("reobfJar")?.mustRunAfter rootProject.tasks.jar
+}*/
 
 jar {
-    manifest {
-        attributes(
-                "MixinConfigs": 'mixins.valkyrienwarfare.json',
-                "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
-                "TweakOrder": 0,
-                'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'valkyrienwarfare.mixin.MixinLoaderForge',
-				'ForceLoadAsMod': 'true',
-                'FMLAT': 'valkyrienwarfare_at.cfg'
-        )
+    from {
+        configurations.shade.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }.unique(true)
+    } {
+        /*exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"*/
+        exclude "META-INF/*"
     }
+
+    manifest.attributes(
+            "MixinConfigs": "mixins.valkyrienskies.json",
+            "tweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+            "TweakOrder": 0,
+            "FMLCorePluginContainsFMLMod": "true",
+            "FMLCorePlugin": "org.valkyrienskies.mixin.MixinLoaderForge",
+            "ForceLoadAsMod": "true",
+            "FMLAT": "valkyrienskies_at.cfg"
+    )
 }
 
-
-task signJar(type: SignJar, dependsOn: shadowJar) {
-    onlyIf { // Skip the task if our secret data isn't available
-        project.hasProperty('keyStore')
+task signJar(type: SignJar, dependsOn: jar) {
+    onlyIf { // Skip the task if our secret data isn"t available
+        project.hasProperty("keyStore")
     }
 
-	if (project.hasProperty('keyStore')) {
-		keyStore = project.keyStore // This needs to be a path to the keystore file
-		alias = project.keyStoreAlias
-		storePass = project.keyStorePass
-		keyPass = project.keyStoreKeyPass
-		inputFile = shadowJar.archivePath
-		outputFile = shadowJar.archivePath
-	}
+    if (project.hasProperty("keyStore")) {
+        keyStore = project.keyStore // This needs to be a path to the keystore file
+        alias = project.keyStoreAlias
+        storePass = project.keyStorePass
+        keyPass = project.keyStoreKeyPass
+        inputFile = jar.archivePath
+        outputFile = jar.archivePath
+    }
 }
 
 build.dependsOn signJar
@@ -232,17 +237,44 @@ build.dependsOn signJar
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'valkyrienwarfare'
-            artifactId = 'valkyrienwarfare'
+            groupId = "valkyrienskies"
+            artifactId = "valkyrienskies"
             version = project.version
 
             from components.java
             artifact sourceJar {
                 classifier "sources"
             }
-            artifact shadowJar {
-                classifier "full"
-            }
         }
     }
+}
+
+//sets additional JVM args for genIntellijRuns
+
+import java.util.concurrent.atomic.AtomicReference
+
+AtomicReference<String> mixinPath = new AtomicReference<>(null)
+configurations.compile.each {
+    String absolutePath = it.absolutePath
+    if (absolutePath.contains("mixin")) {
+        mixinPath.set(absolutePath)
+    }
+}
+if (mixinPath != null) {
+    minecraft.clientJvmArgs = minecraft.serverJvmArgs = Arrays.asList(
+            "-Dmixin.checks.interfaces=true",
+            "-Dmixin.debug.export=true",
+            "-Dmixin.debug.verbose=true",
+            "-Dmixin.hotSwap=true",
+            "-javaagent:" + mixinPath,
+            "-ea",
+            "-da:io.netty..."
+    )
+} else {
+    throw new IllegalStateException("Unable to find mixin path!")
+}
+
+// Junit testing
+test {
+    useJUnitPlatform()
 }

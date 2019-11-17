@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "vs_control:empty"
+    },
+    "normal": {
+      "model": "vs_control:empty"
+    },
+    "axis=x": {
+      "model": "vs_control:empty"
+    },
+    "axis=y": {
+      "model": "vs_control:empty"
+    },
+    "axis=z": {
+      "model": "vs_control:empty"
+    },
+    "inventory": [
+      {
+        "model": "vs_control:rotation_axle/rotation_axle_geo.obj",
+        "transform": "forge:default-block",
+        "custom": {
+          "flip-v": true
+        }
+      }
+    ]
+  }
+}

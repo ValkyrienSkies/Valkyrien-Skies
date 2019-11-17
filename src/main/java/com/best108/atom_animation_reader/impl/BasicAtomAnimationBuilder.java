@@ -5,11 +5,15 @@ import com.best108.atom_animation_reader.IAtomAnimationBuilder;
 import com.best108.atom_animation_reader.IModelRenderer;
 import com.best108.atom_animation_reader.parsers.AtomParser;
 import com.best108.atom_animation_reader.parsers.AtomParserElement;
-import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
-import valkyrienwarfare.mod.common.math.Vector;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
+import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
+import org.valkyrienskies.mod.common.math.Vector;
 
 public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 
@@ -59,15 +63,19 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
                     }
                 }
                 // Put the pivot in the local registry.
-                modelNamesToPivots.put(dagNode.modelName.substring(0, dagNode.modelName.length() - 6), pivotPoint.toImmutable());
+                modelNamesToPivots
+                    .put(dagNode.modelName.substring(0, dagNode.modelName.length() - 6),
+                        pivotPoint.toImmutable());
             } else {
                 // This is an animation node.
                 List<BasicAnimationTransform> animations = new ArrayList<BasicAnimationTransform>();
                 for (AnimationDataNode animationNode : dagNode.animationNodes) {
-                    BasicAnimationTransform basicTransform = new BasicAnimationTransform(animationNode.animationType, animationNode.animKeyframes.keyframes);
+                    BasicAnimationTransform basicTransform = new BasicAnimationTransform(
+                        animationNode.animationType, animationNode.animKeyframes.keyframes);
                     animations.add(basicTransform);
                 }
-                BasicDagNodeRenderer dagRenderer = new BasicDagNodeRenderer(dagNode.modelName, animations, modelRenderer);
+                BasicDagNodeRenderer dagRenderer = new BasicDagNodeRenderer(dagNode.modelName,
+                    animations, modelRenderer);
                 dagNodeRenderers.add(dagRenderer);
             }
         }
@@ -98,7 +106,9 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
                             }
                         }
                         if (index == -1) {
-                            throw new IllegalStateException("This is a total mystery!\nOffending model name: " + modelName + "\n");
+                            throw new IllegalStateException(
+                                "This is a total mystery!\nOffending model name: " + modelName
+                                    + "\n");
                         }
                         // We are a group; let us gather the children.
                         String groupName = split[index].replaceAll("defgroup", "");
@@ -108,12 +118,14 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
                         for (BasicDagNodeRenderer potentialChild : dagNodeRenderers) {
                             // Check if the possible child belongs to a group
                             if (potentialChild.getModelName()
-                                    .contains("_grp")) {
+                                .contains("_grp")) {
                                 String[] possibleChildNameSplit = potentialChild.getModelName()
-                                        .split("_");
+                                    .split("_");
                                 // Check if the suffix is in a group
-                                if (possibleChildNameSplit[possibleChildNameSplit.length - 1].contains("grp")) {
-                                    String possibleChildGroup = possibleChildNameSplit[possibleChildNameSplit.length - 1].replaceAll("grp", "");
+                                if (possibleChildNameSplit[possibleChildNameSplit.length - 1]
+                                    .contains("grp")) {
+                                    String possibleChildGroup = possibleChildNameSplit[
+                                        possibleChildNameSplit.length - 1].replaceAll("grp", "");
                                     // Check if this potential child is in this group
                                     if (possibleChildGroup.equals(groupName)) {
                                         children.add(potentialChild);
@@ -123,10 +135,14 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
                         }
                         hasChanged = !children.isEmpty();
                         if (hasChanged) {
-                            List<BasicDagNodeRenderer> newDagRenderers = new ArrayList<>(dagNodeRenderers);
+                            List<BasicDagNodeRenderer> newDagRenderers = new ArrayList<>(
+                                dagNodeRenderers);
                             newDagRenderers.removeAll(children);
                             newDagRenderers.remove(dagNodeRenderer);
-                            newDagRenderers.add(new GroupedDagNodeRenderer(dagNodeRenderer.getModelName(), dagNodeRenderer.transformations, children, dagNodeRenderer.pivot));
+                            newDagRenderers.add(
+                                new GroupedDagNodeRenderer(dagNodeRenderer.getModelName(),
+                                    dagNodeRenderer.transformations, children,
+                                    dagNodeRenderer.pivot));
 
                             dagNodeRenderers = newDagRenderers;
                             break;
@@ -150,6 +166,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
     }
 
     static class DagNode {
+
         final String modelName;
         // Nodes in the order their transform will be applied.
         final List<AnimationDataNode> animationNodes;
@@ -168,8 +185,10 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
             for (String[] line : properties) {
                 if (line[0].equals("anim")) {
                     // Create a new animation node.
-                    List<String[]> animKeyframes = parserElement.branches.get(currentBranch).properties;
-                    Keyframes keyFrames = new Keyframes(parserElement.branches.get(currentBranch).branches.get(0).properties);
+                    List<String[]> animKeyframes = parserElement.branches
+                        .get(currentBranch).properties;
+                    Keyframes keyFrames = new Keyframes(
+                        parserElement.branches.get(currentBranch).branches.get(0).properties);
                     AnimationDataNode animationNode = new AnimationDataNode(line[2], keyFrames);
                     animationNodes.add(animationNode);
                     currentBranch++;
@@ -179,6 +198,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
     }
 
     static class AnimationDataNode {
+
         final String animationType;
         final Keyframes animKeyframes;
 
@@ -189,6 +209,7 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
     }
 
     static class Keyframes {
+
         final List<String[]> keyframes;
 
         Keyframes(List<String[]> keyframes) {

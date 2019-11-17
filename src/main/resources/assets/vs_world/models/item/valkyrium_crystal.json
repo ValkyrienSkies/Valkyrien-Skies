@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "vs_world:items/valkyrium_crystal"
+  }
+}

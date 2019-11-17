@@ -1,9 +1,8 @@
 package com.best108.atom_animation_reader.impl;
 
 import com.best108.atom_animation_reader.IAtomAnimation;
-import net.minecraft.client.renderer.GlStateManager;
-
 import java.util.List;
+import net.minecraft.client.renderer.GlStateManager;
 
 /**
  * A very basic implementation of the IAtomAnimation interface.
@@ -16,7 +15,8 @@ public class BasicAtomAnimation implements IAtomAnimation {
     private double minKeyFrame;
     private double maxKeyFrame;
 
-    public BasicAtomAnimation(List<BasicDagNodeRenderer> dagNodes, double minKeyFrame, double maxKeyFrame) {
+    public BasicAtomAnimation(List<BasicDagNodeRenderer> dagNodes, double minKeyFrame,
+        double maxKeyFrame) {
         this.dagNodes = dagNodes;
         this.minKeyFrame = minKeyFrame;
         this.maxKeyFrame = maxKeyFrame;

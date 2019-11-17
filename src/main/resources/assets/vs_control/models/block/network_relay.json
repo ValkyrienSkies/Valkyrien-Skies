@@ -1,0 +1,287 @@
+{
+  "textures": {
+    "0": "blocks/cauldron_side",
+    "1": "blocks/planks_spruce",
+    "2": "blocks/planks_spruce",
+    "particle": "blocks/planks_spruce"
+  },
+  "elements": [
+    {
+      "name": "Base",
+      "from": [
+        5,
+        0,
+        5
+      ],
+      "to": [
+        11,
+        1,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            5,
+            12,
+            11,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            5,
+            12,
+            11,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            5,
+            12,
+            11,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            11,
+            13,
+            5,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            4,
+            3,
+            10,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            8,
+            6,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "name": "Stand",
+      "from": [
+        7,
+        1,
+        7
+      ],
+      "to": [
+        9,
+        6,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#1",
+          "uv": [
+            2,
+            2,
+            4,
+            7
+          ],
+          "cullface": "north"
+        },
+        "east": {
+          "texture": "#2",
+          "uv": [
+            2,
+            2,
+            4,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#2",
+          "uv": [
+            2,
+            2,
+            4,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#2",
+          "uv": [
+            2,
+            2,
+            4,
+            7
+          ]
+        },
+        "up": {
+          "texture": "#2",
+          "uv": [
+            10,
+            5,
+            12,
+            7
+          ]
+        },
+        "down": {
+          "texture": "#2",
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cube",
+      "from": [
+        6,
+        1,
+        6
+      ],
+      "to": [
+        10,
+        2,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "name": "Cube",
+      "from": [
+        6,
+        3,
+        6
+      ],
+      "to": [
+        10,
+        4,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        "down": {
+          "texture": "#0",
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ]
+        }
+      }
+    }
+  ]
+}

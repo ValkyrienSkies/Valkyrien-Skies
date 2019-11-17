@@ -1,0 +1,27 @@
+newmtl initialShadingGroup
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl telescope_glass_mtlSG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/telescope_glass_512
+Ni 1.00
+newmtl telescopegold_mtlSG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/telescope512
+Ni 1.00
+newmtl telescoperims_mtlSG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/telescope512
+Ni 1.00

@@ -1,0 +1,35 @@
+newmtl chadburn_dial_mtlSG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/chadburn_dial_512
+Ni 1.00
+newmtl chadburn_glass_mtlSG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/chadburn_glass_512
+Ni 1.00
+newmtl chadburn_handles_mtlSG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/chadburn_handles_512
+Ni 1.00
+newmtl chadburn_speed_telegraph_mtlSG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/chadburnspeed_telegraph_512
+Ni 1.00
+newmtl lambert2SG
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd vs_control:blocks/chadburn_dial_back_512
+Ni 1.00

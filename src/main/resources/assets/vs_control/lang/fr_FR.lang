@@ -1,0 +1,17 @@
+# Items
+item.relay_wire.name=Câble relais
+
+# Blocks
+tile.captainschair.name=Siège de pilote
+tile.passenger_chair.name=Siège de passager
+tile.compacted_valkyrium.name=Valkyrium dopé
+tile.network_relay.name=Relais
+tile.ship_helm.name=Gouvernail
+tile.speed_telegraph.name=Télégraphe de navire
+
+# Legacy Engines
+tile.basic_engine.name=Moteur basique
+tile.advanced_engine.name=Moteur avancé
+tile.elite_engine.name=Moteur d'élite
+tile.ultimate_engine.name=Moteur ultime
+tile.redstone_engine.name=Moteur à redstone

@@ -1,0 +1,59 @@
+atomVersion 1.0;
+mayaVersion 2018;
+mayaSceneFile D:/Drakes Documents/Projects/VS/MODELS/FINAL MODELS/vsmodels/vsmodels.ma;
+timeUnit film;
+linearUnit cm;
+angularUnit deg;
+startTime 1;
+endTime 100;
+dagNode {
+  pocketwatch_lid_geo_pivot 3 1;
+  anim translate.translateY translateY 0;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.5468785 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateZ translateZ 1;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.69015125 auto auto 1 0 0;
+    }
+  }
+  anim translate.translateX translateX 2;
+  animData {
+    input time;
+    output linear;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0.5 auto auto 1 0 0;
+    }
+  }
+}
+dagNode {
+  pocketwatch_lid_geo 3 1;
+  anim rotate.rotateX rotateX 0;
+  animData {
+    input time;
+    output angular;
+    weighted 0;
+    preInfinity constant;
+    postInfinity constant;
+    keys {
+      1 0 auto auto 1 0 0;
+      5 157.8842 auto auto 1 0 0;
+    }
+  }
+}

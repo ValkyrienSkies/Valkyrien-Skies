@@ -19,18 +19,29 @@ jobs:
           name: Create JAR file
           command: |
             export TERM=${TERM:-dumb}
-            ./gradlew setupCiWorkspace
+            ./gradlew setupDecompWorkspace
             ./gradlew build
       - save_cache:
           paths:
             - ~/.gradle
           key: dependencies-{{ checksum "build.gradle" }}
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
       - store_artifacts:
           path: build/libs
           destination: /
       - slack/status:
           success_message: Branch $CIRCLE_BRANCH, build $CIRCLE_BUILD_NUM passed. Download at $CIRCLE_BUILD_URL#artifacts/containers/0
           only_for_branches: master,breaking/1.0
+          failure_message: Branch $CIRCLE_BRANCH, build $CIRCLE_BUILD_NUM failed. $CIRCLE_BUILD_URL
 
 workflows:
   version: 2

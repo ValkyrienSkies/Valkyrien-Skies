@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "default": {
+      "model": "vs_control:empty"
+    },
+    "facing=down": {
+      "model": "vs_control:empty",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "vs_control:empty",
+      "x": 270
+    },
+    "facing=north": {
+      "model": "vs_control:empty"
+    },
+    "facing=south": {
+      "model": "vs_control:empty",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "vs_control:empty",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "vs_control:empty",
+      "y": 90
+    },
+    "inventory": [
+      {
+        "model": "vs_control:basic_engine",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

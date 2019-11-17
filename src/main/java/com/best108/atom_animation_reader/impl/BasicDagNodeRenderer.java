@@ -1,11 +1,10 @@
 package com.best108.atom_animation_reader.impl;
 
 import com.best108.atom_animation_reader.IModelRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import valkyrienwarfare.mod.common.coordinates.VectorImmutable;
-import valkyrienwarfare.mod.common.math.Vector;
-
 import java.util.List;
+import net.minecraft.client.renderer.GlStateManager;
+import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
+import org.valkyrienskies.mod.common.math.Vector;
 
 public class BasicDagNodeRenderer {
 
@@ -14,7 +13,8 @@ public class BasicDagNodeRenderer {
     private final IModelRenderer modelRenderer;
     protected VectorImmutable pivot;
 
-    public BasicDagNodeRenderer(String modelName, List<BasicAnimationTransform> transformations, IModelRenderer modelRenderer) {
+    public BasicDagNodeRenderer(String modelName, List<BasicAnimationTransform> transformations,
+        IModelRenderer modelRenderer) {
         this.modelName = modelName;
         this.transformations = transformations;
         this.modelRenderer = modelRenderer;
@@ -23,7 +23,7 @@ public class BasicDagNodeRenderer {
 
     public void render(double keyframe, int brightness) {
         for (int i = 0; i < transformations.size(); i++) {
-            Vector customPivot = pivot.createMutibleVectorCopy();
+            Vector customPivot = new Vector(pivot);
             for (int j = transformations.size() - 1; j > i; j--) {
                 transformations.get(j).changePivot(customPivot, keyframe);
             }
@@ -31,8 +31,8 @@ public class BasicDagNodeRenderer {
             transformations.get(i).transform(keyframe);
             GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);
         }
-//		Vector customPivot = pivot.createMutibleVectorCopy();
-//		GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);
+//        Vector customPivot = pivot.createMutibleVectorCopy();
+//        GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);
         modelRenderer.renderModel(modelName, brightness);
     }
 

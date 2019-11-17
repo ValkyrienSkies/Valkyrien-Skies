@@ -10,8 +10,8 @@ import java.util.Set;
 public interface IAtomAnimationBuilder {
 
     /**
-     * Compiles the information from this builder into an animation. Throws an
-     * IllegalStateException if the animation couldn't be built.
+     * Compiles the information from this builder into an animation. Throws an IllegalStateException
+     * if the animation couldn't be built.
      */
     IAtomAnimation build(IModelRenderer modelRenderer);
 

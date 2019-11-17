@@ -94,13 +94,13 @@ public class TileEntityValkyriumCompressorPart extends
 
     @Override
     public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
-		List<IMultiblockSchematic> valkyriumEngineMultiblockSchematics = MultiblockRegistry
-		.getSchematicsWithPrefix("multiblock_valkyrium_compressor");
-		for (IMultiblockSchematic schematic : valkyriumEngineMultiblockSchematics) {
-			if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
-				return true;
-			}
-		}
-		return false;
-	}
+        List<IMultiblockSchematic> valkyriumEngineMultiblockSchematics = MultiblockRegistry
+        .getSchematicsWithPrefix("multiblock_valkyrium_compressor");
+        for (IMultiblockSchematic schematic : valkyriumEngineMultiblockSchematics) {
+            if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

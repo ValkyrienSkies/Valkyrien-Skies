@@ -57,9 +57,9 @@ public class VSConfig extends VSConfigTemplate {
 
     public static boolean doAirshipMovement = true;
 
-	@Name("Disable wrench modes")
-	@Comment("Makes wrench toggle a multiblock's constructed state, removes modes.")
-	public static boolean wrenchModeless = false;
+    @Name("Disable wrench modes")
+    @Comment("Makes wrench toggle a multiblock's constructed state, removes modes.")
+    public static boolean wrenchModeless = false;
 
     public static double physSpeed = 0.01D;
 

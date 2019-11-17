@@ -65,7 +65,7 @@ public class TileEntityValkyriumEnginePart extends
                 }
                 if (physicsObjectOptional.isPresent() && !rotationNode.hasBeenPlacedIntoNodeWorld()
                     && this.getRelativePos()
-					.equals(this.getMultiBlockSchematic().getTorqueOutputPos())) {
+                    .equals(this.getMultiBlockSchematic().getTorqueOutputPos())) {
                     nodeWorld.enqueueTaskOntoWorld(
                         () -> nodeWorld.setNodeFromPos(getPos(), rotationNode));
                 }
@@ -135,15 +135,15 @@ public class TileEntityValkyriumEnginePart extends
 
     @Override
     public boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing) {
-		List<IMultiblockSchematic> schematics = MultiblockRegistry
-			.getSchematicsWithPrefix("multiblock_valkyrium_engine");
-		for (IMultiblockSchematic schematic : schematics) {
-			if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
-				return true;
-			}
-		}
-		return false;
-	}
+        List<IMultiblockSchematic> schematics = MultiblockRegistry
+            .getSchematicsWithPrefix("multiblock_valkyrium_engine");
+        for (IMultiblockSchematic schematic : schematics) {
+            if (schematic.attemptToCreateMultiblock(worldIn, pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void disassembleMultiblockLocal() {

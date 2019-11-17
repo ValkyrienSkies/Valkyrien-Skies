@@ -12,7 +12,7 @@ public interface ITileEntityMultiblockPart<E extends IMultiblockSchematic, F ext
     BlockPos getRelativePos();
     void disassembleMultiblock();
     void disassembleMultiblockLocal();
-	void assembleMultiblock(E schematic, BlockPos relativePos);
-	boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing);
+    void assembleMultiblock(E schematic, BlockPos relativePos);
+    boolean attemptToAssembleMultiblock(World worldIn, BlockPos pos, EnumFacing facing);
     E getMultiBlockSchematic();
 }

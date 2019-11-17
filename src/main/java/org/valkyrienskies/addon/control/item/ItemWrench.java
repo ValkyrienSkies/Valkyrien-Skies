@@ -65,26 +65,26 @@ public class ItemWrench extends Item {
         }
 
         TileEntity blockTile = worldIn.getTileEntity(pos);
-		boolean shouldConstruct = this.mode == EnumWrenchMode.CONSTRUCT || VSConfig.wrenchModeless;
-		boolean shouldDeconstruct = this.mode == EnumWrenchMode.DECONSTRUCT || VSConfig.wrenchModeless;
-		if (blockTile instanceof ITileEntityMultiblockPart) {
-			ITileEntityMultiblockPart part = (ITileEntityMultiblockPart) blockTile;
-			shouldConstruct = shouldConstruct && !part.isPartOfAssembledMultiblock();
-			shouldDeconstruct = shouldDeconstruct && part.isPartOfAssembledMultiblock();
-		} else if (blockTile instanceof TileEntityGearbox) {
-			shouldConstruct = true;
-		} else {
-			return EnumActionResult.PASS;
-		}
-		if (shouldConstruct) {
-			if (blockTile instanceof ITileEntityMultiblockPart) {
-				if (((ITileEntityMultiblockPart) blockTile).attemptToAssembleMultiblock(worldIn, pos, facing)) {
-					return EnumActionResult.SUCCESS;
-				}
-			} else if (blockTile instanceof TileEntityGearbox) {
-				((TileEntityGearbox) blockTile).setInputFacing(
-					player.isSneaking() ? facing.getOpposite() : facing);
-			}
+        boolean shouldConstruct = this.mode == EnumWrenchMode.CONSTRUCT || VSConfig.wrenchModeless;
+        boolean shouldDeconstruct = this.mode == EnumWrenchMode.DECONSTRUCT || VSConfig.wrenchModeless;
+        if (blockTile instanceof ITileEntityMultiblockPart) {
+            ITileEntityMultiblockPart part = (ITileEntityMultiblockPart) blockTile;
+            shouldConstruct = shouldConstruct && !part.isPartOfAssembledMultiblock();
+            shouldDeconstruct = shouldDeconstruct && part.isPartOfAssembledMultiblock();
+        } else if (blockTile instanceof TileEntityGearbox) {
+            shouldConstruct = true;
+        } else {
+            return EnumActionResult.PASS;
+        }
+        if (shouldConstruct) {
+            if (blockTile instanceof ITileEntityMultiblockPart) {
+                if (((ITileEntityMultiblockPart) blockTile).attemptToAssembleMultiblock(worldIn, pos, facing)) {
+                    return EnumActionResult.SUCCESS;
+                }
+            } else if (blockTile instanceof TileEntityGearbox) {
+                ((TileEntityGearbox) blockTile).setInputFacing(
+                    player.isSneaking() ? facing.getOpposite() : facing);
+            }
         } else if (shouldDeconstruct) {
             ((ITileEntityMultiblockPart) blockTile).disassembleMultiblock();
             return EnumActionResult.SUCCESS;

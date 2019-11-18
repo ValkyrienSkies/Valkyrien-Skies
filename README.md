@@ -12,7 +12,7 @@ The Airships Mod to end all other Airships Mods. Better compatibility, performan
 Official and stable releases of the Valkyrien Skies mod can be found on the [CurseForge page](https://minecraft.curseforge.com/projects/valkyrien-skies/files).
 
 Beta releases (warning: may be unstable!) can be found on the following:
-- the [Jenkins build server](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/) 
+- the [Jenkins build server](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienWarfare/)
 - the [CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies/tree/master) (click on the latest build #, then artifacts, then download the mod JAR file)
 
 ### Installing on your server

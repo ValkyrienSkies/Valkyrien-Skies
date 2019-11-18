@@ -27,10 +27,10 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEng
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 import org.valkyrienskies.mod.common.config.VSConfig;
 
-public class ItemWrench extends Item {
+public class ItemVSWrench extends Item {
     private EnumWrenchMode mode = EnumWrenchMode.CONSTRUCT;
 
-    public ItemWrench() {
+    public ItemVSWrench() {
         this.setMaxStackSize(1);
         this.setMaxDamage(80);
     }
@@ -60,7 +60,7 @@ public class ItemWrench extends Item {
         if (player.isSneaking() && !VSConfig.wrenchModeless) {
             this.mode = EnumWrenchMode.values()[(this.mode.ordinal() + 1) % EnumWrenchMode.values().length]; // Switch to the next mode
             player.sendMessage(new TextComponentString(
-                TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench_switched", this.mode.toString()))); // Say in chat
+                TextFormatting.BLUE + I18n.format("tooltip.vs_control.wrench.switched." + this.mode.toString()))); // Say in chat
             return EnumActionResult.SUCCESS;
         }
 

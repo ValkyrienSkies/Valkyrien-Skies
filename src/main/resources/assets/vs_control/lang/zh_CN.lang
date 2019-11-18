@@ -39,20 +39,20 @@ tile.gearbox.name=齿轮箱
 tooltip.vs_control.gearbox_1=用来调整扭矩输出方向及功率大小。
 tooltip.vs_control.gearbox_2=连接到速度计来调整扭矩输出。
 
-tile.rotation_axle.name=Rotation Axle传动轴
-tooltip.vs_control.rotation_axle=Used to connect valkyrium engines from gearboxes to propellers.用来把瓦尔基里发动机和齿轮箱或螺旋桨连接起来。
+tile.rotation_axle.name=传动轴
+tooltip.vs_control.rotation_axle=用来把瓦尔基里发动机连接到齿轮箱或螺旋桨。
 
-tile.network_relay.name=Network Relay
-tooltip.vs_control.network_relay=Lets you connect %d components, including relays, to this using Relay Wire.
+tile.network_relay.name=中继节点
+tooltip.vs_control.network_relay=通过使用中继线缆来把最多%d个组件或其他中继节点连接起来。
 
 
 ## Multi-Block parts
-tile.valkyrium_compressor_part.name=Valkyrium Compressor Part
-tooltip.vs_control.valkyrium_compressor_part_1=Part of a 2x2x2 multiblock, the Valkyrium Compressor.
-tooltip.vs_control.valkyrium_compressor_part_2=This multiblock's purpose is to provide a lot of thrust up or down.
+tile.valkyrium_compressor_part.name=瓦尔基里压缩机构件
+tooltip.vs_control.valkyrium_compressor_part_1=瓦尔基里压缩机（2x2x2的多方块结构）的构件。
+tooltip.vs_control.valkyrium_compressor_part_2=这个多方块结构的功能是提供大量垂直升力。
 
-tile.rudder_part.name=Rudder Part
-tooltip.vs_control.rudder_part=Changes the direction of the thrust from propellers; controlled by the Ship Helm.
+tile.rudder_part.name=Rudder Part方向舵构件
+tooltip.vs_control.rudder_part=通过船舵来改变螺旋桨的推进方向。
 
 tile.giant_propeller_part.name=Giant Propeller Part
 tooltip.vs_control.giant_propeller_part=3x3 to 7x7 multiblock that converts torque to thrust.

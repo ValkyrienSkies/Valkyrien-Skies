@@ -29,8 +29,7 @@ public class BlockRudderPart extends Block implements ITileEntityProvider, IBloc
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation,
         ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rudder_axle_part_1"));
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rudder_axle_part_2"));
+        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rudder_axle_part"));
         itemInformation.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + I18n.format("tooltip.vs_control.wrench_usage"));
     }
 

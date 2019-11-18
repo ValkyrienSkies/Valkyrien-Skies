@@ -44,9 +44,9 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
 	};
 
     @Override
-    public void render(TileEntityNetworkRelay te, double x, double y, double z, float partialTick,
-        int destroyStage, float alpha) {
-        GlStateManager.disableBlend();
+    public void render(TileEntityNetworkRelay te, double x, double y, double z,
+		float partialTick, int destroyStage, float alpha) {
+		GlStateManager.disableBlend();
         VSNode_TileEntity tileNode = te.getNode();
         if (tileNode != null) {
             GL11.glPushMatrix();
@@ -76,12 +76,9 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
                 GL11.glPushMatrix();
                 // GlStateManager.resetColor();
 
-                double startX = te.getPos()
-                    .getX();
-                double startY = te.getPos()
-                    .getY();
-                double startZ = te.getPos()
-                    .getZ();
+                double startX = te.getPos().getX();
+                double startY = te.getPos().getY();
+                double startZ = te.getPos().getZ();
 
                 double endX = (startX * 2) - otherPos.getX();
                 double endY = (startY * 2) - otherPos.getY() - 1.5;

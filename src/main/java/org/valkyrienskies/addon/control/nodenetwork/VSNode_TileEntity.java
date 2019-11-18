@@ -186,10 +186,11 @@ public class VSNode_TileEntity implements IVSNode {
         int[] data = new int[getLinkedNodesPos().size() * 4];
 		int i = 0;
 		for (BlockPos pos : getLinkedNodesPos()) {
-            data[i++] = pos.getX();
-            data[i++] = pos.getY();
-            data[i++] = pos.getZ();
-			data[i] = linkedWireTypes.get(i++).ordinal();
+            data[i] = pos.getX();
+            data[i + 1] = pos.getY();
+            data[i + 2] = pos.getZ();
+			data[i] = linkedWireTypes.get(i).ordinal();
+			i += 4;
         }
         compound.setIntArray(NBT_DATA_KEY, data);
     }

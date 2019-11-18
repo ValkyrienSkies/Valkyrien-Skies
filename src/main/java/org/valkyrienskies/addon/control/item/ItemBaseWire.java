@@ -41,7 +41,7 @@ import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 
 public class ItemBaseWire extends Item {
-	private EnumWireType wireType;
+	private EnumWireType wireType = EnumWireType.RELAY;
 
     public ItemBaseWire(EnumWireType wireType) {
         this.setMaxDamage(80);
@@ -85,6 +85,8 @@ public class ItemBaseWire extends Item {
                                     player.sendMessage(new TextComponentString(TextFormatting.RED
                                         + I18n.format("message.vs_control.error_already_linked")));
                                 } else if (currentPosNode.canLinkToOtherNode(lastPosNode)) {
+                                    player.sendMessage(new TextComponentString(TextFormatting.YELLOW
+                                        + "Wire type is " + this.wireType.toString()));
                                     currentPosNode.makeConnection(lastPosNode, this.wireType);
                                     stack.damageItem(1, player);
                                 } else {

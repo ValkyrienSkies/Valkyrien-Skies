@@ -53,11 +53,10 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
             GL11.glTranslated(.5D, -1D, .5D);
             // GL11.glTranslated(0, y, 0);
 
-			for (int i = 0; i < tileNode.getLinkedNodesPos().length; i++) {
-				BlockPos otherpos = tileNode.getLinkedNodesPos()[i];
-				EnumWireType wireType = tileNode.getLinkedWireTypes()[i];
-
-                TileEntity otherTile = getWorld().getTileEntity(otherPos);
+			int i = 0;
+            for (BlockPos otherPos : tileNode.getLinkedNodesPos()) {
+				TileEntity otherTile = getWorld().getTileEntity(otherPos);
+				EnumWireType wireType = tileNode.getLinkedWireTypes().get(i++);
                 if (otherTile instanceof TileEntityNetworkRelay) {
                     // Don't render the same connection twice.
                     if (otherTile.getPos().compareTo(te.getPos()) < 0) {
@@ -65,7 +64,7 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
                     }
                 }
 
-                if (wireType == EnumWireType.VANISHING) {
+				if (wireType == EnumWireType.VANISHING) {
 					EntityLivingBase entity = (EntityLivingBase) Minecraft.getMinecraft().player;
 					ItemStack stackR = entity.getHeldItem(EnumHand.MAIN_HAND);
 					ItemStack stackL = entity.getHeldItem(EnumHand.OFF_HAND);

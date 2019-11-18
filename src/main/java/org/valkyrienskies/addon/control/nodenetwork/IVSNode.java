@@ -1,7 +1,6 @@
 package org.valkyrienskies.addon.control.nodenetwork;
 
 import gigaherz.graph.api.GraphObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.nbt.NBTTagCompound;
@@ -55,7 +54,7 @@ public interface IVSNode extends GraphObject {
 
 	Set<BlockPos> getLinkedNodesPos();
 
-	ArrayList<EnumWireType> getLinkedWireTypes();
+	List<EnumWireType> getLinkedWireTypes();
 
     void writeToNBT(NBTTagCompound compound);
 

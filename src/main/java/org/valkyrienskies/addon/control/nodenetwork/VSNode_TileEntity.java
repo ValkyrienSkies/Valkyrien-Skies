@@ -37,11 +37,11 @@ public class VSNode_TileEntity implements IVSNode {
     private final TileEntity parentTile;
     // No duplicate connections, use Set<Node> to guarantee this
 	private final Set<BlockPos> linkedNodesPos;
-	private final ArrayList<EnumWireType> linkedWireTypes;
+	private final List<EnumWireType> linkedWireTypes;
     // A wrapper unmodifiable Set that allows external classes to see an immutable
     // version of linkedNodesPos.
 	private final Set<BlockPos> immutableLinkedNodesPos;
-	private final ArrayList<EnumWireType> immutableLinkedWireTypes;
+	private final List<EnumWireType> immutableLinkedWireTypes;
     private final int maximumConnections;
     private boolean isValid;
     private PhysicsObject parentPhysicsObject;
@@ -50,7 +50,8 @@ public class VSNode_TileEntity implements IVSNode {
 
     public VSNode_TileEntity(TileEntity parent, int maximumConnections) {
         this.parentTile = parent;
-        this.linkedNodesPos = new HashSet<>();
+		this.linkedNodesPos = new HashSet<>();
+		this.linkedWireTypes = new ArrayList<EnumWireType>();
 		this.immutableLinkedNodesPos = Collections.unmodifiableSet(linkedNodesPos);
 		this.immutableLinkedWireTypes = Collections.unmodifiableList(linkedWireTypes);
         this.isValid = false;
@@ -176,7 +177,7 @@ public class VSNode_TileEntity implements IVSNode {
 	}
 
 	@Override
-	public ArrayList<EnumWireType> getLinkedWireTypes() {
+	public List<EnumWireType> getLinkedWireTypes() {
 		return immutableLinkedWireTypes;
 	}
 
@@ -188,7 +189,7 @@ public class VSNode_TileEntity implements IVSNode {
             data[i++] = pos.getX();
             data[i++] = pos.getY();
             data[i++] = pos.getZ();
-			data[i] = linkedWireTypes[i++].ordinal();
+			data[i] = linkedWireTypes.get(i++).ordinal();
         }
         compound.setIntArray(NBT_DATA_KEY, data);
     }
@@ -198,7 +199,7 @@ public class VSNode_TileEntity implements IVSNode {
         int[] data = compound.getIntArray(NBT_DATA_KEY);
         for (int i = 0; i < data.length; i += 4) {
             this.linkedNodesPos.add(new BlockPos(data[i], data[i + 1], data[i + 2]));
-			this.linkedWireTypes.add(EnumWireType.values[data[i + 4]]);
+			this.linkedWireTypes.add(EnumWireType.values()[data[i + 4]]);
         }
     }
 

@@ -7,7 +7,8 @@ message.vs_control.error_relay_wire_length=线缆太短，无法建立连接！
 item.vs_wrench.name=VS扳手
 tooltip.vs_control.wrench_usage=需要用VS扳手来构建它。
 tooltip.vs_control.wrench_modes=Shift+右击来改变模式。
-tooltip.vs_control.wrench_switched=切换扳手至%sion模式。
+tooltip.vs_control.wrench_switched.construct=已切换扳手至构建模式。
+tooltip.vs_control.wrench_switched.deconstruct=已切换扳手至拆解模式。
 tooltip.vs_control.wrench_toggle=右击多方块结构来拆解它。
 tooltip.vs_control.wrench.construct=可以用来构建多方块结构或调整齿轮箱朝向。
 tooltip.vs_control.wrench.deconstruct=可以用来安全拆解多方块结构。
@@ -52,10 +53,10 @@ tooltip.vs_control.valkyrium_compressor_part_1=瓦尔基里压缩机（2x2x2的�
 tooltip.vs_control.valkyrium_compressor_part_2=这个多方块结构的功能是提供大量垂直升力。
 
 tile.rudder_part.name=Rudder Part方向舵构件
-tooltip.vs_control.rudder_part=通过船舵来改变螺旋桨的推进方向。
+tooltip.vs_control.rudder_part=可以通过船舵来改变螺旋桨的推进方向。
 
-tile.giant_propeller_part.name=Giant Propeller Part
-tooltip.vs_control.giant_propeller_part=3x3 to 7x7 multiblock that converts torque to thrust.
+tile.giant_propeller_part.name=巨型螺旋桨构件
+tooltip.vs_control.giant_propeller_part=能将扭矩转换为推力的3x3至7x7大小的多方块结构。
 
 tile.valkyrium_engine_part.name=Valkyrium Engine Part
 tooltip.vs_control.valkyrium_engine_part=Part of a multiblock that generates torque to power propellers.

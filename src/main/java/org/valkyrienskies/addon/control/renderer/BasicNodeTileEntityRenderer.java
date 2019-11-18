@@ -53,7 +53,10 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
             GL11.glTranslated(.5D, -1D, .5D);
             // GL11.glTranslated(0, y, 0);
 
-            for (BlockPos otherPos : tileNode.getLinkedNodesPos()) {
+			for (int i = 0; i < tileNode.getLinkedNodesPos().length; i++) {
+				BlockPos otherpos = tileNode.getLinkedNodesPos()[i];
+				EnumWireType wireType = tileNode.getLinkedWireTypes()[i];
+
                 TileEntity otherTile = getWorld().getTileEntity(otherPos);
                 if (otherTile instanceof TileEntityNetworkRelay) {
                     // Don't render the same connection twice.
@@ -62,16 +65,12 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
                     }
                 }
 
-                EnumWireType wireType = EnumWireType.RELAY;
-                if (otherTile instanceof BasicNodeTileEntity) {
-					wireType = ((BasicNodeTileEntity) otherTile).getNode().getWireType();
-					if (wireType == EnumWireType.VANISHING) {
-						EntityLivingBase entity = (EntityLivingBase) Minecraft.getMinecraft().player;
-						ItemStack stackR = entity.getHeldItem(EnumHand.MAIN_HAND);
-						ItemStack stackL = entity.getHeldItem(EnumHand.OFF_HAND);
-						if (!(this.canUnvanish(stackR) || this.canUnvanish(stackL))) {
-							continue; // Only draw vanishing wires when holding any wire or a vs wrench
-						}
+                if (wireType == EnumWireType.VANISHING) {
+					EntityLivingBase entity = (EntityLivingBase) Minecraft.getMinecraft().player;
+					ItemStack stackR = entity.getHeldItem(EnumHand.MAIN_HAND);
+					ItemStack stackL = entity.getHeldItem(EnumHand.OFF_HAND);
+					if (!(this.canUnvanish(stackR) || this.canUnvanish(stackL))) {
+						continue; // Only draw vanishing wires when holding any wire or a vs wrench
 					}
 				}
                 // render wire between these two blockPos

@@ -199,7 +199,7 @@ public class VSNode_TileEntity implements IVSNode {
         int[] data = compound.getIntArray(NBT_DATA_KEY);
         for (int i = 0; i < data.length; i += 4) {
             this.linkedNodesPos.add(new BlockPos(data[i], data[i + 1], data[i + 2]));
-			this.linkedWireTypes.add(EnumWireType.values()[data[i + 4]]);
+			this.linkedWireTypes.add(EnumWireType.values()[data[i + 3]]);
         }
     }
 

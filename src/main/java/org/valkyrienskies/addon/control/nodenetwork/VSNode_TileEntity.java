@@ -44,7 +44,7 @@ public class VSNode_TileEntity implements IVSNode {
     private boolean isValid;
     private PhysicsObject parentPhysicsObject;
     private Graph nodeGraph;
-    private EnumWireType wireType;
+    private EnumWireType wireType = EnumWireType.RELAY;
 
     public VSNode_TileEntity(TileEntity parent, int maximumConnections) {
         this.parentTile = parent;
@@ -170,23 +170,25 @@ public class VSNode_TileEntity implements IVSNode {
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
-        int[] positions = new int[getLinkedNodesPos().size() * 3];
+        int[] data = new int[getLinkedNodesPos().size() * 3 + 1];
         int cont = 0;
         for (BlockPos pos : getLinkedNodesPos()) {
-            positions[cont] = pos.getX();
-            positions[cont + 1] = pos.getY();
-            positions[cont + 2] = pos.getZ();
+            data[cont] = pos.getX();
+            data[cont + 1] = pos.getY();
+            data[cont + 2] = pos.getZ();
             cont += 3;
         }
-        compound.setIntArray(NBT_DATA_KEY, positions);
+        data[cont] = this.wireType.ordinal();
+        compound.setIntArray(NBT_DATA_KEY, data);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        int[] positions = compound.getIntArray(NBT_DATA_KEY);
-        for (int i = 0; i < positions.length; i += 3) {
-            linkedNodesPos.add(new BlockPos(positions[i], positions[i + 1], positions[i + 2]));
+        int[] data = compound.getIntArray(NBT_DATA_KEY);
+        for (int i = 0; i < data.length - 1; i += 3) {
+            linkedNodesPos.add(new BlockPos(data[i], data[i + 1], data[i + 2]));
         }
+        this.wireType = EnumWireType.values()[data[data.length - 1]];
     }
 
     @Override

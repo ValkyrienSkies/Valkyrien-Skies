@@ -127,6 +127,8 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
         double d3 = Math.sin(d0);
         double d4 = Math.sin(d1);
 
+		System.out.printf("Wire is %d - %s\n", wireType, EnumWireType.values()[wireType].toString());
+
         // if (entity instanceof EntityHanging)
         // {
         d4 = -1.0D;

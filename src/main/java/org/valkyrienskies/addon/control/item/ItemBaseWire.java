@@ -64,15 +64,9 @@ public class ItemBaseWire extends Item {
         TileEntity currentTile = worldIn.getTileEntity(pos);
         ItemStack stack = player.getHeldItem(hand);
 
-		player.sendMessage(new TextComponentString(TextFormatting.YELLOW
-			+ "Wire type is " + this.wireType.toString()));
         if (currentTile instanceof IVSNodeProvider && !worldIn.isRemote) {
-			player.sendMessage(new TextComponentString(TextFormatting.YELLOW
-				+ "Tile is valid"));
             ICapabilityLastRelay inst = stack.getCapability(ValkyrienSkiesControl.lastRelayCapability, null);
             if (inst != null) {
-				player.sendMessage(new TextComponentString(TextFormatting.YELLOW
-					+ "Item is capable"));
                 if (!inst.hasLastRelay()) {
                     inst.setLastRelay(pos);
                     // Draw a wire in the player's hand after this
@@ -87,11 +81,13 @@ public class ItemBaseWire extends Item {
                             IVSNode currentPosNode = ((IVSNodeProvider) currentTile).getNode();
                             if (lastPosNode != null && currentPosNode != null) {
                                 if (currentPosNode.isLinkedToNode(lastPosNode)) {
-                                    player.sendMessage(new TextComponentString(TextFormatting.RED
-                                        + I18n.format("message.vs_control.error_already_linked")));
+									currentPosNode.breakConnection(lastPosNode);
+									// Break connection and give player the correct wire back
+									ItemStack drop = new ItemStack(wireType.toItem());
+									if (player.inventory.addItemStackToInventory(drop)) {
+										player.dropItem(drop, false);
+									}
                                 } else if (currentPosNode.canLinkToOtherNode(lastPosNode)) {
-									player.sendMessage(new TextComponentString(TextFormatting.YELLOW
-										+ "Tile linked!"));
                                     currentPosNode.makeConnection(lastPosNode, this.wireType);
                                     stack.damageItem(1, player);
                                 } else {

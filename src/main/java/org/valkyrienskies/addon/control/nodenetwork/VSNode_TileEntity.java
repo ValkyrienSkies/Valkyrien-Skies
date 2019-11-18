@@ -111,6 +111,7 @@ public class VSNode_TileEntity implements IVSNode {
         boolean contains = linkedNodesPos.contains(other.getNodePos());
         if (!contains) {
             linkedNodesPos.add(other.getNodePos());
+			System.out.println("WireType is " + wireType.toString());
 			linkedWireTypes.add(wireType);
             parentTile.markDirty();
             other.makeConnection(this, wireType);

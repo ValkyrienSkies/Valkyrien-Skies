@@ -131,6 +131,8 @@ public class ValkyrienSkiesControl {
         event.getRegistry()
             .register(INSTANCE.relayWire);
         event.getRegistry()
+            .register(INSTANCE.vanishingWire);
+        event.getRegistry()
             .register(INSTANCE.vsWrench);
 
         INSTANCE.vsControlBlocks.registerBlockItems(event);

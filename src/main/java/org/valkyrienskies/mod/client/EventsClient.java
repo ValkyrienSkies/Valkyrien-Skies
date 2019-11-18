@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.client;
 
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -24,7 +25,6 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -42,6 +42,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
+import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.fixes.SoundFixWrapper;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
@@ -50,10 +51,9 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.util.VSRenderUtils;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 public class EventsClient {
 
@@ -245,26 +245,23 @@ public class EventsClient {
         }
 
         if (event.phase == Phase.START) {
-            for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
-                wrapper.getShipTransformationManager()
-                        .updateRenderTransform(partialTicks);
+            for (PhysicsObject wrapper : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
+                wrapper.getShipTransformationManager().updateRenderTransform(partialTicks);
             }
         }
     }
 
     @SubscribeEvent
     public void onRenderWorldLastEvent(RenderWorldLastEvent event) {
-        if (Minecraft.getMinecraft().getRenderManager().isDebugBoundingBox() && !Minecraft.getMinecraft().isReducedDebug()) {
+        Minecraft mc = Minecraft.getMinecraft();
+        World world = Minecraft.getMinecraft().world;
+        if (mc.getRenderManager().isDebugBoundingBox() && !mc.isReducedDebug() && world != null) {
             float partialTicks = event.getPartialTicks();
-            World world = Minecraft.getMinecraft().world;
-            EntityPlayer entity = Minecraft.getMinecraft().player;
+            Vector3dc offset =
+                VSRenderUtils.getEntityPartialPosition(mc.player, partialTicks).negate();
 
-            double playerX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) partialTicks;
-            double playerY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
-            double playerZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTicks;
-
-            for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
-                wrapper.getShipRenderer().renderDebugInfo(-playerX, -playerY, -playerZ, partialTicks);
+            for (PhysicsObject physo : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
+                physo.getShipRenderer().renderDebugInfo(offset);
             }
         }
     }

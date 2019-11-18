@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 import org.joml.Vector2i;
 import org.joml.Vector3i;
 
-public class VSIterationUtil {
+public class VSIterationUtils {
 
     /**
      * Iterates 3d space from the start position (inclusive) to the end position (inclusive). End
@@ -50,6 +50,7 @@ public class VSIterationUtil {
      */
     public static void expand3d(int originX, int originY, int originZ,
         IntTernaryConsumer consumer) {
+
         expand3d(originX, originY, originZ, 1, consumer);
     }
 

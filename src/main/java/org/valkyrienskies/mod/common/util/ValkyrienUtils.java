@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.util;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +35,7 @@ import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
+import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
@@ -163,9 +165,12 @@ public class ValkyrienUtils {
         ShipTransform initial = new ShipTransform(shipPosInitial, centerOfMassInitial);
         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(shipPosInitial.x(), shipPosInitial.y(),
             shipPosInitial.z(), shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z());
-        ShipData data = ShipData.createData(QueryableShipData.get(world).getAllShips(),
+        return ShipData.createData(QueryableShipData.get(world).getAllShips(),
             name, chunkClaim, shipID, initial, axisAlignedBB, physInfuserPos);
-        return data;
+    }
+
+    public static Collection<PhysicsObject> getPhysosLoadedInWorld(World world) {
+        return ((IHasShipManager) world).getManager().getAllLoadedPhysObj();
     }
 
     public static TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(World world,
@@ -200,16 +205,11 @@ public class ValkyrienUtils {
                         }
                         return;
                     }
-                    System.out.println("Hello1! " + Thread.currentThread().getName());
                     QueryableShipData.get(world).addShip(shipData);
-                    System.out.println("Hello2! " + Thread.currentThread().getName());
                     PhysicsObject physicsObject = new PhysicsObject(world, shipData, true);
-                    System.out.println("Hello3! " + Thread.currentThread().getName());
                     shipData.setPhyso(physicsObject);
-                    System.out.println("Hello4! " + Thread.currentThread().getName());
 
                     physicsObject.assembleShip(creator, detector, physicsInfuserPos);
-                    System.out.println("Executed!");
                     int i = 1;
                     // TODO: Do something with this?
                 }, VSExecutors.forWorld((WorldServer) world));

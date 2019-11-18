@@ -10,11 +10,11 @@ import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.junit.jupiter.api.Test;
 
-public class VSIterationUtilTest {
+public class VSIterationUtilsTest {
 
     @Test
     public void testIterator2d() {
-        Iterator<Vector2i> iterator = new VSIterationUtil.Int2dIterator(-10, -10, 10, 10);
+        Iterator<Vector2i> iterator = new VSIterationUtils.Int2dIterator(-10, -10, 10, 10);
 
         List<Vector2i> iVals = new ArrayList<>();
         List<Vector2i> oVals = new ArrayList<>();
@@ -24,14 +24,14 @@ public class VSIterationUtilTest {
             iVals.add(vec);
         }
 
-        VSIterationUtil.iterate2d(-10, -10,  10, 10, (x, y) -> oVals.add(new Vector2i(x, y)));
+        VSIterationUtils.iterate2d(-10, -10,  10, 10, (x, y) -> oVals.add(new Vector2i(x, y)));
 
         assertThat(iVals, containsInAnyOrder(oVals.toArray()));
     }
 
     @Test
     public void testIterator3d() {
-        Iterator<Vector3i> iterator = new VSIterationUtil.Int3dIterator(-10, -10, -10, 10, 10, 10);
+        Iterator<Vector3i> iterator = new VSIterationUtils.Int3dIterator(-10, -10, -10, 10, 10, 10);
 
         List<Vector3i> iVals = new ArrayList<>();
         List<Vector3i> oVals = new ArrayList<>();
@@ -41,7 +41,7 @@ public class VSIterationUtilTest {
             iVals.add(vec);
         }
 
-        VSIterationUtil.iterate3d(-10, -10, -10, 10, 10, 10,
+        VSIterationUtils.iterate3d(-10, -10, -10, 10, 10, 10,
             (x, y, z) -> oVals.add(new Vector3i(x, y, z)));
 
         assertThat(iVals, containsInAnyOrder(oVals.toArray()));

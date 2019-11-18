@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.client.render;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -34,8 +35,6 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.proxy.ClientProxy;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Object owned by each physObject responsible for handling all rendering operations
@@ -233,16 +232,25 @@ public class PhysObjectRenderManager {
         GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
     }
 
-    public void renderDebugInfo(double offsetX, double offsetY, double offsetZ, float partialTicks) {
+    /**
+     * @see #renderDebugInfo(double, double, double)
+     */
+    public void renderDebugInfo(Vector3dc offset) {
+        this.renderDebugInfo(offset.x(), offset.y(), offset.z());
+    }
+
+    /**
+     * Renders bounding boxes for this ship's AABB and center of mass relative to the offset
+     * (probably the negative player's position). Used in F3+D
+     */
+    public void renderDebugInfo(double offsetX, double offsetY, double offsetZ) {
         GlStateManager.pushMatrix();
 
-        AxisAlignedBB shipBB = parent.getShipBB();
+        AxisAlignedBB shipBB = parent.getShipBB().offset(offsetX, offsetY, offsetZ);
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
-        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(renderTransform.getPosX(), renderTransform.getPosY(), renderTransform.getPosZ(), renderTransform.getPosX(), renderTransform.getPosY(), renderTransform.getPosZ()).grow(.1);
-
-        // renderDebugBoundingBox(renderBB, offsetX, offsetY, offsetZ);
-
+        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(renderTransform.toBlockPos())
+            .grow(.1).offset(offsetX, offsetY, offsetZ);
 
         GlStateManager.depthMask(false);
         GlStateManager.disableTexture2D();
@@ -251,11 +259,11 @@ public class PhysObjectRenderManager {
         GlStateManager.disableBlend();
 
         // Draw the bounding box for the ship.
-        RenderGlobal.drawBoundingBox(shipBB.minX + offsetX, shipBB.minY + offsetY, shipBB.minZ + offsetZ, shipBB.maxX + offsetX, shipBB.maxY + offsetY, shipBB.maxZ + offsetZ, 1.0F, 1.0F, 1.0F, 1.0F);
+        RenderGlobal.drawSelectionBoundingBox(shipBB, 1.0F, 1.0F, 1.0F, 1.0F);
 
         // Draw the center of mass bounding box.
         GlStateManager.disableDepth();
-        RenderGlobal.drawBoundingBox(centerOfMassBB.minX + offsetX, centerOfMassBB.minY + offsetY, centerOfMassBB.minZ + offsetZ, centerOfMassBB.maxX + offsetX, centerOfMassBB.maxY + offsetY, centerOfMassBB.maxZ + offsetZ, 0, 0, 1.0F, 1.0F);
+        RenderGlobal.drawSelectionBoundingBox(centerOfMassBB, 0, 0, 1.0F, 1.0F);
         GlStateManager.enableDepth();
 
         GlStateManager.enableTexture2D();
@@ -266,11 +274,13 @@ public class PhysObjectRenderManager {
 
         // Draw a text box that shows the numerical value of the center of mass.
         String centerOfMassStr = "Center of Mass: " + renderTransform.getCenterCoord().toString();
-        renderTextBox(centerOfMassStr, renderTransform.getPosX(), renderTransform.getPosY() + .5, renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
+        renderTextBox(centerOfMassStr, renderTransform.getPosX(), renderTransform.getPosY() + .5,
+            renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
 
-        String massStr = "Mass: " + String.format("%.2f", parent.getData().getInertiaData().getGameTickMass());
-        renderTextBox(massStr, renderTransform.getPosX(), renderTransform.getPosY() + 1, renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
+        String massStr = String.format("Mass: %.2f", parent.getData().getInertiaData().getGameTickMass());
 
+        renderTextBox(massStr, renderTransform.getPosX(), renderTransform.getPosY() + 1,
+            renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
 
         GlStateManager.popMatrix();
     }
@@ -280,14 +290,18 @@ public class PhysObjectRenderManager {
      * in text box distance check).
      */
     private void renderTextBox(String str, double posX, double posY, double posZ, double offsetX, double offsetY, double offsetZ) {
+        Minecraft mc = Minecraft.getMinecraft();
         final double maxDistance = 64;
-        double d0 = new Vec3d(posX, posY, posZ).squareDistanceTo(Minecraft.getMinecraft().getRenderManager().renderViewEntity.getPositionVector());
+        double d0 = new Vec3d(posX, posY, posZ)
+            .squareDistanceTo(mc.getRenderManager().renderViewEntity.getPositionVector());
 
         if (d0 <= maxDistance * maxDistance) {
-            float f = Minecraft.getMinecraft().getRenderManager().playerViewY; // player yaw
-            float f1 = Minecraft.getMinecraft().getRenderManager().playerViewX; // player pitch
-            boolean flag1 = Minecraft.getMinecraft().getRenderManager().options.thirdPersonView == 2;
-            EntityRenderer.drawNameplate(Minecraft.getMinecraft().getRenderManager().getFontRenderer(), str, (float) (posX + offsetX), (float) (posY + offsetY), (float) (posZ + offsetZ), 0, f, f1, flag1, false);
+            float playerYaw = mc.getRenderManager().playerViewY;
+            float playerPitch = mc.getRenderManager().playerViewX;
+            boolean isThirdPersonFrontal = mc.getRenderManager().options.thirdPersonView == 2;
+            EntityRenderer.drawNameplate(mc.getRenderManager().getFontRenderer(), str,
+                (float) (posX + offsetX), (float) (posY + offsetY), (float) (posZ + offsetZ),
+                0, playerYaw, playerPitch, isThirdPersonFrontal, false);
         }
     }
 

@@ -1,15 +1,15 @@
 # Items
 item.relay_wire.name=中继线缆
 tooltip.vs_control.relay_wire=用来把中继器连接到组件或其他中继器上。
-message.vs_control.error_relay_wire_limit=其中一方链接数已达上限。中继节点可以建立%d个链接，其余所有组件都只能建立1个链接。
-message.vs_control.error_relay_wire_length=线缆太短，无法建立链接！
+message.vs_control.error_relay_wire_limit=其中一方连接数已达上限。中继节点可以建立%d个连接，其余所有组件都只能建立1个连接。
+message.vs_control.error_relay_wire_length=线缆太短，无法建立连接！
 
 item.vs_wrench.name=VS扳手
 tooltip.vs_control.wrench_usage=需要用VS扳手来构建它。
 tooltip.vs_control.wrench_modes=Shift+右击来改变模式。
 tooltip.vs_control.wrench_switched=切换扳手至%sion模式。
 tooltip.vs_control.wrench_toggle=右击多方块结构来拆解它。
-tooltip.vs_control.wrench.construct=可以用来构建多方块结构或调整变速箱朝向。
+tooltip.vs_control.wrench.construct=可以用来构建多方块结构或调整齿轮箱朝向。
 tooltip.vs_control.wrench.deconstruct=可以用来安全拆解多方块结构。
 
 
@@ -24,23 +24,23 @@ tile.passenger_chair.name=乘客座
 tooltip.vs_control.passenger_chair=用这个来稳稳地坐在船上。
 
 tile.ship_helm.name=船舵
-tooltip.vs_control.ship_helm=这个方块可以让你转动在同一网络中的方向舵。
+tooltip.vs_control.ship_helm=这个方块可以让你控制处在同一网络中的方向舵。
 
 tile.speed_telegraph.name=速度计
-tooltip.vs_control.speed_telegraph=这个方块可以让你控制变速箱的输出速度，借此来控制推进器速度。
+tooltip.vs_control.speed_telegraph=这个方块可以让你控制齿轮箱的输出速度，借此来控制螺旋桨转速。
 
-tile.dummy_telegraph.name=Dummy Telegraph
-tooltip.vs_control.dummy_telegraph=A non-functioning Speed Telegraph.
+tile.dummy_telegraph.name=速度计模型
+tooltip.vs_control.dummy_telegraph=没有功能的速度计。
 
-tile.lift_lever.name=Lift Lever
-tooltip.vs_control.lift_lever=This block lets you set the target altitude of Valkyrium Compressors.
+tile.lift_lever.name=控制杆
+tooltip.vs_control.lift_lever=这个方块可以让你调整瓦尔基里压缩机的目标高度。
 
-tile.gearbox.name=Gearbox
-tooltip.vs_control.gearbox_1=Allows changing torque direction and power.
-tooltip.vs_control.gearbox_2=Connect to a Speed Telegraph to control torque output.
+tile.gearbox.name=齿轮箱
+tooltip.vs_control.gearbox_1=用来调整扭矩输出方向及功率大小。
+tooltip.vs_control.gearbox_2=连接到速度计来调整扭矩输出。
 
-tile.rotation_axle.name=Rotation Axle
-tooltip.vs_control.rotation_axle=Used to connect valkyrium engines from gearboxes to propellers.
+tile.rotation_axle.name=Rotation Axle传动轴
+tooltip.vs_control.rotation_axle=Used to connect valkyrium engines from gearboxes to propellers.用来把瓦尔基里发动机和齿轮箱或螺旋桨连接起来。
 
 tile.network_relay.name=Network Relay
 tooltip.vs_control.network_relay=Lets you connect %d components, including relays, to this using Relay Wire.

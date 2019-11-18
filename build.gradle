@@ -198,6 +198,7 @@ mixin {
 }
 
 shadowJar {
+    classifier = null // No -all classifier
     configurations = [project.configurations.shade]
     relocate 'com.fasterxml', 'org.valkyrienskies.deps.com.fasterxml'
     mergeServiceFiles() // https://github.com/johnrengelman/shadow/issues/304
@@ -252,6 +253,7 @@ def listConfigurationDependencies(Configuration configuration) {
 }*/
 
 jar {
+    classifier = 'unshaded' // this is probably not the one you want
     manifest.attributes(
             "MixinConfigs": "mixins.valkyrienskies.json",
             "tweakClass": "org.spongepowered.asm.launch.MixinTweaker",

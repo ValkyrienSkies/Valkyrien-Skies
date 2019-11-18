@@ -39,7 +39,9 @@ public class TileEntityGyroscopeStabilizer extends TileEntity {
 
         double torquePowerFactor = angleBetween / 5;
 
-        torquePowerFactor = Math.max(Math.min(1, torquePowerFactor), 0);s
+        torquePowerFactor = Math.max(Math.min(1, torquePowerFactor), 0);
+
+        // System.out.println(angleBetween);
 
         torqueDir.multiply(MAXIMUM_TORQUE * torquePowerFactor * physicsCalculations
             .getPhysicsTimeDeltaPerPhysTick() * -1D);

@@ -212,6 +212,7 @@ public class VSNode_TileEntity implements IVSNode {
     @Override
     public void sendNodeUpdates() {
         if (!this.getNodeWorld().isRemote) {
+            // System.out.println("help");
             if (!parentTile.isInvalid()) {
                 VSNetwork.sendTileToAllNearby(this.parentTile);
             }

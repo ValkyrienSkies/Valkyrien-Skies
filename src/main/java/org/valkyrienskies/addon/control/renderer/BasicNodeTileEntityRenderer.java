@@ -108,10 +108,12 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
         int wireType) {
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
+
         float wireR = colours[wireType][0];
         float wireG = colours[wireType][1];
         float wireB = colours[wireType][2];
         float wireAlpha = colours[wireType][3];
+
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         double d0 = 0;// this.interpolateValue(entity.prevRotationYaw, entity.rotationYaw,
@@ -121,6 +123,8 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
         double d2 = Math.cos(d0);
         double d3 = Math.sin(d0);
         double d4 = Math.sin(d1);
+
+        System.out.printf("Wire is %d - %s\n", wireType, EnumWireType.values()[wireType].toString());
 
         // if (entity instanceof EntityHanging)
         // {

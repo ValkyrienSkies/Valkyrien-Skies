@@ -185,12 +185,12 @@ public class VSNode_TileEntity implements IVSNode {
     public void writeToNBT(NBTTagCompound compound) {
         int[] data = new int[getLinkedNodesPos().size() * 4];
 		int i = 0;
+		int types = 0;
 		for (BlockPos pos : getLinkedNodesPos()) {
-            data[i] = pos.getX();
-            data[i + 1] = pos.getY();
-            data[i + 2] = pos.getZ();
-			data[i] = linkedWireTypes.get(i).ordinal();
-			i += 4;
+            data[i++] = pos.getX();
+            data[i++] = pos.getY();
+            data[i++] = pos.getZ();
+			data[i++] = linkedWireTypes.get(types++).ordinal();
         }
         compound.setIntArray(NBT_DATA_KEY, data);
     }

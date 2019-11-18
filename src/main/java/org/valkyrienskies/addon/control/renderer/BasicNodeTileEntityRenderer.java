@@ -38,25 +38,25 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkRelay;
 
 public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityNetworkRelay> {
 
-	private static final float[][] colours = { // RGBA
-		{0.6F, 0.25F, 0.02F, 1.0F},
-		{0.37F, 0.92F, 0.85F, 0.5F}
-	};
+    private static final float[][] colours = { // RGBA
+        {0.6F, 0.25F, 0.02F, 1.0F},
+        {0.37F, 0.92F, 0.85F, 0.5F}
+    };
 
     @Override
     public void render(TileEntityNetworkRelay te, double x, double y, double z,
-		float partialTick, int destroyStage, float alpha) {
-		GlStateManager.disableBlend();
+        float partialTick, int destroyStage, float alpha) {
+        GlStateManager.disableBlend();
         VSNode_TileEntity tileNode = te.getNode();
         if (tileNode != null) {
             GL11.glPushMatrix();
             GL11.glTranslated(.5D, -1D, .5D);
             // GL11.glTranslated(0, y, 0);
 
-			int i = 0;
+            int i = 0;
             for (BlockPos otherPos : tileNode.getLinkedNodesPos()) {
-				TileEntity otherTile = getWorld().getTileEntity(otherPos);
-				EnumWireType wireType = tileNode.getLinkedWireTypes().get(i++);
+                TileEntity otherTile = getWorld().getTileEntity(otherPos);
+                EnumWireType wireType = tileNode.getLinkedWireTypes().get(i++);
                 if (otherTile instanceof TileEntityNetworkRelay) {
                     // Don't render the same connection twice.
                     if (otherTile.getPos().compareTo(te.getPos()) < 0) {
@@ -64,14 +64,14 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
                     }
                 }
 
-				if (wireType == EnumWireType.VANISHING) {
-					EntityLivingBase entity = (EntityLivingBase) Minecraft.getMinecraft().player;
-					ItemStack stackR = entity.getHeldItem(EnumHand.MAIN_HAND);
-					ItemStack stackL = entity.getHeldItem(EnumHand.OFF_HAND);
-					if (!(this.canUnvanish(stackR) || this.canUnvanish(stackL))) {
-						continue; // Only draw vanishing wires when holding any wire or a vs wrench
-					}
-				}
+                if (wireType == EnumWireType.VANISHING) {
+                    EntityLivingBase entity = (EntityLivingBase) Minecraft.getMinecraft().player;
+                    ItemStack stackR = entity.getHeldItem(EnumHand.MAIN_HAND);
+                    ItemStack stackL = entity.getHeldItem(EnumHand.OFF_HAND);
+                    if (!(this.canUnvanish(stackR) || this.canUnvanish(stackL))) {
+                        continue; // Only draw vanishing wires when holding any wire or a vs wrench
+                    }
+                }
                 // render wire between these two blockPos
                 GL11.glPushMatrix();
                 // GlStateManager.resetColor();
@@ -103,20 +103,15 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
     }
 
     private void renderWire(double x, double y, double z,
-		double entity1x, double entity1y, double entity1z,
+        double entity1x, double entity1y, double entity1z,
         double entity2x, double entity2y, double entity2z,
         int wireType) {
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
         float wireR = colours[wireType][0];
         float wireG = colours[wireType][1];
-		float wireB = colours[wireType][2];
-		float wireAlpha = colours[wireType][3];
-        // Vec3d vec = new Vec3d(x,y,z);
-        // if (vec.lengthSquared() < .01D) {
-        // System.out.println("REE");
-        // }
-        // y = .5D;
+        float wireB = colours[wireType][2];
+        float wireAlpha = colours[wireType][3];
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         double d0 = 0;// this.interpolateValue(entity.prevRotationYaw, entity.rotationYaw,
@@ -126,8 +121,6 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
         double d2 = Math.cos(d0);
         double d3 = Math.sin(d0);
         double d4 = Math.sin(d1);
-
-		System.out.printf("Wire is %d - %s\n", wireType, EnumWireType.values()[wireType].toString());
 
         // if (entity instanceof EntityHanging)
         // {
@@ -213,10 +206,10 @@ public class BasicNodeTileEntityRenderer extends TileEntitySpecialRenderer<TileE
 
     // If an item can be used to show vs_control:vanish_wire.
     private boolean canUnvanish(ItemStack stack) {
-		if (stack == null) {
-			return false;
-		}
-		Item item = stack.getItem();
-		return item instanceof ItemBaseWire || item instanceof ItemVSWrench;
-	}
+        if (stack == null) {
+            return false;
+        }
+        Item item = stack.getItem();
+        return item instanceof ItemBaseWire || item instanceof ItemVSWrench;
+    }
 }

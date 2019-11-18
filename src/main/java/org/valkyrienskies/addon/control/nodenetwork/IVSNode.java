@@ -48,13 +48,13 @@ public interface IVSNode extends GraphObject {
      */
     BlockPos getNodePos();
 
-	EnumWireType getWireType();
+    EnumWireType getWireType();
 
     World getNodeWorld();
 
-	Set<BlockPos> getLinkedNodesPos();
+    Set<BlockPos> getLinkedNodesPos();
 
-	List<EnumWireType> getLinkedWireTypes();
+    List<EnumWireType> getLinkedWireTypes();
 
     void writeToNBT(NBTTagCompound compound);
 

@@ -41,7 +41,7 @@ import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 
 public class ItemBaseWire extends Item {
-	private EnumWireType wireType = EnumWireType.RELAY;
+    private EnumWireType wireType = EnumWireType.RELAY;
 
     public ItemBaseWire(EnumWireType wireType) {
         this.setMaxDamage(80);
@@ -81,12 +81,12 @@ public class ItemBaseWire extends Item {
                             IVSNode currentPosNode = ((IVSNodeProvider) currentTile).getNode();
                             if (lastPosNode != null && currentPosNode != null) {
                                 if (currentPosNode.isLinkedToNode(lastPosNode)) {
-									currentPosNode.breakConnection(lastPosNode);
-									// Break connection and give player the correct wire back
-									ItemStack drop = new ItemStack(wireType.toItem());
-									if (player.inventory.addItemStackToInventory(drop)) {
-										player.dropItem(drop, false);
-									}
+                                    currentPosNode.breakConnection(lastPosNode);
+                                    // Break connection and give player the correct wire back
+                                    ItemStack drop = new ItemStack(wireType.toItem());
+                                    if (player.inventory.addItemStackToInventory(drop)) {
+                                        player.dropItem(drop, false);
+                                    }
                                 } else if (currentPosNode.canLinkToOtherNode(lastPosNode)) {
                                     currentPosNode.makeConnection(lastPosNode, this.wireType);
                                     stack.damageItem(1, player);

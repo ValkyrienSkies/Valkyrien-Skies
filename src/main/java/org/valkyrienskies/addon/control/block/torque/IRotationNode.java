@@ -34,7 +34,6 @@ public interface IRotationNode extends Comparable<IRotationNode> {
             // Default friction calculation
             return getAngularVelocity() * -.4 * getRotationalInertia();
         } else {
-            // System.out.println("test");
             return getCustomTorqueFunction().get().calculateTorque(parent);
         }
     }

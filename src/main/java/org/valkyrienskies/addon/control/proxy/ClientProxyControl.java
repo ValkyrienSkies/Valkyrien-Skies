@@ -107,8 +107,8 @@ public class ClientProxyControl extends CommonProxyControl {
     }
 
     private static void registerItemModels() {
-		registerItemModel(ValkyrienSkiesControl.INSTANCE.relayWire);
-		registerItemModel(ValkyrienSkiesControl.INSTANCE.vanishingWire);
+        registerItemModel(ValkyrienSkiesControl.INSTANCE.relayWire);
+        registerItemModel(ValkyrienSkiesControl.INSTANCE.vanishingWire);
         registerItemModel(ValkyrienSkiesControl.INSTANCE.vsWrench);
     }
 

@@ -75,7 +75,6 @@ public class BlockRudderPart extends Block implements ITileEntityProvider, IBloc
                 .getTileEntity(pos);
             Vector forceBeforeTimeScale = tileEntity.calculateForceFromVelocity(physicsObject);
             if (forceBeforeTimeScale != null && forceBeforeTimeScale.lengthSq() > 1) {
-                // System.out.println(forceBeforeTimeScale.toRoundedString());
                 return forceBeforeTimeScale.getProduct(secondsToApply);
             } else {
                 return null;

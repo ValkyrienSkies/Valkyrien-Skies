@@ -25,6 +25,7 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEnginePart;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
+import org.valkyrienskies.addon.control.util.BaseItem;
 import org.valkyrienskies.mod.common.config.VSConfig;
 
 public class ItemVSWrench extends BaseItem {

@@ -38,6 +38,7 @@ import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.nodenetwork.EnumWireType;
 import org.valkyrienskies.addon.control.nodenetwork.IVSNode;
 import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
+import org.valkyrienskies.addon.control.util.BaseItem;
 import org.valkyrienskies.mod.common.config.VSConfig;
 
 public class ItemBaseWire extends BaseItem {

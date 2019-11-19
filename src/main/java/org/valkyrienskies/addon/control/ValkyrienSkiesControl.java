@@ -118,7 +118,7 @@ public class ValkyrienSkiesControl {
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-		INSTANCE.vsControlBlocks = new BlocksValkyrienSkiesControl()
+		INSTANCE.vsControlBlocks = new BlocksValkyrienSkiesControl();
 
 		// Actual registering
 		Block[] blockArray = BLOCKS.toArray(new Block[0]);

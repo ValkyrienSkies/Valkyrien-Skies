@@ -4,7 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import org.valkyrienskies.mod.common.item.BaseModel;
+import org.valkyrienskies.mod.client.BaseModel;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 // Addons need to provide their own copies of this class.

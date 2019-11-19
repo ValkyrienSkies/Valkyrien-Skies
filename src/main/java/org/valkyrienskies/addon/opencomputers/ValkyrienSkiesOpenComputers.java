@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.opencomputers;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;

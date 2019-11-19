@@ -21,7 +21,7 @@ public class BlockRotatedPillar extends BaseBlock {
     public static final PropertyEnum<EnumFacing.Axis> AXIS = PropertyEnum.<EnumFacing.Axis>create("axis", EnumFacing.Axis.class);
 
     protected BlockRotatedPillar(String name, Material mat, float light, boolean creativeTab) {
-        super(name, mat, light, creativeTab));
+        super(name, mat, light, creativeTab);
     }
 
     @Override

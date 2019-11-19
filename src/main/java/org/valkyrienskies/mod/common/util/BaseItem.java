@@ -1,7 +1,7 @@
 package org.valkyrienskies.mod.common.util;
 
 import net.minecraft.item.Item;
-import org.valkyrienskies.mod.common.item.BaseModel;
+import org.valkyrienskies.mod.client.BaseModel;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 // Addons need to provide their own copies of this class.

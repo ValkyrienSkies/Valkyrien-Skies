@@ -1,6 +1,5 @@
 package org.valkyrienskies.mod.common.capability.framework;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
 import java.io.IOException;
@@ -16,8 +15,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.util.EnumFacing;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
-import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
-import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
+import org.valkyrienskies.mod.common.util.jackson.VSJacksonUtil;
 
 /**
  * Implement as follows
@@ -65,14 +63,7 @@ public abstract class VSDefaultCapability<K> {
     private static ObjectMapper createMapper() {
         ObjectMapper mapper = new CBORMapper();
 
-        mapper.setVisibility(mapper.getVisibilityChecker()
-            .withFieldVisibility(Visibility.ANY)
-            .withGetterVisibility(Visibility.NONE)
-            .withIsGetterVisibility(Visibility.NONE)
-            .withSetterVisibility(Visibility.NONE));
-
-        mapper.registerModule(new MinecraftSerializationModule())
-            .registerModule(new JOMLSerializationModule());
+        VSJacksonUtil.configureMapper(mapper);
 
         return mapper;
     }

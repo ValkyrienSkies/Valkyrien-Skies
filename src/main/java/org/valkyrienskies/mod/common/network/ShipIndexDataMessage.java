@@ -1,6 +1,5 @@
 package org.valkyrienskies.mod.common.network;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
@@ -10,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
-import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
-import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
+import org.valkyrienskies.mod.common.util.jackson.VSJacksonUtil;
 
 public class ShipIndexDataMessage implements IMessage {
 
@@ -25,14 +23,7 @@ public class ShipIndexDataMessage implements IMessage {
     private static ObjectMapper createMapper() {
         ObjectMapper mapper = new CBORMapper();
 
-        mapper.setVisibility(mapper.getVisibilityChecker()
-                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE));
-
-        mapper.registerModule(new MinecraftSerializationModule())
-            .registerModule(new JOMLSerializationModule());
+        VSJacksonUtil.configureMapper(mapper);
 
         return mapper;
     }

@@ -2,7 +2,6 @@ package org.valkyrienskies.mod.common.network;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
 import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,19 +12,11 @@ import org.valkyrienskies.mod.common.util.jackson.VSJacksonUtil;
 
 public class ShipIndexDataMessage implements IMessage {
 
-    private static final ObjectMapper serializer = createMapper();
+    private static final ObjectMapper serializer = VSJacksonUtil.getPacketMapper();
     protected final List<ShipData> indexedData;
 
     public ShipIndexDataMessage() {
         indexedData = new ArrayList<>();
-    }
-
-    private static ObjectMapper createMapper() {
-        ObjectMapper mapper = new CBORMapper();
-
-        VSJacksonUtil.configureMapper(mapper);
-
-        return mapper;
     }
 
     public void addDataToMessage(Iterable<ShipData> indices) {

@@ -1,7 +1,6 @@
 package org.valkyrienskies.mod.common.capability.framework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
 import java.io.IOException;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -49,7 +48,7 @@ public abstract class VSDefaultCapability<K> {
     private Supplier<K> factory;
 
     public VSDefaultCapability(Class<K> kClass, Supplier<K> factory) {
-        this(kClass, factory, createMapper());
+        this(kClass, factory, VSJacksonUtil.getDefaultMapper());
     }
 
     public VSDefaultCapability(Class<K> kClass, Supplier<K> factory, ObjectMapper mapper) {
@@ -58,14 +57,6 @@ public abstract class VSDefaultCapability<K> {
         this.instance = factory.get();
         log.debug("CONSTRUCTED INSTANCE: " + instance);
         this.mapper = mapper;
-    }
-
-    private static ObjectMapper createMapper() {
-        ObjectMapper mapper = new CBORMapper();
-
-        VSJacksonUtil.configureMapper(mapper);
-
-        return mapper;
     }
 
     @Nullable

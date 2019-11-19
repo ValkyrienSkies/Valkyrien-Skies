@@ -53,13 +53,13 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
                 Vector pivotPoint = new Vector();
                 for (AnimationDataNode animData : dagNode.animationNodes) {
                     if (animData.animationType.equals("translateX")) {
-                        pivotPoint.X = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+                        pivotPoint.x = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
                     }
                     if (animData.animationType.equals("translateY")) {
-                        pivotPoint.Y = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+                        pivotPoint.y = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
                     }
                     if (animData.animationType.equals("translateZ")) {
-                        pivotPoint.Z = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+                        pivotPoint.z = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
                     }
                 }
                 // Put the pivot in the local registry.

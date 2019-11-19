@@ -1,3 +1,5 @@
+#PARSE_ESCAPES
+
 tile.shipblock.name=Activateur de physique
 tile.shipblockcreative.name=Activateur de physique créatif
 

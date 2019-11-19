@@ -31,6 +31,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.model.IModel;
@@ -41,17 +42,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
+import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.fixes.SoundFixWrapper;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
-import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.util.VSRenderUtils;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -79,16 +79,16 @@ public class EventsClient {
         switch (event.phase) {
             case START:
                 // Nothing for now
-                for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                    .getManagerForWorld(world)
-                    .getTickablePhysicsEntities()) {
+
+                for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
                     // This is necessary because Minecraft will run a raytrace right after this
                     // event to determine what the player is looking at for interaction purposes.
                     // That raytrace will use the render transform, so we must have the render
                     // transform set to a partialTick of 1.0.
-                    wrapper.getPhysicsObject().shipTransformationManager()
+                    wrapper.getShipTransformationManager()
                         .updateRenderTransform(1.0);
                 }
+
                 break;
             case END:
                 // Tick the IShipManager on the world client.
@@ -105,12 +105,12 @@ public class EventsClient {
             BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
 
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+                .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
             if (physicsObject.isPresent()) {
                 Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(),
                     sound.getZPosF());
                 physicsObject.get()
-                    .shipTransformationManager()
+                    .getShipTransformationManager()
                     .getCurrentTickTransform()
                     .transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
 
@@ -126,6 +126,7 @@ public class EventsClient {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.world != null) {
             if (!mc.isGamePaused()) {
+                /*
                 WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                     .getManagerForWorld(mc.world);
                 if (event.phase == Phase.END) {
@@ -134,6 +135,8 @@ public class EventsClient {
                     }
                     EntityDraggable.tickAddedVelocityForWorld(mc.world);
                 }
+
+                 */
             }
         }
 
@@ -144,7 +147,7 @@ public class EventsClient {
         GL11.glPushMatrix();
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
         if (physicsObject.isPresent()) {
             RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
             if (objectOver != null && objectOver.hitVec != null) {
@@ -154,11 +157,11 @@ public class EventsClient {
                 oldZOff = buffer.zOffset;
 
                 buffer.setTranslation(-physicsObject.get()
-                    .shipRenderer().offsetPos.getX(), -physicsObject.get()
-                    .shipRenderer().offsetPos.getY(), -physicsObject.get()
-                    .shipRenderer().offsetPos.getZ());
+                    .getShipRenderer().offsetPos.getX(), -physicsObject.get()
+                    .getShipRenderer().offsetPos.getY(), -physicsObject.get()
+                    .getShipRenderer().offsetPos.getZ());
                 physicsObject.get()
-                    .shipRenderer()
+                    .getShipRenderer()
                     .applyRenderTransform(event.getPartialTicks());
             }
         }
@@ -168,7 +171,7 @@ public class EventsClient {
     public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
         if (physicsObject.isPresent()) {
             RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
             if (objectOver != null && objectOver.hitVec != null) {
@@ -242,11 +245,23 @@ public class EventsClient {
         }
 
         if (event.phase == Phase.START) {
-            for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                .getManagerForWorld(world)
-                .getTickablePhysicsEntities()) {
-                wrapper.getPhysicsObject().shipTransformationManager()
-                    .updateRenderTransform(partialTicks);
+            for (PhysicsObject wrapper : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
+                wrapper.getShipTransformationManager().updateRenderTransform(partialTicks);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderWorldLastEvent(RenderWorldLastEvent event) {
+        Minecraft mc = Minecraft.getMinecraft();
+        World world = Minecraft.getMinecraft().world;
+        if (mc.getRenderManager().isDebugBoundingBox() && !mc.isReducedDebug() && world != null) {
+            float partialTicks = event.getPartialTicks();
+            Vector3dc offset =
+                VSRenderUtils.getEntityPartialPosition(mc.player, partialTicks).negate();
+
+            for (PhysicsObject physo : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
+                physo.getShipRenderer().renderDebugInfo(offset);
             }
         }
     }

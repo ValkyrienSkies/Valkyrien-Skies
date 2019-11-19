@@ -1,5 +1,9 @@
 package org.valkyrienskies.mod.common.tileentity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import mcp.MethodsReturnNonnullByDefault;
@@ -12,7 +16,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -29,16 +32,11 @@ import org.valkyrienskies.mod.client.gui.IVSTileGui;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.container.EnumInfuserButton;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.multithreaded.VSExecutors;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
     IVSTileGui {
@@ -77,7 +75,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         // Check if we have to create a ship
         if (!getWorld().isRemote) {
             Optional<PhysicsObject> parentShip = ValkyrienUtils
-                .getPhysicsObject(getWorld(), getPos(), false);
+                .getPhysoManagingBlock(getWorld(), getPos());
             // Set the physics and align value to false if we're not in a ship
             if (!parentShip.isPresent()) {
                 if (isPhysicsEnabled || isTryingToAlignShip) {
@@ -108,15 +106,14 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             if (!parentShip.isPresent() && canMaintainShip() && isTryingToAssembleShip) {
                 // Create a ship with this physics infuser
                 // Make sure we don't try to create a ship when we're already in ship space.
-                if (!PhysicsChunkManager
-                    .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
+                if (!ShipChunkAllocator.isBlockInShipyard(getPos())) {
                     try {
-                        IThreadListener gameTickThread = (WorldServer) world;
-                        PhysicsWrapperEntity.createWrapperEntity(this)
-                            .thenAcceptTickSync(ship -> {
+                        ValkyrienUtils.assembleShipAsOrderedByPlayer(getWorld(), null, getPos())
+                            .thenRunAsync(() -> {
                                 System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
-                                getWorld().spawnEntity(ship);
-                            }, gameTickThread);
+                                // TODO: Hmmmmmmmm
+                                // getWorld().spawnEntity(ship);
+                            }, VSExecutors.forWorld((WorldServer) world));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -248,7 +245,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
     public boolean isCurrentlyInShip() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         return physicsObject.isPresent();
     }
 
@@ -297,7 +294,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
      */
     public boolean canShipBeDeconstructed() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         return !physicsObject.isPresent() || physicsObject.get()
             .canShipBeDeconstructed();
     }
@@ -308,11 +305,17 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         return oldState.getBlock() != newSate.getBlock();
     }
 
+    /**
+     * If the infuser is in a ship then we return true if this tile is the center of the ship. If the infuser isn't
+     * in a ship then we just retard true regardless.
+     *
+     * @return
+     */
     public boolean isCenterOfShip() {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+                .getPhysoManagingBlock(getWorld(), getPos());
         return !physicsObject.isPresent() ||
-            physicsObject.get().physicsInfuserPos().equals(getPos());
+                getPos().equals(physicsObject.get().getData().getPhysInfuserPos());
     }
 
     @SideOnly(Side.CLIENT)

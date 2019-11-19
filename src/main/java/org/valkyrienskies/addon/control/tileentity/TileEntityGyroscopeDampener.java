@@ -2,7 +2,7 @@ package org.valkyrienskies.addon.control.tileentity;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import valkyrienwarfare.api.TransformType;
@@ -15,28 +15,28 @@ public class TileEntityGyroscopeDampener extends TileEntity {
 
     public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
         Vector shipLevelNormal = new Vector(GRAVITY_UP);
-        physicsCalculations.getParent().shipTransformationManager().getCurrentPhysicsTransform()
+        physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
             .rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
 
-        double dampingComponent = shipLevelNormal.dot(physicsCalculations.angularVelocity);
+        double dampingComponent = shipLevelNormal.dot(physicsCalculations.getAngularVelocity());
         Vector angularChangeAllowed = shipLevelNormal
-            .getProduct(shipLevelNormal.dot(physicsCalculations.angularVelocity));
-        Vector angularVelocityToDamp = physicsCalculations.angularVelocity
+            .getProduct(shipLevelNormal.dot(physicsCalculations.getAngularVelocity()));
+        Vector angularVelocityToDamp = physicsCalculations.getAngularVelocity()
             .getSubtraction(angularChangeAllowed);
 
         Vector dampingTorque = angularVelocityToDamp
             .getProduct(physicsCalculations.getPhysicsTimeDeltaPerPhysTick());
 
-        Vector dampingTorqueWithRespectToInertia = RotationMatrices
-            .get3by3TransformedVec(physicsCalculations.getPhysMOITensor(), dampingTorque);
+
+        Vector3d dampingTorqueWithRespectToInertia = physicsCalculations.getPhysMOITensor().transform(dampingTorque.toVector3d());
 
         double dampingTorqueRespectMagnitude = dampingTorqueWithRespectToInertia.length();
         if (dampingTorqueRespectMagnitude > maximumTorque) {
             dampingTorqueWithRespectToInertia
-                .multiply(maximumTorque / dampingTorqueRespectMagnitude);
+                .mul(maximumTorque / dampingTorqueRespectMagnitude);
             // System.out.println("yee");
         }
 
-        return dampingTorqueWithRespectToInertia;
+        return new Vector(dampingTorqueWithRespectToInertia.x, dampingTorqueWithRespectToInertia.y, dampingTorqueWithRespectToInertia.z);
     }
 }

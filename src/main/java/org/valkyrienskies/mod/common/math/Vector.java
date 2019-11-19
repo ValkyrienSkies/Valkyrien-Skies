@@ -17,30 +17,38 @@
 package org.valkyrienskies.mod.common.math;
 
 import io.netty.buffer.ByteBuf;
+import lombok.Data;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 /**
  * Custom Vector class used by Valkyrien Skies
  *
  * @author thebest108
+ * @deprecated Use JOML {@link Vector3d}
  */
+@Data
+@Deprecated
 public class Vector {
 
-    public double X;
-    public double Y;
-    public double Z;
+    public double x;
+    public double y;
+    public double z;
 
     public Vector(double x, double y, double z) {
-        X = x;
-        Y = y;
-        Z = z;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    public Vector() {}
+    public Vector() {
+        this(0, 0, 0);
+    }
 
     /**
      * Construct a copy of a {@link VectorImmutable}
@@ -49,22 +57,35 @@ public class Vector {
         this(vec.getX(), vec.getY(), vec.getZ());
     }
 
+    /**
+     * Construct a copy of a {@link Vector}
+     */
+    public Vector(Vector vec) {
+        this(vec.x, vec.y, vec.z);
+    }
+
+    /**
+     * Construct a copy of a {@link Vec3i}
+     */
+    public Vector(Vec3i vec) {
+        this(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    /**
+     * Construct a copy of a {@link Vec3d}
+     */
+    public Vector(Vec3d vec) {
+        this(vec.x, vec.y, vec.z);
+    }
+
     public Vector(double x, double y, double z, double[] rotationMatrix) {
         this(x, y, z);
         transform(rotationMatrix);
     }
 
-    public Vector(Vector v) {
-        this(v.X, v.Y, v.Z);
-    }
-
     public Vector(Vector v, double scale) {
         this(v);
         multiply(scale);
-    }
-
-    public Vector(Vec3d vec3) {
-        this(vec3.x, vec3.y, vec3.z);
     }
 
     public Vector(Entity entity) {
@@ -76,101 +97,100 @@ public class Vector {
     }
 
     public Vector(Vector theNormal, double[] matrixTransform) {
-        this(theNormal.X, theNormal.Y, theNormal.Z, matrixTransform);
+        this(theNormal.x, theNormal.y, theNormal.z, matrixTransform);
     }
 
     public Vector(EnumFacing facing) {
         switch (facing) {
             case DOWN:
-                Y = 1;
+                y = 1;
                 break;
             case UP:
-                Y = -1;
+                y = -1;
                 break;
             case EAST:
-                X = -1;
+                x = -1;
                 break;
             case NORTH:
-                Z = 1;
+                z = 1;
                 break;
             case WEST:
-                X = 1;
+                x = 1;
                 break;
             case SOUTH:
-                Z = -1;
+                z = -1;
         }
     }
 
-    public Vector(Vec3i directionVec) {
-        this(directionVec.getX(), directionVec.getY(), directionVec.getZ());
+    public Vector(Vector3dc vector3dc) {
+        this(vector3dc.x(), vector3dc.y(), vector3dc.z());
     }
 
     public static Vector[] generateAxisAlignedNorms() {
-        Vector[] norms = new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
+        return new Vector[]{new Vector(1.0D, 0.0D, 0.0D), new Vector(0.0D, 1.0D, 0.0D),
             new Vector(0.0D, 0.0D, 1.0D)};
-        return norms;
     }
 
     public Vector getSubtraction(Vector v) {
-        return new Vector(v.X - X, v.Y - Y, v.Z - Z);
+        return new Vector(v.x - x, v.y - y, v.z - z);
     }
 
     public Vector getAddition(Vector v) {
-        return new Vector(v.X + X, v.Y + Y, v.Z + Z);
+        return new Vector(v.x + x, v.y + y, v.z + z);
     }
 
     public void subtract(Vector v) {
-        subtract(v.X, v.Y, v.Z);
+        subtract(v.x, v.y, v.z);
     }
 
     public void subtract(double x, double y, double z) {
-        X -= x;
-        Y -= y;
-        Z -= z;
+        this.x -= x;
+        this.y -= y;
+        this.z -= z;
     }
 
     public void add(Vector v) {
-        add(v.X, v.Y, v.Z);
+        add(v.x, v.y, v.z);
     }
 
     public void add(double x, double y, double z) {
-        X += x;
-        Y += y;
-        Z += z;
+        this.x += x;
+        this.y += y;
+        this.z += z;
     }
 
     public double dot(Vector v) {
-        return X * v.X + Y * v.Y + Z * v.Z;
+        return x * v.x + y * v.y + z * v.z;
     }
 
     public Vector cross(Vector v) {
-        return new Vector(Y * v.Z - v.Y * Z, Z * v.X - X * v.Z, X * v.Y - v.X * Y);
+        return new Vector(y * v.z - v.y * z, z * v.x - x * v.z, x * v.y - v.x * y);
     }
 
     public void setCross(Vector v1, Vector v2) {
-        X = v1.Y * v2.Z - v2.Y * v1.Z;
-        Y = v1.Z * v2.X - v1.X * v2.Z;
-        Z = v1.X * v2.Y - v2.X * v1.Y;
+        x = v1.y * v2.z - v2.y * v1.z;
+        y = v1.z * v2.x - v1.x * v2.z;
+        z = v1.x * v2.y - v2.x * v1.y;
     }
 
     public void multiply(double scale) {
-        X *= scale;
-        Y *= scale;
-        Z *= scale;
+        x *= scale;
+        y *= scale;
+        z *= scale;
     }
 
     public void divide(double scale) {
-        X /= scale;
-        Y /= scale;
-        Z /= scale;
+        x /= scale;
+        y /= scale;
+        z /= scale;
     }
 
     public Vector getProduct(double scale) {
-        return new Vector(X * scale, Y * scale, Z * scale);
+        return new Vector(x * scale, y * scale, z * scale);
     }
 
     public Vec3d toVec3d() {
-        return new Vec3d(X, Y, Z);
+        return new Vec3d(x, y, z);
     }
 
     public void normalize() {
@@ -187,7 +207,7 @@ public class Vector {
     }
 
     public double lengthSq() {
-        return X * X + Y * Y + Z * Z;
+        return x * x + y * y + z * z;
     }
 
     public boolean isZero() {
@@ -195,30 +215,18 @@ public class Vector {
     }
 
     public void zero() {
-        X = Y = Z = 0D;
+        x = y = z = 0D;
     }
 
     public void roundToWhole() {
-        X = Math.round(X);
-        Y = Math.round(Y);
-        Z = Math.round(Z);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        } else if (other instanceof Vector) {
-            Vector vec = (Vector) other;
-            return vec.X == X && vec.Y == Y && vec.Z == Z;
-        }
-        return false;
+        x = Math.round(x);
+        y = Math.round(y);
+        z = Math.round(z);
     }
 
     @Override
     public String toString() {
-        String coords = "<" + X + ", " + Y + ", " + Z + ">";
-        return coords;
+        return "<" + x + ", " + y + ", " + z + ">";
     }
 
     public Vector crossAndUnit(Vector v) {
@@ -228,15 +236,15 @@ public class Vector {
     }
 
     public void writeToByteBuf(ByteBuf toWrite) {
-        toWrite.writeDouble(X);
-        toWrite.writeDouble(Y);
-        toWrite.writeDouble(Z);
+        toWrite.writeDouble(x);
+        toWrite.writeDouble(y);
+        toWrite.writeDouble(z);
     }
 
     public void setSubtraction(Vector inLocal, Vector centerCoord) {
-        X = inLocal.X - centerCoord.X;
-        Y = inLocal.Y - centerCoord.Y;
-        Z = inLocal.Z - centerCoord.Z;
+        x = inLocal.x - centerCoord.x;
+        y = inLocal.y - centerCoord.y;
+        z = inLocal.z - centerCoord.z;
     }
 
     public void transform(double[] rotationMatrix) {
@@ -244,13 +252,13 @@ public class Vector {
     }
 
     public void setValue(double x, double y, double z) {
-        X = x;
-        Y = y;
-        Z = z;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public void setValue(Vector toCopy) {
-        setValue(toCopy.X, toCopy.Y, toCopy.Z);
+        setValue(toCopy.x, toCopy.y, toCopy.z);
     }
 
     public void setValue(Vec3d toCopy) {
@@ -258,7 +266,6 @@ public class Vector {
     }
 
     /**
-     * @param other
      * @return The angle between these two vectors in radians.
      */
     public double angleBetween(Vector other) {
@@ -273,10 +280,18 @@ public class Vector {
 
     /**
      * Returns true if at least one of the components of this vector is NaN.
-     *
-     * @return
      */
     public boolean isNaN() {
-        return Double.isNaN(X) || Double.isNaN(Y) || Double.isNaN(Z);
+        return Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z);
+    }
+
+    public void setValue(Vector3dc copy) {
+        this.x = copy.x();
+        this.y = copy.y();
+        this.z = copy.z();
+    }
+
+    public Vector3d toVector3d() {
+        return new Vector3d(x, y, z);
     }
 }

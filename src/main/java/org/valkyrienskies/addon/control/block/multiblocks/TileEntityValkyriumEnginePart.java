@@ -18,7 +18,7 @@ import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.ValkyriumEngineTorqueFunction;
 import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.math.VSMath;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class TileEntityValkyriumEnginePart extends
@@ -53,11 +53,11 @@ public class TileEntityValkyriumEnginePart extends
 
             if (this.isPartOfAssembledMultiblock()) {
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
-                    .getPhysicsObject(getWorld(), getPos());
+                    .getPhysoManagingBlock(getWorld(), getPos());
 
                 IRotationNodeWorld nodeWorld;
                 if (physicsObjectOptional.isPresent()) {
-                    nodeWorld = physicsObjectOptional.get().physicsProcessor()
+                    nodeWorld = physicsObjectOptional.get().getPhysicsCalculations()
                         .getPhysicsRotationNodeWorld();
                 } else {
                     IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
@@ -107,10 +107,10 @@ public class TileEntityValkyriumEnginePart extends
         super.assembleMultiblock(schematic, relativePos);
         if (relativePos.equals(schematic.getTorqueOutputPos())) {
             Optional<PhysicsObject> objectOptional = ValkyrienUtils
-                .getPhysicsObject(getWorld(), getPos());
+                .getPhysoManagingBlock(getWorld(), getPos());
             IRotationNodeWorld nodeWorld;
             if (objectOptional.isPresent()) {
-                nodeWorld = objectOptional.get().physicsProcessor()
+                nodeWorld = objectOptional.get().getPhysicsCalculations()
                     .getPhysicsRotationNodeWorld();
             } else {
                 IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
@@ -147,7 +147,7 @@ public class TileEntityValkyriumEnginePart extends
     @Override
     public void disassembleMultiblockLocal() {
         super.disassembleMultiblockLocal();
-        Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> object = ValkyrienUtils.getPhysoManagingBlock(getWorld(), getPos());
         if (object.isPresent()) {
             this.rotationNode.queueTask(rotationNode::resetNodeData);
         }

@@ -18,7 +18,7 @@ package org.valkyrienskies.addon.control.piloting;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public interface ITileEntityPilotable {
 
@@ -30,7 +30,7 @@ public interface ITileEntityPilotable {
 
     void playerWantsToStopPiloting(EntityPlayer player);
 
-    PhysicsWrapperEntity getParentPhysicsEntity();
+    PhysicsObject getParentPhysicsEntity();
 
     default void onStartTileUsage(EntityPlayer player) {
     }

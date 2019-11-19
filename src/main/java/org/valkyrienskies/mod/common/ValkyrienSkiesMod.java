@@ -16,33 +16,6 @@
 
 package org.valkyrienskies.mod.common;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.googlecode.cqengine.ConcurrentIndexedCollection;
-import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
-import de.javakaffee.kryoserializers.UUIDSerializer;
-import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
-import de.javakaffee.kryoserializers.guava.ArrayListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ArrayTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableTableSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedHashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ReverseListSerializer;
-import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
@@ -57,9 +30,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLLog;
@@ -67,12 +37,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -82,27 +47,20 @@ import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
-import org.valkyrienskies.mod.common.command.framework.VSModCommandRegistry;
+import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
+import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.PhysWrapperPositionHandler;
-import org.valkyrienskies.mod.common.network.SubspacedEntityRecordHandler;
-import org.valkyrienskies.mod.common.network.SubspacedEntityRecordMessage;
-import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
-import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
-import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
-import org.valkyrienskies.mod.common.physics.management.DimensionPhysObjectManager;
+import org.valkyrienskies.mod.common.network.*;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.DimensionPhysicsChunkManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.IValkyrienSkiesWorldData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ImplValkyrienSkiesWorldData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.StorageValkyrienSkiesWorldData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Mod(
     modid = ValkyrienSkiesMod.MOD_ID,
@@ -127,23 +85,13 @@ public class ValkyrienSkiesMod {
     @Instance(MOD_ID)
     public static ValkyrienSkiesMod INSTANCE;
 
-    // MOD CLASS MEMBERS
-    /**
-     * This capability provides data attached to the world.
-     */
-    @CapabilityInject(IValkyrienSkiesWorldData.class)
-    public static final Capability<IValkyrienSkiesWorldData> VS_WORLD_DATA = null;
-
     @SidedProxy(
         clientSide = "org.valkyrienskies.mod.proxy.ClientProxy",
         serverSide = "org.valkyrienskies.mod.proxy.ServerProxy")
     public static CommonProxy proxy;
 
     static final int VS_ENTITY_LOAD_DISTANCE = 128;
-    public static final DimensionPhysicsChunkManager VS_CHUNK_MANAGER =
-        new DimensionPhysicsChunkManager();
-    public static final DimensionPhysObjectManager VS_PHYSICS_MANAGER =
-        new DimensionPhysObjectManager();
+
     /**
      * This service is directly responsible for running collision tasks.
      */
@@ -155,8 +103,6 @@ public class ValkyrienSkiesMod {
     public Item physicsCore;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
-
-    private CompletableFuture<Kryo> kryoInstance;
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
@@ -213,10 +159,8 @@ public class ValkyrienSkiesMod {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        // Print out a message of core count, we want this to know what AnvilNode is giving us.
-        log.info("Valkyrien Skies Initialization:");
-        log.info("We are running on " + Runtime.getRuntime().availableProcessors() +
-            " threads; 4 or more is recommended!");
+        log.info("Valkyrien Skies Initialization: We are running on {} threads; 4 or more "
+            + "is recommended!", Runtime.getRuntime().availableProcessors());
         proxy.init(event);
     }
 
@@ -228,22 +172,19 @@ public class ValkyrienSkiesMod {
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
         MinecraftServer server = event.getServer();
-        VSModCommandRegistry.registerCommands(server);
+        VSCommandRegistry.registerCommands(server);
     }
 
     private void registerNetworks(FMLStateEvent event) {
-        physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
+        physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies");
         physWrapperNetwork
-            .registerMessage(PhysWrapperPositionHandler.class, WrapperPositionMessage.class, 0,
+                .registerMessage(ShipIndexDataMessageHandler.class, ShipIndexDataMessage.class, 0,
                 Side.CLIENT);
         physWrapperNetwork
-            .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
-                1, Side.CLIENT);
+                .registerMessage(SpawnPhysObjMessageHandler.class, SpawnPhysObjMessage.class, 1,
+                Side.CLIENT);
         physWrapperNetwork
-            .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
-                2, Side.SERVER);
-        physWrapperNetwork
-            .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 3, Side.SERVER);
+                .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 2, Side.SERVER);
     }
 
     /**
@@ -323,8 +264,8 @@ public class ValkyrienSkiesMod {
         String registryName, ItemStack out, Object... in) {
         CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(in);
         event.getRegistry()
-            .register(new ShapedRecipes(ValkyrienSkiesMod.MOD_ID, primer.width, primer.height,
-                primer.input, out)
+            .register(new ShapedRecipes(
+                ValkyrienSkiesMod.MOD_ID, primer.width, primer.height, primer.input, out)
                 .setRegistryName(ValkyrienSkiesMod.MOD_ID, registryName));
     }
 
@@ -333,12 +274,6 @@ public class ValkyrienSkiesMod {
      */
     private void runConfiguration() {
         VSConfig.sync();
-    }
-
-    private void registerCapabilities() {
-        CapabilityManager.INSTANCE.register(IValkyrienSkiesWorldData.class,
-            new StorageValkyrienSkiesWorldData(),
-            ImplValkyrienSkiesWorldData::new);
     }
 
     private void registerTileEntities() {

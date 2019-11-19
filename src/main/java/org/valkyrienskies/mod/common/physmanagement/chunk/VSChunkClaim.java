@@ -16,14 +16,16 @@
 
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Streams;
+import java.beans.ConstructorProperties;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import javax.annotation.concurrent.Immutable;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Value;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -35,14 +37,27 @@ import net.minecraft.util.math.ChunkPos;
  * @author thebest108
  */
 @Immutable
+
 @Value
 @AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE) // For Kryo
-public class VSChunkClaim {
+public final class VSChunkClaim implements Iterable<ChunkPos> {
 
     private final int centerX;
     private final int centerZ;
     private final int radius;
+
+    // NON-DATA CACHE FIELDS
+    private final transient ImmutableSet<Long> chunkLongs;
+
+    @JsonCreator // This annotation tells Jackson to use this constructor for the class
+    // The below annotation says which JSON properties correspond to which constructor arguments
+    @ConstructorProperties({"centerX", "centerZ", "radius"})
+    public VSChunkClaim(int centerX, int centerZ, int radius) {
+        this.centerX = centerX;
+        this.centerZ = centerZ;
+        this.radius = radius;
+        this.chunkLongs = calculateChunkLongs();
+    }
 
     public VSChunkClaim(NBTTagCompound readFrom) {
         this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"),
@@ -50,9 +65,9 @@ public class VSChunkClaim {
     }
 
     public void writeToNBT(NBTTagCompound toSave) {
-        toSave.setInteger("centerX", centerX());
-        toSave.setInteger("centerZ", centerZ());
-        toSave.setInteger("radius", radius());
+        toSave.setInteger("centerX", getCenterX());
+        toSave.setInteger("centerZ", getCenterZ());
+        toSave.setInteger("radius", getRadius());
     }
 
     /**
@@ -91,42 +106,35 @@ public class VSChunkClaim {
 
     @Override
     public String toString() {
-        return centerX() + ":" + centerZ() + ":" + radius();
-    }
-
-    /**
-     * @return A stream of the {@link ChunkPos} of every chunk inside of this claim.
-     */
-    public Stream<ChunkPos> stream() {
-        return Streams.stream(new ChunkPosIterator());
+        return getCenterX() + ":" + getCenterZ() + ":" + getRadius();
     }
 
     /**
      * @return the maxX
      */
     public int maxX() {
-        return centerX() + radius();
+        return getCenterX() + getRadius();
     }
 
     /**
      * @return the maxZ
      */
     public int maxZ() {
-        return centerZ() + radius();
+        return getCenterZ() + getRadius();
     }
 
     /**
      * @return the minZ
      */
     public int minZ() {
-        return centerZ() - radius();
+        return getCenterZ() - getRadius();
     }
 
     /**
      * @return the minX
      */
     public int minX() {
-        return centerX() - radius();
+        return getCenterX() - getRadius();
     }
 
     /**
@@ -134,19 +142,45 @@ public class VSChunkClaim {
      * 5x5 and the dimension is 5
      */
     public int dimension() {
-        return radius() * 2 + 1;
+        return getRadius() * 2 + 1;
     }
 
-    public BlockPos regionCenter() {
-        return new BlockPos(this.centerX() * 16, 128, this.centerZ() * 16);
+    public BlockPos getRegionCenter() {
+        return new BlockPos(this.getCenterX() * 16, 128, this.getCenterZ() * 16);
     }
 
-    public int chunkLengthX() {
+    public int getChunkLengthX() {
         return maxX() - minX() + 1;
     }
 
-    public int chunkLengthZ() {
+    public int getChunkLengthZ() {
         return maxZ() - minZ() + 1;
+    }
+
+    private ImmutableSet<Long> calculateChunkLongs() {
+        return this.stream()
+            .map(pos -> ChunkPos.asLong(pos.x, pos.z))
+            .collect(ImmutableSet.toImmutableSet());
+    }
+
+    /**
+     * @return A stream of the {@link ChunkPos} of every chunk inside of this claim.
+     */
+    public Stream<ChunkPos> stream() {
+        return Streams.stream(this);
+    }
+
+    /**
+     * Convenience function to decompose a {@link ChunkPos} from the iterator into an X and Z
+     * @param consumer BiConsumer&lt;x, z&gt;
+     */
+    public void forEach(BiConsumer<Integer, Integer> consumer) {
+        this.forEach(pos -> consumer.accept(pos.x, pos.z));
+    }
+
+    @Override
+    public Iterator<ChunkPos> iterator() {
+        return new ChunkPosIterator();
     }
 
     class ChunkPosIterator implements Iterator<ChunkPos> {
@@ -161,8 +195,8 @@ public class VSChunkClaim {
         public ChunkPos next() {
             if (!hasNext()) throw new NoSuchElementException();
 
-            int x = (index % dimension()) + minX();
-            int z = (index / dimension()) + minZ();
+            int x = (index / dimension()) + minX();
+            int z = (index % dimension()) + minZ();
             index++;
             return new ChunkPos(x, z);
         }

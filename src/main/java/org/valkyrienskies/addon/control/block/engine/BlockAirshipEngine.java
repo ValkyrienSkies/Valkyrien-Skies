@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 /**
  * All engines should extend this class, that way other kinds of engines can be made without making

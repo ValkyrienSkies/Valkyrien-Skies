@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
@@ -56,18 +56,18 @@ public abstract class MixinTileEntity {
             //Assume on Ship
             if (tileWorld.isRemote && toReturn > 9999999D) {
                 BlockPos pos = this.pos;
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
 
                 if (physicsObject.isPresent()) {
                     Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D,
                         pos.getZ() + .5D);
                     physicsObject.get()
-                        .shipTransformationManager()
+                        .getShipTransformationManager()
                         .fromLocalToGlobal(tilePos);
 
-                    tilePos.X -= x;
-                    tilePos.Y -= y;
-                    tilePos.Z -= z;
+                    tilePos.x -= x;
+                    tilePos.y -= y;
+                    tilePos.z -= z;
 
                     return tilePos.lengthSq();
                 }

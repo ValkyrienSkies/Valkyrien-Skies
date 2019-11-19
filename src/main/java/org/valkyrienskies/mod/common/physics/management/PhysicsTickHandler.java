@@ -16,23 +16,19 @@
 
 package org.valkyrienskies.mod.common.physics.management;
 
-import java.util.List;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
-import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 
 public class PhysicsTickHandler {
 
     public static void onWorldTickStart(World world) {
+        /*
         WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(world);
 
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
 
         for (PhysicsWrapperEntity wrapper : physicsEntities) {
-            if (wrapper.getPhysicsObject().shipTransformationManager()
+            if (wrapper.getPhysicsObject().getShipTransformationManager()
                 .getCurrentPhysicsTransform() instanceof PhysicsShipTransform) {
                 // Here we poll our transforms from the physics tick, and apply the latest one
                 // to the game tick.
@@ -41,7 +37,7 @@ public class PhysicsTickHandler {
                 // depends on ship movement should go right here! Will possibly be moved to the
                 // end of the game tick instead.
                 PhysicsShipTransform physTransform = (PhysicsShipTransform) wrapper
-                    .getPhysicsObject().shipTransformationManager()
+                    .getPhysicsObject().getShipTransformationManager()
                     .getCurrentPhysicsTransform();
 
                 wrapper.physicsUpdateLastTickPositions();
@@ -49,8 +45,8 @@ public class PhysicsTickHandler {
                     physTransform.getPosY(), physTransform.getPosZ(), physTransform.getPitch(),
                     physTransform.getYaw(), physTransform.getRoll());
                 wrapper.getPhysicsObject()
-                    .shipTransformationManager()
-                    .updateAllTransforms(false, true, true);
+                    .getShipTransformationManager()
+                        .updateAllTransforms(false, true);
             }
 
             wrapper.getPhysicsObject().updateChunkCache();
@@ -68,9 +64,11 @@ public class PhysicsTickHandler {
         // try { manager.setPhysicsThread(ValkyrienSkiesMod.PHYSICS_THREADS.submit(
         // physicsThreadTask)); } catch (Exception e) { e.printStackTrace(); }
 
+
     }
 
     public static void onWorldTickEnd(World world) {
+        /*
         WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(world);
         List<PhysicsWrapperEntity> physicsEntities = manager.getTickablePhysicsEntities();
@@ -86,10 +84,13 @@ public class PhysicsTickHandler {
         // }
 
         // Remember only to run this from the game tick thread.
+        /*
         EntityDraggable.tickAddedVelocityForWorld(world);
         for (PhysicsWrapperEntity wrapperEnt : physicsEntities) {
             wrapperEnt.getPhysicsObject().onPostTick();
         }
+        
+         */
     }
 
 }

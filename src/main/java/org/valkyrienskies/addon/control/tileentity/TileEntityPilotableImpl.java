@@ -31,9 +31,8 @@ import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.ITileEntityPilotable;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -90,11 +89,10 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
     }
 
     @Override
-    public final PhysicsWrapperEntity getParentPhysicsEntity() {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(world, pos);
+    public final PhysicsObject getParentPhysicsEntity() {
+        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
         if (physicsObject.isPresent()) {
-            return physicsObject.get()
-                .wrapperEntity();
+            return physicsObject.get();
         } else {
             return null;
         }
@@ -148,7 +146,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
         Vector tileRelativePos = new Vector(this.getPos().getX() + .5, this.getPos().getY() + .5,
             this.getPos().getZ() + .5);
         if (this.getParentPhysicsEntity() != null) {
-            this.getParentPhysicsEntity().getPhysicsObject().shipTransformationManager()
+            this.getParentPhysicsEntity().getShipTransformationManager()
                 .getCurrentTickTransform()
                 .transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
         }
@@ -158,7 +156,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
             blockFacing.getDirectionVec().getZ());
 
         if (this.getParentPhysicsEntity() != null) {
-            this.getParentPhysicsEntity().getPhysicsObject().shipTransformationManager()
+            this.getParentPhysicsEntity().getShipTransformationManager()
                 .getCurrentTickTransform()
                 .rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
         }

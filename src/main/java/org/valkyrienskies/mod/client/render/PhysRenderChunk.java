@@ -33,7 +33,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class PhysRenderChunk {
 
@@ -170,10 +170,10 @@ public class PhysRenderChunk {
         }
 
         private void updateList(BlockRenderLayer layerToUpdate) {
-            if (parent.toRender.shipRenderer() == null) {
+            if (parent.toRender.getShipRenderer() == null) {
                 return;
             }
-            BlockPos offsetPos = parent.toRender.shipRenderer().offsetPos;
+            BlockPos offsetPos = parent.toRender.getShipRenderer().offsetPos;
             if (offsetPos == null) {
                 return;
             }

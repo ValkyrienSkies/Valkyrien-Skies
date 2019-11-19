@@ -23,8 +23,8 @@ import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Optional;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
@@ -44,11 +44,9 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
     @Optional.Method(modid = "opencomputers")
     public Object[] getPosition(Context context, Arguments args) {
         java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
-            BlockPos pos = physicsObjectOptional.get()
-                .wrapperEntity()
-                .getPosition();
+            BlockPos pos = physicsObjectOptional.get().getTransform().toBlockPos();
             return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
         }
         return null;
@@ -58,11 +56,10 @@ public class GPSTileEntity extends TileEntity implements SimpleComponent {
     @Optional.Method(modid = "opencomputers")
     public Object[] getRotation(Context context, Arguments args) {
         java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
-            .getPhysicsObject(getWorld(), getPos());
+            .getPhysoManagingBlock(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
-            PhysicsWrapperEntity ship = physicsObjectOptional.get()
-                .wrapperEntity();
-            return new Object[]{ship.getYaw(), ship.getPitch(), ship.getRoll()};
+            ShipTransform transform = physicsObjectOptional.get().getTransform();
+            return new Object[]{transform.getYaw(), transform.getPitch(), transform.getRoll()};
         }
         return null;
     }

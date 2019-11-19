@@ -1,13 +1,17 @@
 # Items
 item.relay_wire.name=Relay Wire
-tooltip.vs_control.relay_wire=Used to connect relays to components and other relays.
+tooltip.vs_control.relay_wire=Used to connect relays to components and other relays. Will disconnect already connected nodes.
 message.vs_control.error_relay_wire_limit=One of the connections is maxed out. Relay Nodes can make %d connections, all other objects can only make 1 connection.
 message.vs_control.error_relay_wire_length=The wire is too short to connect these nodes!
+
+item.vanishing_wire.name=Vanishing Wire
+tooltip.vs_control.vanishing_wire=Works like Relay Wire, but it's invisible when not held.
 
 item.vs_wrench.name=VS Wrench
 tooltip.vs_control.wrench_usage=A VS Wrench is needed to construct this.
 tooltip.vs_control.wrench_modes=Shift + Right-Click to change modes.
-tooltip.vs_control.wrench_switched=Switched VS Wrench to %sion mode.
+tooltip.vs_control.wrench_switched.construct=Switched VS Wrench to Construction mode.
+tooltip.vs_control.wrench_switched.deconstruct=Switched VS Wrench to Deconstruction mode.
 tooltip.vs_control.wrench_toggle=Right click multi-blocks to toggle constructed -> deconstructed.
 tooltip.vs_control.wrench.construct=Used to construct multi-blocks and orient the gearbox.
 tooltip.vs_control.wrench.deconstruct=Used to safely deconstruct multi-blocks.

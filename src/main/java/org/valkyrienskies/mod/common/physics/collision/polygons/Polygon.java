@@ -94,20 +94,20 @@ public class Polygon {
 
     public AxisAlignedBB getEnclosedAABB() {
         Vector firstVertex = vertices[0];
-        double mnX = firstVertex.X;
-        double mnY = firstVertex.Y;
-        double mnZ = firstVertex.Z;
-        double mxX = firstVertex.X;
-        double mxY = firstVertex.Y;
-        double mxZ = firstVertex.Z;
+        double mnX = firstVertex.x;
+        double mnY = firstVertex.y;
+        double mnZ = firstVertex.z;
+        double mxX = firstVertex.x;
+        double mxY = firstVertex.y;
+        double mxZ = firstVertex.z;
         for (int i = 1; i < vertices.length; i++) {
             Vector vertex = vertices[i];
-            mnX = Math.min(mnX, vertex.X);
-            mnY = Math.min(mnY, vertex.Y);
-            mnZ = Math.min(mnZ, vertex.Z);
-            mxX = Math.max(mxX, vertex.X);
-            mxY = Math.max(mxY, vertex.Y);
-            mxZ = Math.max(mxZ, vertex.Z);
+            mnX = Math.min(mnX, vertex.x);
+            mnY = Math.min(mnY, vertex.y);
+            mnZ = Math.min(mnZ, vertex.z);
+            mxX = Math.max(mxX, vertex.x);
+            mxY = Math.max(mxY, vertex.y);
+            mxZ = Math.max(mxZ, vertex.z);
         }
         return new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
     }

@@ -51,7 +51,8 @@ import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.ImplCapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.StorageLastRelay;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
-import org.valkyrienskies.addon.control.item.ItemWrench;
+import org.valkyrienskies.addon.control.item.ItemVanishingWire;
+import org.valkyrienskies.addon.control.item.ItemVSWrench;
 import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPiloting;
 import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPilotingHandler;
 import org.valkyrienskies.addon.control.network.MessageStartPiloting;
@@ -109,9 +110,9 @@ public class ValkyrienSkiesControl {
     // MOD CLASS MEMBERS
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienSkiesControl vsControlBlocks = new BlocksValkyrienSkiesControl();
-	public Item relayWire;
-	public Item vanishingWire;
-    public Item multiBlockWrench;
+    public Item relayWire;
+    public Item vanishingWire;
+    public Item vsWrench;
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -123,14 +124,19 @@ public class ValkyrienSkiesControl {
         INSTANCE.relayWire = new ItemRelayWire().setTranslationKey("relay_wire")
             .setRegistryName(MOD_ID, "relay_wire")
             .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        INSTANCE.multiBlockWrench = new ItemWrench().setTranslationKey("vs_wrench")
+        INSTANCE.vanishingWire = new ItemVanishingWire().setTranslationKey("vanishing_wire")
+            .setRegistryName(MOD_ID, "vanishing_wire")
+            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
+        INSTANCE.vsWrench = new ItemVSWrench().setTranslationKey("vs_wrench")
             .setRegistryName(MOD_ID, "vs_wrench")
             .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
 
         event.getRegistry()
             .register(INSTANCE.relayWire);
         event.getRegistry()
-            .register(INSTANCE.multiBlockWrench);
+            .register(INSTANCE.vanishingWire);
+        event.getRegistry()
+            .register(INSTANCE.vsWrench);
 
         INSTANCE.vsControlBlocks.registerBlockItems(event);
         // This doesn't really belong here, but whatever.
@@ -195,6 +201,13 @@ public class ValkyrienSkiesControl {
             " I ",
             'I', relayWireIngot,
             'S', Items.STICK);
+        Module.registerRecipe(event, "recipe_vanishing_wire", // Valkyrium makes stuff invisible sometimes its canon
+            new ItemStack(INSTANCE.vanishingWire, 8),
+            "WWW",
+            "WVW",
+            "WWW",
+            'W', INSTANCE.relayWire,
+            'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
         Module.registerRecipe(event, "recipe_compacted_valkyrium",
             new ItemStack(INSTANCE.vsControlBlocks.compactedValkyrium, 1),

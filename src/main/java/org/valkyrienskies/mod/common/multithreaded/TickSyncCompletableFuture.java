@@ -1,19 +1,22 @@
 package org.valkyrienskies.mod.common.multithreaded;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import net.minecraft.util.IThreadListener;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
-import javax.annotation.Nonnull;
-import java.util.concurrent.*;
-import java.util.function.*;
-
 /**
- * <p>An extension of CompletableFuture with some 'TickSync' suffixed methods like
- * {@link TickSyncCompletableFuture#supplyTickSync(Supplier, IThreadListener)}.</p>
+ * <p>An extension of CompletableFuture with some 'Sync' suffixed methods like
+ * {@link TickSyncCompletableFuture#supplyClientSync(Supplier)}.</p>
  *
  * <p>Any method written like this will have its results executed on the <strong>provided game
  * thread</strong>. This allows for easily multithreading things that produce results that are
@@ -25,7 +28,7 @@ import java.util.function.*;
  * <pre>{@code
  * TickSyncCompletableFuture
  *      .supplyAsync(() -> generatePi())
- *      .thenAcceptTickSync(pi -> player.sendMessage(pi));
+ *      .thenAcceptServerSync(pi -> player.sendMessage(pi));
  * }</pre>
  *
  * @author Rubydesic
@@ -34,9 +37,7 @@ import java.util.function.*;
 public class TickSyncCompletableFuture<T> {
 
     private CompletableFuture<T> base;
-    private boolean isRegistered = false;
 
-    // region Internal Methods
     private TickSyncCompletableFuture(CompletableFuture<T> future) {
         base = future;
     }
@@ -49,96 +50,38 @@ public class TickSyncCompletableFuture<T> {
         return new TickSyncCompletableFuture<>(future);
     }
 
-    private static Supplier<Void> runnableToSupplier(Runnable runnable) {
-        return () -> {
-            runnable.run();
-            return null;
-        };
-    }
-
-    private static <K> Function<K, Void> runnableToFunction(Runnable runnable) {
-        return k -> {
-            runnable.run();
-            return null;
-        };
-    }
-
-    /**
-     * Simple utility function to convert a {@code Consumer<K>} to a {@code Function<K, Void>}
-     */
-    private static <K> Function<K, Void> consumerToFunction(Consumer<K> consumer) {
-        return k -> {
-            consumer.accept(k);
-            return null;
-        };
-    }
-
-    /**
-     * Maps a function to a callable
-     *
-     * @param function The function to convert to a callable
-     * @param value    The value with which to call the function
-     * @param <T>      The type of the value with which to call the function
-     * @param <R>      The type of the functions return value
-     * @return The Callable form of this function
-     */
-    private static <T, R> Callable<R> functionToCallable(Function<T, R> function, T value) {
-        return () -> function.apply(value);
-    }
-
-    /**
-     * Convert a ListenableFuture to a TickSyncCompletableFuture
-     *
-     * @param listenableFuture The ListenableFuture
-     * @param <K>              The type of the futures
-     * @return The TickSyncCompletableFuture
-     */
-    private static <K> TickSyncCompletableFuture<K> toCompletableFuture(
-        final ListenableFuture<K> listenableFuture) {
-        final TickSyncCompletableFuture<K> completableFuture = new TickSyncCompletableFuture<>();
-        Futures.addCallback(listenableFuture, new FutureCallback<K>() {
-            public void onFailure(@Nonnull Throwable throwable) {
-                completableFuture.completeExceptionally(throwable);
-            }
-
-            public void onSuccess(K t) {
-                completableFuture.complete(t);
-            }
-        });
-        return completableFuture;
-    }
-
-    // endregion
-
     // region API methods
 
-    public static <K> TickSyncCompletableFuture<Object> supplyTickSync(Supplier<K> supplier, IThreadListener gameThread) {
-        return toCompletableFuture(gameThread.addScheduledTask(supplier::get));
+    public static <K> TickSyncCompletableFuture<K> supplyClientSync(Supplier<K> supplier) {
+        return TickSyncCompletableFuture.supplyAsync(supplier, VSExecutors.CLIENT);
     }
 
-    public static TickSyncCompletableFuture<Object> runTickSync(Runnable runnable, IThreadListener gameThread) {
-        return supplyTickSync(runnableToSupplier(runnable), gameThread);
+    public static TickSyncCompletableFuture<Void> runClientSync(Runnable runnable) {
+        return TickSyncCompletableFuture.runAsync(runnable, VSExecutors.CLIENT);
     }
 
-    public <K> TickSyncCompletableFuture<K> thenApplyTickSync(
-        Function<? super T, ? extends K> action, IThreadListener gameThread) {
-
-        TickSyncCompletableFuture<K> toReturn = new TickSyncCompletableFuture<>();
-        base.thenAccept(result -> // Consumer<T> --> ListenableFuture<Void>
-            gameThread.addScheduledTask( // Callable<K> --> ListenableFuture<K>
-                // (callback) 3. Apply the function
-                () -> toReturn.complete(action.apply(result)) // Function<T, K> --> Callable<K>
-            ));
-
-        return toReturn;
+    public TickSyncCompletableFuture<Void> thenAcceptClientSync(Consumer<? super T> action) {
+        return this.thenAcceptAsync(action, VSExecutors.CLIENT);
     }
 
-    public TickSyncCompletableFuture<Void> thenAcceptTickSync(Consumer<? super T> action, IThreadListener gameThread) {
-        return thenApplyTickSync(consumerToFunction(action), gameThread);
+    public TickSyncCompletableFuture<Void> thenRunClientSync(Runnable action) {
+        return this.thenRunAsync(action, VSExecutors.CLIENT);
     }
 
-    public TickSyncCompletableFuture<Void> thenRunTickSync(Runnable action, IThreadListener gameThread) {
-        return thenApplyTickSync(runnableToFunction(action), gameThread);
+    public static <K> TickSyncCompletableFuture<K> supplyServerSync(Supplier<K> supplier) {
+        return TickSyncCompletableFuture.supplyAsync(supplier, VSExecutors.SERVER);
+    }
+
+    public static TickSyncCompletableFuture<Void> runServerSync(Runnable runnable) {
+        return TickSyncCompletableFuture.runAsync(runnable, VSExecutors.SERVER);
+    }
+
+    public TickSyncCompletableFuture<Void> thenAcceptServerSync(Consumer<? super T> action) {
+        return this.thenAcceptAsync(action, VSExecutors.SERVER);
+    }
+
+    public TickSyncCompletableFuture<Void> thenRunServerSync(Runnable action) {
+        return this.thenRunAsync(action, VSExecutors.SERVER);
     }
 
     // endregion

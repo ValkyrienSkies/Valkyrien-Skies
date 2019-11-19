@@ -54,13 +54,13 @@ public class BasicAnimationTransform {
 
         switch (animationTransform) {
             case "translateX":
-                pivotChange.X += value;
+                pivotChange.x += value;
                 break;
             case "translateY":
-                pivotChange.Y += value;
+                pivotChange.y += value;
                 break;
             case "translateZ":
-                pivotChange.Z += value;
+                pivotChange.z += value;
                 break;
         }
     }

@@ -1,7 +1,7 @@
 package org.valkyrienskies.addon.control.block.torque.custom_torque_functions;
 
 import org.valkyrienskies.addon.control.block.torque.IRotationNode;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class ValkyriumEngineTorqueFunction extends SimpleTorqueFunction {
 

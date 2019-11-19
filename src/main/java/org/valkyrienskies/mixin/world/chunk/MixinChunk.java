@@ -17,7 +17,6 @@
 package org.valkyrienskies.mixin.world.chunk;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
@@ -35,28 +34,18 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.fixes.IPhysicsChunk;
 import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Mixin(value = Chunk.class, priority = 1001)
-public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhysicsChunk {
+public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
 
-    private Optional<PhysicsObject> parentOptional = Optional.empty();
+    private final Chunk thisAsChunk = Chunk.class.cast(this);
 
     @Shadow
     public abstract World getWorld();
-
-    @Override
-    public void setParentPhysicsObject(Optional<PhysicsObject> physicsObjectOptional) {
-        this.parentOptional = physicsObjectOptional;
-    }
-
-    @Override
-    public Optional<PhysicsObject> getPhysicsObjectOptional() {
-        return parentOptional;
-    }
 
     @Shadow
     @Final
@@ -71,10 +60,10 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhys
     public World world;
 
     // We keep track of these so we can quickly update the tile entities that need rendering.
-    private List<TileEntity>[] tileEntitesByExtendedData = new List[16];
+    private List<TileEntity>[] tileEntitiesByExtendedData = new List[16];
 
     public List<TileEntity> getTileEntitiesToRender(int chunkExtendedDataIndex) {
-        return tileEntitesByExtendedData[chunkExtendedDataIndex];
+        return tileEntitiesByExtendedData[chunkExtendedDataIndex];
     }
 
     @Inject(method = "addTileEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", at = @At("TAIL"))
@@ -82,40 +71,30 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhys
         CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
-        tileEntitesByExtendedData[yIndex].add(tileEntityIn);
-        if (getPhysicsObjectOptional().isPresent()) {
-            getPhysicsObjectOptional().get()
-                .onSetTileEntity(pos, tileEntityIn);
-        }
+        tileEntitiesByExtendedData[yIndex].add(tileEntityIn);
+
+        getPhysicsObject().ifPresent(physo -> physo.onSetTileEntity(pos, tileEntityIn));
     }
 
     @Inject(method = "removeTileEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("TAIL"))
     public void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
-        if (getPhysicsObjectOptional().isPresent()) {
-            getPhysicsObjectOptional().get()
-                .onRemoveTileEntity(pos);
-        }
+        getPhysicsObject().ifPresent(physo -> physo.onRemoveTileEntity(pos));
     }
 
     private void removeTileEntityFromIndex(BlockPos pos, int yIndex) {
-        if (tileEntitesByExtendedData[yIndex] == null) {
-            tileEntitesByExtendedData[yIndex] = new ArrayList<TileEntity>();
+        if (tileEntitiesByExtendedData[yIndex] == null) {
+            tileEntitiesByExtendedData[yIndex] = new ArrayList<>();
         }
-        Iterator<TileEntity> tileEntitiesIterator = tileEntitesByExtendedData[yIndex].iterator();
-        while (tileEntitiesIterator.hasNext()) {
-            TileEntity tile = tileEntitiesIterator.next();
-            if (tile.getPos().equals(pos) || tile.isInvalid()) {
-                tileEntitiesIterator.remove();
-            }
-        }
+        tileEntitiesByExtendedData[yIndex]
+            .removeIf(tile -> tile.getPos().equals(pos) || tile.isInvalid());
     }
 
     @Inject(method = "populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
     public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator,
         CallbackInfo callbackInfo) {
-        if (PhysicsChunkManager.isLikelyShipChunk(this.x, this.z)) {
+        if (ShipChunkAllocator.isChunkInShipyard(this.x, this.z)) {
             callbackInfo.cancel();
         }
     }
@@ -141,4 +120,8 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IPhys
 
     @Shadow
     public abstract IBlockState getBlockState(BlockPos pos);
+
+    private Optional<PhysicsObject> getPhysicsObject() {
+        return ValkyrienUtils.getPhysoManagingChunk(thisAsChunk);
+    }
 }

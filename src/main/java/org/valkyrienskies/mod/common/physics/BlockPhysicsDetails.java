@@ -16,8 +16,6 @@
 
 package org.valkyrienskies.mod.common.physics;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -29,7 +27,10 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockMassProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BlockPhysicsDetails {
 
@@ -116,7 +117,7 @@ public class BlockPhysicsDetails {
     /**
      * Get block mass, in kg.
      */
-    static double getMassFromState(IBlockState state, BlockPos pos, World world) {
+    public static double getMassFromState(IBlockState state, BlockPos pos, World world) {
         Block block = state.getBlock();
         if (block instanceof IBlockMassProvider) {
             return ((IBlockMassProvider) block).getBlockMass(world, pos, state);
@@ -153,9 +154,9 @@ public class BlockPhysicsDetails {
             if (forceVector == null) {
                 toSet.zero();
             } else {
-                toSet.X = forceVector.X;
-                toSet.Y = forceVector.Y;
-                toSet.Z = forceVector.Z;
+                toSet.x = forceVector.x;
+                toSet.y = forceVector.y;
+                toSet.z = forceVector.z;
             }
         }
     }

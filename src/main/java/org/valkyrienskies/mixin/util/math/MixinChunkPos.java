@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -63,7 +63,7 @@ public abstract class MixinChunkPos {
         }
 
         try {
-            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysicsObject(entityIn.world,
+            Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(entityIn.world,
                 new BlockPos(d0, 127, d1));
 
             if (physicsObject.isPresent()) {
@@ -71,11 +71,11 @@ public abstract class MixinChunkPos {
                 // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
                 // entityPosInLocal);
                 physicsObject.get()
-                    .shipTransformationManager()
+                    .getShipTransformationManager()
                     .getCurrentTickTransform()
                     .transform(entityPosInLocal,
                         TransformType.GLOBAL_TO_SUBSPACE);
-                entityPosInLocal.subtract(d0, entityPosInLocal.Y, d1);
+                entityPosInLocal.subtract(d0, entityPosInLocal.y, d1);
                 return entityPosInLocal.lengthSq();
             }
         } catch (Exception e) {

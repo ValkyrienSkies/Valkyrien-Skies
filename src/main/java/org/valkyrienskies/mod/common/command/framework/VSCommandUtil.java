@@ -7,8 +7,9 @@ import java.util.StringTokenizer;
 public class VSCommandUtil {
 
     /**
-     * The only difference between tab-complete args and proper args is that tab-complete args
-     * retain an empty string element at the end if the tab complete was requesting a new arg.
+     * The only difference between tab-complete args and {@link #toProperArgs(String)} is that
+     * tab-complete args retain an empty string element at the end if the tab complete was
+     * requesting a new arg.
      */
     public static String[] toTabCompleteArgs(String[] args) {
         List<String> properArgs = translateCommandline(String.join(" ", args));
@@ -20,10 +21,20 @@ public class VSCommandUtil {
         return properArgs.toArray(new String[0]);
     }
 
+    /**
+     * Convenience method for <code>VSCommandUtil.toProperArgs(String.join(args, " "))</code>
+     */
     public static String[] toProperArgs(String[] args) {
         return toProperArgs(String.join(" ", args));
     }
 
+    /**
+     * This method converts a {@link String} into the standard args {@link String} array, like
+     * Java's <code>public static void main(String[] args)</code>
+     *
+     * @param args The string
+     * @return The args array
+     */
     public static String[] toProperArgs(String args) {
         return translateCommandline(args).toArray(new String[0]);
     }

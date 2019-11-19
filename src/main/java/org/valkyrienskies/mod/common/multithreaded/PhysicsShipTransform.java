@@ -27,6 +27,7 @@ import valkyrienwarfare.api.TransformType;
  *
  * @author thebest108
  */
+@Deprecated
 public class PhysicsShipTransform extends ShipTransform {
 
     private final double posX;
@@ -55,7 +56,7 @@ public class PhysicsShipTransform extends ShipTransform {
         double physYaw,
         double physRoll, Vector physCenterOfMass, AxisAlignedBB gameTickShipBoundingBox,
         ShipTransform gameTickTransform) {
-        super(physX, physY, physZ, physPitch, physYaw, physRoll, physCenterOfMass);
+        super(physX, physY, physZ, physPitch, physYaw, physRoll, physCenterOfMass.toVector3d());
         this.posX = physX;
         this.posY = physY;
         this.posZ = physZ;

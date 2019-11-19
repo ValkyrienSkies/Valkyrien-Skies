@@ -119,15 +119,17 @@ public class ValkyrienSkiesControl {
     public Item vanishingWire;
     public Item vsWrench;
 
-    @SubscribeEvent
-    public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        INSTANCE.vsControlBlocks = new BlocksValkyrienSkiesControl();
-
-        // Actual registering
+	@SubscribeEvent
+	public static void registerBlocks(RegistryEvent.Register<Block> event) {
         Block[] blockArray = BLOCKS.toArray(new Block[0]);
         event.getRegistry().registerAll(blockArray);
+	}
 
-        // This doesn't really belong here, but whatever.
+	public void addBlocks() {
+		INSTANCE.vsControlBlocks = new BlocksValkyrienSkiesControl();
+	}
+
+	public void registerMultiblocks() {
         MultiblockRegistry
         .registerAllPossibleSchematicVariants(ValkyriumEngineMultiblockSchematic.class);
         MultiblockRegistry
@@ -140,15 +142,16 @@ public class ValkyrienSkiesControl {
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        INSTANCE.relayWire = new ItemRelayWire();
-        INSTANCE.vanishingWire = new ItemVanishingWire();
-        INSTANCE.vsWrench = new ItemVSWrench();
-
         event.getRegistry().registerAll(ITEMS.toArray(new Item[0]));
     }
 
-    @SubscribeEvent
-    public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+    public void addItems() {
+		INSTANCE.relayWire = new ItemRelayWire();
+		INSTANCE.vanishingWire = new ItemVanishingWire();
+		INSTANCE.vsWrench = new ItemVSWrench();
+	}
+
+    public void registerRecipes() {
 		addShapedRecipe(INSTANCE.vsControlBlocks.captainsChair, 1,
             "SLS",
             "VWV",
@@ -171,6 +174,7 @@ public class ValkyrienSkiesControl {
 		addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.COBBLESTONE);
 		addEngineRecipe(INSTANCE.vsControlBlocks.eliteEngine, Items.IRON_INGOT);
 		addEngineRecipe(INSTANCE.vsControlBlocks.ultimateEngine, Blocks.OBSIDIAN);
+		addEngineRecipe(INSTANCE.vsControlBlocks.redstoneEngine, Blocks.REDSTONE_BLOCK);
         Item relayWireIngot = Items.IRON_INGOT;
         // TODO: Code to check for copper and set relayWireIngot
 
@@ -212,11 +216,15 @@ public class ValkyrienSkiesControl {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+		addItems();
+		addBlocks();
         proxy.preInit(event);
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+		registerRecipes();
+		registerMultiblocks();
         registerTileEntities();
         registerNetworks();
         registerCapabilities();
@@ -287,7 +295,7 @@ public class ValkyrienSkiesControl {
             ImplCapabilityLastRelay::new);
     }
 
-    public static void addShapedRecipe(ItemStack output, Object... params) {
+    public void addShapedRecipe(ItemStack output, Object... params) {
 		ResourceLocation location = getNameForRecipe(output);
 		CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(params);
 		ShapedRecipes recipe = new ShapedRecipes(
@@ -297,15 +305,15 @@ public class ValkyrienSkiesControl {
 		GameData.register_impl(recipe);
 	}
 
-	public static void addShapedRecipe(Item output, int outputCount, Object... params) {
+	public void addShapedRecipe(Item output, int outputCount, Object... params) {
 		addShapedRecipe(new ItemStack(output, outputCount), params);
 	}
-	public static void addShapedRecipe(Block output, int outputCount, Object... params) {
+	public void addShapedRecipe(Block output, int outputCount, Object... params) {
 		addShapedRecipe(new ItemStack(output, outputCount), params);
 	}
 
 	// Engine recipe helpers
-	public static void addEngineRecipe(Block output, Item type) {
+	public void addEngineRecipe(Block output, Item type) {
 		addShapedRecipe(output, 4,
 			"I##",
 			"IPP",
@@ -315,7 +323,7 @@ public class ValkyrienSkiesControl {
 			'I', Items.IRON_INGOT);
 	}
 
-	public static void addEngineRecipe(Block output, Block type) {
+	public void addEngineRecipe(Block output, Block type) {
 		addEngineRecipe(output, Item.getItemFromBlock(type));
 	}
 

@@ -11,7 +11,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 public class BaseBlock extends Block implements BaseModel {
     public BaseBlock(String name, Material mat, float light, boolean creativeTab) {
         super(mat);
-        this.setUnlocalizedName(name);
+        this.setTranslationKey(name);
         this.setRegistryName(name);
         this.setLightLevel(light);
 

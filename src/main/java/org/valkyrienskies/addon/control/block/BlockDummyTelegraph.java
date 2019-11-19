@@ -18,7 +18,7 @@ import org.valkyrienskies.addon.control.util.BaseBlock;
 public class BlockDummyTelegraph extends BaseBlock {
 
     public BlockDummyTelegraph() {
-        super("dummy_telegraph", Materials.WOOD, 0.0F, true);
+        super("dummy_telegraph", Material.WOOD, 0.0F, true);
         this.setHardness(5.0F);
     }
 

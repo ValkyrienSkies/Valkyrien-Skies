@@ -80,6 +80,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.registries.GameData;
 
 @Mod(
     name = ValkyrienSkiesControl.MOD_NAME,
@@ -295,13 +296,16 @@ public class ValkyrienSkiesControl {
 		GameData.register_impl(recipe);
 	}
 
-    public static void addShapedRecipe(Item output, int outputCount, Object... params) {
-		this.addShapedRecipe(new ItemStack(output, outputCount), params);
+	public static void addShapedRecipe(Item output, int outputCount, Object... params) {
+		addShapedRecipe(new ItemStack(output, outputCount), params);
+	}
+	public static void addShapedRecipe(Block output, int outputCount, Object... params) {
+		addShapedRecipe(new ItemStack(output, outputCount), params);
 	}
 
 	// Engine recipe helpers
 	public static void addEngineRecipe(Item output, Item type) {
-		this.addShapedRecipe(output, 4,
+		addShapedRecipe(output, 4,
 			"I##",
 			"IPP",
 			"I##",
@@ -311,6 +315,6 @@ public class ValkyrienSkiesControl {
 	}
 
 	public static void addEngineRecipe(Item output, Block type) {
-		this.addEngineRecipe(output, count, Item.getItemFromBlock(type));
+		addEngineRecipe(output, count, Item.getItemFromBlock(type));
 	}
 }

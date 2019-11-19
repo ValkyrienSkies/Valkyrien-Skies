@@ -43,7 +43,7 @@ public class BlockPhysicsDetails {
      */
     private static final HashMap<Block, Double> blockToMass = new HashMap<>();
     /**
-     * Materials mapped to their mass.
+     * Material.mapped to their mass.
      */
     private static final HashMap<Material, Double> materialMass = new HashMap<>();
     /**

@@ -35,6 +35,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
@@ -61,6 +63,7 @@ import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
+import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
@@ -141,8 +144,7 @@ public class ValkyrienSkiesMod {
         log.debug("Initializing networks.");
         registerNetworks(event);
 
-        registerCapabilities();
-
+		VSCapabilityRegistry.registerCapabilities();
         proxy.preInit(event);
 
         log.debug("Initializing the VS API.");

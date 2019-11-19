@@ -27,12 +27,12 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEng
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 import org.valkyrienskies.mod.common.config.VSConfig;
 
-public class ItemVSWrench extends Item {
+public class ItemVSWrench extends BaseItem {
     private EnumWrenchMode mode = EnumWrenchMode.CONSTRUCT;
 
     public ItemVSWrench() {
+		super("vs_wrench", true);
         this.setMaxStackSize(1);
-        this.setMaxDamage(80);
     }
 
     @Override

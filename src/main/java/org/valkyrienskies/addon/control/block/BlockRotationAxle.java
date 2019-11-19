@@ -2,7 +2,6 @@ package org.valkyrienskies.addon.control.block;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockRotatedPillar;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -21,8 +20,9 @@ import org.valkyrienskies.addon.control.block.torque.TileEntityRotationAxle;
 
 public class BlockRotationAxle extends BlockRotatedPillar implements ITileEntityProvider {
 
-    public BlockRotationAxle(Material material) {
-        super(material);
+    public BlockRotationAxle() {
+        super("rotation_axle", Material.IRON, 0.0F, true);
+		this.setHardness(6.0F);
     }
 
     @Override

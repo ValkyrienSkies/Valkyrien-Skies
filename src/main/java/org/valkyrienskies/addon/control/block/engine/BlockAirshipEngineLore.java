@@ -38,8 +38,8 @@ public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
 
     private String[] lore;
 
-    public BlockAirshipEngineLore(Material materialIn, double enginePower) {
-        super(materialIn, enginePower);
+	public BlockAirshipEngineLore(String name, Material mat, double enginePower, float hardness) {
+        super(name, mat, enginePower, hardness);
     }
 
     @Override
@@ -72,8 +72,6 @@ public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
         if (engineTile != null) {
             VectorImmutable forceOutputNormal = engineTile.getForceOutputNormal(secondsToApply,
                 physicsObject);
-            // System.out.println(forceOutputNormal.getX() + ":" + forceOutputNormal.getY()
-            // + ":" + forceOutputNormal.getZ());
             return new Vector(pos.getX() + .5D - forceOutputNormal.getX() * .75,
                 pos.getY() + .5D - forceOutputNormal.getY() * .75,
                 pos.getZ() + .5D - forceOutputNormal.getZ() * .75);

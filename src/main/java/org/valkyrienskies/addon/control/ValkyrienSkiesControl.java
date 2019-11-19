@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.control;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -109,45 +111,37 @@ public class ValkyrienSkiesControl {
 
     // MOD CLASS MEMBERS
     public static SimpleNetworkWrapper controlNetwork;
-    public final BlocksValkyrienSkiesControl vsControlBlocks = new BlocksValkyrienSkiesControl();
+    public final BlocksValkyrienSkiesControl vsControlBlocks;
     public Item relayWire;
     public Item vanishingWire;
     public Item vsWrench;
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        INSTANCE.vsControlBlocks.registerBlocks(event);
+		INSTANCE.vsControlBlocks = new BlocksValkyrienSkiesControl()
+
+		// Actual registering
+		Block[] blockArray = BLOCKS.toArray(new Block[0]);
+		event.getRegistry().registerAll(blockArray);
+
+		// This doesn't really belong here, but whatever.
+		MultiblockRegistry
+		.registerAllPossibleSchematicVariants(ValkyriumEngineMultiblockSchematic.class);
+		MultiblockRegistry
+		.registerAllPossibleSchematicVariants(ValkyriumCompressorMultiblockSchematic.class);
+		MultiblockRegistry
+		.registerAllPossibleSchematicVariants(RudderAxleMultiblockSchematic.class);
+		MultiblockRegistry
+		.registerAllPossibleSchematicVariants(GiantPropellerMultiblockSchematic.class);
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        INSTANCE.relayWire = new ItemRelayWire().setTranslationKey("relay_wire")
-            .setRegistryName(MOD_ID, "relay_wire")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        INSTANCE.vanishingWire = new ItemVanishingWire().setTranslationKey("vanishing_wire")
-            .setRegistryName(MOD_ID, "vanishing_wire")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        INSTANCE.vsWrench = new ItemVSWrench().setTranslationKey("vs_wrench")
-            .setRegistryName(MOD_ID, "vs_wrench")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
+		INSTANCE.relayWire = new ItemRelayWire();
+		INSTANCE.vanishingWire = new ItemVanishingWire();
+		INSTANCE.vsWrench = new ItemVSWrench();
 
-        event.getRegistry()
-            .register(INSTANCE.relayWire);
-        event.getRegistry()
-            .register(INSTANCE.vanishingWire);
-        event.getRegistry()
-            .register(INSTANCE.vsWrench);
-
-        INSTANCE.vsControlBlocks.registerBlockItems(event);
-        // This doesn't really belong here, but whatever.
-        MultiblockRegistry
-            .registerAllPossibleSchematicVariants(ValkyriumEngineMultiblockSchematic.class);
-        MultiblockRegistry
-            .registerAllPossibleSchematicVariants(ValkyriumCompressorMultiblockSchematic.class);
-        MultiblockRegistry
-            .registerAllPossibleSchematicVariants(RudderAxleMultiblockSchematic.class);
-        MultiblockRegistry
-            .registerAllPossibleSchematicVariants(GiantPropellerMultiblockSchematic.class);
+		event.getRegistry().registerAll(ITEMS.toArray(new Item[0]));
     }
 
     @SubscribeEvent
@@ -282,7 +276,7 @@ public class ValkyrienSkiesControl {
         GameRegistry.registerTileEntity(TileEntityValkyriumCompressorPart.class,
             new ResourceLocation(MOD_ID, "tile_valkyrium_compressor_part"));
         GameRegistry.registerTileEntity(TileEntityRudderPart.class,
-            new ResourceLocation(MOD_ID, "tile_rudder_axle_part"));
+            new ResourceLocation(MOD_ID, "tile_rudder_part"));
         GameRegistry.registerTileEntity(TileEntityGiantPropellerPart.class,
             new ResourceLocation(MOD_ID, "tile_giant_propeller_part"));
         GameRegistry.registerTileEntity(TileEntityRotationAxle.class,

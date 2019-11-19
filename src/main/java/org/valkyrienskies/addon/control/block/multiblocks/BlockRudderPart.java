@@ -15,21 +15,23 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
-public class BlockRudderPart extends Block implements ITileEntityProvider, IBlockForceProvider {
+public class BlockRudderPart extends BaseBlock implements ITileEntityProvider, IBlockForceProvider {
 
-    public BlockRudderPart(Material materialIn) {
-        super(materialIn);
+    public BlockRudderPart() {
+        super("rudder_part", Material.WOOD, 0.0F, true);
+		this.setHardness(5.0F);
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation,
         ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rudder_axle_part"));
+        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.rudder_part"));
         itemInformation.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + I18n.format("tooltip.vs_control.wrench_usage"));
     }
 

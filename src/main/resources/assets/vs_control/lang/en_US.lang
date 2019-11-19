@@ -46,8 +46,13 @@ tooltip.vs_control.gearbox_2=Connect to a Speed Telegraph to control torque outp
 tile.rotation_axle.name=Rotation Axle
 tooltip.vs_control.rotation_axle=Used to connect valkyrium engines from gearboxes to propellers.
 
+
+## Network
+tile.network_display.name=Network Display
+tooltip.vs_control.network_display=[WIP] Lists all nodes on the connected network.
+
 tile.network_relay.name=Network Relay
-tooltip.vs_control.network_relay=Lets you connect %d components, including relays, to this using Relay Wire.
+tooltip.vs_control.network_relay=Lets you connect %d components, including relays, to this using Relay Wire or Vanishing Wire.
 
 
 ## Multi-Block parts
@@ -77,7 +82,7 @@ tooltip.vs_control.legacy_engine=Legacy engine, only requires a redstone signal 
 
 ## Misc.
 tile.compacted_valkyrium.name=Compacted Valkyrium
-# Upward force: 200KN
+tooltip.vs_control.compacted_valkrium=Lift force: %d Newtons.
 
 tile.gyroscope_stabilizer.name=Ship Gyroscope Stabilizer
 tooltip.vs_control.gyroscope_stabilizer=This block passively provides a torque to makes the ship level.
@@ -86,9 +91,7 @@ tile.gyroscope_dampener.name=Ship Gyroscope Dampener
 tooltip.vs_control.gyroscope_dampener=This block passively provides a torque to prevent the ship from rocking.
 
 
+
 ## Not Yet Implemented
 tile.lift_valve.name=Lift Valve
 tooltip.vs_control.lift_valve=Not yet implemented.
-
-tile.network_display.name=Network Display
-tooltip.vs_control.network_display=Not yet implemented.

@@ -37,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
@@ -47,8 +48,8 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
-    public BlockCaptainsChair(Material materialIn) {
-        super(materialIn);
+    public BlockCaptainsChair() {
+        super("captains_chair", Material.WOOD, 4.0F);
     }
 
     public static double getChairYaw(IBlockState state, BlockPos pos) {

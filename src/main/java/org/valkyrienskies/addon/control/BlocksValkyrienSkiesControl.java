@@ -73,178 +73,38 @@ public class BlocksValkyrienSkiesControl {
     public final Block rotationAxle;
 
     public BlocksValkyrienSkiesControl() {
+        basicEngine = new BlockNormalEngine("basic", Material.WOOD,
+            VSConfig.ENGINE_POWER.basicEnginePower, 5.0F);
+        advancedEngine = new BlockNormalEngine("advanced", Material.ROCK,
+            VSConfig.ENGINE_POWER.basicEnginePower, 6.0F);
+        eliteEngine = new BlockNormalEngine("elite", Material.IRON,
+            VSConfig.ENGINE_POWER.basicEnginePower, 8.0F);
+        ultimateEngine = new BlockNormalEngine("ultimate", Material.GROUND,
+            VSConfig.ENGINE_POWER.basicEnginePower, 10.0F);
+        redstoneEngine = new BlockRedstoneEngine();
 
-        basicEngine = (BlockNormalEngine) new BlockNormalEngine(Material.WOOD,
-            VSConfig.ENGINE_POWER.basicEnginePower).setHardness(5f)
-            .setTranslationKey("basic_engine")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "basic_engine")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        advancedEngine = (BlockNormalEngine) new BlockNormalEngine(Material.ROCK,
-            VSConfig.ENGINE_POWER.advancedEnginePower).setHardness(6f)
-            .setTranslationKey("advanced_engine")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "advanced_engine")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        eliteEngine = (BlockNormalEngine) new BlockNormalEngine(Material.IRON,
-            VSConfig.ENGINE_POWER.eliteEnginePower).setHardness(8f)
-            .setTranslationKey("elite_engine")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "elite_engine")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        ultimateEngine = (BlockNormalEngine) new BlockNormalEngine(Material.GROUND,
-            VSConfig.ENGINE_POWER.ultimateEnginePower).setHardness(10f)
-            .setTranslationKey("ultimate_engine")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "ultimate_engine")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        redstoneEngine = (BlockRedstoneEngine) new BlockRedstoneEngine(Material.REDSTONE_LIGHT,
-            VSConfig.ENGINE_POWER.redstoneEnginePower).setHardness(7.0f)
-            .setTranslationKey("redstone_engine")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "redstone_engine")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
+        compactedValkyrium = new BlockCompactedValkyrium();
+        captainsChair = new BlockCaptainsChair();
+        passengerChair = new BlockPassengerChair();
+        shipHelm = new BlockShipHelm();
+        shipWheel = new BlockShipWheel();
+        speedTelegraph = new BlockSpeedTelegraph();
+        dummyTelegraph = new BlockDummyTelegraph();
 
-        compactedValkyrium = new BlockCompactedValkyrium(Material.GLASS).setHardness(4f)
-            .setTranslationKey("compacted_valkyrium")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "compacted_valkyrium")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        captainsChair = new BlockCaptainsChair(Material.IRON).setHardness(4f)
-            .setTranslationKey("captains_chair")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "captains_chair")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
+        networkRelay = new BlockNetworkRelay();
+        networkDisplay = new BlockNetworkDisplay();
 
-        passengerChair = new BlockPassengerChair(Material.IRON).setHardness(4f)
-            .setTranslationKey("passenger_chair")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "passenger_chair")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        shipHelm = new BlockShipHelm(Material.WOOD).setHardness(4f)
-            .setTranslationKey("ship_helm")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "ship_helm")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        shipWheel = new BlockShipWheel(Material.WOOD).setHardness(5f)
-            .setTranslationKey("ship_helm_wheel")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "ship_helm_wheel");
-        speedTelegraph = new BlockSpeedTelegraph(Material.WOOD).setHardness(5f)
-            .setTranslationKey("speed_telegraph")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "speed_telegraph")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
+        gyroscopeStabilizer = new BlockGyroscopeStabilizer();
+        gyroscopeDampener = new BlockGyroscopeDampener();
 
-        networkRelay = new BlockNetworkRelay(Material.IRON).setHardness(5f)
-            .setTranslationKey("network_relay")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "network_relay")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
+        liftValve = new BlockLiftValve();
+        liftLever = new BlockLiftLever();
 
-        gyroscopeStabilizer = new BlockGyroscopeStabilizer(Material.IRON).setHardness(5f)
-            .setTranslationKey("gyroscope_stabilizer")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "gyroscope_stabilizer")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-
-        liftValve = new BlockLiftValve(Material.IRON).setHardness(7f)
-            .setTranslationKey("lift_valve")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "lift_valve")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        networkDisplay = new BlockNetworkDisplay(Material.IRON).setHardness(5f)
-            .setTranslationKey("network_display")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "network_display")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        liftLever = new BlockLiftLever(Material.IRON).setHardness(5f)
-            .setTranslationKey("lift_lever")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "lift_lever")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-
-        valkyriumCompressorPart = new BlockValkyriumCompressorPart(Material.IRON).setHardness(6f)
-            .setTranslationKey("valkyrium_compressor_part")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "valkyrium_compressor_part")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-
-        gyroscopeDampener = new BlockGyroscopeDampener(Material.IRON).setHardness(6f)
-            .setTranslationKey("gyroscope_dampener")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "gyroscope_dampener")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        valkyriumEnginePart = new BlockValkyriumEnginePart(Material.IRON).setHardness(6f)
-            .setTranslationKey("valkyrium_engine_part")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "valkyrium_engine_part")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        gearbox = new BlockGearbox(Material.IRON).setHardness(6f)
-            .setTranslationKey("gearbox")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "gearbox")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        dummyTelegraph = new BlockDummyTelegraph(Material.WOOD).setHardness(5f)
-            .setTranslationKey("dummy_telegraph")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "dummy_telegraph");
-        rudderPart = new BlockRudderPart(Material.IRON).setHardness(5f)
-            .setTranslationKey("rudder_part")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "rudder_part")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        giantPropellerPart = new BlockGiantPropellerPart(Material.IRON).setHardness(5f)
-            .setTranslationKey("giant_propeller_part")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "giant_propeller_part")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        rotationAxle = new BlockRotationAxle(Material.IRON).setHardness(5f)
-            .setTranslationKey("rotation_axle")
-            .setRegistryName(ValkyrienSkiesControl.MOD_ID, "rotation_axle")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-    }
-
-    public void registerBlocks(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(basicEngine);
-        event.getRegistry().register(advancedEngine);
-        event.getRegistry().register(eliteEngine);
-        event.getRegistry().register(ultimateEngine);
-        event.getRegistry().register(redstoneEngine);
-
-        event.getRegistry().register(compactedValkyrium);
-        event.getRegistry().register(captainsChair);
-        event.getRegistry().register(passengerChair);
-
-        event.getRegistry().register(shipHelm);
-        event.getRegistry().register(shipWheel);
-        event.getRegistry().register(speedTelegraph);
-        event.getRegistry().register(dummyTelegraph);
-        event.getRegistry().register(networkRelay);
-
-        event.getRegistry().register(liftValve);
-        event.getRegistry().register(liftLever);
-        event.getRegistry().register(networkDisplay);
-        event.getRegistry().register(gyroscopeStabilizer);
-        event.getRegistry().register(gyroscopeDampener);
-
-        event.getRegistry().register(valkyriumCompressorPart);
-        event.getRegistry().register(valkyriumEnginePart);
-        event.getRegistry().register(rudderPart);
-        event.getRegistry().register(giantPropellerPart);
-        event.getRegistry().register(gearbox);
-        event.getRegistry().register(rotationAxle);
-    }
-
-    public void registerBlockItems(RegistryEvent.Register<Item> event) {
-        registerItemBlock(event, basicEngine);
-        registerItemBlock(event, advancedEngine);
-        registerItemBlock(event, eliteEngine);
-        registerItemBlock(event, ultimateEngine);
-        registerItemBlock(event, redstoneEngine);
-
-        registerItemBlock(event, compactedValkyrium);
-        registerItemBlock(event, captainsChair);
-        registerItemBlock(event, passengerChair);
-
-        registerItemBlock(event, shipHelm);
-        registerItemBlock(event, shipWheel);
-        registerItemBlock(event, speedTelegraph);
-        registerItemBlock(event, dummyTelegraph);
-        registerItemBlock(event, networkRelay);
-
-        registerItemBlock(event, liftValve);
-        registerItemBlock(event, liftLever);
-        registerItemBlock(event, networkDisplay);
-        registerItemBlock(event, valkyriumCompressorPart);
-        registerItemBlock(event, gyroscopeStabilizer);
-        registerItemBlock(event, gyroscopeDampener);
-
-        registerItemBlock(event, valkyriumEnginePart);
-        registerItemBlock(event, gearbox);
-        registerItemBlock(event, rudderPart);
-        registerItemBlock(event, giantPropellerPart);
-        registerItemBlock(event, rotationAxle);
-    }
-
-    private void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {
-        Module.registerItemBlock(event, block);
+        valkyriumCompressorPart = new BlockValkyriumCompressorPart();
+        valkyriumEnginePart = new BlockValkyriumEnginePart();
+        rudderPart = new BlockRudderPart();
+        giantPropellerPart = new BlockGiantPropellerPart();
+        rotationAxle = new BlockRotationAxle();
+        gearbox = new BlockGearbox();
     }
 }

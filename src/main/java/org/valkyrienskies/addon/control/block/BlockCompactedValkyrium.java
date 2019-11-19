@@ -31,15 +31,10 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
-public class BlockCompactedValkyrium extends Block implements IBlockForceProvider {
+public class BlockCompactedValkyrium extends BaseBlock implements IBlockForceProvider {
 
-    private static final double DOPED_ETHEREUM_FORCE = 200000;
-    private static final String[] lore = new String[]{
-        "" + TextFormatting.GRAY + TextFormatting.ITALIC + TextFormatting.BOLD +
-            "Force:", "  " + DOPED_ETHEREUM_FORCE + " Newtons"};
-
-    public BlockCompactedValkyrium(Material materialIn) {
-        super(materialIn);
+    public BlockCompactedValkyrium() {
+        super("compacted_valkyrium", Material.GLASS, 4.0F, true);
     }
 
     /**
@@ -50,7 +45,7 @@ public class BlockCompactedValkyrium extends Block implements IBlockForceProvide
     public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
         PhysicsObject physicsObject, double secondsToApply) {
         // TODO: Shouldn't this depend on the gravity vector?
-        return new Vector(0, DOPED_ETHEREUM_FORCE * secondsToApply, 0);
+        return new Vector(0, VSConfig.compactedValkyriumLift * secondsToApply, 0);
     }
 
     /**
@@ -66,7 +61,8 @@ public class BlockCompactedValkyrium extends Block implements IBlockForceProvide
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation,
         ITooltipFlag advanced) {
-        Collections.addAll(itemInformation, lore);
+		itemInformation.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + "" + TextFormatting.BOLD +
+			I18n.format("tooltip.vs_control.compacted_valkyrium", VSConfig.compactedValkyriumLift));
     }
 
 }

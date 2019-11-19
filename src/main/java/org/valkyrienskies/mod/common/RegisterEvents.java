@@ -40,19 +40,36 @@ public class RegisterEvents {
     @SubscribeEvent
     public static void registerBlocks(@Nonnull final RegistryEvent.Register<Block> event) {
         logger.debug("Registering blocks");
-        ValkyrienSkiesMod.INSTANCE.registerBlocks(event);
+		ValkyrienSkiesMod.INSTANCE.registerBlocks(event);
+		event.getRegistry().registerAll(ValkyrienSkiesMod.ITEMS.toArray(new Item[0]));
     }
 
     @SubscribeEvent
     public static void registerItems(@Nonnull final RegistryEvent.Register<Item> event) {
         logger.debug("Registering items");
-        ValkyrienSkiesMod.INSTANCE.registerItems(event);
+		ValkyrienSkiesMod.INSTANCE.registerItems(event);
+		event.getRegistry().registerAll(ValkyrienSkiesMod.ITEMS.toArray(new Item[0]));
     }
 
     @SubscribeEvent
     public static void registerRecipes(@Nonnull final RegistryEvent.Register<IRecipe> event) {
         ValkyrienSkiesMod.INSTANCE.registerRecipes(event);
     }
+
+    @SubscribeEvent
+    public static void onModelRegister(ModelRegistryEvent event) {
+		for (Item item : ValkyrienSkiesMod.ITEMS) {
+			if (item instanceof BaseModel) {
+				((BaseModel) item).registerModels();
+			}
+		}
+
+		for (Block block : ValkyrienSkiesMod.BLOCKS) {
+			if (block instanceof BaseModel) {
+				((BaseModel) block).registerModels();
+			}
+		}
+	}
 
     /**
      * This method will be called by Forge when it is time for the mod to register its entity

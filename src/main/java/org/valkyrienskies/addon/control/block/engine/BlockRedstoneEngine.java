@@ -20,12 +20,13 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class BlockRedstoneEngine extends BlockAirshipEngineLore {
 
-    public BlockRedstoneEngine(Material materialIn, double powerMultiplier) {
-        super(materialIn, powerMultiplier);
+    public BlockRedstoneEngine() {
+		super("redstone", Material.REDSTONE_LIGHT, VSConfig.ENGINE_POWER.basicEnginePower, 7.0F);
     }
 
     @Override

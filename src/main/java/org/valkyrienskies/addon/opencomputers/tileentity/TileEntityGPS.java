@@ -28,9 +28,9 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "opencomputers")
-public class GPSTileEntity extends TileEntity implements SimpleComponent {
+public class TileEntityGPS extends TileEntity implements SimpleComponent {
 
-    public GPSTileEntity() {
+    public TileEntityGPS() {
         super();
     }
 

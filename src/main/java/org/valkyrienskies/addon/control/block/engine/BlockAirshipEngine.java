@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
@@ -39,15 +40,16 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
  * tons of new classes for them. Only engines that add new functionality should have their own
  * class.
  */
-public abstract class BlockAirshipEngine extends Block implements IBlockForceProvider,
+public abstract class BlockAirshipEngine extends BaseBlock implements IBlockForceProvider,
     ITileEntityProvider {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
     protected double enginePower;
 
-    public BlockAirshipEngine(Material materialIn, double enginePower) {
-        super(materialIn);
+    public BlockAirshipEngine(String name, Material mat, double enginePower, float hardness) {
+        super(name + "_engine", mat, light, true);
         this.setEnginePower(enginePower);
+		this.setHardness(hardness);
     }
 
     @Override

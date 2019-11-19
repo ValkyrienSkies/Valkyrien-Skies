@@ -28,11 +28,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityLiftValve;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 
-public class BlockLiftValve extends Block implements ITileEntityProvider {
+public class BlockLiftValve extends BaseBlock implements ITileEntityProvider {
 
-    public BlockLiftValve(Material materialIn) {
-        super(materialIn);
+    public BlockLiftValve() {
+        super("lift_valve", Material.IRON, 0.0F, true);
+		this.setHardness(7.0F);
     }
 
     @Override

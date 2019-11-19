@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.mod.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;

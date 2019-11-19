@@ -47,8 +47,8 @@ public class BlockPassengerChair extends Block {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
-    public BlockPassengerChair(Material materialIn) {
-        super(materialIn);
+    public BlockPassengerChair() {
+        super("passenger_chair", Material.WOOD, 4.0F);
     }
 
     public static double getChairYaw(IBlockState state, BlockPos pos) {

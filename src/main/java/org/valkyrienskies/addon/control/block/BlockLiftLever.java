@@ -21,8 +21,8 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityLiftLever;
 
 public class BlockLiftLever extends BlockPilotableBasic {
 
-    public BlockLiftLever(Material materialIn) {
-        super(materialIn);
+    public BlockLiftLever() {
+        super("lift_lever", Materials.IRON, 5.0F);
     }
 
     @Override

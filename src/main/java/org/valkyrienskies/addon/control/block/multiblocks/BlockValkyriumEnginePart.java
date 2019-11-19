@@ -14,11 +14,13 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 
-public class BlockValkyriumEnginePart extends Block implements ITileEntityProvider {
+public class BlockValkyriumEnginePart extends BaseBlock implements ITileEntityProvider {
 
-    public BlockValkyriumEnginePart(Material materialIn) {
-        super(materialIn);
+    public BlockValkyriumEnginePart() {
+        super("valkyrium_engine_part", Material.IRON, 0.0F, true);
+		this.setHardness(6.0F);
     }
 
     @Override

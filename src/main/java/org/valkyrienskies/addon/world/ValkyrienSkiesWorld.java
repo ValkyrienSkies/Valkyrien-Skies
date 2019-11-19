@@ -16,6 +16,8 @@
 
 package org.valkyrienskies.addon.world;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -54,6 +56,9 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesWorld.MOD_ID)
 @Log4j2
 public class ValkyrienSkiesWorld {
+	// Used for registering stuff
+	public static final List<Block> BLOCKS = new ArrayList<Block>();
+	public static final List<Item> ITEMS = new ArrayList<Item>();
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "vs_world";
@@ -82,29 +87,18 @@ public class ValkyrienSkiesWorld {
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         log.debug("Registering blocks...");
 
-        INSTANCE.valkyriumOre = new BlockValkyriumOre(Material.ROCK).setHardness(3f)
-            .setTranslationKey("valkyrium_ore")
-            .setRegistryName(MOD_ID, "valkyrium_ore")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
+        INSTANCE.valkyriumOre = new BlockValkyriumOre();
 
-        event.getRegistry()
-            .register(INSTANCE.valkyriumOre);
-
+		// Actual registering
+		Block[] blockArray = BLOCKS.toArray(new Block[0]);
+		event.getRegistry().registerAll(blockArray);
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        INSTANCE.valkyriumCrystal = new ItemValkyriumCrystal().setTranslationKey("valkyrium_crystal")
-            .setRegistryName(MOD_ID, "valkyrium_crystal")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB)
-            .setMaxStackSize(16);
+        INSTANCE.valkyriumCrystal = new ItemValkyriumCrystal();
 
-        event.getRegistry()
-            .register(INSTANCE.valkyriumCrystal);
-        // Register item block for valkyrium ore.
-        event.getRegistry()
-            .register(new ItemBlock(INSTANCE.valkyriumOre)
-                .setRegistryName(INSTANCE.valkyriumOre.getRegistryName()));
+		event.getRegistry().registerAll(ITEMS.toArray(new Item[0]));
     }
 
     @EventHandler

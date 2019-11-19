@@ -31,7 +31,7 @@ public class BlockShipWheel extends BaseBlock {
 
     public BlockShipWheel() {
         super("ship_helm_wheel", Material.WOOD, 0.0F, false);
-		this.setHardness(5.0F);
+        this.setHardness(5.0F);
         setDefaultState(getStateFromMeta(0));
     }
 

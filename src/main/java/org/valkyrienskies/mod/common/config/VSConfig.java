@@ -49,8 +49,8 @@ public class VSConfig extends VSConfigTemplate {
     @Name("Enable gravity")
     public static boolean doGravity = true;
 
-	@Name("Compacted Valkyrium lift")
-	public static double compactedValkyriumLift = 200000;
+    @Name("Compacted Valkyrium lift")
+    public static double compactedValkyriumLift = 200000;
 
     public static boolean doPhysicsBlocks = true;
 

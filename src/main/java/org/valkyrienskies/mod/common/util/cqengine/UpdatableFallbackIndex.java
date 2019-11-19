@@ -8,10 +8,10 @@ public class UpdatableFallbackIndex<O> extends FallbackIndex<O> implements Updat
 
     /**
      * No-op
-	 */
-	@Override
-	public void updateAll(ObjectSet<O> objectSet, QueryOptions queryOptions) {
-		// No-op
-	}
+     */
+    @Override
+    public void updateAll(ObjectSet<O> objectSet, QueryOptions queryOptions) {
+        // No-op
+    }
 
 }

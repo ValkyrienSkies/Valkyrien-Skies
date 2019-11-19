@@ -19,7 +19,7 @@ public class BlockDummyTelegraph extends BaseBlock {
 
     public BlockDummyTelegraph() {
         super("dummy_telegraph", Materials.WOOD, 0.0F, true);
-		this.setHardness(5.0F);
+        this.setHardness(5.0F);
     }
 
     @Override

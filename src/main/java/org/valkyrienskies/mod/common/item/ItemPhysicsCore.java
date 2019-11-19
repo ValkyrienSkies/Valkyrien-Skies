@@ -13,7 +13,7 @@ import org.valkyrienskies.mod.common.util.BaseItem;
 public class ItemPhysicsCore extends BaseItem {
 
     public ItemPhysicsCore() {
-		super("physics_core", true);
+        super("physics_core", true);
         this.setMaxStackSize(1);
         this.setMaxDamage(80);
     }

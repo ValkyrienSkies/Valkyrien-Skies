@@ -46,7 +46,7 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 @ParametersAreNonnullByDefault
 public class BlockNetworkRelay extends BaseBlock implements ITileEntityProvider {
 
-	public static final PropertyDirection FACING = PropertyDirection.create("facing");
+    public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
     private static final AxisAlignedBB EAST = new AxisAlignedBB(0D / 16D, 5D / 16D, 5D / 16D,
         6D / 16D, 11D / 16D, 11D / 16D);
@@ -63,7 +63,7 @@ public class BlockNetworkRelay extends BaseBlock implements ITileEntityProvider 
 
     public BlockNetworkRelay() {
         super("network_relay", Material.IRON, 0.0F, true);
-		this.setHardness(5.0F);
+        this.setHardness(5.0F);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
 

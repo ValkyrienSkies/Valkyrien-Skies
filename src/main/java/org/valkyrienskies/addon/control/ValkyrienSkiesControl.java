@@ -18,28 +18,7 @@ package org.valkyrienskies.addon.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
+
 import org.valkyrienskies.addon.control.block.multiblocks.GiantPropellerMultiblockSchematic;
 import org.valkyrienskies.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
@@ -53,8 +32,8 @@ import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.ImplCapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.StorageLastRelay;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
-import org.valkyrienskies.addon.control.item.ItemVanishingWire;
 import org.valkyrienskies.addon.control.item.ItemVSWrench;
+import org.valkyrienskies.addon.control.item.ItemVanishingWire;
 import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPiloting;
 import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPilotingHandler;
 import org.valkyrienskies.addon.control.network.MessageStartPiloting;
@@ -78,7 +57,29 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
 import org.valkyrienskies.addon.control.tileentity.TileEntitySpeedTelegraph;
 import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienwarfare.api.addons.Module;
+
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(
     name = ValkyrienSkiesControl.MOD_NAME,
@@ -88,9 +89,9 @@ import org.valkyrienwarfare.api.addons.Module;
 )
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
 public class ValkyrienSkiesControl {
-	// Used for registering stuff
-	public static final List<Block> BLOCKS = new ArrayList<Block>();
-	public static final List<Item> ITEMS = new ArrayList<Item>();
+    // Used for registering stuff
+    public static final List<Block> BLOCKS = new ArrayList<Block>();
+    public static final List<Item> ITEMS = new ArrayList<Item>();
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "vs_control";
@@ -111,43 +112,42 @@ public class ValkyrienSkiesControl {
 
     // MOD CLASS MEMBERS
     public static SimpleNetworkWrapper controlNetwork;
-    public final BlocksValkyrienSkiesControl vsControlBlocks;
+    public BlocksValkyrienSkiesControl vsControlBlocks;
     public Item relayWire;
     public Item vanishingWire;
     public Item vsWrench;
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-		INSTANCE.vsControlBlocks = new BlocksValkyrienSkiesControl();
+        INSTANCE.vsControlBlocks = new BlocksValkyrienSkiesControl();
 
-		// Actual registering
-		Block[] blockArray = BLOCKS.toArray(new Block[0]);
-		event.getRegistry().registerAll(blockArray);
+        // Actual registering
+        Block[] blockArray = BLOCKS.toArray(new Block[0]);
+        event.getRegistry().registerAll(blockArray);
 
-		// This doesn't really belong here, but whatever.
-		MultiblockRegistry
-		.registerAllPossibleSchematicVariants(ValkyriumEngineMultiblockSchematic.class);
-		MultiblockRegistry
-		.registerAllPossibleSchematicVariants(ValkyriumCompressorMultiblockSchematic.class);
-		MultiblockRegistry
-		.registerAllPossibleSchematicVariants(RudderAxleMultiblockSchematic.class);
-		MultiblockRegistry
-		.registerAllPossibleSchematicVariants(GiantPropellerMultiblockSchematic.class);
+        // This doesn't really belong here, but whatever.
+        MultiblockRegistry
+        .registerAllPossibleSchematicVariants(ValkyriumEngineMultiblockSchematic.class);
+        MultiblockRegistry
+        .registerAllPossibleSchematicVariants(ValkyriumCompressorMultiblockSchematic.class);
+        MultiblockRegistry
+        .registerAllPossibleSchematicVariants(RudderAxleMultiblockSchematic.class);
+        MultiblockRegistry
+        .registerAllPossibleSchematicVariants(GiantPropellerMultiblockSchematic.class);
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-		INSTANCE.relayWire = new ItemRelayWire();
-		INSTANCE.vanishingWire = new ItemVanishingWire();
-		INSTANCE.vsWrench = new ItemVSWrench();
+        INSTANCE.relayWire = new ItemRelayWire();
+        INSTANCE.vanishingWire = new ItemVanishingWire();
+        INSTANCE.vsWrench = new ItemVSWrench();
 
-		event.getRegistry().registerAll(ITEMS.toArray(new Item[0]));
+        event.getRegistry().registerAll(ITEMS.toArray(new Item[0]));
     }
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        Module.registerRecipe(event, "recipe_captains_chair",
-            new ItemStack(INSTANCE.vsControlBlocks.captainsChair),
+		this.addShapedRecipe(INSTANCE.vsControlBlocks.captainsChair, 1,
             "SLS",
             "VWV",
             " S ",
@@ -155,63 +155,43 @@ public class ValkyrienSkiesControl {
             'L', Items.LEATHER,
             'W', Item.getItemFromBlock(Blocks.LOG),
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
+		this.addShapedRecipe(INSTANCE.vsControlBlocks.passengerChair, 1,
+            "SLS",
+            "PWP",
+            " S ",
+            'S', Items.STICK,
+            'L', Items.LEATHER,
+            'W', Item.getItemFromBlock(Blocks.LOG),
+            'P', Item.getItemFromBlock(Blocks.PLANKS));
 
-        Module.registerRecipe(event, "recipe_basic_engine",
-            new ItemStack(INSTANCE.vsControlBlocks.basicEngine, 4),
-            "I##",
-            "IPP",
-            "I##",
-            '#', Item.getItemFromBlock(Blocks.PLANKS),
-            'P', Item.getItemFromBlock(Blocks.PISTON),
-            'I', Items.IRON_INGOT);
-
-        Module.registerRecipe(event, "recipe_advanced_engine_stone",
-            new ItemStack(INSTANCE.vsControlBlocks.advancedEngine, 4),
-            "I##",
-            "IPP",
-            "I##",
-            '#', Item.getItemFromBlock(Blocks.STONE),
-            'P', Item.getItemFromBlock(Blocks.PISTON),
-            'I', Items.IRON_INGOT);
-        Module.registerRecipe(event, "recipe_advanced_engine_cobblestone",
-            new ItemStack(INSTANCE.vsControlBlocks.advancedEngine, 2), "I##", "IPP", "I##", '#',
-            Item.getItemFromBlock(Blocks.COBBLESTONE), 'P', Item.getItemFromBlock(Blocks.PISTON),
-            'I', Items.IRON_INGOT);
-        Module.registerRecipe(event, "recipe_elite_engine",
-            new ItemStack(INSTANCE.vsControlBlocks.eliteEngine, 4), "III", "IPP", "III", 'P',
-            Item.getItemFromBlock(Blocks.PISTON), 'I', Items.IRON_INGOT);
-        Module.registerRecipe(event, "recipe_ultimate_engine",
-            new ItemStack(INSTANCE.vsControlBlocks.ultimateEngine, 4), "I##", "IPP", "I##", '#',
-            Item.getItemFromBlock(Blocks.OBSIDIAN), 'P', Item.getItemFromBlock(Blocks.PISTON), 'I',
-            Items.IRON_INGOT);
-
+		this.addEngineRecipe(INSTANCE.vsControlBlocks.basicEngine, Blocks.PLANKS);
+		this.addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.STONE);
+		this.addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.COBBLESTONE);
+		this.addEngineRecipe(INSTANCE.vsControlBlocks.eliteEngine, Items.IRON_INGOT);
+		this.addEngineRecipe(INSTANCE.vsControlBlocks.ultimateEngine, Blocks.OBSIDIAN);
         Item relayWireIngot = Items.IRON_INGOT;
         // TODO: Code to check for copper and set relayWireIngot
 
-        Module.registerRecipe(event, "recipe_relay_wire",
-            new ItemStack(INSTANCE.relayWire, 4), // 1 per copper/iron ingot
+        this.addShapedRecipe(INSTANCE.relayWire, 4, // 1 per copper/iron ingot
             " I ",
             "ISI",
             " I ",
             'I', relayWireIngot,
             'S', Items.STICK);
-        Module.registerRecipe(event, "recipe_vanishing_wire", // Valkyrium makes stuff invisible sometimes its canon
-            new ItemStack(INSTANCE.vanishingWire, 8),
+		this.addShapedRecipe(INSTANCE.vanishingWire, 8,
             "WWW",
             "WVW",
             "WWW",
             'W', INSTANCE.relayWire,
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
-        Module.registerRecipe(event, "recipe_compacted_valkyrium",
-            new ItemStack(INSTANCE.vsControlBlocks.compactedValkyrium, 1),
+        this.addShapedRecipe(INSTANCE.vsControlBlocks.compactedValkyrium, 1,
             "VVV",
             "VVV",
             "VVV",
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
-        Module.registerRecipe(event, "recipe_valkyrium_engine_part",
-            new ItemStack(INSTANCE.vsControlBlocks.valkyriumEnginePart, 1),
+        this.addShapedRecipe(INSTANCE.vsControlBlocks.valkyriumEnginePart, 1,
             "IVI",
             "VFV",
             "IVI",
@@ -219,8 +199,7 @@ public class ValkyrienSkiesControl {
             'F', Item.getItemFromBlock(Blocks.FURNACE),
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
-        Module.registerRecipe(event, "recipe_valkyrium_compressor_part",
-            new ItemStack(INSTANCE.vsControlBlocks.valkyriumCompressorPart, 1),
+        this.addShapedRecipe(INSTANCE.vsControlBlocks.valkyriumCompressorPart, 1,
             "GVG",
             "VFV",
             "GVG",
@@ -305,4 +284,33 @@ public class ValkyrienSkiesControl {
         CapabilityManager.INSTANCE.register(ICapabilityLastRelay.class, new StorageLastRelay(),
             ImplCapabilityLastRelay::new);
     }
+
+    public static void addShapedRecipe(ItemStack output, Object... params) {
+		ResourceLocation location = getNameForRecipe(output);
+		CraftingHelper.ShapedPrimer primer = CraftingHelper.parseShaped(params);
+		ShapedRecipes recipe = new ShapedRecipes(
+			output.getItem().getRegistryName().toString(),
+			primer.width, primer.height, primer.input, output);
+		recipe.setRegistryName(location);
+		GameData.register_impl(recipe);
+	}
+
+    public static void addShapedRecipe(Item output, int outputCount, Object... params) {
+		this.addShapedRecipe(new ItemStack(output, outputCount), params);
+	}
+
+	// Engine recipe helpers
+	public static void addEngineRecipe(Item output, Item type) {
+		this.addShapedRecipe(output, 4,
+			"I##",
+			"IPP",
+			"I##",
+			'#', type,
+			'P', Item.getItemFromBlock(Blocks.PISTON),
+			'I', Items.IRON_INGOT);
+	}
+
+	public static void addEngineRecipe(Item output, Block type) {
+		this.addEngineRecipe(output, count, Item.getItemFromBlock(type));
+	}
 }

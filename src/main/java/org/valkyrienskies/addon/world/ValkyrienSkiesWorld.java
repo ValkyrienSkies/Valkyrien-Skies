@@ -56,9 +56,9 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesWorld.MOD_ID)
 @Log4j2
 public class ValkyrienSkiesWorld {
-	// Used for registering stuff
-	public static final List<Block> BLOCKS = new ArrayList<Block>();
-	public static final List<Item> ITEMS = new ArrayList<Item>();
+    // Used for registering stuff
+    public static final List<Block> BLOCKS = new ArrayList<Block>();
+    public static final List<Item> ITEMS = new ArrayList<Item>();
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "vs_world";
@@ -89,16 +89,16 @@ public class ValkyrienSkiesWorld {
 
         INSTANCE.valkyriumOre = new BlockValkyriumOre();
 
-		// Actual registering
-		Block[] blockArray = BLOCKS.toArray(new Block[0]);
-		event.getRegistry().registerAll(blockArray);
+        // Actual registering
+        Block[] blockArray = BLOCKS.toArray(new Block[0]);
+        event.getRegistry().registerAll(blockArray);
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         INSTANCE.valkyriumCrystal = new ItemValkyriumCrystal();
 
-		event.getRegistry().registerAll(ITEMS.toArray(new Item[0]));
+        event.getRegistry().registerAll(ITEMS.toArray(new Item[0]));
     }
 
     @EventHandler

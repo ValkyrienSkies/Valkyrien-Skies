@@ -26,7 +26,7 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 public class BlockRedstoneEngine extends BlockAirshipEngineLore {
 
     public BlockRedstoneEngine() {
-		super("redstone", Material.REDSTONE_LIGHT, VSConfig.ENGINE_POWER.basicEnginePower, 7.0F);
+        super("redstone", Material.REDSTONE_LIGHT, VSConfig.ENGINE_POWER.basicEnginePower, 7.0F);
     }
 
     @Override

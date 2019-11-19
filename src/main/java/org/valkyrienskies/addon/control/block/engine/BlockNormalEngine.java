@@ -20,7 +20,7 @@ import net.minecraft.block.material.Material;
 
 public class BlockNormalEngine extends BlockAirshipEngineLore {
 
-	public BlockNormalEngine(String name, Material mat, double enginePower, float hardness) {
+    public BlockNormalEngine(String name, Material mat, double enginePower, float hardness) {
         super(name, mat, enginePower, hardness);
     }
 

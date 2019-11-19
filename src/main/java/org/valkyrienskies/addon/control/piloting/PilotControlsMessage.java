@@ -16,13 +16,15 @@
 
 package org.valkyrienskies.addon.control.piloting;
 
-import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+
+import org.valkyrienskies.mod.client.VSKeyHandler;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import org.valkyrienskies.mod.client.VSKeyHandler;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class PilotControlsMessage implements IMessage {
 

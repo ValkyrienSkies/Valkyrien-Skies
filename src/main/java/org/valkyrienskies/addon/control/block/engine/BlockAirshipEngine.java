@@ -16,7 +16,12 @@
 
 package org.valkyrienskies.addon.control.block.engine;
 
-import net.minecraft.block.Block;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
+import org.valkyrienskies.addon.control.util.BaseBlock;
+import org.valkyrienskies.mod.common.block.IBlockForceProvider;
+import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -29,11 +34,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
-import org.valkyrienskies.addon.control.util.BaseBlock;
-import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 /**
  * All engines should extend this class, that way other kinds of engines can be made without making
@@ -47,9 +47,9 @@ public abstract class BlockAirshipEngine extends BaseBlock implements IBlockForc
     protected double enginePower;
 
     public BlockAirshipEngine(String name, Material mat, double enginePower, float hardness) {
-        super(name + "_engine", mat, light, true);
+        super(name + "_engine", mat, 0.0F, true);
         this.setEnginePower(enginePower);
-		this.setHardness(hardness);
+        this.setHardness(hardness);
     }
 
     @Override

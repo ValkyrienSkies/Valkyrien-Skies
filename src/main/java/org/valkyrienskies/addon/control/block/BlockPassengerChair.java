@@ -17,10 +17,14 @@
 package org.valkyrienskies.addon.control.block;
 
 import java.util.List;
+
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.valkyrienskies.addon.control.tileentity.TileEntityPassengerChair;
+import org.valkyrienskies.addon.control.util.BaseBlock;
+
 import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -39,16 +43,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPassengerChair;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class BlockPassengerChair extends Block {
+public class BlockPassengerChair extends BaseBlock {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
     public BlockPassengerChair() {
-        super("passenger_chair", Material.WOOD, 4.0F);
+        super("passenger_chair", Material.WOOD, 0.0F, true);
+        this.setHardness(4.0F);
     }
 
     public static double getChairYaw(IBlockState state, BlockPos pos) {
@@ -117,7 +121,6 @@ public class BlockPassengerChair extends Block {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
         float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
@@ -131,7 +134,6 @@ public class BlockPassengerChair extends Block {
         return new BlockStateContainer(this, FACING);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public IBlockState getStateFromMeta(int meta) {
         EnumFacing enumfacing = EnumFacing.byIndex(meta);
@@ -151,13 +153,11 @@ public class BlockPassengerChair extends Block {
         return BlockRenderLayer.CUTOUT;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;

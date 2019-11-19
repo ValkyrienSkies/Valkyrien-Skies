@@ -34,7 +34,7 @@ public class BlockLiftValve extends BaseBlock implements ITileEntityProvider {
 
     public BlockLiftValve() {
         super("lift_valve", Material.IRON, 0.0F, true);
-		this.setHardness(7.0F);
+        this.setHardness(7.0F);
     }
 
     @Override

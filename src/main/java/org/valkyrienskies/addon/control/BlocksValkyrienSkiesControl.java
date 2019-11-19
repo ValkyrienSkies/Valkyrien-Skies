@@ -16,10 +16,6 @@
 
 package org.valkyrienskies.addon.control;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.Item;
-import net.minecraftforge.event.RegistryEvent;
 import org.valkyrienskies.addon.control.block.BlockCaptainsChair;
 import org.valkyrienskies.addon.control.block.BlockCompactedValkyrium;
 import org.valkyrienskies.addon.control.block.BlockDummyTelegraph;
@@ -41,9 +37,10 @@ import org.valkyrienskies.addon.control.block.multiblocks.BlockGiantPropellerPar
 import org.valkyrienskies.addon.control.block.multiblocks.BlockRudderPart;
 import org.valkyrienskies.addon.control.block.multiblocks.BlockValkyriumCompressorPart;
 import org.valkyrienskies.addon.control.block.multiblocks.BlockValkyriumEnginePart;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienwarfare.api.addons.Module;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 
 public class BlocksValkyrienSkiesControl {
 

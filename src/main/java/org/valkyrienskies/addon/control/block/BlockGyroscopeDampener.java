@@ -23,7 +23,7 @@ public class BlockGyroscopeDampener extends BaseBlock implements ITileEntityProv
 
     public BlockGyroscopeDampener() {
         super("gyroscope_dampener", Material.IRON, 0.0F, true);
-		this.setHardness(6.0F);
+        this.setHardness(6.0F);
     }
 
     @Override

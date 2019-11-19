@@ -16,17 +16,64 @@
 
 package org.valkyrienskies.mod.common;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.valkyrienskies.mixin.MixinLoaderForge;
+import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
+import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
+import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
+import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
+import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
+import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessageHandler;
+import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
+import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
+import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
+import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.mod.proxy.CommonProxy;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.googlecode.cqengine.ConcurrentIndexedCollection;
+
+import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
+import de.javakaffee.kryoserializers.UUIDSerializer;
+import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
+import de.javakaffee.kryoserializers.guava.ArrayListMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ArrayTableSerializer;
+import de.javakaffee.kryoserializers.guava.HashBasedTableSerializer;
+import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
+import de.javakaffee.kryoserializers.guava.ImmutableTableSerializer;
+import de.javakaffee.kryoserializers.guava.LinkedHashMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.LinkedListMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.ReverseListSerializer;
+import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
+import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
+import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -34,35 +81,23 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import org.valkyrienskies.mixin.MixinLoaderForge;
-import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
-import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
-import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
-import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
-import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
-import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
-import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.*;
-import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
-import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Mod(
     modid = ValkyrienSkiesMod.MOD_ID,
@@ -73,9 +108,9 @@ import java.util.concurrent.Executors;
 )
 @Log4j2
 public class ValkyrienSkiesMod {
-	// Used for registering stuff
-	public static final List<Block> BLOCKS = new ArrayList<Block>();
-	public static final List<Item> ITEMS = new ArrayList<Item>();
+    // Used for registering stuff
+    public static final List<Block> BLOCKS = new ArrayList<Block>();
+    public static final List<Item> ITEMS = new ArrayList<Item>();
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "valkyrienskies";
@@ -129,15 +164,7 @@ public class ValkyrienSkiesMod {
         serializationInitAsync();
         registerNetworks(event);
 
-		registerCapabilities();
-
-		log.debug("Registering items, blocks and tile entities.");
-		this.physicsCore = new ItemPhysicsCore();
-
-		this.physicsInfuser = new BlockPhysicsInfuser("physics_infuser");
-		this.physicsInfuserCreative = new BlockPhysicsInfuserCreative();
-		this.physicsInfuserDummy = new BlockPhysicsInfuserDummy();
-		registerTileEntities();
+        registerCapabilities();
 
         proxy.preInit(event);
 
@@ -281,6 +308,17 @@ public class ValkyrienSkiesMod {
     private void registerTileEntities() {
         GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class,
             new ResourceLocation(MOD_ID, "tile_physics_infuser"));
+    }
+
+    public void registerBlocks() {
+        this.physicsInfuser = new BlockPhysicsInfuser("physics_infuser");
+        this.physicsInfuserCreative = new BlockPhysicsInfuserCreative();
+        this.physicsInfuserDummy = new BlockPhysicsInfuserDummy();
+        this.registerTileEntities();
+    }
+
+    public void registerItems(Register<Item> event) {
+        this.physicsCore = new ItemPhysicsCore();
     }
 
 }

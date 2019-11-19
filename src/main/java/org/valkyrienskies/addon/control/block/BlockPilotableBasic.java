@@ -17,7 +17,7 @@ public abstract class BlockPilotableBasic extends BaseBlock implements ITileEnti
 
     BlockPilotableBasic(String name, Material mat, float hardness) {
         super(name, mat, 0.0F, true);
-		this.setHardness(hardness);
+        this.setHardness(hardness);
     }
 
     @Override

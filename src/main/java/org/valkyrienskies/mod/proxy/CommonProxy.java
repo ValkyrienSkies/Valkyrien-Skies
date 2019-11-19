@@ -26,8 +26,8 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 public class CommonProxy {
 
-	public void registerItemRender(Item item, int i) {
-	}
+    public void registerItemRender(Item item, int i) {
+    }
 
     public void preInit(FMLPreInitializationEvent e) {
     }
@@ -37,6 +37,6 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent e) {
-	}
+    }
 
 }

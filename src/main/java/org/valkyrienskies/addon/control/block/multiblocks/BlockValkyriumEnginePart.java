@@ -20,7 +20,7 @@ public class BlockValkyriumEnginePart extends BaseBlock implements ITileEntityPr
 
     public BlockValkyriumEnginePart() {
         super("valkyrium_engine_part", Material.IRON, 0.0F, true);
-		this.setHardness(6.0F);
+        this.setHardness(6.0F);
     }
 
     @Override

@@ -39,7 +39,7 @@ public class BlockGyroscopeStabilizer extends BaseBlock implements ITileEntityPr
 
     public BlockGyroscopeStabilizer() {
         super("gyroscope_stabilizer", Material.IRON, 0.0F, true);
-		this.setHardness(5.0F);
+        this.setHardness(5.0F);
     }
 
     @Override

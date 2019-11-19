@@ -29,7 +29,7 @@ public class BlockGearbox extends BaseBlock implements ITileEntityProvider {
 
     public BlockGearbox() {
         super("gearbox", Material.IRON, 0.0F, true);
-		this.setHardness(6.0F);
+        this.setHardness(6.0F);
     }
 
     @Override

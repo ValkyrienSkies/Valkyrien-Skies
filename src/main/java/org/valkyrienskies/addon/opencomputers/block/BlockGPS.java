@@ -29,12 +29,12 @@ public class BlockGPS extends BaseBlock implements ITileEntityProvider {
 
     public BlockGPS() {
         super("gps", Material.IRON, 0.0F, true);
-		this.setHardness(5.0F);
+        this.setHardness(5.0F);
     }
 
     @Nullable
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityGPS();
+        return new TileEntityGPS();
     }
 }

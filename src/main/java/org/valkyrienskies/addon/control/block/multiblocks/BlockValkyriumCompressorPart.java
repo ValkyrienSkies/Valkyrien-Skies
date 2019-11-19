@@ -27,7 +27,7 @@ public class BlockValkyriumCompressorPart extends BaseBlock implements ITileEnti
 
     public BlockValkyriumCompressorPart() {
         super("valkyrium_compressor_part", Material.IRON, 0.0F, true);
-		this.setHardness(6.0F);
+        this.setHardness(6.0F);
     }
 
     @Override

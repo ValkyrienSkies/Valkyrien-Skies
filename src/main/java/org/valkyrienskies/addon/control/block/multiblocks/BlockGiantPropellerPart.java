@@ -23,8 +23,8 @@ public class BlockGiantPropellerPart extends BaseBlock implements ITileEntityPro
     IBlockForceProvider {
 
     public BlockGiantPropellerPart() {
-        super("giant_propeller_part", Materal.WOOD, 0.0F, true);
-		this.setHardness(5.0F);
+        super("giant_propeller_part", Material.WOOD, 0.0F, true);
+        this.setHardness(5.0F);
     }
 
     @Override

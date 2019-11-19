@@ -16,21 +16,24 @@
 
 package org.valkyrienskies.addon.control.block;
 
-import java.util.Collections;
 import java.util.List;
+
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
+
+import org.valkyrienskies.addon.control.util.BaseBlock;
+import org.valkyrienskies.mod.common.block.IBlockForceProvider;
+import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import org.valkyrienskies.addon.control.util.BaseBlock;
-import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class BlockCompactedValkyrium extends BaseBlock implements IBlockForceProvider {
 
@@ -62,8 +65,8 @@ public class BlockCompactedValkyrium extends BaseBlock implements IBlockForcePro
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation,
         ITooltipFlag advanced) {
-		itemInformation.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + "" + TextFormatting.BOLD +
-			I18n.format("tooltip.vs_control.compacted_valkyrium", VSConfig.compactedValkyriumLift));
+        itemInformation.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + "" + TextFormatting.BOLD +
+            I18n.format("tooltip.vs_control.compacted_valkyrium", VSConfig.compactedValkyriumLift));
     }
 
 }

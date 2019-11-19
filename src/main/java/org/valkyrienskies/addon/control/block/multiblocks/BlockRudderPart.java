@@ -24,7 +24,7 @@ public class BlockRudderPart extends BaseBlock implements ITileEntityProvider, I
 
     public BlockRudderPart() {
         super("rudder_part", Material.WOOD, 0.0F, true);
-		this.setHardness(5.0F);
+        this.setHardness(5.0F);
     }
 
     @Override

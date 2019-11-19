@@ -28,9 +28,9 @@ import org.valkyrienskies.addon.world.util.BaseItem;
 
 public class ItemValkyriumCrystal extends BaseItem {
 
-	public ItemValkyriumCrystal() {
-		super("valkyrium_crystal", true);
-	}
+    public ItemValkyriumCrystal() {
+        super("valkyrium_crystal", true);
+    }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World player,

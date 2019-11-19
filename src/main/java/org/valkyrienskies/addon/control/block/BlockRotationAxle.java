@@ -22,7 +22,7 @@ public class BlockRotationAxle extends BlockRotatedPillar implements ITileEntity
 
     public BlockRotationAxle() {
         super("rotation_axle", Material.IRON, 0.0F, true);
-		this.setHardness(6.0F);
+        this.setHardness(6.0F);
     }
 
     @Override

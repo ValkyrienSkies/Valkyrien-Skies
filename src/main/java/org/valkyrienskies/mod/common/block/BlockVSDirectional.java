@@ -9,9 +9,9 @@ import org.valkyrienskies.mod.common.util.BaseBlock;
 
 public abstract class BlockVSDirectional extends BaseBlock {
 
-	public static final PropertyDirection FACING = PropertyDirection.create("facing");
+    public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
-	protected BlockVSDirectional(String name, Material mat, float light, boolean creativeTab) {
+    protected BlockVSDirectional(String name, Material mat, float light, boolean creativeTab) {
         super(name, mat, light, creativeTab);
     }
 

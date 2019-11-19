@@ -52,10 +52,13 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
 
     public static final PropertyBool INFUSER_LIGHT_ON = PropertyBool.create("infuser_light_on");
 
+	protected String name;
+
     int shipSpawnDetectorID;
 
     public BlockPhysicsInfuser(String name) {
         super(name, Material.WOOD, 0.0F, true);
+		this.name = name;
         shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
     }
 
@@ -127,7 +130,7 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip,
         ITooltipFlag flagIn) {
-        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies." + this.getRegistryName()));
+        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies." + this.name));
     }
 
     @Override

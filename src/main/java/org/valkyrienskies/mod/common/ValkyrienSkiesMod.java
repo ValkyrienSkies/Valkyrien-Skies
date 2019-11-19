@@ -16,7 +16,6 @@
 
 package org.valkyrienskies.mod.common;
 
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -162,7 +161,9 @@ public class ValkyrienSkiesMod {
             e.printStackTrace();
             log.fatal("FAILED TO INITIALIZE VS API!");
         }
-        // Initialize VS API end.
+
+        registerItems();
+		registerBlocks();
     }
 
     @EventHandler
@@ -234,7 +235,7 @@ public class ValkyrienSkiesMod {
         this.registerTileEntities();
     }
 
-    public void registerItems(Register<Item> event) {
+    public void registerItems() {
         this.physicsCore = new ItemPhysicsCore();
     }
 

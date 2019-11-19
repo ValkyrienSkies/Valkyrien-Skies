@@ -43,7 +43,6 @@ public class RegisterEvents {
     @SubscribeEvent
     public static void registerBlocks(@Nonnull final RegistryEvent.Register<Block> event) {
         logger.debug("Registering blocks");
-        ValkyrienSkiesMod.INSTANCE.registerBlocks();
         Block[] blockArray = ValkyrienSkiesMod.BLOCKS.toArray(new Block[0]);
         event.getRegistry().registerAll(blockArray);
     }
@@ -51,7 +50,6 @@ public class RegisterEvents {
     @SubscribeEvent
     public static void registerItems(@Nonnull final RegistryEvent.Register<Item> event) {
         logger.debug("Registering items");
-        ValkyrienSkiesMod.INSTANCE.registerItems(event);
         event.getRegistry().registerAll(ValkyrienSkiesMod.ITEMS.toArray(new Item[0]));
     }
 

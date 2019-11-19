@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -42,6 +43,11 @@ import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 public class ClientProxy extends CommonProxy {
+	// This can be called from addon code because it doesnt set namespace:id.
+    public void registerItemRender(Item item, int meta) {
+        ModelLoader.setCustomModelResourceLocation(item, meta,
+            new ModelResourceLocation(item.getRegistryName(), "inventory"));
+    }
 
     public static ICamera lastCamera;
     private final VSKeyHandler keyEvents = new VSKeyHandler();

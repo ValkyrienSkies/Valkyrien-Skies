@@ -54,8 +54,8 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
 
     int shipSpawnDetectorID;
 
-    public BlockPhysicsInfuser(Material materialIn) {
-        super(materialIn);
+    public BlockPhysicsInfuser(String name) {
+        super(name, Material.WOOD, 0.0F, true);
         shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
     }
 
@@ -127,7 +127,7 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip,
         ITooltipFlag flagIn) {
-        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies.physics_infuser"));
+        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies." + this.getRegistryName()));
     }
 
     @Override
@@ -150,8 +150,7 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
             facingHorizontal = playerFacing.getOpposite();
         } else {
             // There was no valid facing! How the did this method even get called!
-            throw new IllegalStateException(
-                "Cannot find valid state for placement for Physics Infuser!");
+            throw new IllegalStateException("Cannot find valid state for placement for Physics Infuser!");
         }
 
         return this.getDefaultState()

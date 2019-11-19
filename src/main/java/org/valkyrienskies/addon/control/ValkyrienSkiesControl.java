@@ -85,6 +85,9 @@ import org.valkyrienwarfare.api.addons.Module;
 )
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
 public class ValkyrienSkiesControl {
+	// Used for registering stuff
+	public static final List<Block> BLOCKS = new ArrayList<Block>();
+	public static final List<Item> ITEMS = new ArrayList<Item>();
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "vs_control";
@@ -106,7 +109,8 @@ public class ValkyrienSkiesControl {
     // MOD CLASS MEMBERS
     public static SimpleNetworkWrapper controlNetwork;
     public final BlocksValkyrienSkiesControl vsControlBlocks = new BlocksValkyrienSkiesControl();
-    public Item relayWire;
+	public Item relayWire;
+	public Item vanishingWire;
     public Item multiBlockWrench;
 
     @SubscribeEvent

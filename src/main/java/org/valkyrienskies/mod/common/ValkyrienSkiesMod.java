@@ -113,6 +113,9 @@ import valkyrienwarfare.api.IPhysicsEntityManager;
 )
 @Log4j2
 public class ValkyrienSkiesMod {
+	// Used for registering stuff
+	public static final List<Block> BLOCKS = new ArrayList<Block>();
+	public static final List<Item> ITEMS = new ArrayList<Item>();
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "valkyrienskies";
@@ -167,21 +170,30 @@ public class ValkyrienSkiesMod {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        log.debug("Initializing configuration");
+        log.debug("Initializing configuration.");
         runConfiguration();
 
-        log.debug("Instantiating the physics thread executor");
+        log.debug("Instantiating the physics thread executor.");
         ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors
             .newFixedThreadPool(VSConfig.threadCount);
 
-        log.debug("Beginning asynchronous Kryo initialization");
+        log.debug("Beginning asynchronous Kryo initialization.");
         serializationInitAsync();
         registerNetworks(event);
 
-        registerCapabilities();
+		registerCapabilities();
+
+		log.debug("Registering items, blocks and tile entities.");
+		this.physicsCore = new ItemPhysicsCore();
+
+		this.physicsInfuser = new BlockPhysicsInfuser("physics_infuser");
+		this.physicsInfuserCreative = new BlockPhysicsInfuserCreative();
+		this.physicsInfuserDummy = new BlockPhysicsInfuserDummy();
+		registerTileEntities();
+
         proxy.preInit(event);
 
-        log.debug("Initializing the VS API");
+        log.debug("Initializing the VS API.");
         try {
             Field instanceField = IPhysicsEntityManager.class.getDeclaredField("INSTANCE");
             // Make the field accessible
@@ -232,28 +244,6 @@ public class ValkyrienSkiesMod {
                 2, Side.SERVER);
         physWrapperNetwork
             .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 3, Side.SERVER);
-    }
-
-    void registerBlocks(RegistryEvent.Register<Block> event) {
-        physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f)
-            .setTranslationKey("physics_infuser")
-            .setRegistryName(MOD_ID, "physics_infuser")
-            .setCreativeTab(VS_CREATIVE_TAB);
-        physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
-            .setTranslationKey("creative_physics_infuser")
-            .setRegistryName(MOD_ID, "creative_physics_infuser")
-            .setCreativeTab(VS_CREATIVE_TAB);
-        // // Do not put the VS_CREATIVE_TAB block into the creative tab
-        physicsInfuserDummy = new BlockPhysicsInfuserDummy(Material.ROCK).setHardness(12f)
-            .setTranslationKey("dummy_physics_infuser")
-            .setRegistryName(MOD_ID, "dummy_physics_infuser")
-            .setCreativeTab(VS_CREATIVE_TAB);
-
-        event.getRegistry().register(physicsInfuser);
-        event.getRegistry().register(physicsInfuserCreative);
-        event.getRegistry().register(physicsInfuserDummy);
-
-        registerTileEntities();
     }
 
     /**
@@ -318,25 +308,15 @@ public class ValkyrienSkiesMod {
         }
     }
 
-    void registerItems(RegistryEvent.Register<Item> event) {
-        registerItemBlock(event, physicsInfuser);
-        registerItemBlock(event, physicsInfuserCreative);
-
-        this.physicsCore = new ItemPhysicsCore().setTranslationKey("physics_core")
-            .setRegistryName(MOD_ID, "physics_core")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        event.getRegistry()
-            .register(this.physicsCore);
-    }
-
-    private static void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {
-        event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
-    }
-
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser),
-            "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
-            Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
+            "IEI",
+            "ODO",
+            "IEI",
+            'E', Items.ENDER_PEARL,
+            'D', Items.DIAMOND,
+            'O', Item.getItemFromBlock(Blocks.OBSIDIAN),
+            'I', Items.IRON_INGOT);
     }
 
     private static void registerRecipe(RegistryEvent.Register<IRecipe> event,

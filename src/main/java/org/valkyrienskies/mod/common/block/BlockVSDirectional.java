@@ -1,15 +1,18 @@
 package org.valkyrienskies.mod.common.block;
 
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
+import org.valkyrienskies.mod.common.util.BaseBlock;
 
-public abstract class BlockVSDirectional extends BlockDirectional {
+public abstract class BlockVSDirectional extends BaseBlock {
 
-    protected BlockVSDirectional(Material materialIn) {
-        super(materialIn);
+	public static final PropertyDirection FACING = PropertyDirection.create("facing");
+
+	protected BlockVSDirectional(String name, Material mat, float light, boolean creativeTab) {
+        super(name, mat, light, creativeTab);
     }
 
     @Override

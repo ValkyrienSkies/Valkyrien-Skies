@@ -8,10 +8,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.util.BaseItem;
 
-public class ItemPhysicsCore extends Item {
+public class ItemPhysicsCore extends BaseItem {
 
     public ItemPhysicsCore() {
+		super("physics_core", true);
         this.setMaxStackSize(1);
         this.setMaxDamage(80);
     }

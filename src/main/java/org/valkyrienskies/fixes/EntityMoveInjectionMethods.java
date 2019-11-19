@@ -66,7 +66,7 @@ public class EntityMoveInjectionMethods {
 
             Vector endPos = new Vector(newX, newY, newZ);
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform()
                 .transform(endPos, TransformType.GLOBAL_TO_SUBSPACE);
             dx = endPos.X - this_.posX;

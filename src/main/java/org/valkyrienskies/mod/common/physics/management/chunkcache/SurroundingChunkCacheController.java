@@ -18,7 +18,7 @@ public class SurroundingChunkCacheController {
     }
 
     public void updateChunkCache() {
-        AxisAlignedBB cacheBB = physicsObject.shipBoundingBox();
+        AxisAlignedBB cacheBB = physicsObject.getShipBoundingBox();
 
         // Check if all those surrounding chunks are loaded
         BlockPos min = new BlockPos(cacheBB.minX, Math.max(cacheBB.minY, 0), cacheBB.minZ);

@@ -50,9 +50,9 @@ public class VSChunkClaim {
     }
 
     public void writeToNBT(NBTTagCompound toSave) {
-        toSave.setInteger("centerX", centerX());
-        toSave.setInteger("centerZ", centerZ());
-        toSave.setInteger("radius", radius());
+        toSave.setInteger("centerX", getCenterX());
+        toSave.setInteger("centerZ", getCenterZ());
+        toSave.setInteger("radius", getRadius());
     }
 
     /**
@@ -91,7 +91,7 @@ public class VSChunkClaim {
 
     @Override
     public String toString() {
-        return centerX() + ":" + centerZ() + ":" + radius();
+        return getCenterX() + ":" + getCenterZ() + ":" + getRadius();
     }
 
     /**
@@ -105,28 +105,28 @@ public class VSChunkClaim {
      * @return the maxX
      */
     public int maxX() {
-        return centerX() + radius();
+        return getCenterX() + getRadius();
     }
 
     /**
      * @return the maxZ
      */
     public int maxZ() {
-        return centerZ() + radius();
+        return getCenterZ() + getRadius();
     }
 
     /**
      * @return the minZ
      */
     public int minZ() {
-        return centerZ() - radius();
+        return getCenterZ() - getRadius();
     }
 
     /**
      * @return the minX
      */
     public int minX() {
-        return centerX() - radius();
+        return getCenterX() - getRadius();
     }
 
     /**
@@ -134,11 +134,11 @@ public class VSChunkClaim {
      * 5x5 and the dimension is 5
      */
     public int dimension() {
-        return radius() * 2 + 1;
+        return getRadius() * 2 + 1;
     }
 
     public BlockPos regionCenter() {
-        return new BlockPos(this.centerX() * 16, 128, this.centerZ() * 16);
+        return new BlockPos(this.getCenterX() * 16, 128, this.getCenterZ() * 16);
     }
 
     public int chunkLengthX() {

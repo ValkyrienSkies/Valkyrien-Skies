@@ -71,7 +71,7 @@ public abstract class MixinChunkPos {
                 // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
                 // entityPosInLocal);
                 physicsObject.get()
-                    .shipTransformationManager()
+                    .getShipTransformationManager()
                     .getCurrentTickTransform()
                     .transform(entityPosInLocal,
                         TransformType.GLOBAL_TO_SUBSPACE);

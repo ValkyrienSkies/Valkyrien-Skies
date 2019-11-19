@@ -10,8 +10,8 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
+import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -80,13 +80,13 @@ public class TileEntityRudderPart extends
             Vector directionFacing = this.getForcePosRelativeToAxleInShipSpace();
             Vector forcePosRelativeToShipCenter = this.getForcePositionInShipSpace();
             forcePosRelativeToShipCenter
-                .subtract(physicsObject.physicsProcessor().gameTickCenterOfMass);
-            physicsObject.shipTransformationManager().getCurrentPhysicsTransform()
+                .subtract(physicsObject.getPhysicsProcessor().gameTickCenterOfMass);
+            physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
                 .rotate(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
 
-            Vector velocity = physicsObject.physicsProcessor()
+            Vector velocity = physicsObject.getPhysicsProcessor()
                 .getVelocityAtPoint(forcePosRelativeToShipCenter);
-            physicsObject.shipTransformationManager().getCurrentPhysicsTransform()
+            physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
                 .rotate(velocity, TransformType.GLOBAL_TO_SUBSPACE);
             // Now we have the velocity in local, the position in local, and the position relative to the axle
             Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();

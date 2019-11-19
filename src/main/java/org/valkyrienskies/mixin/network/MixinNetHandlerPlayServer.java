@@ -65,7 +65,7 @@ public abstract class MixinNetHandlerPlayServer {
                 if (physicsObject.isPresent()) {
                     Vector tpPos = new Vector(x, y, z);
                     physicsObject.get()
-                        .shipTransformationManager()
+                        .getShipTransformationManager()
                         .getCurrentTickTransform()
                         .transform(tpPos, TransformType.SUBSPACE_TO_GLOBAL);
                     // Now call this again with the transformed position.

@@ -67,11 +67,11 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         w.posZ = te.getPos()
             .getZ();
 
-        w.getPhysicsObject().creator("unknown");
-        w.superSetCustomName(NounListNameGenerator.instance().generateName());
+        w.getPhysicsObject().setCreator("unknown");
+        w.superSetCustomName(NounListNameGenerator.getInstance().generateName());
 
-        w.getPhysicsObject().detectorID(DetectorIDs.ShipSpawnerGeneral);
-        w.physicsObject.physicsInfuserPos(te.getPos());
+        w.getPhysicsObject().setDetectorID(DetectorIDs.ShipSpawnerGeneral);
+        w.physicsObject.setPhysicsInfuserPos(te.getPos());
         return w.getPhysicsObject().assembleShipAsOrderedByPlayer(null).thenRun(() -> {
             System.out.println("Adding ship in thread " + Thread.currentThread().getName());
             ValkyrienUtils.getQueryableData(te.getWorld()).addShip(w);
@@ -126,7 +126,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        return getPhysicsObject().shipBoundingBox();
+        return getPhysicsObject().getShipBoundingBox();
     }
 
     @Override
@@ -226,7 +226,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
 
     @Override
     public AxisAlignedBB getEntityBoundingBox() {
-        return physicsObject.shipBoundingBox();
+        return physicsObject.getShipBoundingBox();
     }
 
 

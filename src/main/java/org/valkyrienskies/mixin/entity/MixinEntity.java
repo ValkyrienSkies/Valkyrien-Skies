@@ -202,7 +202,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
             .getMountedShipAndPos(Entity.class.cast(this));
         if (mountData.isMounted()) {
             return mountData.getMountedShip()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getRenderTransform()
                 .rotate(original, TransformType.SUBSPACE_TO_GLOBAL);
         } else {
@@ -229,7 +229,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
             .getMountedShipAndPos(Entity.class.cast(this));
         if (mountData.isMounted()) {
             return mountData.getMountedShip()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getRenderTransform()
                 .rotate(vanilla, TransformType.SUBSPACE_TO_GLOBAL);
         } else {
@@ -262,7 +262,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
             if (physicsObject.isPresent()) {
                 Vector posVec = new Vector(x, y, z);
                 physicsObject.get()
-                    .shipTransformationManager()
+                    .getShipTransformationManager()
                     .fromLocalToGlobal(posVec);
                 posVec.X -= this.posX;
                 posVec.Y -= this.posY;
@@ -290,7 +290,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
             if (physicsObject.isPresent()) {
                 Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
                 physicsObject.get()
-                    .shipTransformationManager()
+                    .getShipTransformationManager()
                     .fromLocalToGlobal(posVec);
                 posVec.X -= this.posX;
                 posVec.Y -= this.posY;
@@ -313,7 +313,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         } else {
             searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
 //            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
-            worldBelow.getPhysicsObject().shipTransformationManager().getCurrentTickTransform()
+            worldBelow.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
                 .transform(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
             return MathHelper.floor(searchVector.X);
         }
@@ -351,7 +351,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
         if (mountData.isMounted()) {
             Vector playerPosition = new Vector(mountData.getMountPos());
             mountData.getMountedShip()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getRenderTransform()
                 .transform(playerPosition,
                     TransformType.SUBSPACE_TO_GLOBAL);
@@ -361,7 +361,7 @@ public abstract class MixinEntity implements IDraggable, ISubspacedEntity {
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform,
             // playerEyes);
             mountData.getMountedShip()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform()
                 .rotate(playerEyes, TransformType.SUBSPACE_TO_GLOBAL);
             // Add the new rotate player eyes to the position

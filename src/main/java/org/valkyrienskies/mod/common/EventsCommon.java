@@ -116,7 +116,7 @@ public class EventsCommon {
 
                 if (physicsObject.isPresent()) {
                     physicsObject.get()
-                        .wrapperEntity()
+                        .getWrapperEntity()
                         .setCustomNameTag(stack.getDisplayName());
                     --stack.stackSize;
                     event.setCanceled(true);
@@ -143,7 +143,7 @@ public class EventsCommon {
                 entity.startRiding(entityMountable);
             }
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform().transform(entity,
                 TransformType.SUBSPACE_TO_GLOBAL);
             // TODO: This should work but it doesn't because of sponge. Instead we have to rely on MixinChunk.preAddEntity() to fix this
@@ -350,7 +350,7 @@ public class EventsCommon {
             for (PhysicsWrapperEntity ship : shipsNear) {
                 Vector inLocal = new Vector(center);
 
-                ship.getPhysicsObject().shipTransformationManager().getCurrentTickTransform()
+                ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
                     .transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
 
                 Explosion expl = new Explosion(event.getWorld(), null, inLocal.X, inLocal.Y,

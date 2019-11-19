@@ -130,12 +130,12 @@ public class MainCommand implements Runnable {
 
             try {
                 PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) oEntity.get();
-                BlockPos infuserPos = wrapperEntity.getPhysicsObject().physicsInfuserPos();
+                BlockPos infuserPos = wrapperEntity.getPhysicsObject().getPhysicsInfuserPos();
                 TileEntityPhysicsInfuser infuser = Objects.requireNonNull(
                     (TileEntityPhysicsInfuser) world.getTileEntity(infuserPos));
 
                 if (spec.commandLine().getParseResult().hasMatchedPositional(1)) {
-                    infuser.isPhysicsEnabled(enabled);
+                    infuser.setPhysicsEnabled(enabled);
                     sender.sendMessage(new TextComponentString(
                         "Successfully set the physics of ship " + shipName + " to " +
                             (infuser.isPhysicsEnabled() ? "enabled" : "disabled")

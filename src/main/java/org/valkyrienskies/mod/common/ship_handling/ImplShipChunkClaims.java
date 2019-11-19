@@ -76,7 +76,7 @@ public class ImplShipChunkClaims implements IShipChunkClaims {
     private void injectChunkIntoWorld(int x, int z, Chunk chunk) {
         ChunkProviderServer provider = (ChunkProviderServer) this.getWorldObj().getChunkProvider();
         chunk.dirty = true;
-        // claimedChunks[x - getownedChunks().getMinX()][z - getownedChunks().getMinZ()] = chunk;
+        // claimedChunks[x - getgetOwnedChunks().getMinX()][z - getgetOwnedChunks().getMinZ()] = chunk;
         loadedChunksMap.put(ChunkPos.asLong(x, z), chunk);
 
         provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);

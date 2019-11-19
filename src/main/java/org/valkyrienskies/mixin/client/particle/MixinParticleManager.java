@@ -45,11 +45,11 @@ public abstract class MixinParticleManager {
             Vector posVec = new Vector(effect.posX, effect.posY, effect.posZ);
             Vector velocity = new Vector(effect.motionX, effect.motionY, effect.motionZ);
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .fromLocalToGlobal(posVec);
 //            RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform, velocity);
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform()
                 .rotate(velocity, TransformType.SUBSPACE_TO_GLOBAL);
             effect.setPosition(posVec.X, posVec.Y, posVec.Z);

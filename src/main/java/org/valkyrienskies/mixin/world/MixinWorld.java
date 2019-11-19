@@ -107,7 +107,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
         if (physicsObject.isPresent()) {
             pos = physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform().transform(pos, TransformType.SUBSPACE_TO_GLOBAL);
         }
         return getBiomeForCoordsBody(pos);
@@ -149,7 +149,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // newPosVec);
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform()
                 .transform(newPosVec,
                     TransformType.SUBSPACE_TO_GLOBAL);
@@ -258,14 +258,14 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(aabb, physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform(),
                 TransformType.SUBSPACE_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();// .contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
 
             toReturn.remove(physicsObject.get()
-                .wrapperEntity());
+                .getWrapperEntity());
         }
         return toReturn;
     }
@@ -297,7 +297,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(boundingBox, physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform(),
                 TransformType.SUBSPACE_TO_GLOBAL);
             boundingBox = poly.getEnclosedAABB().shrink(.3D);
@@ -312,7 +312,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
                 .addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
 
             toReturn.remove(physicsObject.get()
-                .wrapperEntity());
+                .getWrapperEntity());
         }
         return toReturn;
     }
@@ -393,7 +393,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
             Vec3d playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
 
-            ShipTransform shipTransform = wrapper.getPhysicsObject().shipTransformationManager()
+            ShipTransform shipTransform = wrapper.getPhysicsObject().getShipTransformationManager()
                 .getRenderTransform();
 
             playerEyesPos = shipTransform.transform(playerEyesPos,

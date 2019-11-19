@@ -93,10 +93,10 @@ public class WorldPhysObjectManager {
      * @param loaded
      */
     public void preloadPhysicsWrapperEntityMappings(PhysicsWrapperEntity loaded) {
-        for (int x = loaded.getPhysicsObject().ownedChunks().minX();
-             x <= loaded.getPhysicsObject().ownedChunks().maxX(); x++) {
-            for (int z = loaded.getPhysicsObject().ownedChunks().minZ();
-                 z <= loaded.getPhysicsObject().ownedChunks().maxZ(); z++) {
+        for (int x = loaded.getPhysicsObject().getOwnedChunks().minX();
+             x <= loaded.getPhysicsObject().getOwnedChunks().maxX(); x++) {
+            for (int z = loaded.getPhysicsObject().getOwnedChunks().minZ();
+                 z <= loaded.getPhysicsObject().getOwnedChunks().maxZ(); z++) {
                 chunkPosToPhysicsEntityMap.put(getLongFromInts(x, z), loaded);
             }
         }
@@ -106,7 +106,7 @@ public class WorldPhysObjectManager {
         if (!loaded.world.isRemote) {
             physicsEntities.remove(loaded);
             loaded.getPhysicsObject().onThisUnload();
-            VSChunkClaim vsChunkClaim = loaded.getPhysicsObject().ownedChunks();
+            VSChunkClaim vsChunkClaim = loaded.getPhysicsObject().getOwnedChunks();
             for (int chunkX = vsChunkClaim.minX(); chunkX <= vsChunkClaim.maxX(); chunkX++) {
                 for (int chunkZ = vsChunkClaim.minZ(); chunkZ <= vsChunkClaim.maxZ();
                      chunkZ++) {
@@ -141,7 +141,7 @@ public class WorldPhysObjectManager {
             // boxes
             if (wrapper.getPhysicsObject()
                 .isFullyLoaded() && wrapper.getPhysicsObject()
-                .shipBoundingBox()
+                .getShipBoundingBox()
                 .expand(2, 2, 2)
                 .intersects(expandedCheck)) {
                 ships.add(wrapper);

@@ -11,15 +11,15 @@ import lombok.Getter;
 class ConfigCommandEndNode extends ConfigCommandNode {
 
     @Getter
-    private Consumer<String> setOption;
+    private Consumer<String> optionSetter;
 
     @Getter
-    private Supplier<?> getOption;
+    private Supplier<?> optionGetter;
 
-    ConfigCommandEndNode(String name, Consumer<String> setOption, Supplier<?> getOption) {
+    ConfigCommandEndNode(String name, Consumer<String> optionSetter, Supplier<?> optionGetter) {
         super(name);
-        this.setOption = setOption;
-        this.getOption = getOption;
+        this.optionSetter = optionSetter;
+        this.optionGetter = optionGetter;
     }
 
 }

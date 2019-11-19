@@ -88,7 +88,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         setPhysInvMOITensor(RotationMatrices.getZeroMatrix(3));
 
         gameTickCenterOfMass = new org.valkyrienskies.mod.common.math.Vector(
-            toProcess.centerCoord());
+            toProcess.getCenterCoord());
         linearMomentum = new org.valkyrienskies.mod.common.math.Vector();
         physCenterOfMass = new org.valkyrienskies.mod.common.math.Vector();
         angularVelocity = new org.valkyrienskies.mod.common.math.Vector();
@@ -173,7 +173,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         // crashing the program.
         if (gameTickMass + addedMass < .0001D) {
             gameTickMass = .0001D;
-            getParent().isPhysicsEnabled(false);
+            getParent().setPhysicsEnabled(false);
         } else {
             gameTickMass += addedMass;
         }
@@ -181,25 +181,25 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public void generatePhysicsTransform() {
         // Create a new physics transform.
-        physRoll = getParent().wrapperEntity()
+        physRoll = getParent().getWrapperEntity()
             .getRoll();
-        physPitch = getParent().wrapperEntity()
+        physPitch = getParent().getWrapperEntity()
             .getPitch();
-        physYaw = getParent().wrapperEntity()
+        physYaw = getParent().getWrapperEntity()
             .getYaw();
-        physX = getParent().wrapperEntity().posX;
-        physY = getParent().wrapperEntity().posY;
-        physZ = getParent().wrapperEntity().posZ;
+        physX = getParent().getWrapperEntity().posX;
+        physY = getParent().getWrapperEntity().posY;
+        physZ = getParent().getWrapperEntity().posZ;
         physCenterOfMass.setValue(gameTickCenterOfMass);
         ShipTransform physicsTransform = new PhysicsShipTransform(physX, physY, physZ, physPitch,
             physYaw, physRoll,
-            physCenterOfMass, getParent().shipBoundingBox(),
-            getParent().shipTransformationManager()
+            physCenterOfMass, getParent().getShipBoundingBox(),
+            getParent().getShipTransformationManager()
                 .getCurrentTickTransform());
-        getParent().shipTransformationManager()
+        getParent().getShipTransformationManager()
             .setCurrentPhysicsTransform(physicsTransform);
         // We're doing this afterwards to prevent from prevPhysicsTransform being null.
-        getParent().shipTransformationManager()
+        getParent().getShipTransformationManager()
             .updatePreviousPhysicsTransform();
     }
 
@@ -235,18 +235,18 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                 }
             }
         } else {
-            getParent().isPhysicsEnabled(false);
+            getParent().setPhysicsEnabled(false);
             linearMomentum.zero();
             angularVelocity.zero();
         }
 
         PhysicsShipTransform finalPhysTransform = new PhysicsShipTransform(physX, physY, physZ,
             physPitch, physYaw,
-            physRoll, physCenterOfMass, getParent().shipBoundingBox(),
-            getParent().shipTransformationManager().getCurrentTickTransform());
+            physRoll, physCenterOfMass, getParent().getShipBoundingBox(),
+            getParent().getShipTransformationManager().getCurrentTickTransform());
 
-        getParent().shipTransformationManager().updatePreviousPhysicsTransform();
-        getParent().shipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
+        getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
+        getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
 
         updatePhysCenterOfMass();
     }
@@ -266,22 +266,22 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // The x/y/z variables need to be updated when the centerOfMass location
     // changes.
     public void updateParentCenterOfMass() {
-        org.valkyrienskies.mod.common.math.Vector parentCM = getParent().centerCoord();
-        if (!getParent().centerCoord().equals(gameTickCenterOfMass)) {
+        org.valkyrienskies.mod.common.math.Vector parentCM = getParent().getCenterCoord();
+        if (!getParent().getCenterCoord().equals(gameTickCenterOfMass)) {
             org.valkyrienskies.mod.common.math.Vector CMDif = gameTickCenterOfMass
                 .getSubtraction(parentCM);
 
-            if (getParent().shipTransformationManager()
+            if (getParent().getShipTransformationManager()
                 .getCurrentPhysicsTransform() != null) {
-                getParent().shipTransformationManager()
+                getParent().getShipTransformationManager()
                     .getCurrentPhysicsTransform()
                     .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
             }
-            getParent().wrapperEntity().posX -= CMDif.X;
-            getParent().wrapperEntity().posY -= CMDif.Y;
-            getParent().wrapperEntity().posZ -= CMDif.Z;
+            getParent().getWrapperEntity().posX -= CMDif.X;
+            getParent().getWrapperEntity().posY -= CMDif.Y;
+            getParent().getWrapperEntity().posZ -= CMDif.Z;
 
-            getParent().centerCoord().setValue(gameTickCenterOfMass);
+            getParent().getCenterCoord().setValue(gameTickCenterOfMass);
         }
     }
 
@@ -294,7 +294,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             org.valkyrienskies.mod.common.math.Vector CMDif = physCenterOfMass
                 .getSubtraction(gameTickCenterOfMass);
 
-            getParent().shipTransformationManager().getCurrentPhysicsTransform()
+            getParent().getShipTransformationManager().getCurrentPhysicsTransform()
                 .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
             physX += CMDif.X;
             physY += CMDif.Y;
@@ -313,7 +313,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         double[] framedMOI = RotationMatrices.getZeroMatrix(3);
 
         // Copy the rotation matrix, ignore the translation and scaling parts.
-        Matrix3d rotationMatrix = getParent().shipTransformationManager()
+        Matrix3d rotationMatrix = getParent().getShipTransformationManager()
             .getCurrentPhysicsTransform().createRotationMatrix(TransformType.SUBSPACE_TO_GLOBAL);
 
         Matrix3d inertiaBodyFrame = new Matrix3d(gameMoITensor);
@@ -379,13 +379,13 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                         if (otherPosition != null) {
                             inBodyWO.setValue(otherPosition);
                             inBodyWO.subtract(physCenterOfMass);
-                            getParent().shipTransformationManager().getCurrentPhysicsTransform()
+                            getParent().getShipTransformationManager().getCurrentPhysicsTransform()
                                 .rotate(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
                         } else {
                             inBodyWO.setValue(pos.getX() + .5,
                                 pos.getY() + .5, pos.getZ() + .5);
                             inBodyWO.subtract(physCenterOfMass);
-                            getParent().shipTransformationManager().getCurrentPhysicsTransform()
+                            getParent().getShipTransformationManager().getCurrentPhysicsTransform()
                                 .rotate(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
                         }
 
@@ -400,7 +400,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                                 particlePos = new org.valkyrienskies.mod.common.math.Vector(
                                     pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
                             }
-                            parent.shipTransformationManager().getCurrentPhysicsTransform()
+                            parent.getShipTransformationManager().getCurrentPhysicsTransform()
                                 .transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
                             // System.out.println(particlePos);
                             float posX = (float) particlePos.X;
@@ -466,7 +466,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private void calculateForcesDeconstruction() {
         applyAirDrag();
         Quaternion gridRotation = new Quaternion(0, 0, 0, 1);
-        Quaternion inverseCurrentRotation = parent.shipTransformationManager()
+        Quaternion inverseCurrentRotation = parent.getShipTransformationManager()
             .getCurrentPhysicsTransform()
             .createRotationQuaternion(TransformType.GLOBAL_TO_SUBSPACE);
 
@@ -531,7 +531,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * Only run ONCE per phys tick!
      */
     private void integrateAngularVelocity() {
-        ShipTransformationManager coordTrans = getParent().shipTransformationManager();
+        ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
 
         double[] rotationChange = RotationMatrices
             .getRotationMatrix(angularVelocity.X, angularVelocity.Y,
@@ -608,7 +608,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         gameTickMass = 0;
         gameMoITensor = RotationMatrices.getZeroMatrix(3);
         IBlockState air = Blocks.AIR.getDefaultState();
-        for (BlockPos pos : getParent().blockPositions()) {
+        for (BlockPos pos : getParent().getBlockPositions()) {
             onSetBlockState(air, getParent().getChunkAt(pos.getX() >> 4, pos.getZ() >> 4)
                 .getBlockState(pos), pos);
         }

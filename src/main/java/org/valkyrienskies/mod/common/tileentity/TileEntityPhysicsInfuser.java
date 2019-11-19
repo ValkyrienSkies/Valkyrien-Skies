@@ -1,5 +1,9 @@
 package org.valkyrienskies.mod.common.tileentity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import mcp.MethodsReturnNonnullByDefault;
@@ -34,11 +38,6 @@ import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.PhysicsChunkManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
     IVSTileGui {
@@ -312,7 +311,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
             .getPhysicsObject(getWorld(), getPos());
         return !physicsObject.isPresent() ||
-            physicsObject.get().physicsInfuserPos().equals(getPos());
+            physicsObject.get().getPhysicsInfuserPos().equals(getPos());
     }
 
     @SideOnly(Side.CLIENT)

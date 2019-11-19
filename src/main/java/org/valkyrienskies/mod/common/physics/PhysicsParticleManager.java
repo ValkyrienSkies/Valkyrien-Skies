@@ -42,9 +42,9 @@ public class PhysicsParticleManager {
             } else {
                 if (physicsParticle.addMomentumToShip) {
                     bufferVectorForcePos
-                        .setValue(physicsParticle.posX - parent.getParent().wrapperEntity().posX,
-                            physicsParticle.posY - parent.getParent().wrapperEntity().posY,
-                            physicsParticle.posZ - parent.getParent().wrapperEntity().posZ);
+                        .setValue(physicsParticle.posX - parent.getParent().getWrapperEntity().posX,
+                            physicsParticle.posY - parent.getParent().getWrapperEntity().posY,
+                            physicsParticle.posZ - parent.getParent().getWrapperEntity().posZ);
                     bufferVectorForce.setValue(physicsParticle.velX * physicsParticle.mass,
                         physicsParticle.velY * physicsParticle.mass,
                         physicsParticle.velZ * physicsParticle.mass);
@@ -105,7 +105,7 @@ public class PhysicsParticleManager {
             // If the particle still isn't dead then check for collision in ship
             if (!isParticleDead) {
                 bufferVector.setValue(posX, posY, posZ);
-                physicsSource.getParent().shipTransformationManager()
+                physicsSource.getParent().getShipTransformationManager()
                     .getCurrentPhysicsTransform()
                     .transform(bufferVector, TransformType.GLOBAL_TO_SUBSPACE);
                 bufferBlockPos.setPos(bufferVector.X, bufferVector.Y, bufferVector.Z);

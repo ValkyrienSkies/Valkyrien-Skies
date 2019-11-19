@@ -42,7 +42,7 @@ public class ClaimedChunkCacheController {
         this.world = parent.world();
         this.parent = parent;
 
-        int dimension = parent.ownedChunks().dimension();
+        int dimension = parent.getOwnedChunks().dimension();
 
         if (loaded) {
             loadLoadedChunks();
@@ -59,7 +59,7 @@ public class ClaimedChunkCacheController {
      * @return The chunk from the cache
      */
     public Chunk getChunkAt(int chunkX, int chunkZ) {
-        VSChunkClaim claim = parent.ownedChunks();
+        VSChunkClaim claim = parent.getOwnedChunks();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
 
@@ -96,7 +96,7 @@ public class ClaimedChunkCacheController {
      * @param chunk  The chunk to cache.
      */
     public void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
-        VSChunkClaim claim = parent.ownedChunks();
+        VSChunkClaim claim = parent.getOwnedChunks();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
 
@@ -121,10 +121,10 @@ public class ClaimedChunkCacheController {
      * Loads chunks that have been generated before into the cache
      */
     private void loadLoadedChunks() {
-        VSChunkClaim chunkClaim = parent.ownedChunks();
+        VSChunkClaim chunkClaim = parent.getOwnedChunks();
 
-        claimedChunks = new Chunk[(chunkClaim.radius() * 2) + 1][
-            (chunkClaim.radius() * 2) + 1];
+        claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
+            (chunkClaim.getRadius() * 2) + 1];
         for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
             for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
                 // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
@@ -151,10 +151,10 @@ public class ClaimedChunkCacheController {
      * the game thread. Running it on a separate thread will lead to data races.
      */
     private void loadNewChunks() {
-        VSChunkClaim chunkClaim = parent.ownedChunks();
+        VSChunkClaim chunkClaim = parent.getOwnedChunks();
 
-        claimedChunks = new Chunk[(chunkClaim.radius() * 2) + 1][
-            (chunkClaim.radius() * 2) + 1];
+        claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
+            (chunkClaim.getRadius() * 2) + 1];
 
         for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
             for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
@@ -166,7 +166,7 @@ public class ClaimedChunkCacheController {
     }
 
     public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
-        VSChunkClaim chunkClaim = parent.ownedChunks();
+        VSChunkClaim chunkClaim = parent.getOwnedChunks();
         chunk.generateSkylightMap();
         chunk.checkLight();
 
@@ -193,7 +193,7 @@ public class ClaimedChunkCacheController {
         PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
         PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
         entry.sentToPlayers = true;
-        entry.players = parent.watchingPlayers();
+        entry.players = parent.getWatchingPlayers();
     }
 
 }

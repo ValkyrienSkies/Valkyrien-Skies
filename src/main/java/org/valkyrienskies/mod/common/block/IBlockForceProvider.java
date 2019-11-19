@@ -41,7 +41,7 @@ public interface IBlockForceProvider {
             return null;
         }
         if (shouldLocalForceBeRotated(world, pos, state, secondsToApply)) {
-            ShipTransform shipTransform = physicsObject.shipTransformationManager()
+            ShipTransform shipTransform = physicsObject.getShipTransformationManager()
                 .getCurrentTickTransform();
             shipTransform.rotate(toReturn, TransformType.SUBSPACE_TO_GLOBAL);
         }

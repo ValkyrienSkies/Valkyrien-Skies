@@ -118,7 +118,7 @@ public class WorldPhysicsCollider {
             cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
         cachedHitsToRemove.resetQuick();
-        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent.needsCollisionCacheUpdate()) {
+        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent.isNeedsCollisionCacheUpdate()) {
             updatePotentialCollisionCache();
             updateCollisionTasksCache = true;
         }
@@ -188,7 +188,7 @@ public class WorldPhysicsCollider {
             inWorld.Y = mutablePos.getY() + .5;
             inWorld.Z = mutablePos.getZ() + .5;
 
-            parent.shipTransformationManager().getCurrentPhysicsTransform().transform(inWorld,
+            parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inWorld,
                 TransformType.GLOBAL_TO_SUBSPACE);
 
             // parent.coordTransform.fromGlobalToLocal(inWorld);
@@ -301,11 +301,11 @@ public class WorldPhysicsCollider {
         // inLocalBB = colBB.get(0);
 
         Polygon shipInWorld = new Polygon(inLocalBB,
-            parent.shipTransformationManager().getCurrentPhysicsTransform(),
+            parent.getShipTransformationManager().getCurrentPhysicsTransform(),
             TransformType.SUBSPACE_TO_GLOBAL);
         Polygon worldPoly = new Polygon(inGlobalBB);
         PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-            parent.shipTransformationManager().normals);
+            parent.getShipTransformationManager().normals);
         if (!collider.seperated) {
             return handleActualCollision(collider, inWorldPos, inLocalPos, inWorldState,
                 inLocalState);
@@ -327,8 +327,8 @@ public class WorldPhysicsCollider {
         }
 
         org.valkyrienskies.mod.common.math.Vector positionInBody = collider.entity.getCenter();
-        positionInBody.subtract(parent.wrapperEntity().posX, parent.wrapperEntity().posY,
-            parent.wrapperEntity().posZ);
+        positionInBody.subtract(parent.getWrapperEntity().posX, parent.getWrapperEntity().posY,
+            parent.getWrapperEntity().posZ);
 
         double impulseApplied = 1D;
 
@@ -339,8 +339,8 @@ public class WorldPhysicsCollider {
 
         for (org.valkyrienskies.mod.common.math.Vector collisionPos : collisionPoints) {
             org.valkyrienskies.mod.common.math.Vector inBody = collisionPos.getSubtraction(
-                new org.valkyrienskies.mod.common.math.Vector(parent.wrapperEntity().posX,
-                    parent.wrapperEntity().posY, parent.wrapperEntity().posZ));
+                new org.valkyrienskies.mod.common.math.Vector(parent.getWrapperEntity().posX,
+                    parent.getWrapperEntity().posY, parent.getWrapperEntity().posZ));
             inBody.multiply(-1D);
             org.valkyrienskies.mod.common.math.Vector momentumAtPoint = calculator
                 .getVelocityAtPoint(inBody);
@@ -422,15 +422,15 @@ public class WorldPhysicsCollider {
             .getProduct(frictionImpulseDot);
         frictionVector.subtract(toRemove);
 
-        double inertiaScalarAlongAxis = parent.physicsProcessor().getInertiaAlongRotationAxis();
+        double inertiaScalarAlongAxis = parent.getPhysicsProcessor().getInertiaAlongRotationAxis();
         // The change in velocity vector
         org.valkyrienskies.mod.common.math.Vector initialVelocity = new org.valkyrienskies.mod.common.math.Vector(
-            parent.physicsProcessor().linearMomentum,
-            parent.physicsProcessor().getInvMass());
+            parent.getPhysicsProcessor().linearMomentum,
+            parent.getPhysicsProcessor().getInvMass());
         // Don't forget to multiply by delta t
         org.valkyrienskies.mod.common.math.Vector deltaVelocity = new org.valkyrienskies.mod.common.math.Vector(
             frictionVector,
-            parent.physicsProcessor().getInvMass() * parent.physicsProcessor()
+            parent.getPhysicsProcessor().getInvMass() * parent.getPhysicsProcessor()
                 .getDragForPhysTick());
 
         double A = initialVelocity.lengthSq();
@@ -438,12 +438,12 @@ public class WorldPhysicsCollider {
         double C = deltaVelocity.lengthSq();
 
         org.valkyrienskies.mod.common.math.Vector initialAngularVelocity = parent
-            .physicsProcessor().angularVelocity;
+            .getPhysicsProcessor().angularVelocity;
         org.valkyrienskies.mod.common.math.Vector deltaAngularVelocity = inBody
             .cross(frictionVector);
         // This might need to be 1 / inertiaScalarAlongAxis
         deltaAngularVelocity
-            .multiply(parent.physicsProcessor().getDragForPhysTick() / inertiaScalarAlongAxis);
+            .multiply(parent.getPhysicsProcessor().getDragForPhysTick() / inertiaScalarAlongAxis);
 
         double D = initialAngularVelocity.lengthSq();
         double E = 2 * deltaAngularVelocity.dot(initialAngularVelocity);
@@ -458,11 +458,11 @@ public class WorldPhysicsCollider {
         // The coefficients of energy as a function of energyScaleFactor in the form (A
         // + B * k + c * k^2)
         double firstCoefficient =
-            A * parent.physicsProcessor().getMass() + D * inertiaScalarAlongAxis;
+            A * parent.getPhysicsProcessor().getMass() + D * inertiaScalarAlongAxis;
         double secondCoefficient =
-            B * parent.physicsProcessor().getMass() + E * inertiaScalarAlongAxis;
+            B * parent.getPhysicsProcessor().getMass() + E * inertiaScalarAlongAxis;
         double thirdCoefficient =
-            C * parent.physicsProcessor().getMass() + F * inertiaScalarAlongAxis;
+            C * parent.getPhysicsProcessor().getMass() + F * inertiaScalarAlongAxis;
 
         double scaleFactor = -secondCoefficient / (thirdCoefficient * 2);
 
@@ -482,7 +482,7 @@ public class WorldPhysicsCollider {
     // TODO: The greatest physics lag starts here.
     private void updatePotentialCollisionCache() {
         PhysicsShipTransform currentPhysicsTransform = (PhysicsShipTransform) parent
-            .shipTransformationManager()
+            .getShipTransformationManager()
             .getCurrentPhysicsTransform();
 
         // Use the physics tick collision box instead of the game tick collision box.
@@ -546,7 +546,7 @@ public class WorldPhysicsCollider {
         int maxZ = max.getZ();
 
         // More multithreading!
-        if (parent.blockPositions().size() > 100) {
+        if (parent.getBlockPositions().size() > 100) {
             List<Tuple<Integer, Integer>> tasks = new ArrayList<Tuple<Integer, Integer>>();
 
             for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
@@ -812,11 +812,11 @@ public class WorldPhysicsCollider {
             if (inLocal.X > shipBB.minX && inLocal.X < shipBB.maxX && inLocal.Y > shipBB.minY
                 && inLocal.Y < shipBB.maxY
                 && inLocal.Z > shipBB.minZ && inLocal.Z < shipBB.maxZ) {
-                parent.shipTransformationManager().getCurrentPhysicsTransform()
+                parent.getShipTransformationManager().getCurrentPhysicsTransform()
                     .transform(inLocal,
                         TransformType.GLOBAL_TO_SUBSPACE);
 
-                inBody.setSubtraction(inLocal, parent.centerCoord());
+                inBody.setSubtraction(inLocal, parent.getCenterCoord());
                 // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
                 // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
@@ -941,10 +941,10 @@ public class WorldPhysicsCollider {
             inLocal.Z = z + .5D;
             // TODO: Something
             // parent.coordTransform.fromGlobalToLocal(inLocal);
-            parent.shipTransformationManager().getCurrentPhysicsTransform().transform(inLocal,
+            parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal,
                 TransformType.GLOBAL_TO_SUBSPACE);
 
-            inBody.setSubtraction(inLocal, parent.centerCoord());
+            inBody.setSubtraction(inLocal, parent.getCenterCoord());
             // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
             // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 

@@ -62,7 +62,7 @@ public abstract class MixinTileEntity {
                     Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D,
                         pos.getZ() + .5D);
                     physicsObject.get()
-                        .shipTransformationManager()
+                        .getShipTransformationManager()
                         .fromLocalToGlobal(tilePos);
 
                     tilePos.X -= x;

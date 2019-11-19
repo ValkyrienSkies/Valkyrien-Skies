@@ -1,8 +1,6 @@
 package org.valkyrienskies.mod.common.capability.framework;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
 import java.io.IOException;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -16,8 +14,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.util.EnumFacing;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
-import org.valkyrienskies.mod.common.util.jackson.JOMLSerializationModule;
-import org.valkyrienskies.mod.common.util.jackson.MinecraftSerializationModule;
+import org.valkyrienskies.mod.common.util.jackson.VSJacksonUtil;
 
 /**
  * Implement as follows
@@ -51,7 +48,7 @@ public abstract class VSDefaultCapability<K> {
     private Supplier<K> factory;
 
     public VSDefaultCapability(Class<K> kClass, Supplier<K> factory) {
-        this(kClass, factory, createMapper());
+        this(kClass, factory, VSJacksonUtil.getDefaultMapper());
     }
 
     public VSDefaultCapability(Class<K> kClass, Supplier<K> factory, ObjectMapper mapper) {
@@ -60,21 +57,6 @@ public abstract class VSDefaultCapability<K> {
         this.instance = factory.get();
         log.debug("CONSTRUCTED INSTANCE: " + instance);
         this.mapper = mapper;
-    }
-
-    private static ObjectMapper createMapper() {
-        ObjectMapper mapper = new CBORMapper();
-
-        mapper.setVisibility(mapper.getVisibilityChecker()
-            .withFieldVisibility(Visibility.ANY)
-            .withGetterVisibility(Visibility.NONE)
-            .withIsGetterVisibility(Visibility.NONE)
-            .withSetterVisibility(Visibility.NONE));
-
-        mapper.registerModule(new MinecraftSerializationModule())
-            .registerModule(new JOMLSerializationModule());
-
-        return mapper;
     }
 
     @Nullable
@@ -97,10 +79,12 @@ public abstract class VSDefaultCapability<K> {
     public K readNBT(NBTBase base, EnumFacing side) {
         long time = System.currentTimeMillis();
 
-        byte[] value = ((NBTTagByteArray) base).getByteArray();
         try {
+            byte[] value = ((NBTTagByteArray) base).getByteArray();
             this.instance = mapper.readValue(value, kClass);
-        } catch (IOException ex) {
+            log.info("VS deserialization took {} ms. Reading data of size {} KB.",
+                System.currentTimeMillis() - time, value.length / Math.pow(2, 10));
+        } catch (IOException | ClassCastException ex) {
             log.fatal("Failed to read your ship data? Ships will probably be missing", ex);
             this.instance = factory.get();
         }
@@ -110,10 +94,7 @@ public abstract class VSDefaultCapability<K> {
             log.fatal("Failed to read your ship data? Ships will probably be missing");
             this.instance = factory.get();
         }
-
-        log.info("VS deserialization took {} ms. Reading data of size {} KB.",
-            System.currentTimeMillis() - time, value.length / Math.pow(2, 10));
-
+        
         return this.instance;
     }
 

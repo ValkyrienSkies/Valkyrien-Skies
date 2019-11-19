@@ -132,6 +132,8 @@ public class VSConfig extends VSConfigTemplate {
         "minecraft:portal",
     };
 
+    public static String[] blockMass = {"minecraft:grass=1500"};
+
     public static Vector gravity() {
         return new Vector(gravityVecX, gravityVecY, gravityVecZ);
     }

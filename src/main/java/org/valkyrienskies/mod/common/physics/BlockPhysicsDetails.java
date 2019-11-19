@@ -17,6 +17,7 @@
 package org.valkyrienskies.mod.common.physics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -25,9 +26,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockMassProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 
@@ -50,11 +53,21 @@ public class BlockPhysicsDetails {
      */
     public static final ArrayList<Block> blocksToNotPhysicsInfuse = new ArrayList<>();
 
-
     static {
         generateBlockMasses();
         generateMaterialMasses();
         generateBlocksToNotPhysicsInfuse();
+
+        VSConfig.registerSyncEvent(BlockPhysicsDetails::onSync);
+        onSync();
+    }
+
+    private static void onSync() {
+        Arrays.stream(VSConfig.blockMass)
+            .map(str -> str.split("="))
+            .filter(arr -> arr.length == 2)
+            .map(arr -> Pair.of(Block.getBlockFromName(arr[0]), Double.parseDouble(arr[1])))
+            .forEach(pair -> blockToMass.put(pair.getLeft(), pair.getRight()));
     }
 
     private static void generateMaterialMasses() {

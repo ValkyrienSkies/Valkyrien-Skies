@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.common;
 
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -25,48 +26,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.valkyrienskies.mixin.MixinLoaderForge;
-import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
-import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
-import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
-import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
-import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
-import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
-import org.valkyrienskies.mod.common.network.ShipIndexDataMessageHandler;
-import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
-import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
-import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
-import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
-import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
-import org.valkyrienskies.mod.proxy.CommonProxy;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.googlecode.cqengine.ConcurrentIndexedCollection;
-
-import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
-import de.javakaffee.kryoserializers.UUIDSerializer;
-import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
-import de.javakaffee.kryoserializers.guava.ArrayListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ArrayTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableListSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableSetSerializer;
-import de.javakaffee.kryoserializers.guava.ImmutableTableSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedHashMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.LinkedListMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.ReverseListSerializer;
-import de.javakaffee.kryoserializers.guava.TreeBasedTableSerializer;
-import de.javakaffee.kryoserializers.guava.TreeMultimapSerializer;
-import de.javakaffee.kryoserializers.guava.UnmodifiableNavigableSetSerializer;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
@@ -97,6 +56,25 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import org.valkyrienskies.mixin.MixinLoaderForge;
+import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
+import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
+import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserCreative;
+import org.valkyrienskies.mod.common.block.BlockPhysicsInfuserDummy;
+import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
+import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessageHandler;
+import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
+import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
+import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
+import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
 
 @Mod(
@@ -160,8 +138,7 @@ public class ValkyrienSkiesMod {
         ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors
             .newFixedThreadPool(VSConfig.threadCount);
 
-        log.debug("Beginning asynchronous Kryo initialization.");
-        serializationInitAsync();
+        log.debug("Initializing networks.");
         registerNetworks(event);
 
         registerCapabilities();
@@ -214,68 +191,6 @@ public class ValkyrienSkiesMod {
                 Side.CLIENT);
         physWrapperNetwork
                 .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 2, Side.SERVER);
-    }
-
-    /**
-     * Create our new instance of {@link Kryo}. This is done asynchronously with CompletableFuture
-     * so as not to slow down initialization. We save a lot of time this way!
-     */
-    private void serializationInitAsync() {
-        kryoInstance = CompletableFuture.supplyAsync(() -> {
-            long start = System.currentTimeMillis();
-
-            Kryo kryo = new Kryo();
-
-            // region More serializers
-
-            //noinspection ArraysAsListWithZeroOrOneArgument
-            UnmodifiableCollectionsSerializer.registerSerializers(kryo);
-            SynchronizedCollectionsSerializer.registerSerializers(kryo);
-
-            ImmutableListSerializer.registerSerializers(kryo);
-            ImmutableSetSerializer.registerSerializers(kryo);
-            ImmutableMapSerializer.registerSerializers(kryo);
-            ImmutableMultimapSerializer.registerSerializers(kryo);
-            ImmutableTableSerializer.registerSerializers(kryo);
-            ReverseListSerializer.registerSerializers(kryo);
-            UnmodifiableNavigableSetSerializer.registerSerializers(kryo);
-
-            ArrayListMultimapSerializer.registerSerializers(kryo);
-            HashMultimapSerializer.registerSerializers(kryo);
-            LinkedHashMultimapSerializer.registerSerializers(kryo);
-            LinkedListMultimapSerializer.registerSerializers(kryo);
-            TreeMultimapSerializer.registerSerializers(kryo);
-            ArrayTableSerializer.registerSerializers(kryo);
-            HashBasedTableSerializer.registerSerializers(kryo);
-            TreeBasedTableSerializer.registerSerializers(kryo);
-
-            // endregion
-
-            kryo.register(ConcurrentIndexedCollection.class);
-            kryo.register(ShipData.class);
-            kryo.register(ShipPositionData.class);
-            kryo.register(VSChunkClaim.class);
-            kryo.register(HashSet.class);
-            kryo.register(UUID.class, new UUIDSerializer());
-
-            // This should be changed to true but only once we're stable
-            kryo.setRegistrationRequired(false);
-
-            log.debug("Kryo initialization: " + (System.currentTimeMillis() - start) + "ms");
-
-            return kryo;
-        });
-    }
-
-    /**
-     * @return The Kryo instance for the mod. This operation is blocking!
-     */
-    public Kryo getKryo() {
-        try {
-            return kryoInstance.get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {

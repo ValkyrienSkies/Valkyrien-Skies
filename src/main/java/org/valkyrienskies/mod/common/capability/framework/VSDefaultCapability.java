@@ -79,10 +79,12 @@ public abstract class VSDefaultCapability<K> {
     public K readNBT(NBTBase base, EnumFacing side) {
         long time = System.currentTimeMillis();
 
-        byte[] value = ((NBTTagByteArray) base).getByteArray();
         try {
+            byte[] value = ((NBTTagByteArray) base).getByteArray();
             this.instance = mapper.readValue(value, kClass);
-        } catch (IOException ex) {
+            log.info("VS deserialization took {} ms. Reading data of size {} KB.",
+                System.currentTimeMillis() - time, value.length / Math.pow(2, 10));
+        } catch (IOException | ClassCastException ex) {
             log.fatal("Failed to read your ship data? Ships will probably be missing", ex);
             this.instance = factory.get();
         }
@@ -92,10 +94,7 @@ public abstract class VSDefaultCapability<K> {
             log.fatal("Failed to read your ship data? Ships will probably be missing");
             this.instance = factory.get();
         }
-
-        log.info("VS deserialization took {} ms. Reading data of size {} KB.",
-            System.currentTimeMillis() - time, value.length / Math.pow(2, 10));
-
+        
         return this.instance;
     }
 

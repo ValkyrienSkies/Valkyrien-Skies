@@ -94,7 +94,7 @@ public abstract class VSDefaultCapability<K> {
             log.fatal("Failed to read your ship data? Ships will probably be missing");
             this.instance = factory.get();
         }
-        
+
         return this.instance;
     }
 

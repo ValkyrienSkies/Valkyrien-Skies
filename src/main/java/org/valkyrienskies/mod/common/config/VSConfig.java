@@ -121,15 +121,13 @@ public class VSConfig extends VSConfigTemplate {
     }
 
     @Comment("Blocks to not be included when assembling a ship")
-    public static String[] shipSpawnDetectorBlacklist = {"minecraft:air", "minecraft:dirt",
-        "minecraft:grass",
-        "minecraft:stone", "minecraft:tallgrass", "minecraft:water", "minecraft:flowing_water",
-        "minecraft:sand", "minecraft:sandstone", "minecraft:gravel", "minecraft:ice",
-        "minecraft:snow",
+    public static String[] shipSpawnDetectorBlacklist = {
+        "minecraft:air", "minecraft:dirt", "minecraft:grass", "minecraft:stone",
+        "minecraft:tallgrass", "minecraft:water", "minecraft:flowing_water", "minecraft:sand",
+        "minecraft:sandstone", "minecraft:gravel", "minecraft:ice", "minecraft:snow",
         "minecraft:snow_layer", "minecraft:lava", "minecraft:flowing_lava", "minecraft:grass_path",
         "minecraft:bedrock", "minecraft:end_portal_frame", "minecraft:end_portal",
-        "minecraft:end_gateway",
-        "minecraft:portal",
+        "minecraft:end_gateway", "minecraft:portal",
     };
 
     public static Vector gravity() {

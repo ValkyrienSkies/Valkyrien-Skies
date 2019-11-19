@@ -18,7 +18,32 @@ package org.valkyrienskies.addon.control;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.registries.GameData;
 import org.valkyrienskies.addon.control.block.multiblocks.GiantPropellerMultiblockSchematic;
 import org.valkyrienskies.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
@@ -57,30 +82,6 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
 import org.valkyrienskies.addon.control.tileentity.TileEntitySpeedTelegraph;
 import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.registries.GameData;
 
 @Mod(
     name = ValkyrienSkiesControl.MOD_NAME,
@@ -148,7 +149,7 @@ public class ValkyrienSkiesControl {
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-		this.addShapedRecipe(INSTANCE.vsControlBlocks.captainsChair, 1,
+		addShapedRecipe(INSTANCE.vsControlBlocks.captainsChair, 1,
             "SLS",
             "VWV",
             " S ",
@@ -156,7 +157,7 @@ public class ValkyrienSkiesControl {
             'L', Items.LEATHER,
             'W', Item.getItemFromBlock(Blocks.LOG),
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
-		this.addShapedRecipe(INSTANCE.vsControlBlocks.passengerChair, 1,
+		addShapedRecipe(INSTANCE.vsControlBlocks.passengerChair, 1,
             "SLS",
             "PWP",
             " S ",
@@ -165,34 +166,34 @@ public class ValkyrienSkiesControl {
             'W', Item.getItemFromBlock(Blocks.LOG),
             'P', Item.getItemFromBlock(Blocks.PLANKS));
 
-		this.addEngineRecipe(INSTANCE.vsControlBlocks.basicEngine, Blocks.PLANKS);
-		this.addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.STONE);
-		this.addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.COBBLESTONE);
-		this.addEngineRecipe(INSTANCE.vsControlBlocks.eliteEngine, Items.IRON_INGOT);
-		this.addEngineRecipe(INSTANCE.vsControlBlocks.ultimateEngine, Blocks.OBSIDIAN);
+		addEngineRecipe(INSTANCE.vsControlBlocks.basicEngine, Blocks.PLANKS);
+		addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.STONE);
+		addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.COBBLESTONE);
+		addEngineRecipe(INSTANCE.vsControlBlocks.eliteEngine, Items.IRON_INGOT);
+		addEngineRecipe(INSTANCE.vsControlBlocks.ultimateEngine, Blocks.OBSIDIAN);
         Item relayWireIngot = Items.IRON_INGOT;
         // TODO: Code to check for copper and set relayWireIngot
 
-        this.addShapedRecipe(INSTANCE.relayWire, 4, // 1 per copper/iron ingot
+        addShapedRecipe(INSTANCE.relayWire, 4, // 1 per copper/iron ingot
             " I ",
             "ISI",
             " I ",
             'I', relayWireIngot,
             'S', Items.STICK);
-		this.addShapedRecipe(INSTANCE.vanishingWire, 8,
+		addShapedRecipe(INSTANCE.vanishingWire, 8,
             "WWW",
             "WVW",
             "WWW",
             'W', INSTANCE.relayWire,
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
-        this.addShapedRecipe(INSTANCE.vsControlBlocks.compactedValkyrium, 1,
+        addShapedRecipe(INSTANCE.vsControlBlocks.compactedValkyrium, 1,
             "VVV",
             "VVV",
             "VVV",
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
-        this.addShapedRecipe(INSTANCE.vsControlBlocks.valkyriumEnginePart, 1,
+        addShapedRecipe(INSTANCE.vsControlBlocks.valkyriumEnginePart, 1,
             "IVI",
             "VFV",
             "IVI",
@@ -200,7 +201,7 @@ public class ValkyrienSkiesControl {
             'F', Item.getItemFromBlock(Blocks.FURNACE),
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
-        this.addShapedRecipe(INSTANCE.vsControlBlocks.valkyriumCompressorPart, 1,
+        addShapedRecipe(INSTANCE.vsControlBlocks.valkyriumCompressorPart, 1,
             "GVG",
             "VFV",
             "GVG",
@@ -304,7 +305,7 @@ public class ValkyrienSkiesControl {
 	}
 
 	// Engine recipe helpers
-	public static void addEngineRecipe(Item output, Item type) {
+	public static void addEngineRecipe(Block output, Item type) {
 		addShapedRecipe(output, 4,
 			"I##",
 			"IPP",
@@ -314,7 +315,23 @@ public class ValkyrienSkiesControl {
 			'I', Items.IRON_INGOT);
 	}
 
-	public static void addEngineRecipe(Item output, Block type) {
-		addEngineRecipe(output, count, Item.getItemFromBlock(type));
+	public static void addEngineRecipe(Block output, Block type) {
+		addEngineRecipe(output, Item.getItemFromBlock(type));
+	}
+
+	// If a recipe already exists, increment number
+	/* eg:
+	  vs_control:item_0
+	  vs_control:item_1
+	*/
+	private static ResourceLocation getNameForRecipe(ItemStack output) {
+		ResourceLocation baseLoc = new ResourceLocation(MOD_ID, output.getItem().getRegistryName().getPath());
+		ResourceLocation recipeLoc = baseLoc;
+		int index = 0;
+		while (CraftingManager.REGISTRY.containsKey(recipeLoc)) {
+			index++;
+			recipeLoc = new ResourceLocation(MOD_ID, baseLoc.getPath() + "_" + index);
+		}
+		return recipeLoc;
 	}
 }

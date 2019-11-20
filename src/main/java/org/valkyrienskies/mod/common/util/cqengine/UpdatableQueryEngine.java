@@ -7,7 +7,7 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 
 public interface UpdatableQueryEngine<O> extends QueryEngineInternal<O> {
 
-	public void updateAll(final ObjectSet<O> objectSet, final Attribute<O, ?> onAttribute,
+    public void updateAll(final ObjectSet<O> objectSet, final Attribute<O, ?> onAttribute,
         final QueryOptions queryOptions);
 
 }

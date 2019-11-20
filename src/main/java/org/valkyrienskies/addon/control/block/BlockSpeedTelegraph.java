@@ -41,8 +41,8 @@ public class BlockSpeedTelegraph extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
-    public BlockSpeedTelegraph(Material materialIn) {
-        super(materialIn);
+    public BlockSpeedTelegraph() {
+        super("speed_telegraph", Material.WOOD, 5.0F);
     }
 
     @Override

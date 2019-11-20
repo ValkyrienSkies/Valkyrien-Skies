@@ -33,11 +33,13 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.world.EntityFallingUpBlock;
 import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
+import org.valkyrienskies.addon.world.util.BaseBlock;
 
-public class BlockValkyriumOre extends Block {
+public class BlockValkyriumOre extends BaseBlock {
 
-    public BlockValkyriumOre(Material materialIn) {
-        super(materialIn);
+    public BlockValkyriumOre() {
+        super("valkyrium_ore", Material.ROCK, 3.0F / 15.0F, true); // Slight glow
+        this.setHardness(3.0F);
     }
 
     // Ripped from BlockFalling class for consistancy with game mechanics

@@ -52,10 +52,13 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
 
     public static final PropertyBool INFUSER_LIGHT_ON = PropertyBool.create("infuser_light_on");
 
+	protected String name;
+
     int shipSpawnDetectorID;
 
-    public BlockPhysicsInfuser(Material materialIn) {
-        super(materialIn);
+    public BlockPhysicsInfuser(String name) {
+        super(name, Material.WOOD, 0.0F, true);
+		this.name = name;
         shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
     }
 
@@ -127,7 +130,7 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip,
         ITooltipFlag flagIn) {
-        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies.physics_infuser"));
+        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies." + this.name));
     }
 
     @Override
@@ -150,8 +153,7 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
             facingHorizontal = playerFacing.getOpposite();
         } else {
             // There was no valid facing! How the did this method even get called!
-            throw new IllegalStateException(
-                "Cannot find valid state for placement for Physics Infuser!");
+            throw new IllegalStateException("Cannot find valid state for placement for Physics Infuser!");
         }
 
         return this.getDefaultState()

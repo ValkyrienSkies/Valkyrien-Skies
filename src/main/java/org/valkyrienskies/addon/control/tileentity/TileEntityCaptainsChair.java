@@ -64,8 +64,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
     public final void onStopTileUsage() {
         // Sanity check, sometimes we can be piloting something that's been destroyed so there's nothing to change physics on.
         if (getParentPhysicsEntity() != null) {
-            getParentPhysicsEntity()
-                .getPhysicsCalculations().actAsArchimedes = false;
+            getParentPhysicsEntity().getPhysicsCalculations().actAsArchimedes = false;
         }
     }
 

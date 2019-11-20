@@ -41,112 +41,112 @@ import java.util.Set;
  */
 public interface UpdatableIndexedCollection<O> extends Set<O>, QueryEngine<O> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	ResultSet<O> retrieve(Query<O> query);
+    /**
+     * {@inheritDoc}
+     */
+    ResultSet<O> retrieve(Query<O> query);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     ResultSet<O> retrieve(Query<O> query, QueryOptions queryOptions);
 
-	/**
-	 * Removes or adds objects to/from the collection and indexes in bulk.
-	 * <p/>
-	 * Note that although this method accepts either {@code Iterable}s or {@code Collection}s for its
-	 * {@code objectsToRemove} and {@code objectsToAdd} parameters, there are pros and cons of each:
-	 * <ul>
-	 *     <li>
-	 *         If an {@code Iterable} is supplied, updates to indexes will be applied in a streaming fashion. This
-	 *         allows the application and CQEngine to avoid buffering many updates in memory as a batch, but requires
-	 *         more round trips to update indexes, which might hurt performance for indexes where making many round
-	 *         trips is expensive. This is typically fine for on-heap indexes, but less so for off-heap or on-disk
-	 *         indexes.
-	 *     </li>
-	 *     <li>
-	 *         If a {@code Collection} is supplied, updates to indexes will be applied as a single batch. This might
-	 *         improve performance for indexes where making many round trips is expensive. Ordinarily this implies that
-	 *         the application needs to assemble a batch into a collection before calling this method. However for
-	 *         applications where the source of updates is computed lazily or originates from a stream, but yet where
-	 *         it is desirable to apply the updates as a batch anyway, the application can wrap the stream as a lazy
-	 *         collection (extend {@link AbstractCollection}) so that CQEngine will behave as above.
-	 *         <ul><li>
-	 *         Note also that some off-heap and on-disk indexes support a fast "bulk import" feature which can be used
-	 *         in conjunction with this. For details on how to perform a bulk import, see
-	 *         {@link com.googlecode.cqengine.index.sqlite.support.SQLiteIndexFlags#BULK_IMPORT}.
-	 *         </li></ul>
-	 *     </li>
-	 * </ul>
-	 *
-	 * @param objectsToRemove The objects to remove from the collection
-	 * @param objectsToAdd The objects to add to the collection
-	 * @return True if the collection was modified as a result, false if it was not
-	 */
-	boolean update(Iterable<O> objectsToRemove, Iterable<O> objectsToAdd);
+    /**
+     * Removes or adds objects to/from the collection and indexes in bulk.
+     * <p/>
+     * Note that although this method accepts either {@code Iterable}s or {@code Collection}s for its
+     * {@code objectsToRemove} and {@code objectsToAdd} parameters, there are pros and cons of each:
+     * <ul>
+     *     <li>
+     *         If an {@code Iterable} is supplied, updates to indexes will be applied in a streaming fashion. This
+     *         allows the application and CQEngine to avoid buffering many updates in memory as a batch, but requires
+     *         more round trips to update indexes, which might hurt performance for indexes where making many round
+     *         trips is expensive. This is typically fine for on-heap indexes, but less so for off-heap or on-disk
+     *         indexes.
+     *     </li>
+     *     <li>
+     *         If a {@code Collection} is supplied, updates to indexes will be applied as a single batch. This might
+     *         improve performance for indexes where making many round trips is expensive. Ordinarily this implies that
+     *         the application needs to assemble a batch into a collection before calling this method. However for
+     *         applications where the source of updates is computed lazily or originates from a stream, but yet where
+     *         it is desirable to apply the updates as a batch anyway, the application can wrap the stream as a lazy
+     *         collection (extend {@link AbstractCollection}) so that CQEngine will behave as above.
+     *         <ul><li>
+     *         Note also that some off-heap and on-disk indexes support a fast "bulk import" feature which can be used
+     *         in conjunction with this. For details on how to perform a bulk import, see
+     *         {@link com.googlecode.cqengine.index.sqlite.support.SQLiteIndexFlags#BULK_IMPORT}.
+     *         </li></ul>
+     *     </li>
+     * </ul>
+     *
+     * @param objectsToRemove The objects to remove from the collection
+     * @param objectsToAdd The objects to add to the collection
+     * @return True if the collection was modified as a result, false if it was not
+     */
+    boolean update(Iterable<O> objectsToRemove, Iterable<O> objectsToAdd);
 
-	/**
-	 * Removes or adds objects to/from the collection and indexes in bulk.
-	 * <p/>
-	 * Note that although this method accepts either {@code Iterable}s or {@code Collection}s for its
-	 * {@code objectsToRemove} and {@code objectsToAdd} parameters, there are pros and cons of each:
-	 * <ul>
-	 *     <li>
-	 *         If an {@code Iterable} is supplied, updates to indexes will be applied in a streaming fashion. This
-	 *         allows the application and CQEngine to avoid buffering many updates in memory as a batch, but requires
-	 *         more round trips to update indexes, which might hurt performance for indexes where making many round
-	 *         trips is expensive. This is typically fine for on-heap indexes, but less so for off-heap or on-disk
-	 *         indexes.
-	 *     </li>
-	 *     <li>
-	 *         If a {@code Collection} is supplied, updates to indexes will be applied as a single batch. This might
-	 *         improve performance for indexes where making many round trips is expensive. Ordinarily this implies that
-	 *         the application needs to assemble a batch into a collection before calling this method. However for
-	 *         applications where the source of updates is computed lazily or originates from a stream, but yet where
-	 *         it is desirable to apply the updates as a batch anyway, the application can wrap the stream as a lazy
-	 *         collection (extend {@link AbstractCollection}) so that CQEngine will behave as above.
-	 *         <ul><li>
-	 *         Note also that some off-heap and on-disk indexes support a fast "bulk import" feature which can be used
-	 *         in conjunction with this. For details on how to perform a bulk import, see
-	 *         {@link com.googlecode.cqengine.index.sqlite.support.SQLiteIndexFlags#BULK_IMPORT}.
-	 *         </li></ul>
-	 *     </li>
-	 * </ul>
-	 *
-	 * @param objectsToRemove The objects to remove from the collection
-	 * @param objectsToAdd The objects to add to the collection
-	 * @param queryOptions Optional parameters for the update
-	 * @return True if the collection was modified as a result, false if it was not
-	 */
-	boolean update(Iterable<O> objectsToRemove, Iterable<O> objectsToAdd, QueryOptions queryOptions);
+    /**
+     * Removes or adds objects to/from the collection and indexes in bulk.
+     * <p/>
+     * Note that although this method accepts either {@code Iterable}s or {@code Collection}s for its
+     * {@code objectsToRemove} and {@code objectsToAdd} parameters, there are pros and cons of each:
+     * <ul>
+     *     <li>
+     *         If an {@code Iterable} is supplied, updates to indexes will be applied in a streaming fashion. This
+     *         allows the application and CQEngine to avoid buffering many updates in memory as a batch, but requires
+     *         more round trips to update indexes, which might hurt performance for indexes where making many round
+     *         trips is expensive. This is typically fine for on-heap indexes, but less so for off-heap or on-disk
+     *         indexes.
+     *     </li>
+     *     <li>
+     *         If a {@code Collection} is supplied, updates to indexes will be applied as a single batch. This might
+     *         improve performance for indexes where making many round trips is expensive. Ordinarily this implies that
+     *         the application needs to assemble a batch into a collection before calling this method. However for
+     *         applications where the source of updates is computed lazily or originates from a stream, but yet where
+     *         it is desirable to apply the updates as a batch anyway, the application can wrap the stream as a lazy
+     *         collection (extend {@link AbstractCollection}) so that CQEngine will behave as above.
+     *         <ul><li>
+     *         Note also that some off-heap and on-disk indexes support a fast "bulk import" feature which can be used
+     *         in conjunction with this. For details on how to perform a bulk import, see
+     *         {@link com.googlecode.cqengine.index.sqlite.support.SQLiteIndexFlags#BULK_IMPORT}.
+     *         </li></ul>
+     *     </li>
+     * </ul>
+     *
+     * @param objectsToRemove The objects to remove from the collection
+     * @param objectsToAdd The objects to add to the collection
+     * @param queryOptions Optional parameters for the update
+     * @return True if the collection was modified as a result, false if it was not
+     */
+    boolean update(Iterable<O> objectsToRemove, Iterable<O> objectsToAdd, QueryOptions queryOptions);
 
-	/**
-	 * @see #addIndex(Index, QueryOptions)
-	 */
-	void addIndex(Index<O> index);
+    /**
+     * @see #addIndex(Index, QueryOptions)
+     */
+    void addIndex(Index<O> index);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	void addIndex(Index<O> index, QueryOptions queryOptions);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    void addIndex(Index<O> index, QueryOptions queryOptions);
 
-	/**
-	 * @see #removeIndex(Index, QueryOptions)
-	 */
-	void removeIndex(Index<O> index);
+    /**
+     * @see #removeIndex(Index, QueryOptions)
+     */
+    void removeIndex(Index<O> index);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	void removeIndex(Index<O> index, QueryOptions queryOptions);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    void removeIndex(Index<O> index, QueryOptions queryOptions);
 
-	/**
-	 * Returns the {@link Persistence} used by the the collection.
-	 *
-	 * @return The {@link Persistence} used by the the collection
-	 */
-	Persistence<O, ?> getPersistence();
+    /**
+     * Returns the {@link Persistence} used by the the collection.
+     *
+     * @return The {@link Persistence} used by the the collection
+     */
+    Persistence<O, ?> getPersistence();
 }

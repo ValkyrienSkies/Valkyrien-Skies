@@ -6,6 +6,6 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 
 public interface UpdatableIndex<O> extends Index<O> {
 
-	public void updateAll(ObjectSet<O> objectSet, QueryOptions queryOptions);
+    public void updateAll(ObjectSet<O> objectSet, QueryOptions queryOptions);
 
 }

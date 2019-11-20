@@ -17,15 +17,17 @@
 package org.valkyrienskies.fixes;
 
 import java.util.Optional;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
+
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import valkyrienwarfare.api.TransformType;
 
 /**

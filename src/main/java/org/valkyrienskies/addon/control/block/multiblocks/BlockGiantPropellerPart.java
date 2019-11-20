@@ -14,15 +14,17 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
-public class BlockGiantPropellerPart extends Block implements ITileEntityProvider,
+public class BlockGiantPropellerPart extends BaseBlock implements ITileEntityProvider,
     IBlockForceProvider {
 
-    public BlockGiantPropellerPart(Material materialIn) {
-        super(materialIn);
+    public BlockGiantPropellerPart() {
+        super("giant_propeller_part", Material.WOOD, 0.0F, true);
+        this.setHardness(5.0F);
     }
 
     @Override

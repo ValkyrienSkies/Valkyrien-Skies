@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.proxy;
 
+import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -25,12 +26,17 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 public class CommonProxy {
 
-    public void preInit(FMLPreInitializationEvent e) {}
+    public void registerItemRender(Item item, int i) {
+    }
+
+    public void preInit(FMLPreInitializationEvent e) {
+    }
 
     public void init(FMLInitializationEvent e) {
         NetworkRegistry.INSTANCE.registerGuiHandler(ValkyrienSkiesMod.INSTANCE, new VSGuiHandler());
     }
 
-    public void postInit(FMLPostInitializationEvent e) { }
+    public void postInit(FMLPostInitializationEvent e) {
+    }
 
 }

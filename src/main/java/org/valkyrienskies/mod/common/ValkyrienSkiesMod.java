@@ -16,28 +16,43 @@
 
 package org.valkyrienskies.mod.common;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -51,16 +66,18 @@ import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.*;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessageHandler;
+import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
+import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
+import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
+import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Mod(
     modid = ValkyrienSkiesMod.MOD_ID,
@@ -71,6 +88,9 @@ import java.util.concurrent.Executors;
 )
 @Log4j2
 public class ValkyrienSkiesMod {
+    // Used for registering stuff
+    public static final List<Block> BLOCKS = new ArrayList<Block>();
+    public static final List<Item> ITEMS = new ArrayList<Item>();
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "valkyrienskies";
@@ -113,20 +133,20 @@ public class ValkyrienSkiesMod {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        log.debug("Initializing configuration");
+        log.debug("Initializing configuration.");
         runConfiguration();
 
-        log.debug("Instantiating the physics thread executor");
+        log.debug("Instantiating the physics thread executor.");
         ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors
             .newFixedThreadPool(VSConfig.threadCount);
 
-        log.debug("Beginning asynchronous Kryo initialization");
+        log.debug("Initializing networks.");
         registerNetworks(event);
 
-        VSCapabilityRegistry.registerCapabilities();
+		VSCapabilityRegistry.registerCapabilities();
         proxy.preInit(event);
 
-        log.debug("Initializing the VS API");
+        log.debug("Initializing the VS API.");
         try {
             Field instanceField = IPhysicsEntityManager.class.getDeclaredField("INSTANCE");
             // Make the field accessible
@@ -141,7 +161,9 @@ public class ValkyrienSkiesMod {
             e.printStackTrace();
             log.fatal("FAILED TO INITIALIZE VS API!");
         }
-        // Initialize VS API end.
+
+        registerItems();
+		registerBlocks();
     }
 
     @EventHandler
@@ -174,46 +196,15 @@ public class ValkyrienSkiesMod {
                 .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 2, Side.SERVER);
     }
 
-    void registerBlocks(RegistryEvent.Register<Block> event) {
-        physicsInfuser = new BlockPhysicsInfuser(Material.ROCK).setHardness(8f)
-            .setTranslationKey("physics_infuser")
-            .setRegistryName(MOD_ID, "physics_infuser")
-            .setCreativeTab(VS_CREATIVE_TAB);
-        physicsInfuserCreative = new BlockPhysicsInfuserCreative(Material.ROCK).setHardness(12f)
-            .setTranslationKey("creative_physics_infuser")
-            .setRegistryName(MOD_ID, "creative_physics_infuser")
-            .setCreativeTab(VS_CREATIVE_TAB);
-        physicsInfuserDummy = new BlockPhysicsInfuserDummy(Material.ROCK).setHardness(12f)
-            .setTranslationKey("dummy_physics_infuser")
-            .setRegistryName(MOD_ID, "dummy_physics_infuser")
-            .setCreativeTab(VS_CREATIVE_TAB);
-
-        event.getRegistry().register(physicsInfuser);
-        event.getRegistry().register(physicsInfuserCreative);
-        event.getRegistry().register(physicsInfuserDummy);
-
-        registerTileEntities();
-    }
-
-    void registerItems(RegistryEvent.Register<Item> event) {
-        registerItemBlock(event, physicsInfuser);
-        registerItemBlock(event, physicsInfuserCreative);
-
-        this.physicsCore = new ItemPhysicsCore().setTranslationKey("physics_core")
-            .setRegistryName(MOD_ID, "physics_core")
-            .setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
-        event.getRegistry()
-            .register(this.physicsCore);
-    }
-
-    private static void registerItemBlock(RegistryEvent.Register<Item> event, Block block) {
-        event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
-    }
-
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser),
-            "IEI", "ODO", "IEI", 'E', Items.ENDER_PEARL, 'D',
-            Items.DIAMOND, 'O', Item.getItemFromBlock(Blocks.OBSIDIAN), 'I', Items.IRON_INGOT);
+            "IEI",
+            "ODO",
+            "IEI",
+            'E', Items.ENDER_PEARL,
+            'D', Items.DIAMOND,
+            'O', Item.getItemFromBlock(Blocks.OBSIDIAN),
+            'I', Items.IRON_INGOT);
     }
 
     private static void registerRecipe(RegistryEvent.Register<IRecipe> event,
@@ -235,6 +226,17 @@ public class ValkyrienSkiesMod {
     private void registerTileEntities() {
         GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class,
             new ResourceLocation(MOD_ID, "tile_physics_infuser"));
+    }
+
+    public void registerBlocks() {
+        this.physicsInfuser = new BlockPhysicsInfuser("physics_infuser");
+        this.physicsInfuserCreative = new BlockPhysicsInfuserCreative();
+        this.physicsInfuserDummy = new BlockPhysicsInfuserDummy();
+        this.registerTileEntities();
+    }
+
+    public void registerItems() {
+        this.physicsCore = new ItemPhysicsCore();
     }
 
 }

@@ -2,15 +2,18 @@
 
 # Items
 item.physics_core.name=Physics Core
-tooltip.valkyrienskies.physics_core=The core of a physics infuser
+tooltip.valkyrienskies.physics_core=The core of a physics infuser.
 
 # Blocks
 tile.physics_infuser.name=Physics Infuser
 tooltip.valkyrienskies.physics_infuser=Turns any blocks attached to this one into a brand new Ship, won't infuse most pregenerated blocks like stone.
 
-tile.creative_physics_infuser.name=Creative Physics Infuser
-tooltip.valkyrienskies.creative_physics_infuser_1=Turns any blocks attached to this one into a brand new Ship, just be careful not to infuse your entire world.
-tooltip.valkyrienskies.creative_physics_infuser_2=Warning, this has no block limits, and it will infuse everything it touches! Use with extreme caution.
+tile.physics_infuser_creative.name=Creative Physics Infuser
+tooltip.valkyrienskies.physics_infuser_creative_1=Turns any blocks attached to this one into a brand new Ship, just be careful not to infuse your entire world.
+tooltip.valkyrienskies.physics_infuser_creative_2=Warning, this has no block limits, and it will infuse everything it touches! Use with extreme caution.
+
+tile.physics_infuser_dummy.name=Dummy Telegraph
+tooltip.vs_control.physics_infuser_dummy=The other half of a physics infuser.
 
 # Item Tab
 itemGroup.valkyrienskies=Valkyrien Skies

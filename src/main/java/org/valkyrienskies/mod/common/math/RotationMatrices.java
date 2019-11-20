@@ -19,11 +19,13 @@ package org.valkyrienskies.mod.common.math;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.projectile.EntityFireball;
+import net.minecraft.util.math.AxisAlignedBB;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -221,7 +223,12 @@ public class RotationMatrices {
         entity.motionY = entityMotion.Y;
         entity.motionZ = entityMotion.Z;
 
+        // Transform the player BB so that its correct as well.
+        AxisAlignedBB playerBB = entity.getEntityBoundingBox();
+        Polygon playerBBPoly = new Polygon(playerBB, shipTransform, transformType);
+
         entity.setPosition(entityPos.X, entityPos.Y, entityPos.Z);
+        entity.setEntityBoundingBox(playerBBPoly.getEnclosedAABB());
     }
 
     public static void applyTransform3by3(double[] M, Vector vec) {

@@ -32,7 +32,6 @@ public class BlockPhysicsInfuserCreative extends BlockPhysicsInfuser {
 
     public BlockPhysicsInfuserCreative(Material materialIn) {
         super(materialIn);
-        shipSpawnDetectorID = DetectorManager.DetectorIDs.BlockPosFinder.ordinal();
     }
 
     @Override
@@ -40,6 +39,11 @@ public class BlockPhysicsInfuserCreative extends BlockPhysicsInfuser {
         ITooltipFlag flagIn) {
         tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies.creative_physics_infuser_1"));
         tooltip.add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format("tooltip.valkyrienskies.creative_physics_infuser_2"));
+    }
+
+    @Override
+    public DetectorManager.DetectorIDs getShipSpawnDetectorID() {
+        return DetectorManager.DetectorIDs.BlockPosFinder;
     }
 
 }

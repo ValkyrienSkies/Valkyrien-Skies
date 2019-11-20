@@ -117,7 +117,7 @@ public class ValkyrienSkiesMod {
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "valkyrienskies";
     public static final String MOD_NAME = "Valkyrien Skies";
-    public static final String MOD_VERSION = "1.0";
+    public static final String MOD_VERSION = "1.0-alpha-1";
     static final String MOD_FINGERPRINT = "b308676914a5e7d99459c1d2fb298744387899a7";
 
     // MOD INSTANCE

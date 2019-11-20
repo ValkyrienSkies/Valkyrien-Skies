@@ -111,7 +111,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                     .isLikelyShipChunk(getPos().getX() >> 4, getPos().getZ() >> 4)) {
                     try {
                         IThreadListener gameTickThread = (WorldServer) world;
-                        PhysicsWrapperEntity.createWrapperEntity(this)
+                        PhysicsWrapperEntity.createWrapperEntity(this, ((BlockPhysicsInfuser) infuserState.getBlock()).getShipSpawnDetectorID())
                             .thenAcceptTickSync(ship -> {
                                 System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
                                 getWorld().spawnEntity(ship);

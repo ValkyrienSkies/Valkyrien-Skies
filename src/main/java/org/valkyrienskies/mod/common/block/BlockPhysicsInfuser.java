@@ -52,11 +52,12 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
 
     public static final PropertyBool INFUSER_LIGHT_ON = PropertyBool.create("infuser_light_on");
 
-    int shipSpawnDetectorID;
-
     public BlockPhysicsInfuser(Material materialIn) {
         super(materialIn);
-        shipSpawnDetectorID = DetectorManager.DetectorIDs.ShipSpawnerGeneral.ordinal();
+    }
+
+    public DetectorManager.DetectorIDs getShipSpawnDetectorID() {
+        return DetectorManager.DetectorIDs.ShipSpawnerGeneral;
     }
 
     @Override

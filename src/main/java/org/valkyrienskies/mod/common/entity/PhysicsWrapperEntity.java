@@ -57,7 +57,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
     }
 
     public static TickSyncCompletableFuture<PhysicsWrapperEntity> createWrapperEntity(
-        TileEntityPhysicsInfuser te) {
+        TileEntityPhysicsInfuser te, DetectorIDs detectorID) {
         PhysicsWrapperEntity w = new PhysicsWrapperEntity(te.getWorld());
 
         w.posX = te.getPos()
@@ -70,7 +70,7 @@ public class PhysicsWrapperEntity extends Entity implements IEntityAdditionalSpa
         w.getPhysicsObject().setCreator("unknown");
         w.superSetCustomName(NounListNameGenerator.getInstance().generateName());
 
-        w.getPhysicsObject().setDetectorID(DetectorIDs.ShipSpawnerGeneral);
+        w.getPhysicsObject().setDetectorID(detectorID);
         w.physicsObject.setPhysicsInfuserPos(te.getPos());
         return w.getPhysicsObject().assembleShipAsOrderedByPlayer(null).thenRun(() -> {
             System.out.println("Adding ship in thread " + Thread.currentThread().getName());

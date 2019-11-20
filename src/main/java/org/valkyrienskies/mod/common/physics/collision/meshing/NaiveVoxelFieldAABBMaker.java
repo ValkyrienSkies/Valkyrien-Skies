@@ -2,6 +2,7 @@ package org.valkyrienskies.mod.common.physics.collision.meshing;
 
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.annotation.Nonnull;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -211,6 +212,7 @@ public class NaiveVoxelFieldAABBMaker implements IVoxelFieldAABBMaker {
         return true;
     }
 
+    @Nonnull
     @Override
     public BlockPos getFieldCenter() {
         return centerPos;

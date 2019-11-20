@@ -2,6 +2,7 @@ package org.valkyrienskies.mod.common.physics.collision.meshing;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -52,6 +53,7 @@ public class ExtremelyNaiveVoxelFieldAABBMaker implements IVoxelFieldAABBMaker {
         return blockPosSet.remove(new BlockPos(x, y, z));
     }
 
+    @Nonnull
     @Override
     public BlockPos getFieldCenter() {
         return voxelFieldWorldCenter;

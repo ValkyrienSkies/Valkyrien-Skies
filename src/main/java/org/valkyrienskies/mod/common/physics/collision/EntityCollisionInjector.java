@@ -16,6 +16,10 @@
 
 package org.valkyrienskies.mod.common.physics.collision;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+import lombok.Value;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
 import net.minecraft.block.SoundType;
@@ -44,10 +48,6 @@ import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EntityCollisionInjector {
 
@@ -515,6 +515,7 @@ public class EntityCollisionInjector {
         return Math.signum(orig) != Math.signum(modded);
     }
 
+    @Value
     public static class IntermediateMovementVariableStorage {
 
         public final Vector dxyz;
@@ -523,16 +524,6 @@ public class EntityCollisionInjector {
         public final boolean alreadyOnGround;
         public final double motionYBefore;
         public final float oldFallDistance;
-
-        public IntermediateMovementVariableStorage(Vector dxyz, Vector origDxyz, Vector origPosXyz,
-                                                   boolean alreadyOnGround, double motionYBefore, float oldFallDistance) {
-            this.dxyz = dxyz;
-            this.origDxyz = origDxyz;
-            this.origPosXyz = origPosXyz;
-            this.alreadyOnGround = alreadyOnGround;
-            this.motionYBefore = motionYBefore;
-            this.oldFallDistance = oldFallDistance;
-        }
 
     }
 

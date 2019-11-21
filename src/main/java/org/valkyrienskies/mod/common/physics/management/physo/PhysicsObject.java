@@ -65,8 +65,6 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingCh
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.IBlockPosSet;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
@@ -97,13 +95,6 @@ public class PhysicsObject implements IPhysicsEntity {
     @Getter
     private final PhysicsCalculations physicsCalculations;
 
-    /**
-     * Has to be concurrent, only exists properly on the server. Do not use this for anything client
-     * side! Contains all of the non-air block positions on the ship. This is used for generating
-     * AABBs and deconstructing the ship.
-     */
-    @Getter
-    private final IBlockPosSet blockPositions;
 
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
@@ -169,8 +160,6 @@ public class PhysicsObject implements IPhysicsEntity {
                     .updateAllTransforms(this.getData().getShipTransform(), true, true);
             }
         }
-        this.blockPositions = new SmallBlockPosSet(referenceBlockPos.getX(),
-            referenceBlockPos.getZ());
     }
 
     private void shipDataUpdateListener(Iterable<ShipData> oldDataIterable,
@@ -570,14 +559,14 @@ public class PhysicsObject implements IPhysicsEntity {
             Math.round(getCenterCoord().z - position.z));
         // First copy all the blocks from ship to world.
 
-        for (BlockPos oldPos : this.blockPositions) {
+        for (BlockPos oldPos : this.getBlockPositions()) {
             newPos.setPos(oldPos.getX() - centerDifference.getX(),
                 oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
             MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.empty());
         }
 
         // Just delete the tile entities in ship to prevent any dupe bugs.
-        for (BlockPos oldPos : this.blockPositions) {
+        for (BlockPos oldPos : this.getBlockPositions()) {
             getWorld().removeTileEntity(oldPos);
         }
 

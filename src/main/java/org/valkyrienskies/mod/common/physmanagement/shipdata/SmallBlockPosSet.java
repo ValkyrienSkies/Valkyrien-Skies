@@ -1,11 +1,24 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.io.IOException;
 import java.util.Iterator;
 import javax.annotation.Nonnull;
 import net.minecraft.util.math.BlockPos;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet.SmallBlockPosSetDeserializer;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet.SmallBlockPosSetSerializer;
 
 /**
  * An implementation of IBlockPosSet that stores block positions as 1 integer. This is accomplished by storing each
@@ -14,11 +27,14 @@ import net.minecraft.util.math.BlockPos;
  * This leaves 8 bits for storing the y coordinate, which allows it the range of 0 to 255, exactly the same as
  * Minecraft.
  */
+@JsonDeserialize(using = SmallBlockPosSetDeserializer.class)
+@JsonSerialize(using = SmallBlockPosSetSerializer.class)
 public class SmallBlockPosSet implements IBlockPosSet {
 
     private static final int BOT_12_BITS = 0x00000FFF;
     private static final int BOT_8_BITS = 0x000000FF;
 
+    @Nonnull
     private final TIntSet blockHashSet;
     private final int centerX;
     private final int centerZ;
@@ -109,6 +125,60 @@ public class SmallBlockPosSet implements IBlockPosSet {
         @Override
         public BlockPos next() {
             return deHash(iterator.next());
+        }
+
+    }
+
+    public static class SmallBlockPosSetSerializer extends StdSerializer<SmallBlockPosSet> {
+
+        public SmallBlockPosSetSerializer() {
+            super((Class<SmallBlockPosSet>) null);
+        }
+
+        @Override
+        public void serialize(SmallBlockPosSet value, JsonGenerator gen,
+            SerializerProvider provider) throws IOException {
+
+            gen.writeStartObject();
+
+            gen.writeFieldName("positions");
+            gen.writeStartArray(value.blockHashSet.size());
+            TIntIterator iter = value.blockHashSet.iterator();
+
+            while (iter.hasNext()) {
+                gen.writeNumber(iter.next());
+            }
+            gen.writeEndArray();
+
+            gen.writeNumberField("centerX", value.centerX);
+            gen.writeNumberField("centerZ", value.centerZ);
+
+            gen.writeEndObject();
+        }
+
+    }
+
+    public static class SmallBlockPosSetDeserializer extends StdDeserializer<SmallBlockPosSet> {
+
+        public SmallBlockPosSetDeserializer() {
+            super((Class<?>) null);
+        }
+
+        @Override
+        public SmallBlockPosSet deserialize(JsonParser p, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException {
+            JsonNode node = p.getCodec().readTree(p);
+
+            int centerX = node.get("centerX").asInt();
+            int centerZ = node.get("centerZ").asInt();
+
+            SmallBlockPosSet set = new SmallBlockPosSet(centerX, centerZ);
+
+            node.get("positions").forEach(elem -> {
+                set.blockHashSet.add(elem.asInt());
+            });
+
+            return set;
         }
     }
 }

@@ -5,6 +5,9 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * This class enables the updating of ship AABBs in O(1) time
+ */
 public interface IVoxelFieldAABBMaker {
 
     int MIN_X = -512, MAX_X = 511, MIN_Y = 0, MAX_Y = 255, MIN_Z = -512, MAX_Z = 511;

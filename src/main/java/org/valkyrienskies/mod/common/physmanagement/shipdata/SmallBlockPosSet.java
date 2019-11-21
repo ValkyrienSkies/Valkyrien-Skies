@@ -1,7 +1,11 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
+import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.Iterator;
+import javax.annotation.Nonnull;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * An implementation of IBlockPosSet that stores block positions as 1 integer. This is accomplished by storing each
@@ -26,16 +30,16 @@ public class SmallBlockPosSet implements IBlockPosSet {
     }
 
     @Override
-    public boolean addPos(int x, int y, int z) {
-        if (!canStorePos(x, y, z)) {
+    public boolean add(int x, int y, int z) {
+        if (!canStore(x, y, z)) {
             throw new IllegalArgumentException("Cannot store block position at <" + x + "," + y + "," + z + ">");
         }
         return blockHashSet.add(calculateHash(x, y, z));
     }
 
     @Override
-    public boolean removePos(int x, int y, int z) {
-        if (!canStorePos(x, y, z)) {
+    public boolean remove(int x, int y, int z) {
+        if (!canStore(x, y, z)) {
             // Nothing to remove
             return false;
         }
@@ -43,8 +47,8 @@ public class SmallBlockPosSet implements IBlockPosSet {
     }
 
     @Override
-    public boolean hasPos(int x, int y, int z) {
-        if (!canStorePos(x, y, z)) {
+    public boolean contains(int x, int y, int z) {
+        if (!canStore(x, y, z)) {
             // This pos cannot exist in this set
             return false;
         }
@@ -52,7 +56,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
     }
 
     @Override
-    public boolean canStorePos(int x, int y, int z) {
+    public boolean canStore(int x, int y, int z) {
         int xLocal = x - centerX;
         int zLocal = z - centerZ;
         return !(y < 0 | y > 255 | xLocal < -2048 | xLocal > 2047 | zLocal < -2048 | zLocal > 2047);
@@ -63,11 +67,48 @@ public class SmallBlockPosSet implements IBlockPosSet {
         return blockHashSet.size();
     }
 
-    private int calculateHash(int x, int y, int z) {
+    @Nonnull
+    @Override
+    public Iterator<BlockPos> iterator() {
+        return new SmallBlockPosIterator(blockHashSet.iterator());
+    }
+
+    @Override
+    public void clear() {
+        blockHashSet.clear();
+    }
+
+    public BlockPos deHash(int hashed) {
+        int z = hashed >> 20;
+        int y = (hashed >> 12) & 0x000000FF;
+        int x = hashed & 0x00000FFF;
+        return new BlockPos(x, y, z);
+    }
+
+    public int calculateHash(int x, int y, int z) {
         // Allocate 12 bits for x, 12 bits for z, and 8 bits for y.
         int xBits = (x - centerX) & BOT_12_BITS;
         int yBits = y & BOT_8_BITS;
         int zBits = (z - centerZ) & BOT_12_BITS;
         return xBits | (yBits << 12) | (zBits << 20);
+    }
+
+    private class SmallBlockPosIterator implements Iterator<BlockPos> {
+
+        TIntIterator iterator;
+
+        SmallBlockPosIterator(TIntIterator intIterator) {
+            this.iterator = intIterator;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public BlockPos next() {
+            return deHash(iterator.next());
+        }
     }
 }

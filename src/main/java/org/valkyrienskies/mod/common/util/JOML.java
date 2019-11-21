@@ -14,7 +14,15 @@ import org.joml.Vector3ic;
 
 public class JOML {
 
+    public static final Vector3dc PITCH_AXISd = new Vector3d(1, 0, 0);
+    public static final Vector3dc YAW_AXISd = new Vector3d(0, 1, 0);
+    public static final Vector3dc ROLL_AXISd = new Vector3d(0, 0, 1);
+
     // region To JOML
+
+    public static Vector3d convert(Vec3d v) {
+        return new Vector3d(v.x, v.y, v.z);
+    }
 
     public static Vector3f convert(org.lwjgl.util.vector.Vector3f v) {
         return new Vector3f(v.x, v.y, v.z);

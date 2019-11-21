@@ -1,15 +1,16 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import net.minecraft.util.math.BlockPos;
-
 import java.util.HashSet;
 import java.util.Set;
+import lombok.experimental.Delegate;
+import net.minecraft.util.math.BlockPos;
 
 /**
- * Naive implementation of IBlockPosSet, basically just a wrapper around a Set<BlockPos>.
+ * Naive implementation of IBlockPosSet, basically just a wrapper around a HashSet<BlockPos>.
  */
 public class NaiveBlockPosSet implements IBlockPosSet {
 
+    @Delegate
     private final Set<BlockPos> blockPosSet;
 
     public NaiveBlockPosSet() {
@@ -17,27 +18,23 @@ public class NaiveBlockPosSet implements IBlockPosSet {
     }
 
     @Override
-    public boolean addPos(int x, int y, int z) {
+    public boolean add(int x, int y, int z) {
         return blockPosSet.add(new BlockPos(x, y, z));
     }
 
     @Override
-    public boolean removePos(int x, int y, int z) {
+    public boolean remove(int x, int y, int z) {
         return blockPosSet.remove(new BlockPos(x, y, z));
     }
 
     @Override
-    public boolean hasPos(int x, int y, int z) {
+    public boolean contains(int x, int y, int z) {
         return blockPosSet.contains(new BlockPos(x, y, z));
     }
 
     @Override
-    public boolean canStorePos(int x, int y, int z) {
+    public boolean canStore(int x, int y, int z) {
         return true;
     }
 
-    @Override
-    public int size() {
-        return blockPosSet.size();
-    }
 }

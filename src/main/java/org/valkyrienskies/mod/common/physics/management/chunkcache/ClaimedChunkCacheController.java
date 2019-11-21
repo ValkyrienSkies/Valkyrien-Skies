@@ -170,7 +170,7 @@ public class ClaimedChunkCacheController {
         }
     }
 
-    private void injectChunkIntoWorldServer(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
+    public void injectChunkIntoWorldServer(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
         VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
         chunk.generateSkylightMap();
         chunk.checkLight();

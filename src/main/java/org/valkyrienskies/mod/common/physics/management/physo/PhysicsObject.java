@@ -17,6 +17,14 @@
 package org.valkyrienskies.mod.common.physics.management.physo;
 
 import gnu.trove.iterator.TIntIterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
@@ -62,10 +70,6 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
-
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -161,10 +165,12 @@ public class PhysicsObject implements IPhysicsEntity {
         } else {
             this.shipRenderer = null;
             if (!firstTimeCreated) {
-                this.getShipTransformationManager().updateAllTransforms(this.getData().getShipTransform(), true, true);
+                this.getShipTransformationManager()
+                    .updateAllTransforms(this.getData().getShipTransform(), true, true);
             }
         }
-        this.blockPositions = new SmallBlockPosSet(referenceBlockPos.getX(), referenceBlockPos.getZ());
+        this.blockPositions = new SmallBlockPosSet(referenceBlockPos.getX(),
+            referenceBlockPos.getZ());
     }
 
     private void shipDataUpdateListener(Iterable<ShipData> oldDataIterable,
@@ -219,12 +225,12 @@ public class PhysicsObject implements IPhysicsEntity {
         boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
 
         if (isNewAir) {
-            getBlockPositions().removePos(posAt);
+            getBlockPositions().remove(posAt);
             voxelFieldAABBMaker.removeVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
         }
 
         if (isOldAir && !isNewAir) {
-            getBlockPositions().addPos(posAt);
+            getBlockPositions().add(posAt);
             voxelFieldAABBMaker.addVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
         }
 
@@ -315,7 +321,8 @@ public class PhysicsObject implements IPhysicsEntity {
         getPhysicsCalculations().updateParentCenterOfMass();
         // This puts the updated ShipData transform into the transformation manager. It also creates the ship bounding
         // box (Which is stored into ShipData).
-        this.getShipTransformationManager().updateAllTransforms(this.getData().getShipTransform(), true, true);
+        this.getShipTransformationManager()
+            .updateAllTransforms(this.getData().getShipTransform(), true, true);
         /*
         Polygon polygon = new Polygon(bbInShipSpace,
             getShipTransformationManager().getCurrentTickTransform(),
@@ -418,18 +425,18 @@ public class PhysicsObject implements IPhysicsEntity {
                 getData().setPhysicsEnabled(false);
             }
 
-
             // getData().setPhysicsEnabled(false);
 
             if (shouldDeconstructShip) {
-                // this.tryToDeconstructShip();
+                this.tryToDeconstructShip();
             }
         }
 
         this.setNeedsCollisionCacheUpdate(true);
 
         if (!world.isRemote) {
-            ShipTransform physicsTransform = getShipTransformationManager().getCurrentPhysicsTransform();
+            ShipTransform physicsTransform = getShipTransformationManager()
+                .getCurrentPhysicsTransform();
             getShipTransformationManager().updateAllTransforms(physicsTransform, false, true);
             getData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
         } else {
@@ -446,7 +453,7 @@ public class PhysicsObject implements IPhysicsEntity {
     public void updateChunkCache() {
         cachedSurroundingChunks.updateChunkCache();
     }
-    
+
     // Generates the blockPos array; must be loaded DIRECTLY after the chunks are
     // setup
     public void detectBlockPositions() {
@@ -474,7 +481,7 @@ public class PhysicsObject implements IPhysicsEntity {
                                             BlockPos pos = new BlockPos(chunk.x * 16 + x,
                                                 index * 16 + y,
                                                 chunk.z * 16 + z);
-                                            getBlockPositions().addPos(pos);
+                                            getBlockPositions().add(pos);
                                             voxelFieldAABBMaker
                                                 .addVoxel(pos.getX(), pos.getY(), pos.getZ());
                                             if (BlockPhysicsDetails.isBlockProvidingForce(
@@ -544,7 +551,7 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public void tryToDeconstructShip() {
-        /*// First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
+        // First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
         if (!canShipBeDeconstructed()) {
             return;
         }
@@ -575,17 +582,15 @@ public class PhysicsObject implements IPhysicsEntity {
         }
 
         // Delete old blocks. TODO: Used to use EMPTYCHUNK to do this but that causes crashes?
-        for (int x = getOwnedChunks().minX(); x <= getOwnedChunks().maxX(); x++) {
-            for (int z = getOwnedChunks().minZ(); z <= getOwnedChunks().maxZ(); z++) {
-                Chunk chunk = new Chunk(getWorld(), x, z);
-                chunk.setTerrainPopulated(true);
-                chunk.setLightPopulated(true);
-                claimedChunkCache.injectChunkIntoWorld(chunk, x, z, true);
-                claimedChunkCache.setChunkAt(x, z, chunk);
-            }
-        }
+        getOwnedChunks().forEach((x, z) -> {
+            Chunk chunk = new Chunk(getWorld(), x, z);
+            chunk.setTerrainPopulated(true);
+            chunk.setLightPopulated(true);
+            claimedChunkCache.injectChunkIntoWorldServer(chunk, x, z, true);
+            claimedChunkCache.setChunkAt(x, z, chunk);
+        });
         // TODO:
-        this.destroy();*/
+        this.destroy();
     }
 
     @Deprecated
@@ -607,16 +612,6 @@ public class PhysicsObject implements IPhysicsEntity {
 
     public Vector getCenterCoord() {
         return new Vector(this.getData().getShipTransform().getCenterCoord());
-    }
-
-    public void setCenterCoord(Vector centerCoord) {
-        try {
-            ShipTransform updatedTransform = getTransform()
-                .withCenterCoord(centerCoord.toVector3d());
-            this.getData().setShipTransform(updatedTransform);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean isShipAligningToGrid() {
@@ -649,19 +644,6 @@ public class PhysicsObject implements IPhysicsEntity {
         this.getData().setShipTransform(transform);
     }
 
-    public void setPositionAndRotation(double posX, double posY, double posZ,
-        double pitch, double yaw, double roll) {
-        ShipTransform newTransform = new ShipTransform(posX, posY, posZ, pitch, yaw, roll,
-            this.getCenterCoord().toVector3d());
-
-        this.updateTransform(newTransform);
-    }
-
-    public void setRotation(double pitch, double yaw, double roll) {
-        setPositionAndRotation(getTransform().getPosX(),
-            getTransform().getPosY(), getTransform().getPosZ(), pitch, yaw, roll);
-    }
-
     // endregion
 
     /**
@@ -686,7 +668,8 @@ public class PhysicsObject implements IPhysicsEntity {
         int minChunkX = cachedSurroundingChunks.getCachedChunks().chunkX;
         int minChunkZ = cachedSurroundingChunks.getCachedChunks().chunkZ;
         Chunk[][] chunks = cachedSurroundingChunks.getCachedChunks().chunkArray;
-        if (x < minChunkX || x >= minChunkX + chunks.length || z < minChunkZ || z >= minChunkZ + chunks[0].length) {
+        if (x < minChunkX || x >= minChunkX + chunks.length || z < minChunkZ
+            || z >= minChunkZ + chunks[0].length) {
             return null;
         }
         return chunks[x - minChunkX][z - minChunkZ];

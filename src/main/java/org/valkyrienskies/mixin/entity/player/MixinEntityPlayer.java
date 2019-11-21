@@ -21,18 +21,19 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import valkyrienwarfare.api.TransformType;
 
 /**
  * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.
@@ -41,6 +42,7 @@ import valkyrienwarfare.api.TransformType;
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements IShipPilot {
 
+    @Shadow public BlockPos bedLocation;
     private PhysicsObject pilotedShip;
     private BlockPos blockBeingControlled;
     private ControllerInputType controlInputType;
@@ -55,23 +57,19 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     private static void preGetBedSpawnLocation(World worldIn, BlockPos bedLocation,
         boolean forceSpawn,
         CallbackInfoReturnable<BlockPos> callbackInfo){
-        int chunkX = bedLocation.getX() >> 4;
-        int chunkZ = bedLocation.getZ() >> 4;
 
         Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn)
-            .getShipFromChunk(chunkX, chunkZ);
+            .getShipFromBlock(bedLocation);
 
         if (shipData.isPresent()) {
             ShipTransform positionData = shipData.get().getShipTransform();
 
             if (positionData != null) {
-                Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D,
-                        bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
-                positionData
-                        .transform(bedPositionInWorld, TransformType.SUBSPACE_TO_GLOBAL);
-                bedPositionInWorld.y += 1D;
-                bedLocation = new BlockPos(bedPositionInWorld.x, bedPositionInWorld.y,
-                        bedPositionInWorld.z);
+                Vector3d bedLocationD = JOML.castDouble(JOML.convert(bedLocation))
+                    .add(0.5, 0.5, 0.5);
+                positionData.getSubspaceToGlobal().transformPosition(bedLocationD);
+                bedLocationD.y += 1D;
+                bedLocation = JOML.toMinecraft(JOML.castInt(bedLocationD));
 
                 callbackInfo.setReturnValue(bedLocation);
             } else {

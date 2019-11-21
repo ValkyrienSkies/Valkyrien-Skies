@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.util;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.joml.Quaterniond;
@@ -10,6 +11,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 public class JOML {
@@ -19,6 +21,10 @@ public class JOML {
     public static final Vector3dc ROLL_AXISd = new Vector3d(0, 0, 1);
 
     // region To JOML
+
+    public static Vector3i convert(Vec3i v) {
+        return new Vector3i(v.getX(), v.getY(), v.getZ());
+    }
 
     public static Vector3d convert(Vec3d v) {
         return new Vector3d(v.x, v.y, v.z);
@@ -44,8 +50,8 @@ public class JOML {
         return new Vec3d(v.x(), v.y(), v.z());
     }
 
-    public static Vec3i toMinecraft(Vector3ic v) {
-        return new Vec3i(v.x(), v.y(), v.z());
+    public static BlockPos toMinecraft(Vector3ic v) {
+        return new BlockPos(v.x(), v.y(), v.z());
     }
 
     public static net.minecraft.client.renderer.Vector3d toMinecraftRenderer(Vector3dc v) {
@@ -88,6 +94,9 @@ public class JOML {
         return new Vector3f(v.x(), v.y(), v.z());
     }
 
+    public static Vector3i castInt(Vector3dc v) {
+        return new Vector3i((int) v.x(), (int) v.y(), (int) v.z());
+    }
 
     // endregion
 

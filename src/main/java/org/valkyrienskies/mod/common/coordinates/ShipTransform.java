@@ -58,7 +58,6 @@ import valkyrienwarfare.api.TransformType;
 @Log4j2
 @Builder(toBuilder = true)
 @NonFinal
-
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class ShipTransform {

@@ -17,6 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
@@ -96,6 +97,10 @@ public class QueryableShipData implements Iterable<ShipData> {
 
     public Optional<ShipData> getShipFromChunk(int chunkX, int chunkZ) {
         return getShipFromChunk(ChunkPos.asLong(chunkX, chunkZ));
+    }
+
+    public Optional<ShipData> getShipFromBlock(BlockPos pos) {
+        return getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public Optional<ShipData> getShipFromChunk(long chunkLong) {

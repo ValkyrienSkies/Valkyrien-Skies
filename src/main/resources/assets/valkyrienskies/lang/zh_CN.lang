@@ -8,9 +8,9 @@ tooltip.valkyrienskies.physics_core=物理注入器的核心。
 tile.physics_infuser.name=物理注入器
 tooltip.valkyrienskies.physics_infuser=会将除了自然生成的绝大多数方块（如石头）外与此连接的任何方块组建成船只。
 
-tile.creative_physics_infuser.name=创造物理注入器
-tooltip.valkyrienskies.creative_physics_infuser_1=会将与此连接的任何方块组建成船只，当心别影响到整个世界。
-tooltip.valkyrienskies.creative_physics_infuser_2=警告：此注入器没有连接上限，会影响到与此连接的所有方块！请谨慎使用。
+tile.physics_infuser_creative.name=创造物理注入器
+tooltip.valkyrienskies.physics_infuser_creative_1=会将与此连接的任何方块组建成船只，当心别影响到整个世界。
+tooltip.valkyrienskies.physics_infuser_creative_2=警告：此注入器没有连接上限，会影响到与此连接的所有方块！请谨慎使用。
 
 # Item Tab
 itemGroup.valkyrienskies=瓦尔基里之空

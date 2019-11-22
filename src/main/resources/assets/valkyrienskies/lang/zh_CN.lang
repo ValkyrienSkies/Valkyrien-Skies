@@ -1,0 +1,31 @@
+#PARSE_ESCAPES
+
+# Items
+item.physics_core.name=物理核心
+tooltip.valkyrienskies.physics_core=物理注入器的核心。
+
+# Blocks
+tile.physics_infuser.name=物理注入器
+tooltip.valkyrienskies.physics_infuser=会将除了自然生成的绝大多数方块（如石头）外与此连接的任何方块组建成船只。
+
+tile.physics_infuser_creative.name=创造物理注入器
+tooltip.valkyrienskies.physics_infuser_creative_1=会将与此连接的任何方块组建成船只，当心别影响到整个世界。
+tooltip.valkyrienskies.physics_infuser_creative_2=警告：此注入器没有连接上限，会影响到与此连接的所有方块！请谨慎使用。
+
+# Item Tab
+itemGroup.valkyrienskies=瓦尔基里之空
+
+# Gui
+gui.physics_infuser=物理注入器
+gui.assemble_ship=构建船只
+gui.disassemble_ship=拆解船只
+gui.enable_physics=启动物理
+gui.disable_physics=关闭物理
+gui.align_ship=对正船只
+gui.stop_align_ship=停止对正
+
+## Commands
+commands.vs.list-ships.noships=此世界中没有船只！
+commands.vs.list-ships.ships=此世界中包含以下船只：%s%n
+
+commands.vs.gc.success=成功清理了垃圾！

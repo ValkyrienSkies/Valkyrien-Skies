@@ -19,15 +19,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 
 /**
  * Class for the Gearbox block. Note that the FACING property is only used to determine the initial
  * orientation of the gearbox. Afterwards the value stored by the tile tile entity dominates.
  */
-public class BlockGearbox extends Block implements ITileEntityProvider {
+public class BlockGearbox extends BaseBlock implements ITileEntityProvider {
 
-    public BlockGearbox(Material materialIn) {
-        super(materialIn);
+    public BlockGearbox() {
+        super("gearbox", Material.IRON, 0.0F, true);
+        this.setHardness(6.0F);
     }
 
     @Override

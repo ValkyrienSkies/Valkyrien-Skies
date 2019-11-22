@@ -13,11 +13,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 
-public class BlockDummyTelegraph extends Block {
+public class BlockDummyTelegraph extends BaseBlock {
 
-    public BlockDummyTelegraph(Material materialIn) {
-        super(materialIn);
+    public BlockDummyTelegraph() {
+        super("dummy_telegraph", Material.WOOD, 0.0F, false);
+        this.setHardness(5.0F);
     }
 
     @Override

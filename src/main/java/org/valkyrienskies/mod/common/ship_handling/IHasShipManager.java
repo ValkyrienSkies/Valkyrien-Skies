@@ -1,15 +1,16 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import java.util.function.Function;
 import net.minecraft.world.World;
+
+import java.util.function.Function;
 
 /**
  * Used to get the ship manager from world objects.
  */
 public interface IHasShipManager {
 
-    IWorldShipManager getManager();
+    IPhysObjectWorld getManager();
 
-    void setManager(Function<World, IWorldShipManager> managerSupplier);
+    void setManager(Function<World, IPhysObjectWorld> managerSupplier);
 
 }

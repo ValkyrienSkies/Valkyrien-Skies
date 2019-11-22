@@ -76,17 +76,17 @@ public class SoundFixWrapper implements ISound {
 
     @Override
     public float getXPosF() {
-        return (float) soundLocation.X;
+        return (float) soundLocation.x;
     }
 
     @Override
     public float getYPosF() {
-        return (float) soundLocation.Y;
+        return (float) soundLocation.y;
     }
 
     @Override
     public float getZPosF() {
-        return (float) soundLocation.Z;
+        return (float) soundLocation.z;
     }
 
     @Override

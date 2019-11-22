@@ -18,7 +18,7 @@ import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
 import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class TileEntityGiantPropellerPart extends
@@ -109,13 +109,13 @@ public class TileEntityGiantPropellerPart extends
 
             if (this.isPartOfAssembledMultiblock()) {
                 Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
-                    .getPhysicsObject(getWorld(), getPos());
+                    .getPhysoManagingBlock(getWorld(), getPos());
                 if (this.isMaster()) {
                     if (!rotationNode.hasBeenPlacedIntoNodeWorld()) {
                         IRotationNodeWorld nodeWorld;
                         if (physicsObjectOptional.isPresent()) {
                             nodeWorld = physicsObjectOptional.get()
-                                .physicsProcessor().getPhysicsRotationNodeWorld();
+                                .getPhysicsCalculations().getPhysicsRotationNodeWorld();
                         } else {
                             IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
                             nodeWorld = provider.getPhysicsRotationNodeWorld();
@@ -162,7 +162,7 @@ public class TileEntityGiantPropellerPart extends
     public void disassembleMultiblockLocal() {
         super.disassembleMultiblockLocal();
 
-        Optional<PhysicsObject> object = ValkyrienUtils.getPhysicsObject(getWorld(), getPos());
+        Optional<PhysicsObject> object = ValkyrienUtils.getPhysoManagingBlock(getWorld(), getPos());
         object.ifPresent(obj -> this.rotationNode.queueTask(rotationNode::resetNodeData));
     }
 

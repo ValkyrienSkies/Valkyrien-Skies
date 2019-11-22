@@ -22,18 +22,20 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.nodenetwork.IVSNode;
 import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkDisplay;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 
-public class BlockNetworkDisplay extends Block implements ITileEntityProvider {
+public class BlockNetworkDisplay extends BaseBlock implements ITileEntityProvider {
 
-    public BlockNetworkDisplay(Material materialIn) {
-        super(materialIn);
+    public BlockNetworkDisplay() {
+        super("network_display", Material.IRON, 0.0F, true);
+        this.setHardness(5.0F);
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation,
         ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.RED + I18n.format("tooltip.vs_control.network_display"));
+        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control.network_display"));
     }
 
 

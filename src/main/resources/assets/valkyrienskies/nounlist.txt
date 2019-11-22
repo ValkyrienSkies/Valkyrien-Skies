@@ -3515,7 +3515,6 @@ range
 ranger
 rank
 rap
-rape
 rat
 rate
 rating

@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mixin.entity.player;
 
+import java.util.Optional;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -26,14 +27,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
-
-import java.util.Optional;
 
 /**
  * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.
@@ -42,9 +41,9 @@ import java.util.Optional;
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements IShipPilot {
 
-    public PhysicsWrapperEntity pilotedShip;
-    public BlockPos blockBeingControlled;
-    public ControllerInputType controlInputType;
+    private PhysicsObject pilotedShip;
+    private BlockPos blockBeingControlled;
+    private ControllerInputType controlInputType;
 
     // Constructor doesn't do anything, just here because java wont compile if it
     // wasn't.
@@ -59,19 +58,20 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
         int chunkX = bedLocation.getX() >> 4;
         int chunkZ = bedLocation.getZ() >> 4;
 
-        Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn).getShipFromChunk(chunkX, chunkZ);
+        Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn)
+            .getShipFromChunk(chunkX, chunkZ);
 
         if (shipData.isPresent()) {
-            ShipPositionData positionData = shipData.get().getPositionData();
+            ShipTransform positionData = shipData.get().getShipTransform();
 
             if (positionData != null) {
                 Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D,
                         bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
-                positionData.transform()
+                positionData
                         .transform(bedPositionInWorld, TransformType.SUBSPACE_TO_GLOBAL);
-                bedPositionInWorld.Y += 1D;
-                bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y,
-                        bedPositionInWorld.Z);
+                bedPositionInWorld.y += 1D;
+                bedLocation = new BlockPos(bedPositionInWorld.x, bedPositionInWorld.y,
+                        bedPositionInWorld.z);
 
                 callbackInfo.setReturnValue(bedLocation);
             } else {
@@ -82,12 +82,12 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     }
 
     @Override
-    public PhysicsWrapperEntity getPilotedShip() {
+    public PhysicsObject getPilotedShip() {
         return pilotedShip;
     }
 
     @Override
-    public void setPilotedShip(PhysicsWrapperEntity wrapper) {
+    public void setPilotedShip(PhysicsObject wrapper) {
         pilotedShip = wrapper;
     }
 

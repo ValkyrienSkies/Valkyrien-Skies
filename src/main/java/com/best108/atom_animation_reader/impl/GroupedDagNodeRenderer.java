@@ -24,10 +24,10 @@ public class GroupedDagNodeRenderer extends BasicDagNodeRenderer {
                 transformations.get(j)
                     .changePivot(customPivot, keyframe);
             }
-            GlStateManager.translate(customPivot.X, customPivot.Y, customPivot.Z);
+            GlStateManager.translate(customPivot.x, customPivot.y, customPivot.z);
             transformations.get(i)
                 .transform(keyframe);
-            GlStateManager.translate(-customPivot.X, -customPivot.Y, -customPivot.Z);
+            GlStateManager.translate(-customPivot.x, -customPivot.y, -customPivot.z);
         }
 
         for (BasicDagNodeRenderer child : children) {

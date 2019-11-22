@@ -20,13 +20,6 @@ import gnu.trove.TCollections;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
-import java.util.Random;
-import java.util.function.Consumer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -37,9 +30,9 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
+import org.joml.Vector3d;
+import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.collision.optimization.IBitOctree;
 import org.valkyrienskies.mod.common.physics.collision.optimization.IBitOctreeProvider;
@@ -48,9 +41,12 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PhysCollisionObj
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollisionPointFinder;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Handles the task of finding and processing collisions between a PhysicsObject and the game
@@ -100,7 +96,7 @@ public class WorldPhysicsCollider {
     public WorldPhysicsCollider(PhysicsCalculations calculations) {
         this.calculator = calculations;
         this.parent = calculations.getParent();
-        this.worldObj = parent.world();
+        this.worldObj = parent.getWorld();
         this.cachedPotentialHits = TCollections.synchronizedList(new TIntArrayList());
         this.cachedHitsToRemove = new TIntArrayList();
         this.rand = new Random();
@@ -118,7 +114,8 @@ public class WorldPhysicsCollider {
             cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
         cachedHitsToRemove.resetQuick();
-        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent.needsCollisionCacheUpdate()) {
+        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent
+            .isNeedsCollisionCacheUpdate()) {
             updatePotentialCollisionCache();
             updateCollisionTasksCache = true;
         }
@@ -184,22 +181,22 @@ public class WorldPhysicsCollider {
             SpatialDetector
                 .setPosWithRespectTo(cachedHitsIterator.next(), centerPotentialHit, mutablePos);
 
-            inWorld.X = mutablePos.getX() + .5;
-            inWorld.Y = mutablePos.getY() + .5;
-            inWorld.Z = mutablePos.getZ() + .5;
+            inWorld.x = mutablePos.getX() + .5;
+            inWorld.y = mutablePos.getY() + .5;
+            inWorld.z = mutablePos.getZ() + .5;
 
-            parent.shipTransformationManager().getCurrentPhysicsTransform().transform(inWorld,
+            parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inWorld,
                 TransformType.GLOBAL_TO_SUBSPACE);
 
             // parent.coordTransform.fromGlobalToLocal(inWorld);
 
-            int minX = MathHelper.floor(inWorld.X - COLLISION_RANGE_CHECK);
-            int minY = MathHelper.floor(inWorld.Y - COLLISION_RANGE_CHECK);
-            int minZ = MathHelper.floor(inWorld.Z - COLLISION_RANGE_CHECK);
+            int minX = MathHelper.floor(inWorld.x - COLLISION_RANGE_CHECK);
+            int minY = MathHelper.floor(inWorld.y - COLLISION_RANGE_CHECK);
+            int minZ = MathHelper.floor(inWorld.z - COLLISION_RANGE_CHECK);
 
-            int maxX = MathHelper.floor(inWorld.X + COLLISION_RANGE_CHECK);
-            int maxY = MathHelper.floor(inWorld.Y + COLLISION_RANGE_CHECK);
-            int maxZ = MathHelper.floor(inWorld.Z + COLLISION_RANGE_CHECK);
+            int maxX = MathHelper.floor(inWorld.x + COLLISION_RANGE_CHECK);
+            int maxY = MathHelper.floor(inWorld.y + COLLISION_RANGE_CHECK);
+            int maxZ = MathHelper.floor(inWorld.z + COLLISION_RANGE_CHECK);
 
             /*
               Something here is causing the game to freeze :/
@@ -217,7 +214,7 @@ public class WorldPhysicsCollider {
             if (!(minChunkY > 15 || maxChunkY < 0)) {
                 for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
                     for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                        if (parent.ownsChunk(chunkX, chunkZ)) {
+                        if (parent.getOwnedChunks().containsChunk(chunkX, chunkZ)) {
                             final Chunk chunkIn = parent.getChunkAt(chunkX, chunkZ);
 
                             int minXToCheck = chunkX << 4;
@@ -283,7 +280,7 @@ public class WorldPhysicsCollider {
     }
 
     // Tests two block positions directly against each other, and figures out
-    // whvalkyrium a collision is occuring or not
+    // whether a collision is occuring or not
     private boolean handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos,
         IBlockState inWorldState,
         IBlockState inLocalState) {
@@ -301,11 +298,11 @@ public class WorldPhysicsCollider {
         // inLocalBB = colBB.get(0);
 
         Polygon shipInWorld = new Polygon(inLocalBB,
-            parent.shipTransformationManager().getCurrentPhysicsTransform(),
+            parent.getShipTransformationManager().getCurrentPhysicsTransform(),
             TransformType.SUBSPACE_TO_GLOBAL);
         Polygon worldPoly = new Polygon(inGlobalBB);
         PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-            parent.shipTransformationManager().normals);
+            parent.getShipTransformationManager().normals);
         if (!collider.seperated) {
             return handleActualCollision(collider, inWorldPos, inLocalPos, inWorldState,
                 inLocalState);
@@ -326,26 +323,30 @@ public class WorldPhysicsCollider {
             toCollideWith = collider.collisions[collider.minDistanceIndex];
         }
 
-        org.valkyrienskies.mod.common.math.Vector positionInBody = collider.entity.getCenter();
-        positionInBody.subtract(parent.wrapperEntity().posX, parent.wrapperEntity().posY,
-            parent.wrapperEntity().posZ);
+        Vector positionInBody = collider.entity.getCenter();
+        positionInBody.subtract(
+            parent.getTransform().getPosX(),
+            parent.getTransform().getPosY(),
+            parent.getTransform().getPosZ());
 
         double impulseApplied = 1D;
 
-        org.valkyrienskies.mod.common.math.Vector[] collisionPoints = PolygonCollisionPointFinder
+        Vector[] collisionPoints = PolygonCollisionPointFinder
             .getPointsOfCollisionForPolygons(toCollideWith);
 
         impulseApplied /= collisionPoints.length;
 
-        for (org.valkyrienskies.mod.common.math.Vector collisionPos : collisionPoints) {
-            org.valkyrienskies.mod.common.math.Vector inBody = collisionPos.getSubtraction(
-                new org.valkyrienskies.mod.common.math.Vector(parent.wrapperEntity().posX,
-                    parent.wrapperEntity().posY, parent.wrapperEntity().posZ));
+        for (Vector collisionPos : collisionPoints) {
+            Vector inBody = collisionPos.getSubtraction(
+                new Vector(
+                    parent.getTransform().getPosX(),
+                    parent.getTransform().getPosY(),
+                    parent.getTransform().getPosZ()));
             inBody.multiply(-1D);
-            org.valkyrienskies.mod.common.math.Vector momentumAtPoint = calculator
+            Vector momentumAtPoint = calculator
                 .getVelocityAtPoint(inBody);
-            org.valkyrienskies.mod.common.math.Vector axis = toCollideWith.collision_normal;
-            org.valkyrienskies.mod.common.math.Vector offsetVector = toCollideWith.getResponse();
+            Vector axis = toCollideWith.collision_normal;
+            Vector offsetVector = toCollideWith.getResponse();
             calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, false,
                 false, impulseApplied);
         }
@@ -356,12 +357,16 @@ public class WorldPhysicsCollider {
     // Finally, the end of all this spaghetti code! This step takes all of the math
     // generated before, and it directly adds the result to Ship velocities
     private void calculateCollisionImpulseForce(org.valkyrienskies.mod.common.math.Vector inBody,
-        org.valkyrienskies.mod.common.math.Vector velocityAtPointOfCollision,
-        org.valkyrienskies.mod.common.math.Vector axis,
-        org.valkyrienskies.mod.common.math.Vector offsetVector, boolean didBlockBreakInShip,
+        Vector velocityAtPointOfCollision,
+        Vector axis,
+        Vector offsetVector, boolean didBlockBreakInShip,
         boolean didBlockBreakInWorld, double impulseApplied) {
-        org.valkyrienskies.mod.common.math.Vector firstCross = inBody.cross(axis);
-        RotationMatrices.applyTransform3by3(calculator.getPhysInvMOITensor(), firstCross);
+        Vector firstCross = inBody.cross(axis);
+        Vector3d firstCrossCopy = firstCross.toVector3d();
+
+        calculator.getPhysInvMOITensor().transform(firstCrossCopy);
+
+        firstCross.setValue(firstCrossCopy);
 
         org.valkyrienskies.mod.common.math.Vector secondCross = firstCross.cross(inBody);
 
@@ -389,12 +394,16 @@ public class WorldPhysicsCollider {
             double collisionVelocity = velocityAtPointOfCollision.dot(axis);
 
             addFrictionToNormalForce(velocityAtPointOfCollision, collisionImpulseForce, inBody);
-            calculator.linearMomentum.add(collisionImpulseForce);
+            calculator.getLinearMomentum().add(collisionImpulseForce);
             org.valkyrienskies.mod.common.math.Vector thirdCross = inBody
                 .cross(collisionImpulseForce);
 
-            RotationMatrices.applyTransform3by3(calculator.getPhysInvMOITensor(), thirdCross);
-            calculator.angularVelocity.add(thirdCross);
+            Vector3d thirdCrossTemp = thirdCross.toVector3d();
+
+            calculator.getPhysInvMOITensor().transform(thirdCrossTemp);
+
+            thirdCross.setValue(thirdCrossTemp);
+            calculator.getAngularVelocity().add(thirdCross);
         }
     }
 
@@ -422,15 +431,16 @@ public class WorldPhysicsCollider {
             .getProduct(frictionImpulseDot);
         frictionVector.subtract(toRemove);
 
-        double inertiaScalarAlongAxis = parent.physicsProcessor().getInertiaAlongRotationAxis();
+        double inertiaScalarAlongAxis = parent.getPhysicsCalculations()
+            .getInertiaAlongRotationAxis();
         // The change in velocity vector
         org.valkyrienskies.mod.common.math.Vector initialVelocity = new org.valkyrienskies.mod.common.math.Vector(
-            parent.physicsProcessor().linearMomentum,
-            parent.physicsProcessor().getInvMass());
+            parent.getPhysicsCalculations().getLinearMomentum(),
+            parent.getPhysicsCalculations().getInvMass());
         // Don't forget to multiply by delta t
         org.valkyrienskies.mod.common.math.Vector deltaVelocity = new org.valkyrienskies.mod.common.math.Vector(
             frictionVector,
-            parent.physicsProcessor().getInvMass() * parent.physicsProcessor()
+            parent.getPhysicsCalculations().getInvMass() * parent.getPhysicsCalculations()
                 .getDragForPhysTick());
 
         double A = initialVelocity.lengthSq();
@@ -438,12 +448,13 @@ public class WorldPhysicsCollider {
         double C = deltaVelocity.lengthSq();
 
         org.valkyrienskies.mod.common.math.Vector initialAngularVelocity = parent
-            .physicsProcessor().angularVelocity;
+            .getPhysicsCalculations().getAngularVelocity();
         org.valkyrienskies.mod.common.math.Vector deltaAngularVelocity = inBody
             .cross(frictionVector);
         // This might need to be 1 / inertiaScalarAlongAxis
         deltaAngularVelocity
-            .multiply(parent.physicsProcessor().getDragForPhysTick() / inertiaScalarAlongAxis);
+            .multiply(
+                parent.getPhysicsCalculations().getDragForPhysTick() / inertiaScalarAlongAxis);
 
         double D = initialAngularVelocity.lengthSq();
         double E = 2 * deltaAngularVelocity.dot(initialAngularVelocity);
@@ -458,11 +469,11 @@ public class WorldPhysicsCollider {
         // The coefficients of energy as a function of energyScaleFactor in the form (A
         // + B * k + c * k^2)
         double firstCoefficient =
-            A * parent.physicsProcessor().getMass() + D * inertiaScalarAlongAxis;
+            A * parent.getPhysicsCalculations().getMass() + D * inertiaScalarAlongAxis;
         double secondCoefficient =
-            B * parent.physicsProcessor().getMass() + E * inertiaScalarAlongAxis;
+            B * parent.getPhysicsCalculations().getMass() + E * inertiaScalarAlongAxis;
         double thirdCoefficient =
-            C * parent.physicsProcessor().getMass() + F * inertiaScalarAlongAxis;
+            C * parent.getPhysicsCalculations().getMass() + F * inertiaScalarAlongAxis;
 
         double scaleFactor = -secondCoefficient / (thirdCoefficient * 2);
 
@@ -481,23 +492,25 @@ public class WorldPhysicsCollider {
 
     // TODO: The greatest physics lag starts here.
     private void updatePotentialCollisionCache() {
-        PhysicsShipTransform currentPhysicsTransform = (PhysicsShipTransform) parent
-            .shipTransformationManager()
+        ShipTransform currentPhysicsTransform = parent
+            .getShipTransformationManager()
             .getCurrentPhysicsTransform();
+
+        AxisAlignedBB shipBB = parent.getShipBB().grow(3);
 
         // Use the physics tick collision box instead of the game tick collision box.
         // We are using grow(3) on both because for some reason if we don't then ships start
         // jiggling through the ground. God I can't wait for a new physics engine.
-        final AxisAlignedBB collisionBB = currentPhysicsTransform.getShipBoundingBox().grow(3)
+        final AxisAlignedBB collisionBB = shipBB
             .grow(AABB_EXPANSION).expand(
-                calculator.linearMomentum.X * calculator.getInvMass() * calculator
+                calculator.getLinearMomentum().x * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.linearMomentum.Y * calculator.getInvMass() * calculator
+                calculator.getLinearMomentum().y * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.linearMomentum.Z * calculator.getInvMass() * calculator
+                calculator.getLinearMomentum().z * calculator.getInvMass() * calculator
                     .getPhysicsTimeDeltaPerPhysTick()
                     * 5);
-        final AxisAlignedBB shipBB = currentPhysicsTransform.getShipBoundingBox().grow(3);
+
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the
         // hopes this will prevent multiple ships from all updating
@@ -546,7 +559,7 @@ public class WorldPhysicsCollider {
         int maxZ = max.getZ();
 
         // More multithreading!
-        if (parent.blockPositions().size() > 100) {
+        if (parent.getBlockPositions().size() > 100) {
             List<Tuple<Integer, Integer>> tasks = new ArrayList<Tuple<Integer, Integer>>();
 
             for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
@@ -595,9 +608,9 @@ public class WorldPhysicsCollider {
             || arrayChunkX > cache.chunkArray.length - 1
             || arrayChunkZ > cache.chunkArray[0].length - 1)) {
 
-            org.valkyrienskies.mod.common.math.Vector temp1 = new org.valkyrienskies.mod.common.math.Vector();
-            org.valkyrienskies.mod.common.math.Vector temp2 = new org.valkyrienskies.mod.common.math.Vector();
-            org.valkyrienskies.mod.common.math.Vector temp3 = new org.valkyrienskies.mod.common.math.Vector();
+            Vector temp1 = new Vector();
+            Vector temp2 = new Vector();
+            Vector temp3 = new Vector();
 
             Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
             for (int storageY = minY >> 4; storageY <= maxY >> 4; storageY++) {
@@ -703,9 +716,9 @@ public class WorldPhysicsCollider {
             || arrayChunkZ > cache.chunkArray[0].length - 1)
             && cache.chunkArray[arrayChunkX][arrayChunkZ] != null) {
 
-            org.valkyrienskies.mod.common.math.Vector temp1 = new org.valkyrienskies.mod.common.math.Vector();
-            org.valkyrienskies.mod.common.math.Vector temp2 = new org.valkyrienskies.mod.common.math.Vector();
-            org.valkyrienskies.mod.common.math.Vector temp3 = new org.valkyrienskies.mod.common.math.Vector();
+            Vector temp1 = new Vector();
+            Vector temp2 = new Vector();
+            Vector temp3 = new Vector();
 
             Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
             for (int storageY = minY >> 4; storageY <= maxY >> 4; storageY++) {
@@ -800,23 +813,23 @@ public class WorldPhysicsCollider {
     }
 
     private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage,
-        IBitOctree octree, org.valkyrienskies.mod.common.math.Vector inLocal,
-        org.valkyrienskies.mod.common.math.Vector inBody,
-        org.valkyrienskies.mod.common.math.Vector speedInBody, AxisAlignedBB shipBB) {
+        IBitOctree octree, Vector inLocal,
+        Vector inBody,
+        Vector speedInBody, AxisAlignedBB shipBB) {
         if (octree.get(x & 15, y & 15, z & 15)) {
-            inLocal.X = x + .5D;
-            inLocal.Y = y + .5D;
-            inLocal.Z = z + .5D;
+            inLocal.x = x + .5D;
+            inLocal.y = y + .5D;
+            inLocal.z = z + .5D;
             // TODO: Something
             // parent.coordTransform.fromGlobalToLocal(inLocal);
-            if (inLocal.X > shipBB.minX && inLocal.X < shipBB.maxX && inLocal.Y > shipBB.minY
-                && inLocal.Y < shipBB.maxY
-                && inLocal.Z > shipBB.minZ && inLocal.Z < shipBB.maxZ) {
-                parent.shipTransformationManager().getCurrentPhysicsTransform()
+            if (inLocal.x > shipBB.minX && inLocal.x < shipBB.maxX && inLocal.y > shipBB.minY
+                && inLocal.y < shipBB.maxY
+                && inLocal.z > shipBB.minZ && inLocal.z < shipBB.maxZ) {
+                parent.getShipTransformationManager().getCurrentPhysicsTransform()
                     .transform(inLocal,
                         TransformType.GLOBAL_TO_SUBSPACE);
 
-                inBody.setSubtraction(inLocal, parent.centerCoord());
+                inBody.setSubtraction(inLocal, parent.getCenterCoord());
                 // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
                 // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
@@ -826,28 +839,28 @@ public class WorldPhysicsCollider {
                 // double RANGE_CHECK = 1;
 
                 int minX, minY, minZ, maxX, maxY, maxZ;
-                if (speedInBody.X > 0) {
-                    minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
-                    maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
+                if (speedInBody.x > 0) {
+                    minX = MathHelper.floor(inLocal.x - RANGE_CHECK);
+                    maxX = MathHelper.floor(inLocal.x + RANGE_CHECK + speedInBody.x);
                 } else {
-                    minX = MathHelper.floor(inLocal.X - RANGE_CHECK + speedInBody.X);
-                    maxX = MathHelper.floor(inLocal.X + RANGE_CHECK);
+                    minX = MathHelper.floor(inLocal.x - RANGE_CHECK + speedInBody.x);
+                    maxX = MathHelper.floor(inLocal.x + RANGE_CHECK);
                 }
 
-                if (speedInBody.Y > 0) {
-                    minY = MathHelper.floor(inLocal.Y - RANGE_CHECK);
-                    maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK + speedInBody.Y);
+                if (speedInBody.y > 0) {
+                    minY = MathHelper.floor(inLocal.y - RANGE_CHECK);
+                    maxY = MathHelper.floor(inLocal.y + RANGE_CHECK + speedInBody.y);
                 } else {
-                    minY = MathHelper.floor(inLocal.Y - RANGE_CHECK + speedInBody.Y);
-                    maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK);
+                    minY = MathHelper.floor(inLocal.y - RANGE_CHECK + speedInBody.y);
+                    maxY = MathHelper.floor(inLocal.y + RANGE_CHECK);
                 }
 
-                if (speedInBody.Z > 0) {
-                    minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK);
-                    maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK + speedInBody.Z);
+                if (speedInBody.z > 0) {
+                    minZ = MathHelper.floor(inLocal.z - RANGE_CHECK);
+                    maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK + speedInBody.z);
                 } else {
-                    minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
-                    maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
+                    minZ = MathHelper.floor(inLocal.z - RANGE_CHECK + speedInBody.z);
+                    maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK);
                 }
 
                 minY = Math.min(255, Math.max(minY, 0));
@@ -862,8 +875,8 @@ public class WorldPhysicsCollider {
                 // maxX = Math.min(maxX, minX << 4);
                 // maxZ = Math.min(maxZ, minZ << 4);
 
-                if (parent.ownsChunk(minX >> 4, minZ >> 4) && parent
-                    .ownsChunk(maxX >> 4, maxZ >> 4)) {
+                if (parent.getOwnedChunks().containsChunk(minX >> 4, minZ >> 4) && parent
+                        .getOwnedChunks().containsChunk(maxX >> 4, maxZ >> 4)) {
 
                     Chunk chunkIn00 = parent.getChunkAt(minX >> 4, minZ >> 4);
                     Chunk chunkIn01 = parent.getChunkAt(minX >> 4, maxZ >> 4);
@@ -932,19 +945,19 @@ public class WorldPhysicsCollider {
     }
 
     private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage,
-        IBitOctree octree, org.valkyrienskies.mod.common.math.Vector inLocal,
-        org.valkyrienskies.mod.common.math.Vector inBody, Vector speedInBody,
+        IBitOctree octree, Vector inLocal,
+        Vector inBody, Vector speedInBody,
         Collection<Integer> collection) {
         if (octree.get(x & 15, y & 15, z & 15)) {
-            inLocal.X = x + .5D;
-            inLocal.Y = y + .5D;
-            inLocal.Z = z + .5D;
+            inLocal.x = x + .5D;
+            inLocal.y = y + .5D;
+            inLocal.z = z + .5D;
             // TODO: Something
             // parent.coordTransform.fromGlobalToLocal(inLocal);
-            parent.shipTransformationManager().getCurrentPhysicsTransform().transform(inLocal,
+            parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal,
                 TransformType.GLOBAL_TO_SUBSPACE);
 
-            inBody.setSubtraction(inLocal, parent.centerCoord());
+            inBody.setSubtraction(inLocal, parent.getCenterCoord());
             // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
             // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 
@@ -954,28 +967,28 @@ public class WorldPhysicsCollider {
             double RANGE_CHECK = 1.8;
 
             int minX, minY, minZ, maxX, maxY, maxZ;
-            if (speedInBody.X > 0) {
-                minX = MathHelper.floor(inLocal.X - RANGE_CHECK);
-                maxX = MathHelper.floor(inLocal.X + RANGE_CHECK + speedInBody.X);
+            if (speedInBody.x > 0) {
+                minX = MathHelper.floor(inLocal.x - RANGE_CHECK);
+                maxX = MathHelper.floor(inLocal.x + RANGE_CHECK + speedInBody.x);
             } else {
-                minX = MathHelper.floor(inLocal.X - RANGE_CHECK + speedInBody.X);
-                maxX = MathHelper.floor(inLocal.X + RANGE_CHECK);
+                minX = MathHelper.floor(inLocal.x - RANGE_CHECK + speedInBody.x);
+                maxX = MathHelper.floor(inLocal.x + RANGE_CHECK);
             }
 
-            if (speedInBody.Y > 0) {
-                minY = MathHelper.floor(inLocal.Y - RANGE_CHECK);
-                maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK + speedInBody.Y);
+            if (speedInBody.y > 0) {
+                minY = MathHelper.floor(inLocal.y - RANGE_CHECK);
+                maxY = MathHelper.floor(inLocal.y + RANGE_CHECK + speedInBody.y);
             } else {
-                minY = MathHelper.floor(inLocal.Y - RANGE_CHECK + speedInBody.Y);
-                maxY = MathHelper.floor(inLocal.Y + RANGE_CHECK);
+                minY = MathHelper.floor(inLocal.y - RANGE_CHECK + speedInBody.y);
+                maxY = MathHelper.floor(inLocal.y + RANGE_CHECK);
             }
 
-            if (speedInBody.Z > 0) {
-                minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK);
-                maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK + speedInBody.Z);
+            if (speedInBody.z > 0) {
+                minZ = MathHelper.floor(inLocal.z - RANGE_CHECK);
+                maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK + speedInBody.z);
             } else {
-                minZ = MathHelper.floor(inLocal.Z - RANGE_CHECK + speedInBody.Z);
-                maxZ = MathHelper.floor(inLocal.Z + RANGE_CHECK);
+                minZ = MathHelper.floor(inLocal.z - RANGE_CHECK + speedInBody.z);
+                maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK);
             }
 
             minY = Math.min(255, Math.max(minY, 0));
@@ -984,7 +997,7 @@ public class WorldPhysicsCollider {
             for (int localX = minX; localX < maxX; localX++) {
                 for (int localZ = minZ; localZ < maxZ; localZ++) {
                     for (int localY = minY; localY < maxY; localY++) {
-                        if (parent.ownsChunk(localX >> 4, localZ >> 4)) {
+                        if (parent.getOwnedChunks().containsChunk(localX >> 4, localZ >> 4)) {
                             Chunk chunkIn = parent.getChunkAt(localX >> 4, localZ >> 4);
                             if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
                                 IBitOctreeProvider provider = (IBitOctreeProvider) chunkIn.storageArrays[

@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Mixin(TileEntityRendererDispatcher.class)
@@ -56,7 +56,7 @@ public abstract class MixinTileEntityRendererDispatcher {
         if (!hasChanged) {
             BlockPos pos = tileentityIn.getPos();
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(tileentityIn.getWorld(), tileentityIn.getPos());
+                .getPhysoManagingBlock(tileentityIn.getWorld(), tileentityIn.getPos());
 
             if (physicsObject.isPresent()) {
                 try {
@@ -68,7 +68,7 @@ public abstract class MixinTileEntityRendererDispatcher {
                     }
 
                     physicsObject.get()
-                        .shipRenderer()
+                        .getShipRenderer()
                         .applyRenderTransform(partialTicks);
 
                     double playerX = TileEntityRendererDispatcher.staticPlayerX;
@@ -76,11 +76,11 @@ public abstract class MixinTileEntityRendererDispatcher {
                     double playerZ = TileEntityRendererDispatcher.staticPlayerZ;
 
                     TileEntityRendererDispatcher.staticPlayerX = physicsObject.get()
-                        .shipRenderer().offsetPos.getX();
+                        .getShipRenderer().offsetPos.getX();
                     TileEntityRendererDispatcher.staticPlayerY = physicsObject.get()
-                        .shipRenderer().offsetPos.getY();
+                        .getShipRenderer().offsetPos.getY();
                     TileEntityRendererDispatcher.staticPlayerZ = physicsObject.get()
-                        .shipRenderer().offsetPos.getZ();
+                        .getShipRenderer().offsetPos.getZ();
 
                     hasChanged = true;
                     if (drawingBatch) {
@@ -96,7 +96,7 @@ public abstract class MixinTileEntityRendererDispatcher {
                     TileEntityRendererDispatcher.staticPlayerZ = playerZ;
 
                     physicsObject.get()
-                        .shipRenderer()
+                        .getShipRenderer()
                         .inverseTransform(partialTicks);
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -39,8 +39,8 @@ public class BlockShipHelm extends BlockPilotableBasic {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
-    public BlockShipHelm(Material materialIn) {
-        super(materialIn);
+    public BlockShipHelm() {
+        super("ship_helm", Material.WOOD, 4.0F);
     }
 
     @Override

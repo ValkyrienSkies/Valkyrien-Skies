@@ -23,6 +23,7 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -38,11 +39,14 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkRelay;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.config.VSConfig;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class BlockNetworkRelay extends BlockDirectional implements ITileEntityProvider {
+public class BlockNetworkRelay extends BaseBlock implements ITileEntityProvider {
+
+    public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
     private static final AxisAlignedBB EAST = new AxisAlignedBB(0D / 16D, 5D / 16D, 5D / 16D,
         6D / 16D, 11D / 16D, 11D / 16D);
@@ -57,8 +61,9 @@ public class BlockNetworkRelay extends BlockDirectional implements ITileEntityPr
     private static final AxisAlignedBB DOWN = new AxisAlignedBB(5D / 16D, 10D / 16D, 5D / 16D,
         11D / 16D, 16D / 16D, 11D / 16D);
 
-    public BlockNetworkRelay(Material materialIn) {
-        super(materialIn);
+    public BlockNetworkRelay() {
+        super("network_relay", Material.IRON, 0.0F, true);
+        this.setHardness(5.0F);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
 

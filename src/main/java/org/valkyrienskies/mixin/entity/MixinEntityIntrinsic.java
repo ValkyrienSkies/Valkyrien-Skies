@@ -58,8 +58,8 @@ public abstract class MixinEntityIntrinsic {
                 .handleMove(type, dx, dy, dz, thisClassAsAnEntity);
             if (alteredMovement != null) {
                 hasChanged = true;
-                this.move(type, alteredMovement.dxyz.X, alteredMovement.dxyz.Y,
-                    alteredMovement.dxyz.Z);
+                this.move(type, alteredMovement.dxyz.x, alteredMovement.dxyz.y,
+                    alteredMovement.dxyz.z);
                 hasChanged = false;
                 callbackInfo.cancel();
             }

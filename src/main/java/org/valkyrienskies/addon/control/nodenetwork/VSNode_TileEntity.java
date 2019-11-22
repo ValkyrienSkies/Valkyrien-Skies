@@ -28,29 +28,36 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.valkyrienskies.addon.control.nodenetwork.EnumWireType;
 import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
 public class VSNode_TileEntity implements IVSNode {
 
     private final TileEntity parentTile;
     // No duplicate connections, use Set<Node> to guarantee this
     private final Set<BlockPos> linkedNodesPos;
+    private final List<EnumWireType> linkedWireTypes;
     // A wrapper unmodifiable Set that allows external classes to see an immutable
     // version of linkedNodesPos.
-    private final Set<BlockPos> unmodifiableLinkedNodesPos;
+    private final Set<BlockPos> immutableLinkedNodesPos;
+    private final List<EnumWireType> immutableLinkedWireTypes;
     private final int maximumConnections;
     private boolean isValid;
     private PhysicsObject parentPhysicsObject;
     private Graph nodeGraph;
+    private EnumWireType wireType;
 
     public VSNode_TileEntity(TileEntity parent, int maximumConnections) {
         this.parentTile = parent;
         this.linkedNodesPos = new HashSet<>();
-        this.unmodifiableLinkedNodesPos = Collections.unmodifiableSet(linkedNodesPos);
+        this.linkedWireTypes = new ArrayList<EnumWireType>();
+        this.immutableLinkedNodesPos = Collections.unmodifiableSet(linkedNodesPos);
+        this.immutableLinkedWireTypes = Collections.unmodifiableList(linkedWireTypes);
         this.isValid = false;
         this.parentPhysicsObject = null;
         this.maximumConnections = maximumConnections;
+        this.wireType = EnumWireType.RELAY;
         Graph.integrate(this, Collections.EMPTY_LIST,
             (graph) -> new BasicNodeTileEntity.GraphData());
     }
@@ -63,9 +70,8 @@ public class VSNode_TileEntity implements IVSNode {
         }
         boolean isChunkLoaded = world.isBlockLoaded(pos);
         if (!isChunkLoaded) {
+            // throw new IllegalStateException("VSNode_TileEntity wasn't loaded in the world!");
             return null;
-            // throw new IllegalStateException("VSNode_TileEntity wasn't loaded in the
-            // world!");
         }
         TileEntity entity = world.getTileEntity(pos);
         if (entity == null) {
@@ -100,18 +106,17 @@ public class VSNode_TileEntity implements IVSNode {
     }
 
     @Override
-    public void makeConnection(IVSNode other) {
+    public void makeConnection(IVSNode other, EnumWireType wireType) {
         assertValidity();
         boolean contains = linkedNodesPos.contains(other.getNodePos());
         if (!contains) {
             linkedNodesPos.add(other.getNodePos());
+            linkedWireTypes.add(wireType);
             parentTile.markDirty();
-            other.makeConnection(this);
+            other.makeConnection(this, wireType);
             sendNodeUpdates();
             List stupid = Collections.singletonList(other);
             getGraph().addNeighours(this, stupid);
-            // System.out.println("Connections: " + getGraph().getObjects().size());
-            // getNodeGraph().addNode(other);
         }
     }
 
@@ -121,6 +126,7 @@ public class VSNode_TileEntity implements IVSNode {
         boolean contains = linkedNodesPos.contains(other.getNodePos());
         if (contains) {
             linkedNodesPos.remove(other.getNodePos());
+            linkedWireTypes.remove(other.getWireType());
             parentTile.markDirty();
             other.breakConnection(this);
             sendNodeUpdates();
@@ -132,8 +138,6 @@ public class VSNode_TileEntity implements IVSNode {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // System.out.println(getGraph().getObjects().size());
-            // getNodeGraph().removeNode(other);
         }
     }
 
@@ -141,6 +145,10 @@ public class VSNode_TileEntity implements IVSNode {
     public BlockPos getNodePos() {
         assertValidity();
         return parentTile.getPos();
+    }
+    @Override
+    public EnumWireType getWireType() {
+        return this.wireType;
     }
 
     @Override
@@ -165,27 +173,34 @@ public class VSNode_TileEntity implements IVSNode {
 
     @Override
     public Set<BlockPos> getLinkedNodesPos() {
-        return unmodifiableLinkedNodesPos;
+        return immutableLinkedNodesPos;
+    }
+
+    @Override
+    public List<EnumWireType> getLinkedWireTypes() {
+        return immutableLinkedWireTypes;
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
-        int[] positions = new int[getLinkedNodesPos().size() * 3];
-        int cont = 0;
+        int[] data = new int[getLinkedNodesPos().size() * 4];
+        int i = 0;
+        int types = 0;
         for (BlockPos pos : getLinkedNodesPos()) {
-            positions[cont] = pos.getX();
-            positions[cont + 1] = pos.getY();
-            positions[cont + 2] = pos.getZ();
-            cont += 3;
+            data[i++] = pos.getX();
+            data[i++] = pos.getY();
+            data[i++] = pos.getZ();
+            data[i++] = linkedWireTypes.get(types++).ordinal();
         }
-        compound.setIntArray(NBT_DATA_KEY, positions);
+        compound.setIntArray(NBT_DATA_KEY, data);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        int[] positions = compound.getIntArray(NBT_DATA_KEY);
-        for (int i = 0; i < positions.length; i += 3) {
-            linkedNodesPos.add(new BlockPos(positions[i], positions[i + 1], positions[i + 2]));
+        int[] data = compound.getIntArray(NBT_DATA_KEY);
+        for (int i = 0; i < data.length; i += 4) {
+            this.linkedNodesPos.add(new BlockPos(data[i], data[i + 1], data[i + 2]));
+            this.linkedWireTypes.add(EnumWireType.values()[data[i + 3]]);
         }
     }
 
@@ -282,7 +297,7 @@ public class VSNode_TileEntity implements IVSNode {
 
     @Override
     public TileEntity getParentTile() {
-        return parentTile;
+        return this.parentTile;
     }
 
     @Override

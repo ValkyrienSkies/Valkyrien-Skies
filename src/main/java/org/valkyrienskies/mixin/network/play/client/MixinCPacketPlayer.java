@@ -6,45 +6,43 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.world.GameType;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.fixes.ITransformablePacket;
-import org.valkyrienskies.mod.common.coordinates.ISubspace;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntity;
-import org.valkyrienskies.mod.common.coordinates.ISubspacedEntityRecord;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.VSMath;
+import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 
 @Mixin(CPacketPlayer.class)
 public class MixinCPacketPlayer implements ITransformablePacket {
 
+    @Shadow public float pitch;
     private final CPacketPlayer thisPacket = CPacketPlayer.class.cast(this);
     private GameType cachedPlayerGameType = null;
 
     @Inject(method = "processPacket", at = @At(value = "HEAD"))
-    public void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+    private void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
         this.doPreProcessing(server, false);
     }
 
     @Inject(method = "processPacket", at = @At(value = "RETURN"))
-    public void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+    private void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
         this.doPostProcessing(server, false);
     }
 
     @Override
     public void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
         if (isPacketOnMainThread(server, callingFromSponge)) {
-            PhysicsWrapperEntity parent = getPacketParent((NetHandlerPlayServer) server);
+            PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
             if (parent != null) {
-                ISubspace parentSubspace = parent.getPhysicsObject().getSubspace();
-                ISubspacedEntityRecord entityRecord = parentSubspace
-                    .getRecordForSubspacedEntity((ISubspacedEntity) getPacketPlayer(server));
-                VectorImmutable positionGlobal = entityRecord.getPositionInGlobalCoordinates();
-                VectorImmutable lookVectorGlobal = entityRecord
-                    .getLookDirectionInGlobalCoordinates();
+
+                EntityPlayerMP playerMP = getPacketPlayer(server);
+                VectorImmutable positionGlobal = new Vector(playerMP.posX, playerMP.posY, playerMP.posZ).toImmutable();
+                VectorImmutable lookVectorGlobal = new Vector(playerMP.getLook(1.0f)).toImmutable();
 
                 float pitch = (float) VSMath.getPitchFromVectorImmutable(lookVectorGlobal);
                 float yaw = (float) VSMath.getYawFromVectorImmutable(lookVectorGlobal, pitch);
@@ -75,18 +73,18 @@ public class MixinCPacketPlayer implements ITransformablePacket {
             if (cachedPlayerGameType != null) {
                 getPacketPlayer(server).interactionManager.gameType = cachedPlayerGameType;
             }
-            PhysicsWrapperEntity parent = getPacketParent((NetHandlerPlayServer) server);
-            if (parent != null) {
-                parent.getPhysicsObject().getSubspace()
-                    .forceSubspaceRecord((ISubspacedEntity) getPacketPlayer(server), null);
-            }
+            PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
+//            if (parent != null) {
+//                parent.getSubspace()
+//                    .forceSubspaceRecord((ISubspacedEntity) getPacketPlayer(server), null);
+//            }
             IDraggable draggable = (IDraggable) getPacketPlayer(server);
             draggable.setForcedRelativeSubspace(null);
         }
     }
 
     @Override
-    public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
+    public PhysicsObject getPacketParent(NetHandlerPlayServer server) {
         EntityPlayerMP player = server.player;
         IDraggable draggable = (IDraggable) player;
         return draggable.getForcedSubspaceBelowFeet();

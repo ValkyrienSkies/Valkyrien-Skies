@@ -32,6 +32,7 @@ import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
+import org.valkyrienskies.mod.common.util.VSIterationUtils;
 import valkyrienwarfare.api.TransformType;
 
 public class ShipCollisionTask implements Callable<Void> {
@@ -98,54 +99,27 @@ public class ShipCollisionTask implements Callable<Void> {
         SpatialDetector.setPosWithRespectTo(integer, toTask.getCenterPotentialHit(), mutablePos);
         inWorldState = toTask.getParent().getCachedSurroundingChunks().getBlockState(mutablePos);
 
-        inWorld.X = mutablePos.getX() + .5;
-        inWorld.Y = mutablePos.getY() + .5;
-        inWorld.Z = mutablePos.getZ() + .5;
+        inWorld.x = mutablePos.getX() + .5;
+        inWorld.y = mutablePos.getY() + .5;
+        inWorld.z = mutablePos.getZ() + .5;
 
 //        toTask.getParent().coordTransform.fromGlobalToLocal(inWorld);
-        toTask.getParent().shipTransformationManager().getCurrentPhysicsTransform()
+        toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
             .transform(inWorld, TransformType.GLOBAL_TO_SUBSPACE);
 
-        int midX = MathHelper.floor(inWorld.X + .5D);
-        int midY = MathHelper.floor(inWorld.Y + .5D);
-        int midZ = MathHelper.floor(inWorld.Z + .5D);
+        int midX = MathHelper.floor(inWorld.x + .5D);
+        int midY = MathHelper.floor(inWorld.y + .5D);
+        int midZ = MathHelper.floor(inWorld.z + .5D);
 
         // Check the 27 possible positions
-        checkPosition(midX - 1, midY - 1, midZ - 1, integer);
-        checkPosition(midX - 1, midY - 1, midZ, integer);
-        checkPosition(midX - 1, midY - 1, midZ + 1, integer);
-        checkPosition(midX - 1, midY, midZ - 1, integer);
-        checkPosition(midX - 1, midY, midZ, integer);
-        checkPosition(midX - 1, midY, midZ + 1, integer);
-        checkPosition(midX - 1, midY + 1, midZ - 1, integer);
-        checkPosition(midX - 1, midY + 1, midZ, integer);
-        checkPosition(midX - 1, midY + 1, midZ + 1, integer);
-
-        checkPosition(midX, midY - 1, midZ - 1, integer);
-        checkPosition(midX, midY - 1, midZ, integer);
-        checkPosition(midX, midY - 1, midZ + 1, integer);
-        checkPosition(midX, midY, midZ - 1, integer);
-        checkPosition(midX, midY, midZ, integer);
-        checkPosition(midX, midY, midZ + 1, integer);
-        checkPosition(midX, midY + 1, midZ - 1, integer);
-        checkPosition(midX, midY + 1, midZ, integer);
-        checkPosition(midX, midY + 1, midZ + 1, integer);
-
-        checkPosition(midX + 1, midY - 1, midZ - 1, integer);
-        checkPosition(midX + 1, midY - 1, midZ, integer);
-        checkPosition(midX + 1, midY - 1, midZ + 1, integer);
-        checkPosition(midX + 1, midY, midZ - 1, integer);
-        checkPosition(midX + 1, midY, midZ, integer);
-        checkPosition(midX + 1, midY, midZ + 1, integer);
-        checkPosition(midX + 1, midY + 1, midZ - 1, integer);
-        checkPosition(midX + 1, midY + 1, midZ, integer);
-        checkPosition(midX + 1, midY + 1, midZ + 1, integer);
-
+        VSIterationUtils.expand3d(midX, midY, midZ, (x, y, z) -> checkPosition(x, y, z, integer));
     }
 
     public void checkPosition(int x, int y, int z, int positionHash) {
-        final Chunk chunkIn = toTask.getParent()
-            .getChunkAt(x >> 4, z >> 4);
+        final Chunk chunkIn = toTask.getParent().getChunkAt(x >> 4, z >> 4);
+        if (chunkIn == null) {
+            return;
+        }
         y = Math.max(0, Math.min(y, 255));
 
         ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];
@@ -176,13 +150,13 @@ public class ShipCollisionTask implements Callable<Void> {
                 // inLocalBB = colBB.get(0);
 
                 Polygon shipInWorld = new Polygon(inLocalBB,
-                    toTask.getParent().shipTransformationManager().getCurrentPhysicsTransform(),
+                    toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform(),
                     TransformType.SUBSPACE_TO_GLOBAL);
                 Polygon worldPoly = new Polygon(inGlobalBB);
 
                 // TODO: Remove the normals crap
                 PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-                    toTask.getParent().shipTransformationManager().normals);
+                    toTask.getParent().getShipTransformationManager().normals);
 
                 if (!collider.seperated) {
                     // return handleActualCollision(collider, mutablePos, inLocalPos, inWorldState,

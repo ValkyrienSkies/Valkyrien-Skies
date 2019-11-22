@@ -49,7 +49,7 @@ public class ValkyriumCompressorPartTileEntityRenderer extends
                 RotationMatrices
                     .applyTransform(RotationMatrices.getRotationMatrix(0, -rotationYaw, 0),
                         centerOffset);
-                GlStateManager.translate(centerOffset.X, centerOffset.Y, centerOffset.Z);
+                GlStateManager.translate(centerOffset.x, centerOffset.y, centerOffset.z);
 
                 GlStateManager.translate(.5, 0, .5);
                 GlStateManager.scale(2, 2, 2);

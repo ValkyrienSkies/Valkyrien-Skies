@@ -15,8 +15,8 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 public class BlockPhysicsInfuserDummy extends BlockVSDirectional {
 
-    public BlockPhysicsInfuserDummy(Material materialIn) {
-        super(materialIn);
+    public BlockPhysicsInfuserDummy() {
+        super("physics_infuser_dummy", Material.WOOD, 0.0F, false);
     }
 
     @Override

@@ -17,7 +17,16 @@
 package org.valkyrienskies.mod.common.math;
 
 import java.util.List;
+import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
+import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
+import org.joml.Matrix4d;
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 /**
@@ -25,10 +34,39 @@ import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
  *
  * @author thebest108
  */
+@UtilityClass
 public class VSMath {
 
     public static final int AABB_MERGE_PASSES = 5;
     public static final double STANDING_TOLERANCE = .42D;
+
+    public Vector3d toVector3d(Vec3i vec) {
+        return new Vector3d(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    public Vector3d toVector3d(Vec3d vec) {
+        return new Vector3d(vec.x, vec.y, vec.z);
+    }
+
+    /**
+     * Converts a double-array matrix to a JOML {@link Matrix4d}
+     *
+     * @param matrix A 4x4 row-major double-array matrix
+     * @return A {@link Matrix4d} representation
+     */
+    public static Matrix4d convertArrayMatrix4d(double[] matrix) {
+        return new Matrix4d().set(matrix).transpose();
+    }
+
+    /**
+     * Converts a double-array matrix into a JOML {@link Matrix3d}
+     *
+     * @param matrix A 3x3 row-major double-array matrix
+     * @return A {@link Matrix3d} representation
+     */
+    public static Matrix3d convertArrayMatrix3d(double[] matrix) {
+        return new Matrix3d().set(matrix).transpose();
+    }
 
     public static double getPitchFromVectorImmutable(VectorImmutable vec) {
         return -Math.asin(vec.getY()) * 180 / Math.PI;
@@ -45,9 +83,6 @@ public class VSMath {
     /**
      * Sorts the array, returns a new array of 2 elements. Element 0 is the minimum of the array
      * passed in, element 1 is the maximum of the array.
-     *
-     * @param elements
-     * @return
      */
     public static double[] getMinMaxOfArray(double[] elements) {
         double[] minMax = new double[2];
@@ -66,18 +101,15 @@ public class VSMath {
      * Used by the collision code to determine if the player should slide when standing on a ship.
      * That depends on the angle of the normal relative to the Y vector (0, 1, 0).
      *
-     * @param normal
      * @return true/false
      */
     public static boolean canStandOnNormal(Vector normal) {
-        double radius = normal.X * normal.X + normal.Z * normal.Z;
+        double radius = normal.x * normal.x + normal.z * normal.z;
         return radius < STANDING_TOLERANCE;
     }
 
     /**
      * Takes an arrayList of AABB's and merges them into larger AABB's
-     *
-     * @param toFuse
      */
     public static void mergeAABBList(List<AxisAlignedBB> toFuse) {
         boolean changed = true;
@@ -210,5 +242,16 @@ public class VSMath {
             remainder += divisor;
         }
         return remainder;
+    }
+
+    public static Matrix3dc createRotationMatrix(double pitchRadians, double yawRadians,
+        double rollRadians) {
+        return new Matrix3d().rotateXYZ(pitchRadians, yawRadians, rollRadians);
+    }
+
+    public static Quaterniondc createRotationQuat(double pitchRadians, double yawRadians,
+        double rollRadians) {
+        return createRotationMatrix(pitchRadians, yawRadians, rollRadians)
+            .getNormalizedRotation(new Quaterniond());
     }
 }

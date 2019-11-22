@@ -30,16 +30,16 @@ import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 @ParametersAreNonnullByDefault
 public class BlockPhysicsInfuserCreative extends BlockPhysicsInfuser {
 
-    public BlockPhysicsInfuserCreative(Material materialIn) {
-        super(materialIn);
+    public BlockPhysicsInfuserCreative() {
+        super("physics_infuser_creative");
         shipSpawnDetectorID = DetectorManager.DetectorIDs.BlockPosFinder.ordinal();
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip,
         ITooltipFlag flagIn) {
-        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies.creative_physics_infuser_1"));
-        tooltip.add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format("tooltip.valkyrienskies.creative_physics_infuser_2"));
+        tooltip.add(TextFormatting.BLUE + I18n.format("tooltip.valkyrienskies.physics_infuser_creative_1"));
+        tooltip.add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n.format("tooltip.valkyrienskies.physics_infuser_creative_2"));
     }
 
 }

@@ -29,15 +29,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeStabilizer;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 
-public class BlockGyroscopeStabilizer extends Block implements ITileEntityProvider,
+public class BlockGyroscopeStabilizer extends BaseBlock implements ITileEntityProvider,
     IBlockTorqueProvider {
 
-    public BlockGyroscopeStabilizer(Material materialIn) {
-        super(materialIn);
+    public BlockGyroscopeStabilizer() {
+        super("gyroscope_stabilizer", Material.IRON, 0.0F, true);
+        this.setHardness(5.0F);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class BlockGyroscopeStabilizer extends Block implements ITileEntityProvid
 
     @Override
     public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
-        TileEntity thisTile = physicsCalculations.getParent().world().getTileEntity(pos);
+        TileEntity thisTile = physicsCalculations.getParent().getWorld().getTileEntity(pos);
         if (thisTile instanceof TileEntityGyroscopeStabilizer) {
             TileEntityGyroscopeStabilizer tileGyroscope = (TileEntityGyroscopeStabilizer) thisTile;
             return tileGyroscope.getTorqueInGlobal(physicsCalculations, pos);

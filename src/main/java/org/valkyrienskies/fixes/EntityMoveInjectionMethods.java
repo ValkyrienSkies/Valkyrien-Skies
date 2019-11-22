@@ -17,20 +17,17 @@
 package org.valkyrienskies.fixes;
 
 import java.util.Optional;
+
+import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector;
+import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector;
-import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
-import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -41,10 +38,6 @@ public class EntityMoveInjectionMethods {
 
     public static IntermediateMovementVariableStorage handleMove(MoverType type, double dx,
         double dy, double dz, Entity this_) {
-        if (this_ instanceof PhysicsWrapperEntity) {
-            //Don't move at all
-            return null;
-        }
         if (this_ instanceof EntityPlayer && ((EntityPlayer) this_).isSpectator()) {
             return null;
         }
@@ -58,7 +51,7 @@ public class EntityMoveInjectionMethods {
             double newZ = this_.posZ + dz;
             BlockPos newPosInBlock = new BlockPos(newX, newY, newZ);
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(this_.world, newPosInBlock);
+                .getPhysoManagingBlock(this_.world, newPosInBlock);
 
             if (!physicsObject.isPresent()) {
                 return null;
@@ -66,12 +59,12 @@ public class EntityMoveInjectionMethods {
 
             Vector endPos = new Vector(newX, newY, newZ);
             physicsObject.get()
-                .shipTransformationManager()
+                .getShipTransformationManager()
                 .getCurrentTickTransform()
                 .transform(endPos, TransformType.GLOBAL_TO_SUBSPACE);
-            dx = endPos.X - this_.posX;
-            dy = endPos.Y - this_.posY;
-            dz = endPos.Z - this_.posZ;
+            dx = endPos.x - this_.posX;
+            dy = endPos.y - this_.posY;
+            dz = endPos.z - this_.posZ;
         }
 
         IntermediateMovementVariableStorage alteredMovement = EntityCollisionInjector
@@ -80,11 +73,4 @@ public class EntityMoveInjectionMethods {
         return alteredMovement;
     }
 
-    public static RayTraceResult rayTraceBlocksIgnoreShip(World world, Vec3d vec31, Vec3d vec32,
-        boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox,
-        boolean returnLastUncollidableBlock, PhysicsWrapperEntity toIgnore) {
-        return ((IWorldVS) world)
-            .rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox,
-                returnLastUncollidableBlock, toIgnore);
-    }
 }

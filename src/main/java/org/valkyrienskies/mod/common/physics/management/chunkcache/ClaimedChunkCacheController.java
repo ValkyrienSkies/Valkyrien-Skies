@@ -1,7 +1,6 @@
 package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
 import java.util.Map.Entry;
-import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -12,8 +11,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
-import org.valkyrienskies.fixes.IPhysicsChunk;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
+import org.valkyrienskies.mod.common.capability.VSChunkPhysoCapability;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 
 /**
@@ -39,10 +39,8 @@ public class ClaimedChunkCacheController {
      *               whether they are being loaded from NBT or from the world.
      */
     public ClaimedChunkCacheController(PhysicsObject parent, boolean loaded) {
-        this.world = parent.world();
+        this.world = parent.getWorld();
         this.parent = parent;
-
-        int dimension = parent.ownedChunks().dimension();
 
         if (loaded) {
             loadLoadedChunks();
@@ -59,7 +57,7 @@ public class ClaimedChunkCacheController {
      * @return The chunk from the cache
      */
     public Chunk getChunkAt(int chunkX, int chunkZ) {
-        VSChunkClaim claim = parent.ownedChunks();
+        VSChunkClaim claim = parent.getData().getChunkClaim();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
 
@@ -96,7 +94,7 @@ public class ClaimedChunkCacheController {
      * @param chunk  The chunk to cache.
      */
     public void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
-        VSChunkClaim claim = parent.ownedChunks();
+        VSChunkClaim claim = parent.getData().getChunkClaim();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
 
@@ -121,57 +119,66 @@ public class ClaimedChunkCacheController {
      * Loads chunks that have been generated before into the cache
      */
     private void loadLoadedChunks() {
-        VSChunkClaim chunkClaim = parent.ownedChunks();
+        System.out.println("Loading chunks");
+        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
 
-        claimedChunks = new Chunk[(chunkClaim.radius() * 2) + 1][
-            (chunkClaim.radius() * 2) + 1];
-        for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
-            for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
-                // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
-                try {
-                    Chunk chunk = world.getChunk(x, z);
-                    // Do this to get it re-integrated into the world
-                    if (!world.isRemote) {
-                        injectChunkIntoWorld(chunk, x, z, false);
-                    }
-                    for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
-                        parent.onSetTileEntity(entry.getKey(), entry.getValue());
-                    }
-                    claimedChunks[x - chunkClaim.minX()][z - chunkClaim
-                        .minZ()] = chunk;
-                } catch (Exception e) {
-                    e.printStackTrace();
+        claimedChunks =
+            new Chunk[(chunkClaim.getRadius() * 2) + 1][(chunkClaim.getRadius() * 2) + 1];
+
+        chunkClaim.forEach((x, z) -> {
+            // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
+            try {
+                Chunk chunk = world.getChunk(x, z);
+
+                // Do this to get it re-integrated into the world
+                if (!world.isRemote) {
+                    injectChunkIntoWorldServer(chunk, x, z, false);
+                } else {
+                    // Make sure this chunk knows we own it.
+                    VSChunkPhysoCapability physoCapability =
+                        chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null);
+                    physoCapability.set(parent);
                 }
+                for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
+                    parent.onSetTileEntity(entry.getKey(), entry.getValue());
+                }
+                claimedChunks[x - chunkClaim.minX()][z - chunkClaim.minZ()] = chunk;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
+        });
     }
 
     /**
-     * Loads chunks that haven't been generated before into the cache. At the moment make sure to only call this from
-     * the game thread. Running it on a separate thread will lead to data races.
+     * Loads chunks that haven't been generated before into the cache. At the moment make sure to
+     * only call this from the game thread. Running it on a separate thread will lead to data
+     * races.
      */
     private void loadNewChunks() {
-        VSChunkClaim chunkClaim = parent.ownedChunks();
+        System.out.println("Loading new chunks");
+        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
 
-        claimedChunks = new Chunk[(chunkClaim.radius() * 2) + 1][
-            (chunkClaim.radius() * 2) + 1];
+        claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
+            (chunkClaim.getRadius() * 2) + 1];
 
         for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
             for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
                 Chunk chunk = new Chunk(world, x, z);
-                injectChunkIntoWorld(chunk, x, z, true);
+                injectChunkIntoWorldServer(chunk, x, z, true);
                 claimedChunks[x - chunkClaim.minX()][z - chunkClaim.minZ()] = chunk;
             }
         }
     }
 
-    public void injectChunkIntoWorld(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
-        VSChunkClaim chunkClaim = parent.ownedChunks();
+    public void injectChunkIntoWorldServer(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
+        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
         chunk.generateSkylightMap();
         chunk.checkLight();
 
-        // Make sure this chunk knows we own it.
-        ((IPhysicsChunk) chunk).setParentPhysicsObject(Optional.of(this.parent));
+        // Make sure this chunk knows we own it
+        VSChunkPhysoCapability physoCapability =
+            chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null);
+        physoCapability.set(parent);
 
         ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
         chunk.dirty = true;
@@ -193,7 +200,7 @@ public class ClaimedChunkCacheController {
         PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
         PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
         entry.sentToPlayers = true;
-        entry.players = parent.watchingPlayers();
+        entry.players = parent.getWatchingPlayers();
     }
 
 }

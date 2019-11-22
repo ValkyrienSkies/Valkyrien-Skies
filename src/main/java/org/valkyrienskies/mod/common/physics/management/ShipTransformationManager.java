@@ -16,32 +16,23 @@
 
 package org.valkyrienskies.mod.common.physics.management;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.border.WorldBorder;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Quaternion;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.multithreaded.PhysicsShipTransform;
-import org.valkyrienskies.mod.common.network.WrapperPositionMessage;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 /**
  * Stores various coordinates and transforms for the ship.
- *
- * @author thebest108
  */
 public class ShipTransformationManager {
 
-    // A transformation that does no rotation, and does no translation.
-    public static final ShipTransform ZERO_TRANSFORM = new ShipTransform();
-    // A buffer to hold ship transform data sent from server to the client.
-    public final ShipTransformationBuffer serverBuffer;
     private final PhysicsObject parent;
     public Vector[] normals;
     private ShipTransform currentTickTransform;
@@ -52,114 +43,23 @@ public class ShipTransformationManager {
     private ShipTransform currentPhysicsTransform;
     private ShipTransform prevPhysicsTransform;
 
-    public ShipTransformationManager(PhysicsObject parent) {
+    public ShipTransformationManager(PhysicsObject parent, ShipTransform initialTransform) {
         this.parent = parent;
-        this.currentTickTransform = null;
-        this.renderTransform = null;
-        this.prevTickTransform = null;
-        this.currentPhysicsTransform = null;
-        this.prevPhysicsTransform = null;
-        this.normals = null;
-        this.serverBuffer = new ShipTransformationBuffer();
+        this.currentTickTransform = initialTransform;
+        this.renderTransform = initialTransform;
+        this.prevTickTransform = initialTransform;
+        this.currentPhysicsTransform = initialTransform;
+        this.prevPhysicsTransform = initialTransform;
+        // Create the normals.
+        this.normals = createCollisionNormals(initialTransform);
     }
 
-    /**
-     * Polls position and rotation data from the parent ship, and creates a new current transform
-     * made from this data.
-     */
-    public void updateCurrentTickTransform() {
-        PhysicsWrapperEntity wrapperEntity = parent.wrapperEntity();
-        ShipTransform newTickTransform = new ShipTransform(wrapperEntity.posX, wrapperEntity.posY,
-            wrapperEntity.posZ, wrapperEntity.getPitch(), wrapperEntity.getYaw(),
-            wrapperEntity.getRoll(), parent.centerCoord());
-        setCurrentTickTransform(newTickTransform);
-    }
-
-    /**
-     * Updates all the transformations, only updates the AABB if passed true.
-     *
-     * @param updateParentAABB
-     */
-    @Deprecated
-    public void updateAllTransforms(boolean updatePhysicsTransform, boolean updateParentAABB,
-        boolean updatePassengers) {
-        prevTickTransform = currentTickTransform;
-        // The client should never be updating the AABB on its own.
-        if (parent.world().isRemote) {
-            updateParentAABB = false;
-        }
-        forceShipIntoWorldBorder();
-        updateCurrentTickTransform();
-        if (prevTickTransform == null) {
-            prevTickTransform = currentTickTransform;
-        }
-        if (updatePhysicsTransform) {
-            // This should only be called once when the ship finally loads from nbt.
-            parent.physicsProcessor()
-                .generatePhysicsTransform();
-            prevPhysicsTransform = currentPhysicsTransform;
-        }
-        if (updateParentAABB) {
-            updateParentAABB();
-        }
-        updateParentNormals();
-        if (updatePassengers) {
-            updatePassengerPositions();
-        }
-    }
-
-    /**
-     * Keeps the Ship in the world border
-     */
-    private void forceShipIntoWorldBorder() {
-        WorldBorder border = parent.world().getWorldBorder();
-        AxisAlignedBB shipBB = parent.shipBoundingBox();
-
-        if (shipBB.maxX > border.maxX()) {
-            parent.wrapperEntity().posX += border.maxX() - shipBB.maxX;
-        }
-        if (shipBB.minX < border.minX()) {
-            parent.wrapperEntity().posX += border.minX() - shipBB.minX;
-        }
-        if (shipBB.maxZ > border.maxZ()) {
-            parent.wrapperEntity().posZ += border.maxZ() - shipBB.maxZ;
-        }
-        if (shipBB.minZ < border.minZ()) {
-            parent.wrapperEntity().posZ += border.minZ() - shipBB.minZ;
-        }
-    }
-
-    public void updatePassengerPositions() {
-        for (Entity entity : parent.wrapperEntity().riddenByEntities) {
-            parent.wrapperEntity().updatePassenger(entity);
-        }
-    }
-
-    public void sendPositionToPlayers(int positionTickID) {
-        WrapperPositionMessage posMessage = null;
-        if (getCurrentPhysicsTransform() != ZERO_TRANSFORM) {
-            posMessage = new WrapperPositionMessage(
-                (PhysicsShipTransform) getCurrentPhysicsTransform(),
-                parent.wrapperEntity().getEntityId(), positionTickID);
-        } else {
-            posMessage = new WrapperPositionMessage(parent.wrapperEntity(), positionTickID);
-        }
-
-        // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.
-        for (int i = 0; i < parent.watchingPlayers().size(); i++) {
-            EntityPlayerMP player = parent.watchingPlayers().get(i);
-            if (player != null) {
-                ValkyrienSkiesMod.physWrapperNetwork.sendTo(posMessage, player);
-            }
-        }
-    }
-
-    private void updateParentNormals() {
+    private static Vector[] createCollisionNormals(ShipTransform transform) {
         // We edit a local array instead of normals to avoid data races.
         final Vector[] newNormals = new Vector[15];
         // Used to generate Normals for the Axis Aligned World
         final Vector[] alignedNorms = Vector.generateAxisAlignedNorms();
-        final Vector[] rotatedNorms = generateRotationNormals();
+        final Vector[] rotatedNorms = generateRotationNormals(transform);
         for (int i = 0; i < 6; i++) {
             Vector currentNorm;
             if (i < 3) {
@@ -186,20 +86,72 @@ public class ShipTransformationManager {
         newNormals[1] = new Vector(0.0D, 1.0D, 0.0D);
         newNormals[2] = new Vector(0.0D, 0.0D, 1.0D);
 
-        this.normals = newNormals;
+        return newNormals;
     }
 
-    private Vector[] generateRotationNormals() {
+    /*
+    public void sendPositionToPlayers(int positionTickID) {
+        WrapperPositionMessage posMessage = null;
+        Matrix4dc gts = getCurrentPhysicsTransform().getGlobalToSubspace();
+        Matrix4dc stg = getCurrentPhysicsTransform().getSubspaceToGlobal();
+        // If it is the identity transform
+        if ((gts.properties() & Matrix4dc.PROPERTY_IDENTITY) != 0 &&
+            (stg.properties() & Matrix4dc.PROPERTY_IDENTITY) != 0) {
+            posMessage = new WrapperPositionMessage(
+                (PhysicsShipTransform) getCurrentPhysicsTransform(),
+                parent.getWrapperEntity().getEntityId(), positionTickID);
+        } else {
+            posMessage = new WrapperPositionMessage(parent.getWrapperEntity(), positionTickID);
+        }
+
+        // Do a standard loop here to avoid a concurrentModificationException. A standard for each loop could cause a crash.
+        for (int i = 0; i < parent.getWatchingPlayers().size(); i++) {
+            EntityPlayerMP player = parent.getWatchingPlayers().get(i);
+            if (player != null) {
+                ValkyrienSkiesMod.physWrapperNetwork.sendTo(posMessage, player);
+            }
+        }
+    }
+     */
+
+    private static Vector[] generateRotationNormals(ShipTransform shipTransform) {
         Vector[] norms = Vector.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
-            getCurrentTickTransform().rotate(norms[i], TransformType.SUBSPACE_TO_GLOBAL);
+            shipTransform.rotate(norms[i], TransformType.SUBSPACE_TO_GLOBAL);
         }
         return norms;
     }
 
+    /**
+     * Updates all the transformations, only updates the AABB if passed true.
+     */
+    @Deprecated
+    public void updateAllTransforms(ShipTransform newTransform, boolean updatePhysicsTransform, boolean updateParentAABB) {
+        prevTickTransform = currentTickTransform;
+        currentTickTransform = newTransform;
+        // The client should never be updating the AABB on its own.
+        if (parent.getWorld().isRemote) {
+            updateParentAABB = false;
+        }
+
+        if (prevTickTransform == null) {
+            prevTickTransform = currentTickTransform;
+        }
+        if (updatePhysicsTransform) {
+            // This should only be called once when the ship finally loads from nbt.
+            parent.getPhysicsCalculations()
+                    .generatePhysicsTransform();
+            prevPhysicsTransform = currentPhysicsTransform;
+        }
+        if (updateParentAABB) {
+            updateParentAABB();
+        }
+        this.normals = createCollisionNormals(currentTickTransform);
+    }
+
     // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
     private void updateParentAABB() {
-        IVoxelFieldAABBMaker aabbMaker = parent.voxelFieldAABBMaker();
+        IVoxelFieldAABBMaker aabbMaker = parent.getVoxelFieldAABBMaker();
         AxisAlignedBB subspaceBB = aabbMaker.makeVoxelFieldAABB();
         if (subspaceBB == null) {
             // The aabbMaker didn't know what the aabb was, just don't update the aabb for now.
@@ -212,7 +164,7 @@ public class ShipTransformationManager {
             TransformType.SUBSPACE_TO_GLOBAL);
         // Set the ship AABB to that of the polygon.
         AxisAlignedBB worldBB = largerPoly.getEnclosedAABB();
-        parent.shipBoundingBox(worldBB);
+        parent.setShipBoundingBox(worldBB);
     }
 
     /**
@@ -254,7 +206,7 @@ public class ShipTransformationManager {
      * @return the renderTransform
      */
     public ShipTransform getRenderTransform() {
-        if (!this.parent.world().isRemote || renderTransform == null) {
+        if (!this.parent.getWorld().isRemote || renderTransform == null) {
             return currentTickTransform;
         }
         return renderTransform;
@@ -278,8 +230,6 @@ public class ShipTransformationManager {
 
     /**
      * Sets the physics transform to the given input.
-     *
-     * @param
      */
     public void setCurrentPhysicsTransform(ShipTransform currentPhysicsTransform) {
         this.currentPhysicsTransform = currentPhysicsTransform;
@@ -303,27 +253,29 @@ public class ShipTransformationManager {
         }
         ShipTransform prev = prevTickTransform;
         ShipTransform cur = currentTickTransform;
-        Vector shipCenter = parent.centerCoord();
+        Vector3d shipCenter = parent.getCenterCoord().toVector3d();
 
-        Vector prevPos = new Vector(shipCenter);
-        Vector curPos = new Vector(shipCenter);
-        prev.transform(prevPos, TransformType.SUBSPACE_TO_GLOBAL);
-        cur.transform(curPos, TransformType.SUBSPACE_TO_GLOBAL);
-        Vector deltaPos = prevPos.getSubtraction(curPos);
-        deltaPos.multiply(partialTick);
-        Vector partialPos = new Vector(prevPos);
+        Vector3d prevPos = new Vector3d(shipCenter);
+        Vector3d curPos = new Vector3d(shipCenter);
+        prev.transformPosition(prevPos, TransformType.SUBSPACE_TO_GLOBAL);
+        cur.transformPosition(curPos, TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3d deltaPos = curPos.sub(prevPos, new Vector3d());
+        deltaPos.mul(partialTick);
+
+        Vector3d partialPos = new Vector3d(prevPos);
         partialPos.add(deltaPos); // Now partialPos is complete
 
-        Quaternion prevRot = prev.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion curRot = cur.createRotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaternion partialRot = Quaternion.slerpInterpolate(prevRot, curRot, partialTick);
-        double[] partialAngles = partialRot
-            .toRadians(); // Now partial angles {pitch, yaw, roll} are complete.
+        Quaterniondc prevRot = prev.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaterniondc curRot = cur.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaterniondc partialRot = prevRot.slerp(curRot, partialTick, new Quaterniond());
+
+        Vector3dc angles = partialRot.getEulerAnglesXYZ(new Vector3d());
+
         // Put it all together to get the render transform.
-        renderTransform = new ShipTransform(partialPos.X, partialPos.Y,
-            partialPos.Z, Math.toDegrees(partialAngles[0]), Math.toDegrees(partialAngles[1]),
-            Math.toDegrees(partialAngles[2]),
-            parent.centerCoord());
+        renderTransform = new ShipTransform(partialPos.x, partialPos.y,
+            partialPos.z, Math.toDegrees(angles.x()), Math.toDegrees(angles.y()),
+            Math.toDegrees(angles.z()),
+                parent.getCenterCoord().toVector3d());
     }
 
 }

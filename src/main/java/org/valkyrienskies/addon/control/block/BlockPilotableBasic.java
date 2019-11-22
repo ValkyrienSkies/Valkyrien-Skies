@@ -11,11 +11,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.piloting.ITileEntityPilotable;
+import org.valkyrienskies.addon.control.util.BaseBlock;
 
-public abstract class BlockPilotableBasic extends Block implements ITileEntityProvider {
+public abstract class BlockPilotableBasic extends BaseBlock implements ITileEntityProvider {
 
-    BlockPilotableBasic(Material materialIn) {
-        super(materialIn);
+    BlockPilotableBasic(String name, Material mat, float hardness) {
+        super(name, mat, 0.0F, true);
+        this.setHardness(hardness);
     }
 
     @Override

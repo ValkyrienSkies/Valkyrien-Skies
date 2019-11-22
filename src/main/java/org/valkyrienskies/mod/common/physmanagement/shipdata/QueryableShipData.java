@@ -1,81 +1,90 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import static com.googlecode.cqengine.query.QueryFactory.equal;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
-import com.googlecode.cqengine.ConcurrentIndexedCollection;
-import com.googlecode.cqengine.index.hash.HashIndex;
-import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-
+import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
-
-import static com.googlecode.cqengine.query.QueryFactory.equal;
-import static com.googlecode.cqengine.query.QueryFactory.startsWith;
+import lombok.extern.log4j.Log4j2;
+import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
+import org.valkyrienskies.mod.common.util.cqengine.UpdatableHashIndex;
+import org.valkyrienskies.mod.common.util.cqengine.UpdatableUniqueIndex;
 
 /**
  * A class that keeps track of ship data
  */
 @MethodsReturnNonnullByDefault
+@Log4j2
 @SuppressWarnings("WeakerAccess")
 public class QueryableShipData implements Iterable<ShipData> {
 
-    // The key used to store/read the allShips collection from nbt.
-    private static final String NBT_STORAGE_KEY = ValkyrienSkiesMod.MOD_ID + "QueryableShipDataNBT";
     // Where every ship data instance is stored, regardless if the corresponding PhysicsObject is
     // loaded in the World or not.
-    private ConcurrentIndexedCollection<ShipData> allShips = new ConcurrentIndexedCollection<>();
+    private ConcurrentUpdatableIndexedCollection<ShipData> allShips;
 
     public QueryableShipData() {
-        allShips.addIndex(HashIndex.onAttribute(ShipData.NAME));
-        allShips.addIndex(UniqueIndex.onAttribute(ShipData.UUID));
-        allShips.addIndex(UniqueIndex.onAttribute(ShipData.CHUNKS));
+        this(new ConcurrentUpdatableIndexedCollection<>());
+    }
+
+    @JsonCreator // This tells Jackson to pass in allShips when serializing
+    // The default thing that is passed in will be 'null' if none exists
+    public QueryableShipData(
+        @JsonProperty("allShips") ConcurrentUpdatableIndexedCollection<ShipData> ships) {
+
+        if (ships == null) {
+            ships = new ConcurrentUpdatableIndexedCollection<>();
+        }
+
+        this.allShips = ships;
+
+        // For every ship data, set the 'owner' field to us -- kinda hacky but what can I do
+        // I don't want to serialize a billion references to this
+        // This probably only needs to be done once per world, so this is fine
+        this.allShips.forEach(data -> {
+            try {
+                Field owner = ShipData.class.getDeclaredField("owner");
+                owner.setAccessible(true);
+                owner.set(data, this.allShips);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        });
+
+        this.allShips.addIndex(UpdatableHashIndex.onAttribute(ShipData.NAME));
+        this.allShips.addIndex(UpdatableUniqueIndex.onAttribute(ShipData.UUID));
+        this.allShips.addIndex(UpdatableUniqueIndex.onAttribute(ShipData.CHUNKS));
+
     }
 
     /**
-     * {@link ValkyrienUtils#getQueryableData(World)}
+     * @see ValkyrienUtils#getQueryableData(World)
      */
     public static QueryableShipData get(World world) {
         return ValkyrienUtils.getQueryableData(world);
     }
-    
+
     /**
-     * @param data The ship to be renamed
-     * @param newName The new name of the ship
-     * @return True of the rename was successful, false if it wasn't.
+     * @deprecated Do not use -- thinking of better API choices
      */
-    public boolean renameShip(ShipData data, String newName) {
-        Query<ShipData> query = equal(ShipData.NAME, newName);
-        if (allShips.retrieve(query).isEmpty()) {
-            ShipData newData = new ShipData.Builder(data)
-                .setName(newName)
-                .build();
-
-            allShips.remove(data);
-            allShips.add(newData);
-
-            return true;
-        }
-        return false;
-    }
-
-    public Stream<ShipData> getShipsFromNameStartingWith(String startsWith) {
-        Query<ShipData> query = startsWith(ShipData.NAME, startsWith);
-
-        return allShips.retrieve(query).stream();
+    @Deprecated
+    public ConcurrentUpdatableIndexedCollection<ShipData> getAllShips() {
+        return allShips;
     }
 
     /**
@@ -91,117 +100,100 @@ public class QueryableShipData implements Iterable<ShipData> {
 
     public Optional<ShipData> getShipFromChunk(long chunkLong) {
         Query<ShipData> query = equal(ShipData.CHUNKS, chunkLong);
-        ResultSet<ShipData> resultSet = allShips.retrieve(query);
-
-        if (resultSet.size() > 1) {
-            throw new IllegalStateException("How the heck did we get 2 or more ships both managing the chunk at " + chunkLong);
-        }
-        if (resultSet.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(resultSet.uniqueResult());
+        try (ResultSet<ShipData> resultSet = allShips.retrieve(query)) {
+            if (resultSet.size() > 1) {
+                throw new IllegalStateException(
+                    "How the heck did we get 2 or more ships both managing the chunk at "
+                        + chunkLong);
+            }
+            if (resultSet.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(resultSet.uniqueResult());
+            }
         }
     }
 
     public Optional<ShipData> getShip(UUID uuid) {
         Query<ShipData> query = equal(ShipData.UUID, uuid);
-        ResultSet<ShipData> resultSet = allShips.retrieve(query);
-
-        if (resultSet.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(resultSet.uniqueResult());
+        try (ResultSet<ShipData> resultSet = allShips.retrieve(query)) {
+            if (resultSet.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(resultSet.uniqueResult());
+            }
         }
-    }
-
-    public Optional<ShipData> getShip(PhysicsWrapperEntity wrapperEntity) {
-        return getShip(wrapperEntity.getPersistentID());
-    }
-
-    public ShipData getOrCreateShip(PhysicsWrapperEntity wrapperEntity) {
-        Optional<ShipData> data = getShip(wrapperEntity.getPersistentID());
-        return data.orElseGet(() -> {
-            ShipData shipData = new ShipData.Builder(wrapperEntity).build();
-            allShips.add(shipData);
-            return shipData;
-        });
     }
 
     public Optional<ShipData> getShipFromName(String name) {
         Query<ShipData> query = equal(ShipData.NAME, name);
-        ResultSet<ShipData> shipDataResultSet = allShips.retrieve(query);
-
-        if (shipDataResultSet.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(shipDataResultSet.uniqueResult());
+        try (ResultSet<ShipData> shipDataResultSet = allShips.retrieve(query)) {
+            if (shipDataResultSet.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(shipDataResultSet.uniqueResult());
+            }
         }
-    }
-
-    public void removeShip(PhysicsWrapperEntity wrapper) {
-        removeShip(wrapper.getPersistentID());
     }
 
     public void removeShip(UUID uuid) {
-        Optional<ShipData> shipOptional = getShip(uuid);
+        getShip(uuid).ifPresent(ship -> allShips.remove(ship));
+    }
 
-        shipOptional.ifPresent(ship -> allShips.remove(ship));
+    public void removeShip(ShipData data) {
+        allShips.remove(data);
     }
 
     public void addShip(ShipData ship) {
+        System.out.println(ship.getName());
         allShips.add(ship);
     }
 
-    public void addShip(PhysicsWrapperEntity wrapperEntity) {
-        Query<ShipData> query = equal(ShipData.UUID, wrapperEntity.getPersistentID());
-
-        // If this ship is already added, don't add it again?
-        if (allShips.retrieve(query).isEmpty()) {
-            addShip(new ShipData.Builder(wrapperEntity).build());
+    /**
+     * Adds the ship data if it doesn't exist, or replaces the old ship data with the new ship data,
+     * while preserving the physics object attached to the old data if there was one.
+     */
+    public void addOrUpdateShipPreservingPhysObj(ShipData ship) {
+        Optional<ShipData> old = getShip(ship.getUuid());
+        if (old.isPresent()) {
+            old.get().setShipTransform(ship.getShipTransform());
+            // old.get().setName(ship.getName());
+            old.get().setPhysInfuserPos(ship.getPhysInfuserPos());
+            old.get().setShipBB(ship.getShipBB());
+            old.get().setPhysicsEnabled(ship.isPhysicsEnabled());
+            // this.updateShipData(old.get(), ship);
+            // PhysicsObject oldPhyso = old.get().getPhyso();
+            // if (oldPhyso != null) {
+            // ship.setPhyso(oldPhyso);
+            // }
+        } else {
+            this.allShips.add(ship);
         }
     }
 
-    public void updateShipPosition(PhysicsWrapperEntity wrapper) {
-        ShipData shipData = getOrCreateShip(wrapper);
-        if (shipData.positionData == null) {
-            shipData.positionData = new ShipPositionData(wrapper);
-        }
-        shipData.positionData.updateData(wrapper);
+    public void registerUpdateListener(
+        BiConsumer<Iterable<ShipData>, Iterable<ShipData>> updateListener) {
+        allShips.registerUpdateListener(updateListener);
     }
 
-    @SuppressWarnings("unchecked")
-    public void readFromNBT(NBTTagCompound nbt) {
-        long start = System.currentTimeMillis();
-
-        Kryo kryo = ValkyrienSkiesMod.INSTANCE.getKryo();
-        Input input = new Input(nbt.getByteArray(NBT_STORAGE_KEY));
-        try {
-            allShips = kryo.readObject(input, ConcurrentIndexedCollection.class);
-        } catch (Exception e) {
-            // Error reading allShips from memory, just make a new empty one.
-            e.printStackTrace();
-            allShips = new ConcurrentIndexedCollection<>();
-        }
-        if (allShips == null) {
-            // This should NEVER EVER happen! So I don't feel bad crashing the game, for now.
-            throw new IllegalStateException(
-                "Kryo read allships as null! Making a new empty allships instance");
-        }
-
-        System.out.println("Price of read: " + (System.currentTimeMillis() - start) + "ms");
+    /**
+     * Atomically updates ShipData. It must be true that <code>!oldData.equals(newData)</code>
+     *
+     * @param oldData The old data object(s) to replace
+     * @param newData The new data object(s)
+     */
+    public void updateShipData(Iterable<ShipData> oldData, Iterable<ShipData> newData) {
+        this.allShips.update(oldData, newData);
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        long start = System.currentTimeMillis();
-
-        Kryo kryo = ValkyrienSkiesMod.INSTANCE.getKryo();
-        Output output = new Output(1024, -1);
-        kryo.writeObject(output, allShips);
-        compound.setByteArray(NBT_STORAGE_KEY, output.getBuffer());
-
-        System.out.println("Price of write: " + (System.currentTimeMillis() - start) + "ms");
-
-        return compound;
+    /**
+     * Atomically updates ShipData. It must be true that <code>!oldData.equals(newData)</code>
+     *
+     * @param oldData The old data object to replace
+     * @param newData The new data object
+     */
+    public void updateShipData(ShipData oldData, ShipData newData) {
+        this.updateShipData(Collections.singleton(oldData), Collections.singleton(newData));
     }
 
     @Override

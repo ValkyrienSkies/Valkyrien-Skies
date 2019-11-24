@@ -35,3 +35,6 @@ Everything there is for the latest version, for old 0.9 builds see below.
 1.  Clone the repo: `git clone https://github.com/ValkyrienSkies/Valkyrien-Skies`
 2. Run `./gradlew setupDecompWorkspace idea genIntellijRuns`
 3. Open the project in IntelliJ
+4. Import the gradle project, sync gradle, run `setupDecompWorkspace` and `genIntellijRuns`, sync gradle again
+5. Open settings (Control + Alt + S), and search for `Annotation Processors`
+6. Check the `Enable annotation processing box`, and add `lombok.launch.AnnotationProcessorHider$AnnotationProcessor` to the list of Processor FQ Names

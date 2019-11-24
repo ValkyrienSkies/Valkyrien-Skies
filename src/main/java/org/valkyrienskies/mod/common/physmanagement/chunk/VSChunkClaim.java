@@ -141,7 +141,7 @@ public final class VSChunkClaim implements Iterable<ChunkPos> {
      * @return the size of this chunk claim. E.g., if the chunk claim has a radius of 2, then it is
      * 5x5 and the dimension is 5
      */
-    public int dimension() {
+    public int dimensions() {
         return getRadius() * 2 + 1;
     }
 
@@ -188,15 +188,15 @@ public final class VSChunkClaim implements Iterable<ChunkPos> {
 
         @Override
         public boolean hasNext() {
-            return index < dimension() * dimension();
+            return index < dimensions() * dimensions();
         }
 
         @Override
         public ChunkPos next() {
             if (!hasNext()) throw new NoSuchElementException();
 
-            int x = (index / dimension()) + minX();
-            int z = (index % dimension()) + minZ();
+            int x = (index / dimensions()) + minX();
+            int z = (index % dimensions()) + minZ();
             index++;
             return new ChunkPos(x, z);
         }

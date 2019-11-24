@@ -1,27 +1,29 @@
 package org.valkyrienskies.mod.common.physics.management.chunkcache;
 
-import java.util.Map.Entry;
+import java.util.Iterator;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
+import org.joml.Vector2i;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSChunkPhysoCapability;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
+import org.valkyrienskies.mod.common.util.VSIterationUtils.Int2dIterator;
 
 /**
  * The ClaimedChunkCacheController is a chunk cache controller used by the {@link PhysicsObject}. It
  * keeps all of a ship's chunks in cache for fast access.
  */
 @Log4j2
-public class ClaimedChunkCacheController {
+public class ClaimedChunkCacheController implements Iterable<Chunk> {
 
     /**
      * You should ideally not be accessing this directly
@@ -115,34 +117,32 @@ public class ClaimedChunkCacheController {
         return claimedChunks;
     }
 
+
+
     /**
      * Loads chunks that have been generated before into the cache
      */
     private void loadLoadedChunks() {
         System.out.println("Loading chunks");
-        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
+        VSChunkClaim claim = parent.getData().getChunkClaim();
 
-        claimedChunks =
-            new Chunk[(chunkClaim.getRadius() * 2) + 1][(chunkClaim.getRadius() * 2) + 1];
+        claimedChunks = new Chunk[claim.dimensions()][claim.dimensions()];
 
-        chunkClaim.forEach((x, z) -> {
+        claim.forEach((x, z) -> {
             // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
             try {
                 Chunk chunk = world.getChunk(x, z);
 
                 // Do this to get it re-integrated into the world
-                if (!world.isRemote) {
-                    injectChunkIntoWorldServer(chunk, x, z, false);
+                if (world.isRemote) {
+                    attachAsParent(chunk);
                 } else {
-                    // Make sure this chunk knows we own it.
-                    VSChunkPhysoCapability physoCapability =
-                        chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null);
-                    physoCapability.set(parent);
+                    injectChunkIntoWorldServer(chunk, x, z, false);
                 }
-                for (Entry<BlockPos, TileEntity> entry : chunk.tileEntities.entrySet()) {
-                    parent.onSetTileEntity(entry.getKey(), entry.getValue());
-                }
-                claimedChunks[x - chunkClaim.minX()][z - chunkClaim.minZ()] = chunk;
+
+                chunk.tileEntities.forEach(parent::onSetTileEntity);
+
+                claimedChunks[x - claim.minX()][z - claim.minZ()] = chunk;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -156,18 +156,15 @@ public class ClaimedChunkCacheController {
      */
     private void loadNewChunks() {
         System.out.println("Loading new chunks");
-        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
+        VSChunkClaim claim = parent.getData().getChunkClaim();
 
-        claimedChunks = new Chunk[(chunkClaim.getRadius() * 2) + 1][
-            (chunkClaim.getRadius() * 2) + 1];
+        claimedChunks = new Chunk[claim.dimensions()][claim.dimensions()];
 
-        for (int x = chunkClaim.minX(); x <= chunkClaim.maxX(); x++) {
-            for (int z = chunkClaim.minZ(); z <= chunkClaim.maxZ(); z++) {
-                Chunk chunk = new Chunk(world, x, z);
-                injectChunkIntoWorldServer(chunk, x, z, true);
-                claimedChunks[x - chunkClaim.minX()][z - chunkClaim.minZ()] = chunk;
-            }
-        }
+        claim.forEach((x, z) -> {
+            Chunk chunk = new Chunk(world, x, z);
+            injectChunkIntoWorldServer(chunk, x, z, true);
+            claimedChunks[x - claim.minX()][z - claim.minZ()] = chunk;
+        });
     }
 
     public void injectChunkIntoWorldServer(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
@@ -176,9 +173,7 @@ public class ClaimedChunkCacheController {
         chunk.checkLight();
 
         // Make sure this chunk knows we own it
-        VSChunkPhysoCapability physoCapability =
-            chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null);
-        physoCapability.set(parent);
+        attachAsParent(chunk);
 
         ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
         chunk.dirty = true;
@@ -203,4 +198,31 @@ public class ClaimedChunkCacheController {
         entry.players = parent.getWatchingPlayers();
     }
 
+    /**
+     * Attaches the parent physo to the selected chunk's {@link VSCapabilityRegistry#VS_CHUNK_PHYSO}
+     * capability
+     */
+    private void attachAsParent(Chunk chunk) {
+        VSChunkPhysoCapability physoCapability = Objects.requireNonNull(
+            chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null));
+        physoCapability.set(parent);
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<Chunk> iterator() {
+        Int2dIterator iter = new Int2dIterator(0, 0, claimedChunks.length, claimedChunks[0].length);
+        return new Iterator<Chunk>() {
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            @Override
+            public Chunk next() {
+                Vector2i nextPos = iter.next();
+                return claimedChunks[nextPos.x][nextPos.y];
+            }
+        };
+    }
 }

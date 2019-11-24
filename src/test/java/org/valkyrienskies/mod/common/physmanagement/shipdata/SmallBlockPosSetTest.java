@@ -10,8 +10,8 @@ public class SmallBlockPosSetTest {
 
     @Test
     public void testDeHash() {
-        SmallBlockPosSet set = new SmallBlockPosSet(0, 0);
-        set.add(10, 10, 15);
-        assertThat(set.iterator().next(), equalTo(new BlockPos(10, 10, 15)));
+        SmallBlockPosSet set = new SmallBlockPosSet(10, -10);
+        set.add(-329, 210, -2049);
+        assertThat(set.iterator().next(), equalTo(new BlockPos(-329, 210, -2049)));
     }
 }

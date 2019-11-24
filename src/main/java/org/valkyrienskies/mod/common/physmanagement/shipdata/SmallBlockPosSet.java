@@ -96,9 +96,11 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
     public BlockPos deHash(int hashed) {
         int z = hashed >> 20;
-        int y = (hashed >> 12) & 0x000000FF;
-        int x = hashed & 0x00000FFF;
-        return new BlockPos(x, y, z);
+        int y = (hashed >> 12) & BOT_8_BITS;
+        // this basically left-pads the int when casting so that the sign is preserved
+        // not sure if there is a better way
+        int x = (hashed & BOT_12_BITS) << 20 >> 20;
+        return new BlockPos(x + centerX, y, z + centerZ);
     }
 
     public int calculateHash(int x, int y, int z) {

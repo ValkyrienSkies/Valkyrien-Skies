@@ -56,9 +56,7 @@ public class EntityCollisionInjector {
     // Returns false if game should use default collision
     @Nullable
     public static IntermediateMovementVariableStorage alterEntityMovement(Entity entity,
-                                                                          MoverType type, double dx,
-                                                                          double dy, double dz) {
-
+        MoverType type, double dx, double dy, double dz) {
         Vector velVec = new Vector(dx, dy, dz);
         double origDx = dx;
         double origDy = dy;
@@ -88,46 +86,45 @@ public class EntityCollisionInjector {
                 try {
 
                     EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove,
-                            shipPoly, shipPoly.normals,
-                            velVec.getAddition(total));
-                    if (!fast.arePolygonsSeperated()) {
+                        shipPoly, shipPoly.normals, velVec.getAddition(total));
+                    if (!fast.arePolygonsSeparated()) {
                         // fastCollisions.add(fast);
                         worldBelow = shipPoly.shipFrom;
 
                         Vector response = fast.getCollisions()[fast.getMinDistanceIndex()]
-                                .getResponse();
+                            .getResponse();
                         // TODO: Add more potential yResponses
                         double stepSquared = entity.stepHeight * entity.stepHeight;
                         boolean isStep = isLiving && entity.onGround;
                         if (response.y >= 0
-                                && VSMath.canStandOnNormal(
-                                fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
+                            && VSMath.canStandOnNormal(
+                            fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
                             Vector slowButStopped = new Vector(0,
-                                    -fast.getCollisions()[fast.getMinDistanceIndex()]
-                                            .getCollisionPenetrationDistance() / fast
-                                            .getCollisionAxes()[fast.getMinDistanceIndex()].y, 0);
+                                -fast.getCollisions()[fast.getMinDistanceIndex()]
+                                    .getCollisionPenetrationDistance() / fast
+                                    .getCollisionAxes()[fast.getMinDistanceIndex()].y, 0);
 
                             response = slowButStopped;
                         }
                         if (isStep) {
                             EntityLivingBase living = (EntityLivingBase) entity;
                             if (Math.abs(living.moveForward) > .01D
-                                    || Math.abs(living.moveStrafing) > .01D) {
+                                || Math.abs(living.moveStrafing) > .01D) {
                                 for (int i = 3; i < 6; i++) {
                                     Vector tempResponse = fast.getCollisions()[i].getResponse();
                                     if (tempResponse.y > 0
-                                            && VSMath.canStandOnNormal(
-                                            fast.getCollisions()[i].getCollisionNormal())
-                                            && tempResponse.lengthSq() < stepSquared) {
+                                        && VSMath.canStandOnNormal(
+                                        fast.getCollisions()[i].getCollisionNormal())
+                                        && tempResponse.lengthSq() < stepSquared) {
                                         if (tempResponse.lengthSq() < .1D) {
                                             // Too small to be a real step, let it through
                                             response = tempResponse;
                                         } else {
                                             // System.out.println("Try Stepping!");
                                             AxisAlignedBB axisalignedbb = entity
-                                                    .getEntityBoundingBox()
-                                                    .offset(tempResponse.x, tempResponse.y,
-                                                            tempResponse.z);
+                                                .getEntityBoundingBox()
+                                                .offset(tempResponse.x, tempResponse.y,
+                                                    tempResponse.z);
                                             entity.setEntityBoundingBox(axisalignedbb);
                                             // I think this correct, but it may create more problems than it solves
                                             response.zero();
@@ -159,21 +156,20 @@ public class EntityCollisionInjector {
                         posOffestZ += response.z;
 
                         AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox()
-                                .offset(response.x, response.y,
-                                        response.z);
+                            .offset(response.x, response.y, response.z);
                         entity.setEntityBoundingBox(axisalignedbb);
                         entity.resetPositionToBB();
 
                     }
                 } catch (Exception e) {
-
+                    // Do nothing
                 }
             }
 
         }
 
         AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox()
-                .offset(-posOffestX, -posOffestY, -posOffestZ);
+            .offset(-posOffestX, -posOffestY, -posOffestZ);
         entity.setEntityBoundingBox(axisalignedbb);
         entity.resetPositionToBB();
 
@@ -251,12 +247,12 @@ public class EntityCollisionInjector {
         }
 
         return new IntermediateMovementVariableStorage(dxyz, origDxyz, origPosXyz, alreadyOnGround,
-                motionYBefore,
-                oldFallDistance);
+            motionYBefore,
+            oldFallDistance);
     }
 
     public static void alterEntityMovementPost(Entity entity,
-                                               IntermediateMovementVariableStorage storage) {
+        IntermediateMovementVariableStorage storage) {
         double dx = storage.dxyz.x;
         double dy = storage.dxyz.y;
         double dz = storage.dxyz.z;
@@ -278,18 +274,18 @@ public class EntityCollisionInjector {
         PhysicsObject worldBelow = draggable.getWorldBelowFeet();
 
         entity.collidedHorizontally =
-                (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
+            (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
         entity.collidedVertically = isDifSignificant(dy, origDy);
         entity.onGround =
-                entity.collidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
+            entity.collidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
         entity.collided = entity.collidedHorizontally || entity.collidedVertically;
 
         Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D,
-                entity.posZ);
+            entity.posZ);
 
         worldBelow.getShipTransformationManager().getCurrentTickTransform()
-                .transform(entityPosInShip,
-                        TransformType.GLOBAL_TO_SUBSPACE);
+            .transform(entityPosInShip,
+                TransformType.GLOBAL_TO_SUBSPACE);
 
         int j4 = MathHelper.floor(entityPosInShip.x);
         int l4 = MathHelper.floor(entityPosInShip.y);
@@ -317,12 +313,12 @@ public class EntityCollisionInjector {
 
                     int i = (int) (150.0D * d0);
                     if (!iblockstate.getBlock()
-                            .addLandingEffects(iblockstate, (WorldServer) entity.world, blockpos,
-                                    iblockstate, (EntityLivingBase) entity, i)) {
+                        .addLandingEffects(iblockstate, (WorldServer) entity.world, blockpos,
+                            iblockstate, (EntityLivingBase) entity, i)) {
                         ((WorldServer) entity.world)
-                                .spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX,
-                                        entity.posY, entity.posZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D,
-                                        Block.getStateId(iblockstate));
+                            .spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX,
+                                entity.posY, entity.posZ, i, 0.0D, 0.0D, 0.0D, 0.15000000596046448D,
+                                Block.getStateId(iblockstate));
                     }
                 }
             }
@@ -332,7 +328,7 @@ public class EntityCollisionInjector {
             if (entity.fallDistance > 0.0F) {
                 // Responsible for breaking crops when you jump on them
                 iblockstate.getBlock()
-                        .onFallenUpon(entity.world, blockpos, entity, entity.fallDistance);
+                    .onFallenUpon(entity.world, blockpos, entity, entity.fallDistance);
             }
 
             entity.fallDistance = 0.0F;
@@ -341,7 +337,7 @@ public class EntityCollisionInjector {
         }
 
         if (/* entity.canTriggerWalking() **/
-                entity instanceof EntityPlayer && !entity.isRiding()) {
+            entity instanceof EntityPlayer && !entity.isRiding()) {
             if (dy != origDy) {
                 // if (!(entity.motionY > 0 && dy > 0)) {
                 block.onLanded(entity.world, entity);
@@ -359,7 +355,7 @@ public class EntityCollisionInjector {
             // (double)MathHelper.sqrt_double(d12 * d12 + d13 * d13 + d14 * d14) * 0.6D);
 
             if (entity.distanceWalkedOnStepModified > entity.nextStepDistance
-                    && iblockstate.getMaterial() != Material.AIR) {
+                && iblockstate.getMaterial() != Material.AIR) {
                 entity.nextStepDistance = (int) entity.distanceWalkedOnStepModified + 1;
 
                 /*
@@ -378,16 +374,16 @@ public class EntityCollisionInjector {
 
                 // TODO: In future, replace this with entity.playStepSound()
                 SoundType soundtype = block
-                        .getSoundType(entity.world.getBlockState(blockpos), entity.world, blockpos,
-                                entity);
+                    .getSoundType(entity.world.getBlockState(blockpos), entity.world, blockpos,
+                        entity);
 
                 if (entity.world.getBlockState(blockpos.up()).getBlock() == Blocks.SNOW_LAYER) {
                     soundtype = Blocks.SNOW_LAYER.getSoundType();
                     entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F,
-                            soundtype.getPitch());
+                        soundtype.getPitch());
                 } else if (!block.getDefaultState().getMaterial().isLiquid()) {
                     entity.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F,
-                            soundtype.getPitch());
+                        soundtype.getPitch());
                 }
             }
         }
@@ -410,22 +406,22 @@ public class EntityCollisionInjector {
      * with
      */
     public static ArrayList<Polygon> getCollidingPolygonsAndDoBlockCols(Entity entity,
-                                                                        Vec3d velocity) {
+        Vec3d velocity) {
         ArrayList<Polygon> collisions = new ArrayList<Polygon>();
         AxisAlignedBB entityBB = entity.getEntityBoundingBox()
-                .offset(velocity.x, velocity.y, velocity.z).expand(1, 1,
-                        1);
+            .offset(velocity.x, velocity.y, velocity.z).expand(1, 1,
+                1);
 
-
-        List<PhysicsObject> ships = ((IHasShipManager) entity.getEntityWorld()).getManager().getNearbyPhysObjects(entityBB);
+        List<PhysicsObject> ships = ((IHasShipManager) entity.getEntityWorld()).getManager()
+            .getNearbyPhysObjects(entityBB);
         // If a player is riding a Ship, don't process any collision between that Ship
         // and the Player
         for (PhysicsObject wrapper : ships) {
             try {
                 Polygon playerInLocal = new Polygon(entityBB,
-                        wrapper.getShipTransformationManager()
-                                .getCurrentTickTransform(),
-                        TransformType.GLOBAL_TO_SUBSPACE);
+                    wrapper.getShipTransformationManager()
+                        .getCurrentTickTransform(),
+                    TransformType.GLOBAL_TO_SUBSPACE);
                 AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
 
                 if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
@@ -441,11 +437,11 @@ public class EntityCollisionInjector {
 
                 for (AxisAlignedBB inLocal : collidingBBs) {
                     ShipPolygon poly = new ShipPolygon(inLocal,
-                            wrapper.getShipTransformationManager()
-                                    .getCurrentTickTransform(),
-                            TransformType.SUBSPACE_TO_GLOBAL,
-                            wrapper.getShipTransformationManager().normals,
-                            wrapper);
+                        wrapper.getShipTransformationManager()
+                            .getCurrentTickTransform(),
+                        TransformType.SUBSPACE_TO_GLOBAL,
+                        wrapper.getShipTransformationManager().normals,
+                        wrapper);
                     collisions.add(poly);
                 }
 
@@ -462,8 +458,8 @@ public class EntityCollisionInjector {
             Vector entityPos = new Vector(posX, posY, posZ);
 
             wrapper.getShipTransformationManager().getCurrentTickTransform()
-                    .transform(entityPos,
-                            TransformType.GLOBAL_TO_SUBSPACE);
+                .transform(entityPos,
+                    TransformType.GLOBAL_TO_SUBSPACE);
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
             // entityPos);
 
@@ -474,7 +470,7 @@ public class EntityCollisionInjector {
 
             if (wrapper.getOwnedChunks().containsChunk(entityChunkX, entityChunkZ)) {
                 Chunk chunkIn = wrapper
-                        .getChunkAt(entityChunkX, entityChunkZ);
+                    .getChunkAt(entityChunkX, entityChunkZ);
 
                 int chunkYIndex = MathHelper.floor(entity.posY / 16.0D);
 

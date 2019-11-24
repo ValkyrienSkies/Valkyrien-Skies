@@ -24,7 +24,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -92,8 +91,8 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
 public class ValkyrienSkiesControl {
     // Used for registering stuff
-    public static final List<Block> BLOCKS = new ArrayList<Block>();
-    public static final List<Item> ITEMS = new ArrayList<Item>();
+    public static final List<Block> BLOCKS = new ArrayList<>();
+    public static final List<Item> ITEMS = new ArrayList<>();
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "vs_control";

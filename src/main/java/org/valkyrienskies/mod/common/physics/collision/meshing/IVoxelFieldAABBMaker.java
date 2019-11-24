@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
+import org.joml.Vector3ic;
 
 /**
  * This class enables the updating of ship AABBs in O(1) time
@@ -45,4 +47,24 @@ public interface IVoxelFieldAABBMaker {
      */
     @Nonnull
     BlockPos getFieldCenter();
+
+    // region OVERLOADS
+
+    default boolean addVoxel(Vec3i vec) {
+        return this.addVoxel(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    default boolean removeVoxel(Vec3i vec) {
+        return this.removeVoxel(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    default boolean addVoxel(Vector3ic vec) {
+        return this.addVoxel(vec.x(), vec.y(), vec.z());
+    }
+
+    default boolean removeVoxel(Vector3ic vec) {
+        return this.removeVoxel(vec.x(), vec.y(), vec.z());
+    }
+
+    // endregion
 }

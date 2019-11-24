@@ -7,21 +7,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
 /**
- * <p>
+ * <p />
  * This class allocates chunks for usage in ships. Chunks in these ship chunks, (oftentimes referred
  * to as "the shipyard") are reserved for usage by Valkyrien Skies, and should not be edited by
  * other mods. Placing chunks in this region will either overwrite existing ships or may be
  * overwritten by future ships.
- * </p>
- * <p>
+ * <p />
  * This "shipyard" is necessary because TileEntities expect that they are in the same world as other
  * entities that are interacting with them.
- * </p>
- *
- * <p>
+ * <p />
  * The coordinate of the center of chunks allocated * for ship # N would be ({@link #CHUNK_X_START},
  * {@link #CHUNK_Z_START} + N*{@link #MAX_CHUNK_LENGTH}).
- * </p>
  */
 @Log4j2
 @NonNull
@@ -74,8 +70,7 @@ public class ShipChunkAllocator {
      * positions
      */
     public VSChunkClaim allocateNextChunkClaim() {
-        return new VSChunkClaim(lastChunkX ,
-            lastChunkZ += MAX_CHUNK_LENGTH, MAX_CHUNK_RADIUS);
+        return new VSChunkClaim(lastChunkX, lastChunkZ += MAX_CHUNK_LENGTH, MAX_CHUNK_RADIUS);
     }
 
 }

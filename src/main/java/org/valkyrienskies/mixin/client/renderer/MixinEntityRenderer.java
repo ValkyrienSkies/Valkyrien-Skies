@@ -33,7 +33,11 @@ import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
@@ -88,7 +92,8 @@ public abstract class MixinEntityRenderer {
 
         if (this.mountData != null) {
 
-            mountData.getMountedShip().getShipTransformationManager().getRenderTransform().rotate(this.eyeVector, TransformType.SUBSPACE_TO_GLOBAL);
+            mountData.getMountedShip().getShipTransformationManager().getRenderTransform()
+                .rotate(this.eyeVector, TransformType.SUBSPACE_TO_GLOBAL);
 
             this.cachedPosition.setValue(this.mountData.getMountPos());
             this.mountData.getMountedShip().getShipTransformationManager().getRenderTransform()
@@ -268,7 +273,8 @@ public abstract class MixinEntityRenderer {
         if (this.mountData != null
                 && this.mountData.getMountedShip().getShipRenderer() != null) {
 
-            Quaterniondc orientationQuat = mountData.getMountedShip().getShipTransformationManager().getRenderTransform().rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+            Quaterniondc orientationQuat = mountData.getMountedShip().getShipTransformationManager()
+                .getRenderTransform().rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
 
             Vector3dc angles = orientationQuat.getEulerAnglesXYZ(new Vector3d());
 

@@ -30,7 +30,7 @@ public class EntityCollisionObject {
     private final Vector axis;
     private final Polygon movable, fixed;
     private double penetrationDistance;
-    private boolean seperated;
+    private boolean separated;
     private double[] playerMinMax;
     private double[] blockMinMax;
     private Vector entityVelocity;
@@ -97,7 +97,7 @@ public class EntityCollisionObject {
             movMinFixMax -= velDot;
         }
         if (movMaxFixMin > 0 || movMinFixMax < 0) {
-            seperated = true;
+            separated = true;
             penetrationDistance = 0.0D;
             return;
         }
@@ -115,7 +115,7 @@ public class EntityCollisionObject {
                 penetrationDistance = movMaxFixMin;
             }
         }
-        seperated = false;
+        separated = false;
     }
 
     public Vector getResponse() {
@@ -131,7 +131,7 @@ public class EntityCollisionObject {
     }
 
     public boolean arePolygonsSeperated() {
-        return seperated;
+        return separated;
     }
 
     public boolean werePolygonsInitiallyColliding() {

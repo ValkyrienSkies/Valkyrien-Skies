@@ -33,10 +33,9 @@ public class EntityPolygonCollider {
     private final EntityPolygon entity;
     private final Polygon block;
     private final Vector entityVelocity;
-    private boolean seperated = false;
+    private boolean separated = false;
     private int minDistanceIndex;
-    private double minDistance;
-    private boolean originallySeperated;
+    private boolean originallySeparated;
 
     public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector[] axes,
         Vector entityVel) {
@@ -49,24 +48,24 @@ public class EntityPolygonCollider {
     }
 
     public void processData() {
-        seperated = false;
+        separated = false;
         for (int i = 0; i < collisions.length; i++) {
-            if (!seperated) {
+            if (!separated) {
                 collisions[i] = new EntityCollisionObject(entity, block, collisionAxes[i],
                     entityVelocity);
                 if (collisions[i].arePolygonsSeperated()) {
-                    seperated = true;
+                    separated = true;
                     break;
                 }
                 if (!collisions[i].werePolygonsInitiallyColliding()) {
-                    originallySeperated = true;
+                    originallySeparated = true;
                 }
             }
         }
-        if (!seperated) {
-            minDistance = 420;
+        if (!separated) {
+            double minDistance = 420;
             for (int i = 0; i < collisions.length; i++) {
-                if (originallySeperated) {
+                if (originallySeparated) {
                     if (Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i]
                         .getVelDot()) / collisions[i].getVelDot()) < minDistance && !collisions[i]
                         .werePolygonsInitiallyColliding()) {
@@ -94,8 +93,8 @@ public class EntityPolygonCollider {
         return minDistanceIndex;
     }
 
-    public boolean arePolygonsSeperated() {
-        return seperated;
+    public boolean arePolygonsSeparated() {
+        return separated;
     }
 
     public Vector[] getCollisionAxes() {

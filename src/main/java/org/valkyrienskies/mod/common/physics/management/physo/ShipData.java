@@ -32,7 +32,6 @@ import org.valkyrienskies.mod.common.util.jackson.annotations.PacketIgnore;
  * is available), by calling {@link #getPhyso()}.
  */
 @Getter
-@NonNull
 @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true) // For Jackson
 public class ShipData {
 
@@ -65,9 +64,10 @@ public class ShipData {
      * AABBs and deconstructing the ship.
      */
     @PacketIgnore
+    @Nullable
     @JsonSerialize(as = SmallBlockPosSet.class)
     @JsonDeserialize(as = SmallBlockPosSet.class)
-    private IBlockPosSet blockPositions;
+    IBlockPosSet blockPositions;
 
     @Setter
     private ShipTransform shipTransform;

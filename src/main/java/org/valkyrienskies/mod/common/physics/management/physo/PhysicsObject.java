@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -95,7 +96,6 @@ public class PhysicsObject implements IPhysicsEntity {
     @Getter
     private final PhysicsCalculations physicsCalculations;
 
-
     // The closest Chunks to the Ship cached in here
     private SurroundingChunkCacheController cachedSurroundingChunks;
 
@@ -112,8 +112,11 @@ public class PhysicsObject implements IPhysicsEntity {
     private boolean needsCollisionCacheUpdate = true;
 
     private boolean shipAligningToGrid = false;
+    /**
+     * Used to quickly make AABBs
+     */
     @Getter
-    private final IVoxelFieldAABBMaker voxelFieldAABBMaker; // Used to quickly make aabb's
+    private final IVoxelFieldAABBMaker voxelFieldAABBMaker;
     private final IPhysicsObjectCenterOfMassProvider centerOfMassProvider;
     @Getter
     private final World world;
@@ -122,6 +125,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * Please never manually update this
      */
     @Delegate
+    @Getter
     private ShipData shipData;
 
     // endregion
@@ -158,38 +162,13 @@ public class PhysicsObject implements IPhysicsEntity {
             if (!firstTimeCreated) {
                 this.getShipTransformationManager()
                     .updateAllTransforms(this.getData().getShipTransform(), true, true);
+                Objects.requireNonNull(shipData.getBlockPositions())
+                    .forEach(voxelFieldAABBMaker::addVoxel);
             }
-        }
-    }
-
-    private void shipDataUpdateListener(Iterable<ShipData> oldDataIterable,
-        Iterable<ShipData> newDataIterable) {
-        System.out.println("Called update listener!");
-        ShipData thisOldData = null, thisNewData = null;
-
-        for (ShipData oldData : oldDataIterable) {
-            if (oldData.getUuid().equals(shipData.getUuid())) {
-                thisOldData = oldData;
-            }
-        }
-
-        for (ShipData newData : newDataIterable) {
-            if (newData.getUuid().equals(shipData.getUuid())) {
-                thisNewData = newData;
-            }
-        }
-
-        if ((thisOldData != null) && (thisNewData != null)) {
-            this.shipData = thisNewData;
-        } else if ((thisOldData == null) ^ (thisNewData == null)) { // ^ is XOR
-            throw new IllegalStateException("It appears that the ShipData for this PhysicsObject"
-                + " was removed or added during an update operation - this is a bug!");
         }
     }
 
     public ShipData getData() {
-        // Theoretically, this should be fine thanks to #shipDataUpdateListener, but keep an eye
-        // on it
         return shipData;
     }
 

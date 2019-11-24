@@ -16,14 +16,26 @@
 
 package org.valkyrienskies.mod.common.physics;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.experimental.Delegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.*;
+import org.joml.AxisAngle4d;
+import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
@@ -39,18 +51,13 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipPhysicsData;
 import valkyrienwarfare.api.TransformType;
 
-import java.lang.Math;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-@JsonAutoDetect(fieldVisibility = Visibility.NONE) // Do not autodetect fields
 public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public static final double DRAG_CONSTANT = .99D;
     public static final double EPSILON = .00000001;
 
     @Delegate
-    ShipPhysicsData data;
+    private ShipPhysicsData data;
 
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;
@@ -58,10 +65,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // CopyOnWrite to provide concurrency between threads.
     private final Set<BlockPos> activeForcePositions;
     private final IRotationNodeWorld physicsRotationNodeWorld;
-
-    public void setData(ShipPhysicsData data) {
-        this.data = data;
-    }
 
     public boolean actAsArchimedes = false;
     private Vector physCenterOfMass;

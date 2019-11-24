@@ -26,7 +26,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockMassProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
@@ -66,8 +65,8 @@ public class BlockPhysicsDetails {
         Arrays.stream(VSConfig.blockMass)
             .map(str -> str.split("="))
             .filter(arr -> arr.length == 2)
-            .map(arr -> Pair.of(Block.getBlockFromName(arr[0]), Double.parseDouble(arr[1])))
-            .forEach(pair -> blockToMass.put(pair.getLeft(), pair.getRight()));
+            .forEach(arr ->
+                blockToMass.put(Block.getBlockFromName(arr[0]), Double.parseDouble(arr[1])));
     }
 
     private static void generateMaterialMasses() {

@@ -249,7 +249,7 @@ public class PhysObjectRenderManager {
         AxisAlignedBB shipBB = parent.getShipBB().offset(offsetX, offsetY, offsetZ);
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
-        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(renderTransform.toBlockPos())
+        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(renderTransform.getShipPositionVec3d(), renderTransform.getShipPositionVec3d())
             .grow(.1).offset(offsetX, offsetY, offsetZ);
 
         GlStateManager.depthMask(false);

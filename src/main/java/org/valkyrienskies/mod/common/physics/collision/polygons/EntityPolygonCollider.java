@@ -16,6 +16,7 @@
 
 package org.valkyrienskies.mod.common.physics.collision.polygons;
 
+import lombok.Getter;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionObject;
 
@@ -28,12 +29,15 @@ import org.valkyrienskies.mod.common.physics.collision.EntityCollisionObject;
  */
 public class EntityPolygonCollider {
 
+    @Getter
     private final Vector[] collisionAxes;
+    @Getter
     private final EntityCollisionObject[] collisions;
     private final EntityPolygon entity;
     private final Polygon block;
     private final Vector entityVelocity;
     private boolean separated = false;
+    @Getter
     private int minDistanceIndex;
     private boolean originallySeparated;
 
@@ -85,20 +89,7 @@ public class EntityPolygonCollider {
         }
     }
 
-    public EntityCollisionObject[] getCollisions() {
-        return collisions;
-    }
-
-    public int getMinDistanceIndex() {
-        return minDistanceIndex;
-    }
-
     public boolean arePolygonsSeparated() {
         return separated;
     }
-
-    public Vector[] getCollisionAxes() {
-        return collisionAxes;
-    }
-
 }

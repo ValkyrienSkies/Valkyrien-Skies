@@ -108,6 +108,7 @@ ext {
     spongeVersion = "1.12.2-2825-7.1.6"
     vsApiVersion = "master-SNAPSHOT"
     jacksonVersion = "2.10.0"
+    gdxVersion = "1.9.10"
 }
 
 dependencies {
@@ -159,6 +160,9 @@ dependencies {
 
     // Include all dependencies in the /dependencies folder
     shade fileTree(include: ["*.jar"], dir: "dependencies")
+
+    shade "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
+    shade "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
 
     // lombok
     compileOnly "org.projectlombok:lombok:$lombokVersion"

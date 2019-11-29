@@ -128,6 +128,12 @@ public class PhysicsObject implements IPhysicsEntity {
     @Getter
     private ShipData shipData;
 
+    /**
+     * Contains the hashCode of this ship's UUID. This allows fast indexing by PhysicsObject
+     * in maps and such.
+     */
+    private final int hashCode;
+
     // endregion
 
     // region Methods
@@ -166,6 +172,9 @@ public class PhysicsObject implements IPhysicsEntity {
                     .forEach(voxelFieldAABBMaker::addVoxel);
             }
         }
+
+        // Initialize hashCode for instant hashing
+        this.hashCode = getUuid().hashCode();
     }
 
     public ShipData getData() {
@@ -629,6 +638,11 @@ public class PhysicsObject implements IPhysicsEntity {
 
     public void setShipBoundingBox(AxisAlignedBB shipBoundingBox) {
         getData().setShipBB(shipBoundingBox);
+    }
+
+    @Override
+    public int hashCode() {
+        return hashCode;
     }
 
     @Nullable

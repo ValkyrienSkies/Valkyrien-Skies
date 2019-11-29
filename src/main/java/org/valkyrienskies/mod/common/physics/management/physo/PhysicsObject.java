@@ -56,6 +56,7 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
+import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.management.BasicCenterOfMassProvider;
@@ -128,11 +129,20 @@ public class PhysicsObject implements IPhysicsEntity {
     @Getter
     private ShipData shipData;
 
+    @Getter
+    private final boolean isRemote;
+
     /**
      * Contains the hashCode of this ship's UUID. This allows fast indexing by PhysicsObject
      * in maps and such.
      */
     private final int hashCode;
+
+    /**
+     * The physics engine which this is currently running with
+     */
+    // TODO: yes, this is hard-set to bullet
+    private BulletPhysicsEngine engine = ValkyrienSkiesMod.getBulletPhysicsEngine();
 
     // endregion
 
@@ -150,6 +160,9 @@ public class PhysicsObject implements IPhysicsEntity {
         // QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
         this.world = world;
         this.shipData = initial;
+        this.isRemote = world.isRemote;
+        // Initialize hashCode for instant hashing
+        this.hashCode = getUuid().hashCode();
         this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.claimedChunkCache = new ClaimedChunkCacheController(this, !firstTimeCreated);
@@ -160,11 +173,13 @@ public class PhysicsObject implements IPhysicsEntity {
         this.shipTransformationManager = new ShipTransformationManager(this,
             getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
+
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
         } else {
             this.shipRenderer = null;
+            engine.addPhysicsObject(this);
             if (!firstTimeCreated) {
                 this.getShipTransformationManager()
                     .updateAllTransforms(this.getData().getShipTransform(), true, true);
@@ -172,9 +187,6 @@ public class PhysicsObject implements IPhysicsEntity {
                     .forEach(voxelFieldAABBMaker::addVoxel);
             }
         }
-
-        // Initialize hashCode for instant hashing
-        this.hashCode = getUuid().hashCode();
     }
 
     public ShipData getData() {

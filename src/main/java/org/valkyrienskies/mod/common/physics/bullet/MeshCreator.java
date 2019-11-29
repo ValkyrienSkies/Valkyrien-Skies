@@ -41,7 +41,8 @@ public class MeshCreator {
                 if (blocks.contains(adjacent)) return;
 
                 // Get the face of this block facing the adjacent block (which is air)
-                // Basically, this is the point directly in between the two blocks
+                // Basically, this is the point directly in between the two blocks, in the center of
+                // the block's face
                 // +----------------+----------------+
                 // |                |                |
                 // |                |                |
@@ -52,9 +53,9 @@ public class MeshCreator {
                 // |                |                |
                 // +----------------+----------------+
                 Vector3 centerOfFace = new Vector3(
-                    ((float) x / 2) + block.getX(),
-                    ((float) y / 2) + block.getY(),
-                    ((float) z / 2) + block.getZ());
+                    ((float) x / 2) + block.getX() + 0.5f,
+                    ((float) y / 2) + block.getY() + 0.5f,
+                    ((float) z / 2) + block.getZ() + 0.5f);
 
                 // Create the two triangles which cover this face of the block
                 // +------------------+
@@ -81,31 +82,33 @@ public class MeshCreator {
      *                     (one value here should be mod 0.5)
      */
     private static void addTriangles(List<Triangle> toAddTo, Vector3 centerOfFace) {
-        if (isDecimal(centerOfFace.y)) {
-            Vector3 corner1 = new Vector3(centerOfFace).add(0.5f, 0f, 0.5f);
-            Vector3 corner2 = new Vector3(centerOfFace).add(-0.5f, 0f, 0.5f);
-            Vector3 corner3 = new Vector3(centerOfFace).add(0.5f, 0f, -0.5f);
-            Vector3 corner4 = new Vector3(centerOfFace).add(-0.5f, 0f, -0.5f);
+        Vector3 corner1, corner2, corner3, corner4;
 
-            toAddTo.add(new Triangle(corner1, corner2, corner3));
-            toAddTo.add(new Triangle(corner2, corner3, corner4));
-        } else if (isDecimal(centerOfFace.x)) {
-            Vector3 corner1 = new Vector3(centerOfFace).add(0f, 0.5f, 0.5f);
-            Vector3 corner2 = new Vector3(centerOfFace).add(0f, -0.5f, 0.5f);
-            Vector3 corner3 = new Vector3(centerOfFace).add(0f, 0.5f, -0.5f);
-            Vector3 corner4 = new Vector3(centerOfFace).add(0f, -0.5f, -0.5f);
-
-            toAddTo.add(new Triangle(corner1, corner2, corner3));
-            toAddTo.add(new Triangle(corner2, corner3, corner4));
-        } else if (isDecimal(centerOfFace.z)) {
-            Vector3 corner1 = new Vector3(centerOfFace).add(0.5f, 0.5f, 0f);
-            Vector3 corner2 = new Vector3(centerOfFace).add(-0.5f, 0.5f, 0f);
-            Vector3 corner3 = new Vector3(centerOfFace).add(0.5f, -0.5f, 0f);
-            Vector3 corner4 = new Vector3(centerOfFace).add(-0.5f, -0.5f, 0f);
-
-            toAddTo.add(new Triangle(corner1, corner2, corner3));
-            toAddTo.add(new Triangle(corner2, corner3, corner4));
+        // Here we generate the corners for the plane that we're operating on
+        if (isInteger(centerOfFace.y)) {
+            // The Y coordinate is an integer, so its the face that we're operating on
+            corner1 = new Vector3(centerOfFace).add(0.5f, 0f, 0.5f);
+            corner2 = new Vector3(centerOfFace).add(-0.5f, 0f, 0.5f);
+            corner3 = new Vector3(centerOfFace).add(0.5f, 0f, -0.5f);
+            corner4 = new Vector3(centerOfFace).add(-0.5f, 0f, -0.5f);
+        } else if (isInteger(centerOfFace.x)) {
+            // The X coordinate is an integer, so its the face that we're operating on
+            corner1 = new Vector3(centerOfFace).add(0f, 0.5f, 0.5f);
+            corner2 = new Vector3(centerOfFace).add(0f, -0.5f, 0.5f);
+            corner3 = new Vector3(centerOfFace).add(0f, 0.5f, -0.5f);
+            corner4 = new Vector3(centerOfFace).add(0f, -0.5f, -0.5f);
+            // The Z coordinate is an integer, so its the face that we're operating on
+        } else if (isInteger(centerOfFace.z)) {
+            corner1 = new Vector3(centerOfFace).add(0.5f, 0.5f, 0f);
+            corner2 = new Vector3(centerOfFace).add(-0.5f, 0.5f, 0f);
+            corner3 = new Vector3(centerOfFace).add(0.5f, -0.5f, 0f);
+            corner4 = new Vector3(centerOfFace).add(-0.5f, -0.5f, 0f);
+        } else {
+            throw new IllegalArgumentException("There was no integer coordinate, this isn't right");
         }
+
+        toAddTo.add(new Triangle(corner1, corner2, corner3));
+        toAddTo.add(new Triangle(corner2, corner3, corner4));
     }
 
     /**
@@ -118,10 +121,10 @@ public class MeshCreator {
 
     /**
      * @param val The number to check
-     * @return True if the number is a decimal, false if it's a whole number
+     * @return True if the number is an integer, false if it's a decimal
      */
-    private static boolean isDecimal(double val) {
-        return (val % 1) != val;
+    private static boolean isInteger(double val) {
+        return (val % 1) == 0;
     }
 
 }

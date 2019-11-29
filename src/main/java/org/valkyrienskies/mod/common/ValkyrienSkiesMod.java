@@ -67,6 +67,7 @@ import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
@@ -113,6 +114,9 @@ public class ValkyrienSkiesMod {
     public Item physicsCore;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
+
+    @Getter
+    private static final BulletPhysicsEngine bulletPhysicsEngine = new BulletPhysicsEngine();
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {

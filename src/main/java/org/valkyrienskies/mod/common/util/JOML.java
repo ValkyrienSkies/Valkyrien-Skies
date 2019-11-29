@@ -23,6 +23,10 @@ public class JOML {
 
     // region To JOML
 
+    public static Vector3f convert(Vector3 v) {
+        return new Vector3f(v.x, v.y, v.z);
+    }
+
     public static Vector3i convert(Vec3i v) {
         return new Vector3i(v.getX(), v.getY(), v.getZ());
     }

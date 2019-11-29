@@ -73,7 +73,6 @@ public class VSIterationUtils {
         consumer.accept(originX, originY - 1, originZ);
         consumer.accept(originX, originY, originZ + 1);
         consumer.accept(originX, originY, originZ - 1);
-
     }
 
     /**

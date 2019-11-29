@@ -6,6 +6,10 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * Represents a set of block positions. Used for more efficient implementations than a
+ * {@link java.util.HashSet} of blocks
+ */
 public interface IBlockPosSet extends Set<BlockPos> {
 
     boolean add(int x, int y, int z);

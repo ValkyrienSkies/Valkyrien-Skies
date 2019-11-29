@@ -32,8 +32,10 @@ public class MeshCreator {
         // For every block in the list of blocks
         blocks.forEach(block ->
             // Iterate over each adjacent block
+            // (x, y, z) is the offset in this case, since the origin is (0, 0, 0)
             VSIterationUtils.iterateAdjacent3d(0, 0, 0, (x, y, z) -> {
-                BlockPos adjacent = new BlockPos(x, y, z);
+                // Calculate the adjacent block position
+                BlockPos adjacent = block.add(x, y, z);
                 // If the adjacent block is present in the list of blocks, then we don't want to
                 // add mesh triangles because they would be covered up
                 if (blocks.contains(adjacent)) return;

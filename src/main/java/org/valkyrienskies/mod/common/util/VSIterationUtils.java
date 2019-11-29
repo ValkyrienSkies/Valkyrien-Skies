@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import org.joml.Vector2i;
 import org.joml.Vector3i;
 
@@ -56,6 +57,23 @@ public class VSIterationUtils {
         IntTernaryConsumer consumer) {
 
         expand3d(originX, originY, originZ, 1, consumer);
+    }
+
+    /**
+     * Iterates every adjacent point to one in 3d space
+
+     * @param consumer The consumer to call with each iteration
+     */
+    public static void iterateAdjacent3d(int originX, int originY, int originZ,
+        IntTernaryConsumer consumer) {
+
+        consumer.accept(originX + 1, originY, originZ);
+        consumer.accept(originX - 1, originY, originZ);
+        consumer.accept(originX, originY + 1, originZ);
+        consumer.accept(originX, originY - 1, originZ);
+        consumer.accept(originX, originY, originZ + 1);
+        consumer.accept(originX, originY, originZ - 1);
+
     }
 
     /**
@@ -131,6 +149,13 @@ public class VSIterationUtils {
         Consumer<? super BlockPos> consumer) {
         iterate3d(startX, startY, startZ, endX, endY, endZ, (x, y, z) ->
             consumer.accept(new BlockPos(x, y, z)));
+    }
+
+    /**
+     * @see #iterateAdjacent3d(int, int, int, IntTernaryConsumer)
+     */
+    public static void iterateAdjacent3d(Vec3i originPos, IntTernaryConsumer consumer) {
+        iterateAdjacent3d(originPos.getX(), originPos.getY(), originPos.getZ(), consumer);
     }
 
     // endregion

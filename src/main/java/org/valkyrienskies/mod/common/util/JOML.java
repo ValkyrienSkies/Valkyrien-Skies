@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.util;
 
+import com.badlogic.gdx.math.Vector3;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -45,6 +46,14 @@ public class JOML {
     // endregion
 
     // region From JOML
+
+    public static Vector3 toGDX(Vector3dc v) {
+        return new Vector3((float) v.x(), (float)v.y(), (float) v.z());
+    }
+
+    public static Vector3 toGDX(Vector3fc v) {
+        return new Vector3(v.x(), v.y(), v.z());
+    }
 
     public static Vec3d toMinecraft(Vector3dc v) {
         return new Vec3d(v.x(), v.y(), v.z());

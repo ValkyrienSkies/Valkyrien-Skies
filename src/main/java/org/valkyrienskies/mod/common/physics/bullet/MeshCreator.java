@@ -20,6 +20,7 @@ public class MeshCreator {
 
     /**
      * This algorithm is garbage. And I'm not even sure if it works lol
+     * Basically, creates two triangles in the mesh for each open face per voxel
      * TODO: Use greedy meshing algorithm https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/
      */
     public static List<Triangle> getMeshTriangles(Collection<BlockPos> blocks2) {

@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import lombok.Value;
 import net.minecraft.util.math.BlockPos;
+import org.joml.Matrix4dc;
+import org.joml.Vector3d;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
 
 public class MeshCreator {
@@ -45,7 +48,7 @@ public class MeshCreator {
                 // the block's face
                 // +----------------+----------------+
                 // |                |                |
-                // |                |                |
+                // |     Block      |      Air       |
                 // |                O                |
                 // |            This point           |
                 // |                |                |
@@ -62,7 +65,7 @@ public class MeshCreator {
                 // |               -/ |
                 // |             -/   |
                 // |           -/     |
-                // |         -/       |
+                // |       Block      |
                 // |       -/         |
                 // |     -/           |
                 // |   -/             |
@@ -97,8 +100,8 @@ public class MeshCreator {
             corner2 = new Vector3(centerOfFace).add(0f, -0.5f, 0.5f);
             corner3 = new Vector3(centerOfFace).add(0f, 0.5f, -0.5f);
             corner4 = new Vector3(centerOfFace).add(0f, -0.5f, -0.5f);
-            // The Z coordinate is an integer, so its the face that we're operating on
         } else if (isInteger(centerOfFace.z)) {
+            // The Z coordinate is an integer, so its the face that we're operating on
             corner1 = new Vector3(centerOfFace).add(0.5f, 0.5f, 0f);
             corner2 = new Vector3(centerOfFace).add(-0.5f, 0.5f, 0f);
             corner3 = new Vector3(centerOfFace).add(0.5f, -0.5f, 0f);
@@ -117,6 +120,18 @@ public class MeshCreator {
     @Value
     public static class Triangle {
         Vector3 a, b, c;
+
+        public Triangle transformPosition(Matrix4dc transform) {
+            Vector3d a = JOML.convertDouble(this.a);
+            Vector3d b = JOML.convertDouble(this.b);
+            Vector3d c = JOML.convertDouble(this.c);
+
+            transform.transformPosition(a);
+            transform.transformPosition(b);
+            transform.transformPosition(c);
+
+            return new Triangle(JOML.toGDX(a), JOML.toGDX(b), JOML.toGDX(c));
+        }
     }
 
     /**

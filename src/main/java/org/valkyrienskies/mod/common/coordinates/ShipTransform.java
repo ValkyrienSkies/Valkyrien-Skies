@@ -80,6 +80,29 @@ public class ShipTransform {
         this(position.x(), position.y(), position.z(), 0, 0, 0, centerCoord);
     }
 
+    public ShipTransform(Matrix4dc transform, Vector3dc centerCoord) {
+        this.centerCoord = centerCoord;
+        posX = transform.m30();
+        posY = transform.m31();
+        posZ = transform.m32();
+
+        Vector3dc angles = transform.getEulerAnglesZYX(new Vector3d());
+        pitch = Math.toDegrees(angles.z());
+        yaw = Math.toDegrees(angles.y());
+        roll = Math.toDegrees(angles.x());
+
+        this.subspaceToGlobal = new Matrix4d()
+            // Finally we translate the coordinates to where they are in the world.
+            .translate(posX, posY, posZ)
+            // Then we rotate about the coordinate origin based on the pitch/yaw/roll.
+            .rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll))
+            // First translate the block coordinates to coordinates where center of mass is <0,0,0>
+            // E.g., move the coordinate origin to <0,0,0>
+            .translate(-centerCoord.x(), -centerCoord.y(), -centerCoord.z());
+
+        this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
+    }
+
     public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
                          double roll, Vector3dc centerCoord) {
         this.posX = posX;

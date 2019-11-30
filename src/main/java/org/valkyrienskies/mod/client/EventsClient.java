@@ -45,7 +45,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import org.joml.Matrix4dc;
-import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.fixes.SoundFixWrapper;
@@ -58,7 +57,6 @@ import org.valkyrienskies.mod.common.physics.bullet.MeshCreator.Triangle;
 import org.valkyrienskies.mod.common.physics.bullet.MeshDebugOverlayRenderer;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.VSRenderUtils;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -274,20 +272,11 @@ public class EventsClient {
                 if (data == null) {
                     System.out.println("Data is null");
                 } else {
-                    List<Triangle> triList = data.triangleList.stream().map(tri -> {
-                        Vector3d a = JOML.castDouble(JOML.convert(tri.getA()));
-                        Vector3d b = JOML.castDouble(JOML.convert(tri.getB()));
-                        Vector3d c = JOML.castDouble(JOML.convert(tri.getC()));
-
-                        Matrix4dc stg = physo.getShipTransformationManager().getRenderTransform()
-                            .getSubspaceToGlobal();
-
-                        stg.transformPosition(a);
-                        stg.transformPosition(b);
-                        stg.transformPosition(c);
-
-                        return new Triangle(JOML.toGDX(a), JOML.toGDX(b), JOML.toGDX(c));
-                    }).collect(ImmutableList.toImmutableList());
+                    Matrix4dc stg = physo.getShipTransformationManager()
+                        .getRenderTransform().getSubspaceToGlobal();
+                    List<Triangle> triList = data.triangleList.stream().map(tri ->
+                        tri.transformPosition(stg)
+                    ).collect(ImmutableList.toImmutableList());
                     MeshDebugOverlayRenderer.renderTriangles(triList, offset);
                 }
             }

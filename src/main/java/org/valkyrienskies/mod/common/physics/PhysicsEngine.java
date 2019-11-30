@@ -6,4 +6,6 @@ public interface PhysicsEngine {
 
     void addPhysicsObject(PhysicsObject obj);
 
+    void tick(float delta);
+
 }

@@ -1,9 +1,12 @@
 package org.valkyrienskies.mod.common.util;
 
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
 import org.joml.Quaternionf;
@@ -27,6 +30,13 @@ public class JOML {
         return new Vector3f(v.x, v.y, v.z);
     }
 
+    /**
+     * Equivalent to <code>castDouble(convert(Vector3))</code>
+     */
+    public static Vector3d convertDouble(Vector3 v) {
+        return new Vector3d(v.x, v.y, v.z);
+    }
+
     public static Vector3i convert(Vec3i v) {
         return new Vector3i(v.getX(), v.getY(), v.getZ());
     }
@@ -43,8 +53,20 @@ public class JOML {
         return new Vector3d(v.x, v.y, v.z);
     }
 
+    public static Vector3d convert(org.valkyrienskies.mod.common.math.Vector v) {
+        return new Vector3d(v.x, v.y, v.z);
+    }
+
     public static Quaternionf convert(org.lwjgl.util.vector.Quaternion q) {
         return new Quaternionf(q.x, q.y, q.z, q.w);
+    }
+
+    public static Matrix4f convert(Matrix4 m) {
+        return new Matrix4f().set(m.val);
+    }
+
+    public static Matrix4d convertDouble(Matrix4 m) {
+        return new Matrix4d().set(m.val);
     }
 
     // endregion

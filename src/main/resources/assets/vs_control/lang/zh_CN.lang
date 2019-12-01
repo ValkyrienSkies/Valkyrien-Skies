@@ -85,7 +85,7 @@ tooltip.vs_control.legacy_engine=老式引擎，仅需红石信号即可工作�
 
 ## Misc.
 tile.compacted_valkyrium.name=压缩瓦尔基里块
-# Upward force: 200KN
+tooltip.vs_control.compacted_valkyrium=升力：%dN。
 
 tile.gyroscope_stabilizer.name=稳定陀螺仪
 tooltip.vs_control.gyroscope_stabilizer=这个方块会被动地提供一个使船体保持水平的扭矩。

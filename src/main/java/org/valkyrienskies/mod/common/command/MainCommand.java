@@ -120,9 +120,9 @@ public class MainCommand implements Runnable {
             }
 
             ShipData targetShipData = oTargetShipData.get();
-            Optional<Entity> oEntity = world.getLoadedEntityList().stream()
+            Optional<Entity> oEntity = world.loadedEntityList.stream()
                 .filter(e -> e.getPersistentID().equals(targetShipData.getUUID()))
-                .findFirst();
+                .findAny();
 
             if (!oEntity.isPresent()) {
                 throw new RuntimeException("QueryableShipData is incorrect?");

@@ -52,7 +52,7 @@ tooltip.vs_control.rotation_axle=用来把瓦尔基里发动机连接到齿轮�
 ## Network
 tile.network_display.name=网络显示器
 tooltip.vs_control.network_display=尚未实装。
-tooltip.vs_control.network_display=[WIP] Lists all nodes on the connected network.[未完成]可以列出当前网络中的所有节点。
+tooltip.vs_control.network_display=[未完成]可以列出当前网络中的所有连接的节点。
 
 tile.network_relay.name=网络中继器
 tooltip.vs_control.network_relay=通过使用线缆来把最多%d个组件或其他中继器连接起来。

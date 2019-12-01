@@ -17,7 +17,7 @@ public class MeshCreator {
 
     public static btTriangleMesh getMesh(Collection<Triangle> triangles) {
         btTriangleMesh mesh = new btTriangleMesh();
-        triangles.forEach(t -> mesh.addTriangle(t.a, t.b, t.c));
+        triangles.forEach(t -> mesh.addTriangle(t.a, t.b, t.c, true));
         return mesh;
     }
 

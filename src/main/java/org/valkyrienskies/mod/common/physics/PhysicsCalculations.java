@@ -152,7 +152,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     public void rawPhysTickPostCol() {
-        if (!isPhysicsBroken()) {
+       /* if (!isPhysicsBroken()) {
             if (getParent().getData().isPhysicsEnabled()) {
                 // This wasn't implemented very well at all! Maybe in the future I'll try again.
                 // enforceStaticFriction();
@@ -174,7 +174,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                 physRoll, physCenterOfMass.toVector3d());
 
         getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
-        getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
+        getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);*/
 
         updatePhysCenterOfMass();
     }
@@ -195,7 +195,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // changes.
     @Deprecated
     public void updateParentCenterOfMass() {
-        if (!getParent().getCenterCoord().equals(parent.getInertiaData().getGameTickCenterOfMass())) {
+        /*if (!getParent().getCenterCoord().equals(parent.getInertiaData().getGameTickCenterOfMass())) {
             Vector CMDif = parent.getCenterCoord()
                     .getSubtraction(parent.getInertiaData().getGameTickCenterOfMass());
 
@@ -219,7 +219,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             getParent().getShipTransformationManager().updateAllTransforms(newTransform, false, true);
 
             getParent().getCenterCoord().setValue(parent.getCenterCoord());
-        }
+        }*/
     }
 
     /**

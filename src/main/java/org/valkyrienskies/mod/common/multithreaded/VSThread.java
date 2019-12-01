@@ -78,7 +78,7 @@ public class VSThread extends Thread {
     @Override
     public void run() {
         // Used to make up for any lost time when we tick
-        long lostTickTime = 0;
+        long lostTickTime = 0, endOfPhysicsTickTimeNano = System.nanoTime();
         while (threadRunning) {
             long startOfPhysicsTickTimeNano = System.nanoTime();
             // Limit the tick smoothing to just one second (1000ms), if lostTickTime becomes
@@ -88,8 +88,8 @@ public class VSThread extends Thread {
                 lostTickTime %= MAX_LOST_TIME_NS;
             }
             // Run the physics code
-            runGameLoop();
-            long endOfPhysicsTickTimeNano = System.nanoTime();
+            runGameLoop(startOfPhysicsTickTimeNano - endOfPhysicsTickTimeNano);
+            endOfPhysicsTickTimeNano = System.nanoTime();
             long deltaPhysicsTickTimeNano = endOfPhysicsTickTimeNano - startOfPhysicsTickTimeNano;
 
             try {
@@ -128,17 +128,19 @@ public class VSThread extends Thread {
         log.trace(super.getName() + " killed");
     }
 
-    private void runGameLoop() {
+    private void runGameLoop(float delta) {
         MinecraftServer mcServer = hostWorld.getMinecraftServer();
         assert mcServer != null;
         if (mcServer.isServerRunning()) {
             if (mcServer.isDedicatedServer()) {
                 // Always tick the physics
                 physicsTick();
+                ValkyrienSkiesMod.getBulletPhysicsEngine().tick(delta);
             } else {
                 // Only tick the physics if the game isn't paused
                 if (!isSinglePlayerPaused()) {
                     physicsTick();
+                    ValkyrienSkiesMod.getBulletPhysicsEngine().tick(delta);
                 }
             }
         }

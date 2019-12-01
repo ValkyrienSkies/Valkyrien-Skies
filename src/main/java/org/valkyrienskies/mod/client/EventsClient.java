@@ -274,7 +274,7 @@ public class EventsClient {
                 } else {
                     Matrix4dc stg = physo.getShipTransformationManager()
                         .getRenderTransform().getSubspaceToGlobal();
-                    List<Triangle> triList = data.triangleList.stream().map(tri ->
+                    List<Triangle> triList = data.getTriangleList().stream().map(tri ->
                         tri.transformPosition(stg)
                     ).collect(ImmutableList.toImmutableList());
                     MeshDebugOverlayRenderer.renderTriangles(triList, offset);

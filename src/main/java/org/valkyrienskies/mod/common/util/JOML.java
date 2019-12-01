@@ -6,6 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
 import org.joml.Matrix4f;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
@@ -72,6 +73,10 @@ public class JOML {
     // endregion
 
     // region From JOML
+
+    public static Matrix4 toGDX(Matrix4dc m) {
+        return new Matrix4().set(m.get(new float[16]));
+    }
 
     public static Vector3 toGDX(Vector3dc v) {
         return new Vector3((float) v.x(), (float)v.y(), (float) v.z());

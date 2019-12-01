@@ -125,6 +125,10 @@ public class ShipTransform {
         this.globalToSubspace = subspaceToGlobal.invert(new Matrix4d());
     }
 
+    public Matrix4d getPositionTransform() {
+        return new Matrix4d().rotateXYZ(pitch, yaw, roll).translate(posX, posY, posZ);
+    }
+
     public BlockPos getShipPositionBlockPos() {
         return new BlockPos(this.getPosX(), this.getPosY(), this.getPosZ());
     }

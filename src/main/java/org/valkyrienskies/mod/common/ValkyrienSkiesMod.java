@@ -116,7 +116,7 @@ public class ValkyrienSkiesMod {
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
 
     @Getter
-    private static final BulletPhysicsEngine bulletPhysicsEngine = new BulletPhysicsEngine();
+    private static BulletPhysicsEngine bulletPhysicsEngine;
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
@@ -132,6 +132,7 @@ public class ValkyrienSkiesMod {
     public void preInit(FMLPreInitializationEvent event) {
         // Initialize Bullet
         Bullet.init();
+        bulletPhysicsEngine = new BulletPhysicsEngine();
 
         log.debug("Initializing configuration.");
         runConfiguration();

@@ -1,3 +1,5 @@
+#PARSE_ESCAPES
+
 # Items
 item.relay_wire.name=中继线缆
 tooltip.vs_control.relay_wire=用来把中继器连接到组件或其他中继器上。
@@ -46,6 +48,12 @@ tooltip.vs_control.gearbox_2=连接到速度计来调整扭矩输出。
 tile.rotation_axle.name=传动轴
 tooltip.vs_control.rotation_axle=用来把瓦尔基里发动机连接到齿轮箱或螺旋桨上。
 
+
+## Network
+tile.network_display.name=网络显示器
+tooltip.vs_control.network_display=尚未实装。
+tooltip.vs_control.network_display=[WIP] Lists all nodes on the connected network.[未完成]可以列出当前网络中的所有节点。
+
 tile.network_relay.name=网络中继器
 tooltip.vs_control.network_relay=通过使用线缆来把最多%d个组件或其他中继器连接起来。
 
@@ -89,6 +97,3 @@ tooltip.vs_control.gyroscope_dampener=这个方块会被动地提供一个防止
 ## Not Yet Implemented
 tile.lift_valve.name=支撑阀
 tooltip.vs_control.lift_valve=尚未实装。
-
-tile.network_display.name=网络显示器
-tooltip.vs_control.network_display=尚未实装。

@@ -79,7 +79,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
     private PhysicsWrapperEntity dontInterceptShip = null;
     private final ISubspace worldSubspace = new ImplSubspace(null);
-    private final World world = World.class.cast(this);
+
     // The IWorldShipManager
     private IWorldShipManager manager = null;
     // Rotation Node World fields. Note this is only used in multiplayer, but making a MixinWorldServer
@@ -103,7 +103,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     @Intrinsic(displace = true)
     public Biome vs$getBiomeForCoordsBody(BlockPos pos) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(world, pos);
+            .getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             pos = physicsObject.get()
@@ -142,7 +142,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
         double ySpeed, double zSpeed, int... parameters) {
         BlockPos pos = new BlockPos(x, y, z);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(world, pos);
+            .getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Vector newPosVec = new Vector(x, y, z);
@@ -254,7 +254,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D,
             (aabb.minZ + aabb.maxZ) / 2D);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(world, pos);
+            .getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(aabb, physicsObject.get()
@@ -293,7 +293,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
             (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(world, pos);
+            .getPhysicsObject(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(boundingBox, physicsObject.get()
@@ -365,11 +365,11 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
         boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
         PhysicsWrapperEntity toIgnore) {
         this.dontIntercept = true;
-        RayTraceResult vanillaTrace = world
+        RayTraceResult vanillaTrace = World.class.cast(this)
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
         WorldPhysObjectManager physManager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-            .getManagerForWorld(world);
+            .getManagerForWorld(World.class.cast(this));
         if (physManager == null) {
             return vanillaTrace;
         }
@@ -403,7 +403,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
             Vec3d playerEyesReachAdded = playerEyesPos.add(playerReachVector.x * reachDistance,
                 playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
-            RayTraceResult resultInShip = world
+            RayTraceResult resultInShip = World.class.cast(this)
                 .rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
                     stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if (resultInShip != null && resultInShip.hitVec != null
@@ -434,7 +434,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
     @Override
     public void setManager(Function<World, IWorldShipManager> managerSupplier) {
-        manager = managerSupplier.apply(world);
+        manager = managerSupplier.apply(World.class.cast(this));
     }
 
     @Override

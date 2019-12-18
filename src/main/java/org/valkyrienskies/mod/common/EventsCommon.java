@@ -55,6 +55,7 @@ import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VSWorldEventListener;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
@@ -128,6 +129,7 @@ public class EventsCommon {
                 IHasShipManager shipManager = (IHasShipManager) world;
                 shipManager.getManager().tick();
                 PhysicsTickHandler.onWorldTickEnd(world);
+                EntityDraggable.tickAddedVelocityForWorld(world);
                 break;
         }
     }

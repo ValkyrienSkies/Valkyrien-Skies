@@ -50,6 +50,7 @@ import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBa
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.VSRenderUtils;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -94,6 +95,7 @@ public class EventsClient {
                 // Tick the IShipManager on the world client.
                 IHasShipManager shipManager = (IHasShipManager) world;
                 shipManager.getManager().tick();
+                EntityDraggable.tickAddedVelocityForWorld(world);
                 break;
         }
     }

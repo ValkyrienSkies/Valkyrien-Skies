@@ -27,7 +27,7 @@ public class MeshCreator {
      * Basically, creates two triangles in the mesh for each open face per voxel
      * TODO: Use greedy meshing algorithm https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/
      */
-    public static List<Triangle> getMeshTriangles(Collection<BlockPos> blocks2, Vector3dc offset) {
+    public static List<Triangle> getMeshTriangles(Collection<BlockPos> blocks2, Vector3 offset) {
         List<Triangle> mesh = new ArrayList<>();
         // Create a set copy of the block collection, which we'll need because we're going to lookup
         // a lot of block positions to check if they're adjacent
@@ -57,9 +57,9 @@ public class MeshCreator {
                 // |                |                |
                 // +----------------+----------------+
                 Vector3 centerOfFace = new Vector3(
-                    ((float) x / 2) + block.getX() + 0.5f - (float) (offset.x()),
-                    ((float) y / 2) + block.getY() + 0.5f -(float) (offset.y()),
-                    ((float) z / 2) + block.getZ() + 0.5f - (float) (offset.z()));
+                    ((float) x / 2) + block.getX() + 0.5f,
+                    ((float) y / 2) + block.getY() + 0.5f,
+                    ((float) z / 2) + block.getZ() + 0.5f);
 
                 // Create the two triangles which cover this face of the block
                 // +------------------+
@@ -72,7 +72,7 @@ public class MeshCreator {
                 // |   -/             |
                 // | -/               |
                 // +------------------+
-                addTriangles(mesh, centerOfFace);
+                addTriangles(mesh, centerOfFace, offset);
             })
         );
 
@@ -85,28 +85,28 @@ public class MeshCreator {
      * @param centerOfFace The center of the face of the block/voxel that is faces the air
      *                     (one value here should be mod 0.5)
      */
-    private static void addTriangles(List<Triangle> toAddTo, Vector3 centerOfFace) {
+    private static void addTriangles(List<Triangle> toAddTo, Vector3 centerOfFace, Vector3 offset) {
         Vector3 corner1, corner2, corner3, corner4;
 
         // Here we generate the corners for the plane that we're operating on
         if (isInteger(centerOfFace.y)) {
             // The Y coordinate is an integer, so its the face that we're operating on
-            corner1 = new Vector3(centerOfFace).add(0.5f, 0f, 0.5f);
-            corner2 = new Vector3(centerOfFace).add(-0.5f, 0f, 0.5f);
-            corner3 = new Vector3(centerOfFace).add(0.5f, 0f, -0.5f);
-            corner4 = new Vector3(centerOfFace).add(-0.5f, 0f, -0.5f);
+            corner1 = new Vector3(centerOfFace).add(0.5f, 0f, 0.5f).add(offset);
+            corner2 = new Vector3(centerOfFace).add(-0.5f, 0f, 0.5f).add(offset);
+            corner3 = new Vector3(centerOfFace).add(0.5f, 0f, -0.5f).add(offset);
+            corner4 = new Vector3(centerOfFace).add(-0.5f, 0f, -0.5f).add(offset);
         } else if (isInteger(centerOfFace.x)) {
             // The X coordinate is an integer, so its the face that we're operating on
-            corner1 = new Vector3(centerOfFace).add(0f, 0.5f, 0.5f);
-            corner2 = new Vector3(centerOfFace).add(0f, -0.5f, 0.5f);
-            corner3 = new Vector3(centerOfFace).add(0f, 0.5f, -0.5f);
-            corner4 = new Vector3(centerOfFace).add(0f, -0.5f, -0.5f);
+            corner1 = new Vector3(centerOfFace).add(0f, 0.5f, 0.5f).add(offset);
+            corner2 = new Vector3(centerOfFace).add(0f, -0.5f, 0.5f).add(offset);
+            corner3 = new Vector3(centerOfFace).add(0f, 0.5f, -0.5f).add(offset);
+            corner4 = new Vector3(centerOfFace).add(0f, -0.5f, -0.5f).add(offset);
         } else if (isInteger(centerOfFace.z)) {
             // The Z coordinate is an integer, so its the face that we're operating on
-            corner1 = new Vector3(centerOfFace).add(0.5f, 0.5f, 0f);
-            corner2 = new Vector3(centerOfFace).add(-0.5f, 0.5f, 0f);
-            corner3 = new Vector3(centerOfFace).add(0.5f, -0.5f, 0f);
-            corner4 = new Vector3(centerOfFace).add(-0.5f, -0.5f, 0f);
+            corner1 = new Vector3(centerOfFace).add(0.5f, 0.5f, 0f).add(offset);
+            corner2 = new Vector3(centerOfFace).add(-0.5f, 0.5f, 0f).add(offset);
+            corner3 = new Vector3(centerOfFace).add(0.5f, -0.5f, 0f).add(offset);
+            corner4 = new Vector3(centerOfFace).add(-0.5f, -0.5f, 0f).add(offset);
         } else {
             throw new IllegalArgumentException("There was no integer coordinate, this isn't right");
         }

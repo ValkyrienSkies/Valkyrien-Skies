@@ -195,7 +195,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     // changes.
     @Deprecated
     public void updateParentCenterOfMass() {
-        /*if (!getParent().getCenterCoord().equals(parent.getInertiaData().getGameTickCenterOfMass())) {
+        if (!getParent().getCenterCoord().equals(parent.getInertiaData().getGameTickCenterOfMass())) {
             Vector CMDif = parent.getCenterCoord()
                     .getSubtraction(parent.getInertiaData().getGameTickCenterOfMass());
 
@@ -219,7 +219,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             getParent().getShipTransformationManager().updateAllTransforms(newTransform, false, true);
 
             getParent().getCenterCoord().setValue(parent.getCenterCoord());
-        }*/
+        }
     }
 
     /**

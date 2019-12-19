@@ -70,7 +70,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         btGImpactCollisionAlgorithm.registerAlgorithm(collisionDispatcher);
 
 
-        btCollisionShape groundShape = new btBoxShape(new Vector3(10000, 5, 10000));
+        btCollisionShape groundShape = new btBoxShape(new Vector3(10000, 4, 10000));
         btCollisionObject groundObject = new btCollisionObject();
         groundObject.setCollisionShape(groundShape);
 
@@ -90,7 +90,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
             .collect(ImmutableSet.toImmutableSet());
 
 
-        Vector3dc centerOfMass = obj.getCenterCoord().toVector3d();
+        Vector3 centerOfMass = JOML.toGDX(obj.getCenterCoord().toVector3d()).scl(-1);
 
         // Create the 'triangle list' from the block positions
         List<Triangle> triangleList = MeshCreator.getMeshTriangles(obj.getBlockPositions(), centerOfMass);
@@ -117,13 +117,13 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         collisionShape.updateBound(); // This line crashes it
         
         // Create a collision shape that won't crash :/
-        // btCollisionShape collisionShape = new btSphereShape(.5f);
+        // btCollisionShape collisionShape = new btSphereShape(1);
 
         // Generate the construction info for a rigid body from the collision shape and mass
         // float mass = (float) obj.getInertiaData().getGameTickMass();
-        float mass = 50;
+        float mass = 10;
         btRigidBodyConstructionInfo constructionInfo = new btRigidBodyConstructionInfo(
-            mass, null, collisionShape, getLocalInertia(collisionShape, mass));
+            mass, null, collisionShape, new Vector3(1, 1, 1)); // , getLocalInertia(collisionShape, mass));
 
         // Create a rigid body from the construction info and collision shape
         btRigidBody rigidBody = new btRigidBody(constructionInfo);

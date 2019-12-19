@@ -184,12 +184,12 @@ public class PhysicsObject implements IPhysicsEntity {
             engine.addPhysicsObject(this);
         } else {
             this.shipRenderer = null;
-            engine.addPhysicsObject(this);
             if (!firstTimeCreated) {
                 this.getShipTransformationManager()
                     .updateAllTransforms(this.getData().getShipTransform(), true, true);
                 Objects.requireNonNull(shipData.getBlockPositions())
                     .forEach(voxelFieldAABBMaker::addVoxel);
+                engine.addPhysicsObject(this);
             }
         }
     }
@@ -323,6 +323,8 @@ public class PhysicsObject implements IPhysicsEntity {
             TransformType.SUBSPACE_TO_GLOBAL);
         getData().setShipBB(polygon.getEnclosedAABB());
         */
+
+        engine.addPhysicsObject(this);
     }
 
     public void preloadNewPlayers() {

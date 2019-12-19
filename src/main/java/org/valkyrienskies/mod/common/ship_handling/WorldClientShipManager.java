@@ -23,7 +23,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
         this.world = world;
         // this.ships = new HashMap<>();
         // TEMP
-        this.physicsEngine = new BulletPhysicsEngine();
+        this.physicsEngine = new BulletPhysicsEngine(world);
     }
 
     @Override

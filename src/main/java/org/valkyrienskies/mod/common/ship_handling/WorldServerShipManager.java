@@ -30,7 +30,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         this.world = world;
         this.playerToWatchingShips = new HashMap<>();
         this.physicsThread = new VSThread(this.world);
-        this.physicsEngine = new BulletPhysicsEngine();
+        this.physicsEngine = new BulletPhysicsEngine(world);
         this.physicsThread.start();
     }
     @Override

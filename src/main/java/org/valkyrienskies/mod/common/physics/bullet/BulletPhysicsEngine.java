@@ -44,7 +44,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
      */
     private final Map<Integer, BulletData> dataMap = new ConcurrentHashMap<>(); // TIntObjectMap<BulletData> dataMap = new TIntObjectHashMap<>();
 
-    private World mcWorld = null; // please remove this I hate it
+    private final World mcWorld; // please remove this I hate it. // No ~Tri0de
 
     private btDynamicsWorld bulletWorld;
     private btConstraintSolver constraintSolver;
@@ -54,7 +54,8 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
     private final Queue<btRigidBody> queuedToAdd = new ConcurrentLinkedQueue<>();
 
-    public BulletPhysicsEngine() {
+    public BulletPhysicsEngine(World mcWorld) {
+        this.mcWorld = mcWorld;
         // Note that things are initialized here and not in the object initializer because
         // I don't think it's a good practice to use the object initializer when we're dealing with
         // objects that manually need to be deconstructed
@@ -67,12 +68,23 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         bulletWorld.setGravity(new Vector3(0f, -9.8f, 0f));
 
         btGImpactCollisionAlgorithm.registerAlgorithm(collisionDispatcher);
+
+
+        btCollisionShape groundShape = new btBoxShape(new Vector3(10000, 5, 10000));
+        btCollisionObject groundObject = new btCollisionObject();
+        groundObject.setCollisionShape(groundShape);
+
+        btRigidBodyConstructionInfo constructionInfo = new btRigidBodyConstructionInfo(
+                0, null, groundShape);
+
+        btRigidBody rigidBody = new btRigidBody(constructionInfo);
+
+        bulletWorld.addRigidBody(rigidBody);
+        // groundObject.setWorldTransform();
     }
 
     @Override
     public void addPhysicsObject(@Nonnull PhysicsObject obj) {
-        mcWorld = obj.getWorld(); // this is the worst code ever
-
         ImmutableSet<BlockPos> offsetPos = obj.getBlockPositions().stream()
             .map(pos -> pos.subtract(obj.getReferenceBlockPos()))
             .collect(ImmutableSet.toImmutableSet());
@@ -146,21 +158,24 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
             System.out.println(data.getRigidBody().getWorldTransform().getTranslation(new Vector3())));
 
 
-        /*
+
         QueryableShipData.get(mcWorld).getShips().stream()
             .filter(shipData -> shipData.getPhyso() != null)
             .map(ShipData::getPhyso)
             .forEach(obj -> {
                 BulletData data = getData(obj);
-                btRigidBody body = data.rigidBody;
-                Matrix4 worldTransform = body.getWorldTransform();
-                Matrix4d transform = JOML.convertDouble(worldTransform);
-                Vector3d centerCoord = JOML.convert(obj.getCenterCoord());
-//                obj.getShipTransformationManager()
-//                    .updateAllTransforms(new ShipTransform(transform, centerCoord), false, true);
+                if (data != null && data.rigidBody != null) {
+                    btRigidBody body = data.rigidBody;
+                    Matrix4 worldTransform = body.getWorldTransform();
+                    Matrix4d transform = JOML.convertDouble(worldTransform);
+                    Vector3d centerCoord = JOML.convert(obj.getCenterCoord());
+                    obj.getShipTransformationManager().setCurrentPhysicsTransform(new ShipTransform(transform, centerCoord));
+                }
             });
+
+
             
-         */
+
     }
 
     @Override

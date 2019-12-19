@@ -56,6 +56,7 @@ import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine.BulletDa
 import org.valkyrienskies.mod.common.physics.bullet.MeshCreator.Triangle;
 import org.valkyrienskies.mod.common.physics.bullet.MeshDebugOverlayRenderer;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.VSRenderUtils;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -100,6 +101,7 @@ public class EventsClient {
                 // Tick the IShipManager on the world client.
                 IHasShipManager shipManager = (IHasShipManager) world;
                 shipManager.getManager().tick();
+                EntityDraggable.tickAddedVelocityForWorld(world);
                 break;
         }
     }

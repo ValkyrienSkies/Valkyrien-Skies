@@ -13,21 +13,27 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 public class SpawnPhysObjMessageHandler implements IMessageHandler<SpawnPhysObjMessage, IMessage> {
 
     @Override
+    @SuppressWarnings("Convert2Lambda")
+    // Why do you not use a lambda? Because lambdas are compiled and this causes NoClassDefFound
+    // errors. DON'T USE A LAMBDA
     public IMessage onMessage(SpawnPhysObjMessage message, MessageContext ctx) {
         IThreadListener mainThread = Minecraft.getMinecraft();
-        mainThread.addScheduledTask(() -> {
-            if (Minecraft.getMinecraft().world != null) {
-                // Spawn a PhysicsObject from the ShipData.
-                World world = Minecraft.getMinecraft().world;
-                QueryableShipData queryableShipData = QueryableShipData.get(world);
-                ShipData toSpawn = message.shipToSpawnData;
-                if (toSpawn.getPhyso() != null) {
-                    throw new IllegalStateException("Wtf you can't spawn a ship twice!");
+        mainThread.addScheduledTask(new Runnable() {
+            @Override
+            public void run() {
+                if (Minecraft.getMinecraft().world != null) {
+                    // Spawn a PhysicsObject from the ShipData.
+                    World world = Minecraft.getMinecraft().world;
+                    QueryableShipData queryableShipData = QueryableShipData.get(world);
+                    ShipData toSpawn = message.shipToSpawnData;
+                    if (toSpawn.getPhyso() != null) {
+                        throw new IllegalStateException("Wtf you can't spawn a ship twice!");
+                    }
+                    // Create a new PhysicsObject based on the ShipData.
+                    queryableShipData.addOrUpdateShipPreservingPhysObj(toSpawn);
+                    PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, false);
+                    toSpawn.setPhyso(physicsObject);
                 }
-                // Create a new PhysicsObject based on the ShipData.
-                queryableShipData.addOrUpdateShipPreservingPhysObj(toSpawn);
-                PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, false);
-                toSpawn.setPhyso(physicsObject);
             }
         });
 

@@ -187,14 +187,12 @@ public class ValkyrienSkiesMod {
 
     private void registerNetworks(FMLStateEvent event) {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies");
-        physWrapperNetwork
-                .registerMessage(ShipIndexDataMessageHandler.class, ShipIndexDataMessage.class, 0,
-                Side.CLIENT);
-        physWrapperNetwork
-                .registerMessage(SpawnPhysObjMessageHandler.class, SpawnPhysObjMessage.class, 1,
-                Side.CLIENT);
-        physWrapperNetwork
-                .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 2, Side.SERVER);
+        physWrapperNetwork.registerMessage(ShipIndexDataMessageHandler.class,
+            ShipIndexDataMessage.class, 0, Side.CLIENT);
+        physWrapperNetwork.registerMessage(SpawnPhysObjMessageHandler.class,
+            SpawnPhysObjMessage.class, 1, Side.CLIENT);
+        physWrapperNetwork.registerMessage(VSGuiButtonHandler.class,
+            VSGuiButtonMessage.class, 2, Side.SERVER);
     }
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {

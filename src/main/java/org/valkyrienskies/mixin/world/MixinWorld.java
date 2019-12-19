@@ -73,7 +73,6 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
     private PhysicsObject dontInterceptShip = null;
 
-    private final World world = World.class.cast(this);
     // The IWorldShipManager
     private IPhysObjectWorld manager = null;
     // Rotation Node World fields. Note this is only used in multiplayer, but making a MixinWorldServer
@@ -92,7 +91,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     @Intrinsic(displace = true)
     public Biome vs$getBiomeForCoordsBody(BlockPos pos) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysoManagingBlock(world, pos);
+            .getPhysoManagingBlock(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             pos = physicsObject.get()
@@ -131,7 +130,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
         double ySpeed, double zSpeed, int... parameters) {
         BlockPos pos = new BlockPos(x, y, z);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysoManagingBlock(world, pos);
+            .getPhysoManagingBlock(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Vector newPosVec = new Vector(x, y, z);
@@ -237,7 +236,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D,
             (aabb.minZ + aabb.maxZ) / 2D);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysoManagingBlock(world, pos);
+            .getPhysoManagingBlock(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(aabb, physicsObject.get()
@@ -271,7 +270,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
             (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysoManagingBlock(world, pos);
+            .getPhysoManagingBlock(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(boundingBox, physicsObject.get()
@@ -340,7 +339,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
                                                    boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
                                                    PhysicsObject toIgnore) {
         this.dontIntercept = true;
-        RayTraceResult vanillaTrace = world
+        RayTraceResult vanillaTrace = World.class.cast(this)
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 
@@ -380,7 +379,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
 
             Vec3d playerEyesReachAdded = playerEyesPos.add(playerReachVector.x * reachDistance,
                 playerReachVector.y * reachDistance, playerReachVector.z * reachDistance);
-            RayTraceResult resultInShip = world
+            RayTraceResult resultInShip = World.class.cast(this)
                 .rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
                     stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if (resultInShip != null && resultInShip.hitVec != null
@@ -411,7 +410,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
 
     @Override
     public void setManager(Function<World, IPhysObjectWorld> managerSupplier) {
-        manager = managerSupplier.apply(world);
+        manager = managerSupplier.apply(World.class.cast(this));
     }
 
     @Override

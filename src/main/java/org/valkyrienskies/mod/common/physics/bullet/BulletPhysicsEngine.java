@@ -86,7 +86,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
 
         // Create a mesh from the 'triangle list'
-        btTriangleMesh trimesh = new btTriangleMesh(); // MeshCreator.getMesh(triangleList);
+        btTriangleMesh trimesh = MeshCreator.getMesh(triangleList);
 
         /*
         Vector3 quad[] = new Vector3[]{
@@ -101,11 +101,11 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
          */
 
 
-        btGImpactMeshShape collisionShapeOriginal = new btGImpactMeshShape(trimesh);
-        // collisionShapeOriginal.updateBound(); // This line crashes it
+        btGImpactMeshShape collisionShape = new btGImpactMeshShape(trimesh);
+        collisionShape.updateBound(); // This line crashes it
         
         // Create a collision shape that won't crash :/
-        btCollisionShape collisionShape = new btSphereShape(.5f);
+        // btCollisionShape collisionShape = new btSphereShape(.5f);
 
         // Generate the construction info for a rigid body from the collision shape and mass
         // float mass = (float) obj.getInertiaData().getGameTickMass();
@@ -125,7 +125,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         // bulletWorld.addRigidBody(rigidBody);
 
         // Create BulletData and add to dataMap
-        BulletData data = new BulletData(triangleList, trimesh, collisionShapeOriginal, rigidBody);
+        BulletData data = new BulletData(triangleList, trimesh, collisionShape, rigidBody);
         dataMap.put(obj.hashCode(), data);
     }
 

@@ -221,17 +221,14 @@ public class ValkyrienSkiesMod {
 
     private void registerNetworks(FMLStateEvent event) {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("physChannel");
-        physWrapperNetwork
-            .registerMessage(PhysWrapperPositionHandler.class, WrapperPositionMessage.class, 0,
-                Side.CLIENT);
-        physWrapperNetwork
-            .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
-                1, Side.CLIENT);
-        physWrapperNetwork
-            .registerMessage(SubspacedEntityRecordHandler.class, SubspacedEntityRecordMessage.class,
-                2, Side.SERVER);
-        physWrapperNetwork
-            .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 3, Side.SERVER);
+        physWrapperNetwork.registerMessage(PhysWrapperPositionHandler.class,
+            WrapperPositionMessage.class, 0, Side.CLIENT);
+        physWrapperNetwork.registerMessage(SubspacedEntityRecordHandler.class,
+            SubspacedEntityRecordMessage.class, 1, Side.CLIENT);
+        physWrapperNetwork.registerMessage(SubspacedEntityRecordHandler.class,
+            SubspacedEntityRecordMessage.class, 2, Side.SERVER);
+        physWrapperNetwork.registerMessage(VSGuiButtonHandler.class,
+            VSGuiButtonMessage.class, 3, Side.SERVER);
     }
 
     void registerBlocks(RegistryEvent.Register<Block> event) {

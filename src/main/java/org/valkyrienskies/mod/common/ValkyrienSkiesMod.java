@@ -19,10 +19,7 @@ package org.valkyrienskies.mod.common;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.Getter;
@@ -34,14 +31,11 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -72,9 +66,7 @@ import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
-import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
@@ -186,14 +178,12 @@ public class ValkyrienSkiesMod {
 
     private void registerNetworks(FMLStateEvent event) {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies");
-        physWrapperNetwork
-                .registerMessage(ShipIndexDataMessageHandler.class, ShipIndexDataMessage.class, 0,
-                Side.CLIENT);
-        physWrapperNetwork
-                .registerMessage(SpawnPhysObjMessageHandler.class, SpawnPhysObjMessage.class, 1,
-                Side.CLIENT);
-        physWrapperNetwork
-                .registerMessage(VSGuiButtonHandler.class, VSGuiButtonMessage.class, 2, Side.SERVER);
+        physWrapperNetwork.registerMessage(ShipIndexDataMessageHandler.class,
+            ShipIndexDataMessage.class, 0, Side.CLIENT);
+        physWrapperNetwork.registerMessage(SpawnPhysObjMessageHandler.class,
+            SpawnPhysObjMessage.class, 1, Side.CLIENT);
+        physWrapperNetwork.registerMessage(VSGuiButtonHandler.class,
+            VSGuiButtonMessage.class, 2, Side.SERVER);
     }
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {

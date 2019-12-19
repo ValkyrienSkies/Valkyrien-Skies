@@ -44,6 +44,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
+import org.joml.Matrix4d;
 import org.joml.Matrix4dc;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
@@ -52,6 +53,7 @@ import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine.BulletData;
 import org.valkyrienskies.mod.common.physics.bullet.MeshCreator.Triangle;
 import org.valkyrienskies.mod.common.physics.bullet.MeshDebugOverlayRenderer;
@@ -270,14 +272,31 @@ public class EventsClient {
 
             for (PhysicsObject physo : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
                 physo.getShipRenderer().renderDebugInfo(offset);
-                BulletData data = ValkyrienSkiesMod.getBulletPhysicsEngine().getData(physo);
+                BulletData data = ((BulletPhysicsEngine) ((IHasShipManager) world).getManager().getPhysicsEngine()).getData(physo);
                 if (data == null) {
                     System.out.println("Data is null");
                 } else {
-                    Matrix4dc stg = physo.getShipTransformationManager()
-                        .getRenderTransform().getSubspaceToGlobal();
+                    // Matrix4dc stg = physo.getShipTransformationManager()
+                    //     .getRenderTransform().getSubspaceToGlobal();
+
+                    double posX = physo.getShipTransformationManager().getRenderTransform().getPosX();
+                    double posY = physo.getShipTransformationManager().getRenderTransform().getPosY();
+                    double posZ = physo.getShipTransformationManager().getRenderTransform().getPosZ();
+
+                    double pitch = physo.getShipTransformationManager().getRenderTransform().getPitch();
+                    double yaw = physo.getShipTransformationManager().getRenderTransform().getYaw();
+                    double roll = physo.getShipTransformationManager().getRenderTransform().getRoll();
+
+                    Matrix4dc subspaceToGlobalTRIANGLES = new Matrix4d()
+                            // Finally we translate the coordinates to where they are in the world.
+                            .translate(posX, posY, posZ)
+                            // Then we rotate about the coordinate origin based on the pitch/yaw/roll.
+                            .rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll));
+
+
+
                     List<Triangle> triList = data.getTriangleList().stream().map(tri ->
-                        tri.transformPosition(stg)
+                        tri.transformPosition(subspaceToGlobalTRIANGLES)
                     ).collect(ImmutableList.toImmutableList());
                     MeshDebugOverlayRenderer.renderTriangles(triList, offset);
                 }

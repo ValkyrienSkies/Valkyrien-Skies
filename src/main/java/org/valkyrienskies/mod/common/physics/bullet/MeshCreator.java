@@ -10,6 +10,7 @@ import lombok.Value;
 import net.minecraft.util.math.BlockPos;
 import org.joml.Matrix4dc;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
 
@@ -26,7 +27,7 @@ public class MeshCreator {
      * Basically, creates two triangles in the mesh for each open face per voxel
      * TODO: Use greedy meshing algorithm https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/
      */
-    public static List<Triangle> getMeshTriangles(Collection<BlockPos> blocks2) {
+    public static List<Triangle> getMeshTriangles(Collection<BlockPos> blocks2, Vector3dc offset) {
         List<Triangle> mesh = new ArrayList<>();
         // Create a set copy of the block collection, which we'll need because we're going to lookup
         // a lot of block positions to check if they're adjacent
@@ -56,9 +57,9 @@ public class MeshCreator {
                 // |                |                |
                 // +----------------+----------------+
                 Vector3 centerOfFace = new Vector3(
-                    ((float) x / 2) + block.getX() + 0.5f,
-                    ((float) y / 2) + block.getY() + 0.5f,
-                    ((float) z / 2) + block.getZ() + 0.5f);
+                    ((float) x / 2) + block.getX() + 0.5f - (float) (offset.x()),
+                    ((float) y / 2) + block.getY() + 0.5f -(float) (offset.y()),
+                    ((float) z / 2) + block.getZ() + 0.5f - (float) (offset.z()));
 
                 // Create the two triangles which cover this face of the block
                 // +------------------+

@@ -6,6 +6,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
+import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -14,10 +16,14 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     private final World world;
     // private final Map<UUID, ShipData> ships;
+    // TEMP CODE FOR VIEWING MESHES
+    private final IPhysicsEngine physicsEngine;
 
     public WorldClientShipManager(World world) {
         this.world = world;
         // this.ships = new HashMap<>();
+        // TEMP
+        this.physicsEngine = new BulletPhysicsEngine();
     }
 
     @Override
@@ -30,7 +36,14 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Override
     public void onWorldUnload() {
-        // Don't do anything
+        // TEMP
+        this.physicsEngine.unload();
+    }
+
+    // TEMP
+    @Override
+    public IPhysicsEngine getPhysicsEngine() {
+        return physicsEngine;
     }
 
     @Nonnull

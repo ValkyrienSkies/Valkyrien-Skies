@@ -134,13 +134,13 @@ public class VSThread extends Thread {
         if (mcServer.isServerRunning()) {
             if (mcServer.isDedicatedServer()) {
                 // Always tick the physics
-                physicsTick();
-                ValkyrienSkiesMod.getBulletPhysicsEngine().tick(delta);
+                // physicsTick();
+                ((IHasShipManager) hostWorld).getManager().getPhysicsEngine().tick(delta);
             } else {
                 // Only tick the physics if the game isn't paused
                 if (!isSinglePlayerPaused()) {
-                    physicsTick();
-                    ValkyrienSkiesMod.getBulletPhysicsEngine().tick(delta);
+                    // physicsTick();
+                    ((IHasShipManager) hostWorld).getManager().getPhysicsEngine().tick(delta);
                 }
             }
         }

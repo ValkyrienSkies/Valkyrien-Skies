@@ -55,6 +55,7 @@ import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
+import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
@@ -67,6 +68,7 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingCh
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
+import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
@@ -142,7 +144,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * The physics engine which this is currently running with
      */
     // TODO: yes, this is hard-set to bullet
-    private BulletPhysicsEngine engine = ValkyrienSkiesMod.getBulletPhysicsEngine();
+    private final IPhysicsEngine engine;
 
     // endregion
 
@@ -173,10 +175,13 @@ public class PhysicsObject implements IPhysicsEntity {
         this.shipTransformationManager = new ShipTransformationManager(this,
             getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
+        this.engine = ((IHasShipManager) world).getManager().getPhysicsEngine();
 
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
+            // TEMP TO SEE SHIP MESH
+            engine.addPhysicsObject(this);
         } else {
             this.shipRenderer = null;
             engine.addPhysicsObject(this);

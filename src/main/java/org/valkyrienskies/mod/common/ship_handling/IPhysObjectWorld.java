@@ -2,6 +2,7 @@ package org.valkyrienskies.mod.common.ship_handling;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 
@@ -59,5 +60,10 @@ public interface IPhysObjectWorld {
 
     @Nonnull
     List<PhysicsObject> getAllLoadedPhysObj();
+
+    @Nullable
+    default IPhysicsEngine getPhysicsEngine() {
+        return null;
+    }
 
 }

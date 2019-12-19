@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
@@ -67,6 +68,7 @@ import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
@@ -115,9 +117,6 @@ public class ValkyrienSkiesMod {
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
 
-    @Getter
-    private static BulletPhysicsEngine bulletPhysicsEngine;
-
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         if (MixinLoaderForge.isObfuscatedEnvironment) { //only print signature warning in obf
@@ -128,11 +127,25 @@ public class ValkyrienSkiesMod {
         }
     }
 
+    // Set this to the path of the lib to use it on desktop instead of the default lib.
+    private final static String customDesktopLib = "C:\\Users\\Alexander\\Desktop\\libgdx\\extensions\\gdx-bullet\\jni\\vs\\gdxBullet\\x64\\Debug\\gdxBullet.dll";
+    private final static boolean DEBUG_BULLET = false;
+
+    static void initBullet() {
+        // Need to initialize bullet before using it.
+        if (DEBUG_BULLET) { // Gdx.app.getType() == Application.ApplicationType.Desktop && debugBullet) {
+            System.load(customDesktopLib);
+        } else {
+            Bullet.init();
+        }
+        // System.out.println(String.format("Bullet", "Version = " + LinearMath.btGetVersion()));
+    }
+
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         // Initialize Bullet
-        Bullet.init();
-        bulletPhysicsEngine = new BulletPhysicsEngine();
+        initBullet();
 
         log.debug("Initializing configuration.");
         runConfiguration();

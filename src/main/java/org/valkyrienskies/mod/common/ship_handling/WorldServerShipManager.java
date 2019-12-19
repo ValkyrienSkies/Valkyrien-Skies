@@ -6,6 +6,8 @@ import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
+import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
+import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -22,10 +24,13 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     private transient Map<EntityPlayer, List<ShipData>> playerToWatchingShips;
     private transient VSThread physicsThread;
 
+    private final IPhysicsEngine physicsEngine;
+
     public WorldServerShipManager(World world) {
         this.world = world;
         this.playerToWatchingShips = new HashMap<>();
         this.physicsThread = new VSThread(this.world);
+        this.physicsEngine = new BulletPhysicsEngine();
         this.physicsThread.start();
     }
     @Override
@@ -35,6 +40,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         this.playerToWatchingShips.clear();
         this.playerToWatchingShips = null;
         this.physicsThread.kill();
+        this.physicsEngine.unload();
     }
 
     @Override
@@ -105,5 +111,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     public VSThread getPhysicsThread() {
         return this.physicsThread;
+    }
+
+    @Override
+    public IPhysicsEngine getPhysicsEngine() {
+        return physicsEngine;
     }
 }

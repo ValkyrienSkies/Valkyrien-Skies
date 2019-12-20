@@ -26,6 +26,10 @@ public class JOML {
         return new Vector3i(v.getX(), v.getY(), v.getZ());
     }
 
+    public static Vector3d convertDouble(Vec3i v) {
+        return new Vector3d(v.getX(), v.getY(), v.getZ());
+    }
+
     public static Vector3d convert(Vec3d v) {
         return new Vector3d(v.x, v.y, v.z);
     }

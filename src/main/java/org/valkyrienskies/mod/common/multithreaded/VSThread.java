@@ -55,6 +55,8 @@ public class VSThread extends Thread {
     // Used by the game thread to mark this thread for death.
     private volatile boolean threadRunning;
 
+    private Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
+
     public VSThread(World host) {
         super("VS World Thread " + threadID);
         threadID++;
@@ -68,6 +70,10 @@ public class VSThread extends Thread {
     @SideOnly(Side.CLIENT)
     private static boolean isSinglePlayerPaused() {
         return Minecraft.getMinecraft().isGamePaused();
+    }
+
+    public void addScheduledTask(Runnable r) {
+        taskQueue.add(r);
     }
 
     /*
@@ -129,6 +135,10 @@ public class VSThread extends Thread {
     }
 
     private void runGameLoop() {
+        // Run tasks queued to run on physics thread
+        taskQueue.forEach(Runnable::run);
+        taskQueue.clear();
+
         MinecraftServer mcServer = hostWorld.getMinecraftServer();
         assert mcServer != null;
         if (mcServer.isServerRunning()) {

@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.physics.bullet;
 
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
@@ -70,7 +71,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         btGImpactCollisionAlgorithm.registerAlgorithm(collisionDispatcher);
 
 
-        btCollisionShape groundShape = new btBoxShape(new Vector3(10000, 4, 10000));
+        btCollisionShape groundShape = new btStaticPlaneShape(new Vector3(0, 1, 0), 4); // new btBoxShape(new Vector3(10000, 4, 10000));
         btCollisionObject groundObject = new btCollisionObject();
         groundObject.setCollisionShape(groundShape);
 
@@ -90,10 +91,10 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
             .collect(ImmutableSet.toImmutableSet());
 
 
-        Vector3 centerOfMass = JOML.toGDX(obj.getCenterCoord().toVector3d()).scl(-1);
+        Vector3 offset = JOML.toGDX(obj.getCenterCoord().toVector3d()).scl(-1);
 
         // Create the 'triangle list' from the block positions
-        List<Triangle> triangleList = MeshCreator.getMeshTriangles(obj.getBlockPositions(), centerOfMass);
+        List<Triangle> triangleList = MeshCreator.getMeshTriangles(obj.getBlockPositions(), offset);
 
 
 
@@ -113,17 +114,29 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
          */
 
 
-        btGImpactMeshShape collisionShape = new btGImpactMeshShape(trimesh);
-        collisionShape.updateBound(); // This line crashes it
+        btGImpactMeshShape collisionShapeMesh = new btGImpactMeshShape(trimesh);
+        collisionShapeMesh.updateBound(); // This line crashes it
         
         // Create a collision shape that won't crash :/
-        // btCollisionShape collisionShape = new btSphereShape(1);
+        btCompoundShape collisionShape = new btCompoundShape();
 
+        for (BlockPos pos : obj.getBlockPositions()) {
+            float offsetX = pos.getX() + .5f - (float) obj.getCenterCoord().getX();
+            float offsetY = pos.getY() + .5f - (float) obj.getCenterCoord().getY();
+            float offsetZ = pos.getZ() + .5f - (float) obj.getCenterCoord().getZ();
+
+            Vector3 position = new Vector3(offsetX, offsetY, offsetZ);
+            Quaternion orientation = new Quaternion();
+
+            Matrix4 transform = new Matrix4().set(position, orientation);
+
+            collisionShape.addChildShape(transform, new btBoxShape(new Vector3(.5f, .5f, .5f)));
+        }
         // Generate the construction info for a rigid body from the collision shape and mass
         // float mass = (float) obj.getInertiaData().getGameTickMass();
-        float mass = 10;
+        float mass = 50;
         btRigidBodyConstructionInfo constructionInfo = new btRigidBodyConstructionInfo(
-            mass, null, collisionShape, new Vector3(1, 1, 1)); // , getLocalInertia(collisionShape, mass));
+            mass, null, collisionShape, getLocalInertia(collisionShape, mass));
 
         // Create a rigid body from the construction info and collision shape
         btRigidBody rigidBody = new btRigidBody(constructionInfo);
@@ -137,7 +150,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         // bulletWorld.addRigidBody(rigidBody);
 
         // Create BulletData and add to dataMap
-        BulletData data = new BulletData(triangleList, trimesh, collisionShape, rigidBody);
+        BulletData data = new BulletData(triangleList, trimesh, collisionShapeMesh, rigidBody);
         dataMap.put(obj.hashCode(), data);
     }
 
@@ -154,8 +167,8 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
 
 
-        dataMap.values().forEach(data ->
-            System.out.println(data.getRigidBody().getWorldTransform().getTranslation(new Vector3())));
+        // dataMap.values().forEach(data ->
+        //     System.out.println(data.getRigidBody().getWorldTransform().getTranslation(new Vector3())));
 
 
 

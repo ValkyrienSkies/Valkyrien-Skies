@@ -86,10 +86,10 @@ public class ShipTransform {
         posY = transform.m31();
         posZ = transform.m32();
 
-        Vector3dc angles = transform.getEulerAnglesZYX(new Vector3d());
-        pitch = Math.toDegrees(angles.z());
+        Vector3dc angles = transform.getNormalizedRotation(new Quaterniond()).getEulerAnglesXYZ(new Vector3d());
+        pitch = Math.toDegrees(angles.x());
         yaw = Math.toDegrees(angles.y());
-        roll = Math.toDegrees(angles.x());
+        roll = Math.toDegrees(angles.z());
 
         this.subspaceToGlobal = new Matrix4d()
             // Finally we translate the coordinates to where they are in the world.

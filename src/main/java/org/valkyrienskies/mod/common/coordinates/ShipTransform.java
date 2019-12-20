@@ -126,7 +126,7 @@ public class ShipTransform {
     }
 
     public Matrix4d getPositionTransform() {
-        return new Matrix4d().rotateXYZ(pitch, yaw, roll).translate(posX, posY, posZ);
+        return new Matrix4d().translate(posX, posY, posZ).rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll));
     }
 
     public BlockPos getShipPositionBlockPos() {

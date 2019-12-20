@@ -86,38 +86,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
     @Override
     public void addPhysicsObject(@Nonnull PhysicsObject obj) {
-        ImmutableSet<BlockPos> offsetPos = obj.getBlockPositions().stream()
-            .map(pos -> pos.subtract(obj.getReferenceBlockPos()))
-            .collect(ImmutableSet.toImmutableSet());
-
-
-        Vector3 offset = JOML.toGDX(obj.getCenterCoord().toVector3d()).scl(-1);
-
-        // Create the 'triangle list' from the block positions
-        List<Triangle> triangleList = MeshCreator.getMeshTriangles(obj.getBlockPositions(), offset);
-
-
-
-        // Create a mesh from the 'triangle list'
-        btTriangleMesh trimesh = MeshCreator.getMesh(triangleList);
-
-        /*
-        Vector3 quad[] = new Vector3[]{
-                new Vector3(0, 1, -1),
-                new Vector3(0, 1, 1),
-                new Vector3(0, -1, 1),
-                new Vector3(0, -1, -1)};
-
-        trimesh.addTriangle(quad[0], quad[1], quad[2], true);
-        trimesh.addTriangle(quad[0], quad[2], quad[3], true);
-
-         */
-
-
-        btGImpactMeshShape collisionShapeMesh = new btGImpactMeshShape(trimesh);
-        collisionShapeMesh.updateBound(); // This line crashes it
-        
-        // Create a collision shape that won't crash :/
+        // Create the collision shape
         btCompoundShape collisionShape = new btCompoundShape();
 
         for (BlockPos pos : obj.getBlockPositions()) {
@@ -150,7 +119,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         // bulletWorld.addRigidBody(rigidBody);
 
         // Create BulletData and add to dataMap
-        BulletData data = new BulletData(triangleList, trimesh, collisionShapeMesh, rigidBody);
+        BulletData data = new BulletData(null, null, null, rigidBody);
         dataMap.put(obj.hashCode(), data);
     }
 
@@ -185,10 +154,6 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
                     obj.getShipTransformationManager().setCurrentPhysicsTransform(new ShipTransform(transform, centerCoord));
                 }
             });
-
-
-            
-
     }
 
     @Override

@@ -63,8 +63,7 @@ public class ShipData {
      * side! Contains all of the non-air block positions on the ship. This is used for generating
      * AABBs and deconstructing the ship.
      */
-    // TEMP MESH RENDER CODE
-    // @PacketIgnore
+    @PacketIgnore
     @Nullable
     @JsonSerialize(as = SmallBlockPosSet.class)
     @JsonDeserialize(as = SmallBlockPosSet.class)

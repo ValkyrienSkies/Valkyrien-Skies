@@ -180,8 +180,6 @@ public class PhysicsObject implements IPhysicsEntity {
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
-            // TEMP TO SEE SHIP MESH
-            engine.addPhysicsObject(this);
         } else {
             this.shipRenderer = null;
             if (!firstTimeCreated) {

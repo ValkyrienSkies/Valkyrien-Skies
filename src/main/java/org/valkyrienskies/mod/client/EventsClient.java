@@ -272,34 +272,6 @@ public class EventsClient {
 
             for (PhysicsObject physo : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
                 physo.getShipRenderer().renderDebugInfo(offset);
-                BulletData data = ((BulletPhysicsEngine) ((IHasShipManager) world).getManager().getPhysicsEngine()).getData(physo);
-                if (data == null) {
-                    System.out.println("Data is null");
-                } else {
-                    // Matrix4dc stg = physo.getShipTransformationManager()
-                    //     .getRenderTransform().getSubspaceToGlobal();
-
-                    double posX = physo.getShipTransformationManager().getRenderTransform().getPosX();
-                    double posY = physo.getShipTransformationManager().getRenderTransform().getPosY();
-                    double posZ = physo.getShipTransformationManager().getRenderTransform().getPosZ();
-
-                    double pitch = physo.getShipTransformationManager().getRenderTransform().getPitch();
-                    double yaw = physo.getShipTransformationManager().getRenderTransform().getYaw();
-                    double roll = physo.getShipTransformationManager().getRenderTransform().getRoll();
-
-                    Matrix4dc subspaceToGlobalTRIANGLES = new Matrix4d()
-                            // Finally we translate the coordinates to where they are in the world.
-                            .translate(posX, posY, posZ)
-                            // Then we rotate about the coordinate origin based on the pitch/yaw/roll.
-                            .rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll));
-
-
-
-                    List<Triangle> triList = data.getTriangleList().stream().map(tri ->
-                        tri.transformPosition(subspaceToGlobalTRIANGLES)
-                    ).collect(ImmutableList.toImmutableList());
-                    MeshDebugOverlayRenderer.renderTriangles(triList, offset);
-                }
             }
         }
     }

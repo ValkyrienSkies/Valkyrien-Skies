@@ -15,15 +15,9 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 public class WorldClientShipManager implements IPhysObjectWorld {
 
     private final World world;
-    // private final Map<UUID, ShipData> ships;
-    // TEMP CODE FOR VIEWING MESHES
-    private final IPhysicsEngine physicsEngine;
 
     public WorldClientShipManager(World world) {
         this.world = world;
-        // this.ships = new HashMap<>();
-        // TEMP
-        this.physicsEngine = new BulletPhysicsEngine(world);
     }
 
     @Override
@@ -36,14 +30,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Override
     public void onWorldUnload() {
-        // TEMP
-        this.physicsEngine.unload();
-    }
 
-    // TEMP
-    @Override
-    public IPhysicsEngine getPhysicsEngine() {
-        return physicsEngine;
     }
 
     @Nonnull

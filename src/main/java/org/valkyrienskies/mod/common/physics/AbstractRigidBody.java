@@ -21,11 +21,23 @@ public abstract class AbstractRigidBody {
     final Set<Box> boxes = new HashSet<>();
     final Set<Box> boxesUnmodifiable = Collections.unmodifiableSet(boxes);
 
+    final boolean isStatic;
+
     @Getter
     private final ITransformController controller;
 
+    /**
+     * Constructs a rigid body
+     *
+     * @param controller The {@link ITransformController} that owns this rigid body
+     * @param initial    The initial collision shape of this rigid body
+     * @param data       The initial inertial data of this rigid body
+     * @param transform  The initial transform of this rigid body
+     * @param isStatic   If the object is static, then it should never move
+     */
     public AbstractRigidBody(ITransformController controller, ImmutableSet<Box> initial,
-        InertiaData data, Matrix4dc transform) {
+        InertiaData data, Matrix4dc transform, boolean isStatic) {
+        this.isStatic = isStatic;
         this.inertiaData = data;
         this.transform = transform;
         this.boxes.addAll(initial);
@@ -41,21 +53,25 @@ public abstract class AbstractRigidBody {
 
     /**
      * This updates the transform of the rigid body and notifies the physics engine.
-     *
+     * <p>
      * THIS SHOULD NOT BE CALLED BY A PHYSICS ENGINE, use {@link #silentUpdateTransform(Matrix4dc)}
      * instead.
      */
     public void updateTransform(Matrix4dc transform) {
+        assert !this.isStatic : "Someone tried to update a static body";
+
         this.transform = transform;
         this.observers.forEach(o -> o.onTransformUpdate(transform));
         onTransformUpdate(transform);
     }
 
     /**
-     * THIS IS ONLY TO BE CALLED BY THE PHYSICS ENGINE, IT DOES NOT TRIGGER THE
-     * {@link RigidBodyObserver#onTransformUpdate(Matrix4dc)} EVENT
+     * THIS IS ONLY TO BE CALLED BY THE PHYSICS ENGINE, IT DOES NOT TRIGGER THE {@link
+     * RigidBodyObserver#onTransformUpdate(Matrix4dc)} EVENT
      */
     public void silentUpdateTransform(Matrix4dc transform) {
+        assert !this.isStatic : "Physics engine tried to update a static body";
+
         this.transform = transform;
         onTransformUpdate(transform);
     }
@@ -98,11 +114,11 @@ public abstract class AbstractRigidBody {
         void onInertiaUpdate(InertiaData newInertia);
 
         /**
-         * Called when something causes the rigid body's transform to be changed through
-         * {@link #updateTransform(Matrix4dc)}, e.g., NOT BY THE PHYSICS ENGINE
+         * Called when something causes the rigid body's transform to be changed through {@link
+         * #updateTransform(Matrix4dc)}, e.g., NOT BY THE PHYSICS ENGINE
          *
-         * @param newTransform The new transform of this rigid body updated by something
-         *                     other than the physics engine
+         * @param newTransform The new transform of this rigid body updated by something other than
+         *                     the physics engine
          */
         void onTransformUpdate(Matrix4dc newTransform);
 
@@ -110,6 +126,7 @@ public abstract class AbstractRigidBody {
 
     @Value
     public static class InertiaData {
+
         Vector3dc centerOfMass;
         Matrix3dc inertia;
         float mass;
@@ -117,6 +134,7 @@ public abstract class AbstractRigidBody {
 
     @Value
     public static class Box {
+
         Vector3dc center;
         Vector3dc halfExtents;
     }

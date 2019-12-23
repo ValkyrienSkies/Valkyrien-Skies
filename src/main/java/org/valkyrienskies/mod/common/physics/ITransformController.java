@@ -11,6 +11,8 @@ public interface ITransformController {
      */
     void addRigidBody(AbstractRigidBody body);
 
+    void removeRigidBody(AbstractRigidBody body);
+
     void tick(float delta);
 
     default void unload() {}

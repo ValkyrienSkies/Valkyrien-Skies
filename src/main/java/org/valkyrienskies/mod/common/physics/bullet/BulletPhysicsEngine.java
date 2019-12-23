@@ -137,6 +137,12 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         dataMap.put(body, observer);
     }
 
+    @Override
+    public void removeRigidBody(AbstractRigidBody body) {
+        BulletData removed = dataMap.remove(body);
+
+    }
+
     @PhysicsThreadOnly
     public void tick(float delta) {
         VSPreconditions.assertPhysicsThread();
@@ -202,6 +208,8 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
         // This constructor is only called when a new AbstractRigidBody is registered
         BulletData(AbstractRigidBody observing) {
+            observing.registerObserver(this);
+
             bulletShape = new btCompoundShape();
             observing.getInternalShapeSet().forEach(this::addBox);
 

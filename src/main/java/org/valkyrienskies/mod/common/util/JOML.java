@@ -78,6 +78,10 @@ public class JOML {
         return new Matrix4().set(m.get(new float[16]));
     }
 
+    public static Vector3 toGDX(Vec3i v) {
+        return new Vector3(v.getX(), v.getY(), v.getZ());
+    }
+
     public static Vector3 toGDX(Vector3dc v) {
         return new Vector3((float) v.x(), (float)v.y(), (float) v.z());
     }

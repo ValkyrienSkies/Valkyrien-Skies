@@ -1,13 +1,11 @@
 package org.valkyrienskies.mod.common.physics;
 
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.joml.Vector3dc;
 
-public interface IPhysicsEngine {
+public interface IPhysicsEngine extends ITransformController {
 
-    void addPhysicsObject(PhysicsObject obj);
+    void applyForce(AbstractRigidBody body, Vector3dc force, Vector3dc position);
 
-    void tick(float delta);
-
-    void unload();
+    void addCentralForce(AbstractRigidBody body, Vector3dc force);
 
 }

@@ -13,13 +13,9 @@ import org.joml.Vector3dc;
 
 public abstract class AbstractRigidBody {
 
-    Set<RigidBodyObserver> observers = ConcurrentHashMap.newKeySet();
+    final Set<RigidBodyObserver> observers = ConcurrentHashMap.newKeySet();
     @Getter
-    Vector3dc centerOfMass;
-    @Getter
-    Matrix3dc inertia;
-    @Getter
-    float mass;
+    InertiaData inertiaData;
     @Getter
     Matrix4dc transform;
     final Set<Box> boxes = new HashSet<>();
@@ -29,9 +25,8 @@ public abstract class AbstractRigidBody {
     private final ITransformController controller;
 
     public AbstractRigidBody(ITransformController controller, ImmutableSet<Box> initial,
-        Vector3dc centerOfMass, Matrix3dc inertia, Matrix4dc transform) {
-        this.centerOfMass = centerOfMass;
-        this.inertia = inertia;
+        InertiaData data, Matrix4dc transform) {
+        this.inertiaData = data;
         this.transform = transform;
         this.boxes.addAll(initial);
 
@@ -39,28 +34,36 @@ public abstract class AbstractRigidBody {
         controller.addRigidBody(this);
     }
 
+    public void updateInertiaData(InertiaData newInertiaData) {
+        this.inertiaData = newInertiaData;
+        this.observers.forEach(o -> o.onInertiaUpdate(newInertiaData));
+    }
+
+    /**
+     * This updates the transform of the rigid body and notifies the physics engine.
+     *
+     * THIS SHOULD NOT BE CALLED BY A PHYSICS ENGINE, use {@link #silentUpdateTransform(Matrix4dc)}
+     * instead.
+     */
     public void updateTransform(Matrix4dc transform) {
         this.transform = transform;
-        this.observers.forEach(o -> o.onTransformChange(transform));
+        this.observers.forEach(o -> o.onTransformUpdate(transform));
         onTransformUpdate(transform);
     }
 
+    /**
+     * THIS IS ONLY TO BE CALLED BY THE PHYSICS ENGINE, IT DOES NOT TRIGGER THE
+     * {@link RigidBodyObserver#onTransformUpdate(Matrix4dc)} EVENT
+     */
+    public void silentUpdateTransform(Matrix4dc transform) {
+        this.transform = transform;
+        onTransformUpdate(transform);
+    }
+
+    /**
+     * Called when this Rigid Body's transform is changed, typically
+     */
     protected abstract void onTransformUpdate(Matrix4dc transform);
-
-    public void updateCenterOfMass(Vector3dc newCenterOfMass) {
-        this.centerOfMass = newCenterOfMass;
-        this.observers.forEach(o -> o.onCenterOfMassUpdate(newCenterOfMass));
-    }
-
-    public void updateInertia(Matrix3dc newInertia) {
-        this.inertia = newInertia;
-        this.observers.forEach(o -> o.onInertiaUpdate(newInertia));
-    }
-
-    public void updateMass(float newMass) {
-        this.mass = newMass;
-        this.observers.forEach(o -> o.onUpdateMass(newMass));
-    }
 
     public Set<Box> getInternalShapeSet() {
         return boxesUnmodifiable;
@@ -92,9 +95,7 @@ public abstract class AbstractRigidBody {
 
         void onShapeUpdate(ImmutableSet<Box> added, ImmutableSet<Box> removed);
 
-        void onInertiaUpdate(Matrix3dc newInertia);
-
-        void onCenterOfMassUpdate(Vector3dc newCenterOfMass);
+        void onInertiaUpdate(InertiaData newInertia);
 
         /**
          * Called when something causes the rigid body's transform to be changed through
@@ -103,10 +104,15 @@ public abstract class AbstractRigidBody {
          * @param newTransform The new transform of this rigid body updated by something
          *                     other than the physics engine
          */
-        void onTransformChange(Matrix4dc newTransform);
+        void onTransformUpdate(Matrix4dc newTransform);
 
-        void onUpdateMass(float newMass);
+    }
 
+    @Value
+    public static class InertiaData {
+        Vector3dc centerOfMass;
+        Matrix3dc inertia;
+        float mass;
     }
 
     @Value

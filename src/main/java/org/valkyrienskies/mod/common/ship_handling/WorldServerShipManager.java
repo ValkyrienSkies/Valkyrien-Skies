@@ -1,7 +1,10 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
@@ -12,13 +15,7 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class WorldServerShipManager implements IPhysObjectWorld {
+public class WorldServerShipManager implements IWorldShipManager {
 
     private transient World world;
     private transient Map<EntityPlayer, List<ShipData>> playerToWatchingShips;
@@ -43,42 +40,13 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         this.physicsEngine.unload();
     }
 
-    @Override
-    public PhysicsObject createPhysObjectFromData(ShipData data) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removePhysObject(ShipData data) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public PhysicsObject getPhysObjectFromData(ShipData data) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nonnull
-    @Override
-    public List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck) {
-        List<PhysicsObject> nearby = new ArrayList<>();
-        for (ShipData data : QueryableShipData.get(world)) {
-            if (data.getPhyso() != null) {
-                if (toCheck.intersects(data.getShipBB())) {
-                    nearby.add(data.getPhyso());
-                }
-            }
-        }
-        return nearby;
-    }
-
     public void tick() {
         // Does nothing for now, will eventually be used when ships are no longer entities.
         for (ShipData data : QueryableShipData.get(world)) {
             // TODO: Temp code. We should only be spawning in ships once a player gets close, and de-spawn them when
             //  players are far.
             if (data.getPhyso() == null) {
-                PhysicsObject physicsObject = new PhysicsObject(world, data, false);
+                PhysicsObject physicsObject = new PhysicsObject(world, data, false, physicsEngine);
                 data.setPhyso(physicsObject);
             }
             if (data.getPhyso() != null) {
@@ -94,17 +62,6 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     @Nonnull
-    @Override
-    public List<PhysicsObject> getAllLoadedPhysObj() {
-        List<PhysicsObject> allLoaded = new ArrayList<>();
-        for (ShipData data : QueryableShipData.get(world)) {
-            if (data.getPhyso() != null) {
-                allLoaded.add(data.getPhyso());
-            }
-        }
-        return allLoaded;
-    }
-
     public World getWorld() {
         return world;
     }

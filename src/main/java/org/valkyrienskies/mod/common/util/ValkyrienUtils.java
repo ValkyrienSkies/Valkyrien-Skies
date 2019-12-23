@@ -1,6 +1,5 @@
 package org.valkyrienskies.mod.common.util;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +27,7 @@ import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
 import org.valkyrienskies.mod.common.multithreaded.VSExecutors;
+import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
@@ -169,10 +169,6 @@ public class ValkyrienUtils {
             name, chunkClaim, shipID, initial, axisAlignedBB, physInfuserPos);
     }
 
-    public static Collection<PhysicsObject> getPhysosLoadedInWorld(World world) {
-        return ((IHasShipManager) world).getManager().getAllLoadedPhysObj();
-    }
-
     public static TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(World world,
         @Nullable EntityPlayerMP creator, BlockPos physicsInfuserPos) {
         if (world.isRemote) {
@@ -206,7 +202,8 @@ public class ValkyrienUtils {
                         return;
                     }
                     QueryableShipData.get(world).addShip(shipData);
-                    PhysicsObject physicsObject = new PhysicsObject(world, shipData, true);
+                    IPhysicsEngine engine = ((IHasShipManager) world).getManager().getPhysicsEngine();
+                    PhysicsObject physicsObject = new PhysicsObject(world, shipData, true, engine);
                     shipData.setPhyso(physicsObject);
 
                     physicsObject.assembleShip(creator, detector, physicsInfuserPos);

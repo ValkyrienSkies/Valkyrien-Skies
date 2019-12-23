@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
@@ -68,8 +67,6 @@ import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
-import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
-import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
@@ -84,6 +81,7 @@ import valkyrienwarfare.api.IPhysicsEntityManager;
 )
 @Log4j2
 public class ValkyrienSkiesMod {
+
     // Used for registering stuff
     public static final List<Block> BLOCKS = new ArrayList<Block>();
     public static final List<Item> ITEMS = new ArrayList<Item>();
@@ -127,18 +125,17 @@ public class ValkyrienSkiesMod {
         }
     }
 
-    // Set this to the path of the lib to use it on desktop instead of the default lib.
-    private final static String customDesktopLib = "C:\\Users\\Alexander\\Desktop\\libgdx\\extensions\\gdx-bullet\\jni\\vs\\gdxBullet\\x64\\Debug\\gdxBullet.dll";
-    private final static boolean DEBUG_BULLET = false;
+    // Set bullet DLL path as env variable (-DbulletDLL="C:\Path\To\Bullet.dll")
+    private static final String customDesktopLib = System.getProperty("bulletDLL");
+    private static final boolean DEBUG_BULLET = false;
 
     static void initBullet() {
         // Need to initialize bullet before using it.
-        if (DEBUG_BULLET) { // Gdx.app.getType() == Application.ApplicationType.Desktop && debugBullet) {
+        if (DEBUG_BULLET && customDesktopLib != null) {
             System.load(customDesktopLib);
         } else {
-            Bullet.init();
+            Bullet.init(true);
         }
-        // System.out.println(String.format("Bullet", "Version = " + LinearMath.btGetVersion()));
     }
 
 
@@ -157,7 +154,7 @@ public class ValkyrienSkiesMod {
         log.debug("Initializing networks.");
         registerNetworks(event);
 
-		VSCapabilityRegistry.registerCapabilities();
+        VSCapabilityRegistry.registerCapabilities();
         proxy.preInit(event);
 
         log.debug("Initializing the VS API.");
@@ -177,7 +174,7 @@ public class ValkyrienSkiesMod {
         }
 
         registerItems();
-		registerBlocks();
+        registerBlocks();
     }
 
     @EventHandler

@@ -55,8 +55,9 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.ship_handling.IWorldShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -74,7 +75,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     private PhysicsObject dontInterceptShip = null;
 
     // The IWorldShipManager
-    private IPhysObjectWorld manager = null;
+    private IWorldShipManager manager = null;
     // Rotation Node World fields. Note this is only used in multiplayer, but making a MixinWorldServer
     // just for one field would be wasteful.
     private ImplRotationNodeWorld rotationNodeWorld = new ImplRotationNodeWorld(null);
@@ -343,19 +344,13 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 
-
-        IPhysObjectWorld physObjectWorld = ((IHasShipManager) (this)).getManager();
-
-        if (physObjectWorld == null) {
-            return vanillaTrace;
-        }
-
         Vec3d playerReachVector = vec32.subtract(vec31);
 
-        AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y,
-            vec32.z);
+        AxisAlignedBB playerRangeBB =
+            new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y, vec32.z);
 
-        List<PhysicsObject> nearbyShips = physObjectWorld.getNearbyPhysObjects(playerRangeBB);
+        List<PhysicsObject> nearbyShips = QueryableShipData.get(World.class.cast(this))
+            .getNearbyLoadedShips(playerRangeBB);
         // Get rid of the Ship that we're not supposed to be RayTracing for
         nearbyShips.remove(toIgnore);
 
@@ -400,7 +395,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     }
 
     @Override
-    public IPhysObjectWorld getManager() {
+    public IWorldShipManager getManager() {
         if (manager == null) {
             throw new IllegalStateException(
                 "We can't be accessing this manager since WorldEvent.load() was never called!");
@@ -409,7 +404,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     }
 
     @Override
-    public void setManager(Function<World, IPhysObjectWorld> managerSupplier) {
+    public void setManager(Function<World, IWorldShipManager> managerSupplier) {
         manager = managerSupplier.apply(World.class.cast(this));
     }
 

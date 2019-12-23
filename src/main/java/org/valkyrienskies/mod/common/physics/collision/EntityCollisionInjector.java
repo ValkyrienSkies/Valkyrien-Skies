@@ -46,7 +46,7 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.ShipPolygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
-import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import valkyrienwarfare.api.TransformType;
 
 public class EntityCollisionInjector {
@@ -412,8 +412,9 @@ public class EntityCollisionInjector {
             .offset(velocity.x, velocity.y, velocity.z).expand(1, 1,
                 1);
 
-        List<PhysicsObject> ships = ((IHasShipManager) entity.getEntityWorld()).getManager()
-            .getNearbyPhysObjects(entityBB);
+        List<PhysicsObject> ships = QueryableShipData.get(entity.getEntityWorld())
+            .getNearbyLoadedShips(entityBB);
+
         // If a player is riding a Ship, don't process any collision between that Ship
         // and the Player
         for (PhysicsObject wrapper : ships) {

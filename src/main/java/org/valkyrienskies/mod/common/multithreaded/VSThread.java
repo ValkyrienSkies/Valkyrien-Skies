@@ -31,6 +31,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 
 /**
@@ -152,7 +153,7 @@ public class VSThread extends Thread {
         // TODO: Temporary fix:
 //        WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
 //            .getManagerForWorld(hostWorld);
-        List<PhysicsObject> physicsEntities = ((IHasShipManager) hostWorld).getManager().getAllLoadedPhysObj();
+        List<PhysicsObject> physicsEntities = QueryableShipData.get(hostWorld).getLoadedPhysos();
         // Tick ship physics here
         tickThePhysicsAndCollision(physicsEntities);
         tickSendUpdatesToPlayers(physicsEntities);

@@ -57,8 +57,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.proxy.ClientProxy;
 
@@ -266,8 +265,7 @@ public abstract class MixinRenderGlobal {
                                      Entity entityIn, CallbackInfoReturnable callbackInfo) {
         RenderHelper.disableStandardItemLighting();
 
-        IPhysObjectWorld physObjectWorld = ((IHasShipManager) Minecraft.getMinecraft().world).getManager();
-        for (PhysicsObject wrapper : physObjectWorld.getAllLoadedPhysObj()) {
+        for (PhysicsObject wrapper : QueryableShipData.get(world).getLoadedPhysos()) {
             GL11.glPushMatrix();
             if (wrapper.getShipRenderer() != null && wrapper
                     .getShipRenderer().shouldRender()) {

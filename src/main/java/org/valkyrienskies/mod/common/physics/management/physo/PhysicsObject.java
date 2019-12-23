@@ -47,6 +47,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
+import org.joml.Matrix4dc;
 import org.joml.Quaterniondc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
@@ -54,10 +55,10 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
+import org.valkyrienskies.mod.common.physics.AbstractRigidBody;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
-import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
+import org.valkyrienskies.mod.common.physics.ITransformController;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
-import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.management.BasicCenterOfMassProvider;
@@ -68,7 +69,6 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingCh
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
-import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
@@ -77,7 +77,7 @@ import valkyrienwarfare.api.TransformType;
  * The heart and soul of this mod, and now its broken lol.
  */
 
-public class PhysicsObject implements IPhysicsEntity {
+public class PhysicsObject extends AbstractRigidBody implements IPhysicsEntity {
 
     // region Fields
 
@@ -140,12 +140,6 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     private final int hashCode;
 
-    /**
-     * The physics engine which this is currently running with
-     */
-    // TODO: yes, this is hard-set to bullet
-    private final IPhysicsEngine engine;
-
     // endregion
 
     // region Methods
@@ -158,8 +152,10 @@ public class PhysicsObject implements IPhysicsEntity {
      * @param firstTimeCreated True if this ship was just created through a physics infuser, false
      *                         if it was loaded in from the world save.
      */
-    public PhysicsObject(World world, ShipData initial, boolean firstTimeCreated) {
-        // QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
+    public PhysicsObject(World world, ShipData initial, boolean firstTimeCreated,
+        ITransformController engine) {
+        super(engine);
+
         this.world = world;
         this.shipData = initial;
         this.isRemote = world.isRemote;
@@ -175,7 +171,6 @@ public class PhysicsObject implements IPhysicsEntity {
         this.shipTransformationManager = new ShipTransformationManager(this,
             getData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
-        this.engine = ((IHasShipManager) world).getManager().getPhysicsEngine();
 
         // Note how this is last.
         if (world.isRemote) {
@@ -187,7 +182,6 @@ public class PhysicsObject implements IPhysicsEntity {
                     .updateAllTransforms(this.getData().getShipTransform(), true, true);
                 Objects.requireNonNull(shipData.getBlockPositions())
                     .forEach(voxelFieldAABBMaker::addVoxel);
-                engine.addPhysicsObject(this);
             }
         }
     }
@@ -321,8 +315,6 @@ public class PhysicsObject implements IPhysicsEntity {
             TransformType.SUBSPACE_TO_GLOBAL);
         getData().setShipBB(polygon.getEnclosedAABB());
         */
-
-        engine.addPhysicsObject(this);
     }
 
     public void preloadNewPlayers() {
@@ -672,5 +664,15 @@ public class PhysicsObject implements IPhysicsEntity {
             return null;
         }
         return chunks[x - minChunkX][z - minChunkZ];
+    }
+
+    @Override
+    public void onTransformUpdate(Matrix4dc transform) {
+
+    }
+
+    @Override
+    public CollisionShape getShape() {
+        return null;
     }
 }

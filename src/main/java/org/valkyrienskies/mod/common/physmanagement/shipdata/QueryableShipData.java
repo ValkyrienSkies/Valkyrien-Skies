@@ -8,18 +8,19 @@ import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
@@ -91,8 +92,32 @@ public class QueryableShipData implements Iterable<ShipData> {
     /**
      * Retrieves a list of all ships.
      */
-    public List<ShipData> getShips() {
+    public ImmutableList<ShipData> getShips() {
         return ImmutableList.copyOf(allShips);
+    }
+
+    /**
+     * @return All {@link ShipData} with a nonnull {@link ShipData#getPhyso()}, mapped
+     * by {@link ShipData#getPhyso()}
+     *
+     * @see #getLoadedShips()
+     */
+    public ImmutableList<PhysicsObject> getLoadedPhysos() {
+        return allShips.stream()
+            .filter(ship -> ship.getPhyso() != null)
+            .map(ShipData::getPhyso)
+            .collect(ImmutableList.toImmutableList());
+    }
+
+    /**
+     * @return All {@link ShipData} with a nonnull {@link ShipData#getPhyso()}
+     *
+     * @see #getLoadedPhysos()
+     */
+    public ImmutableList<ShipData> getLoadedShips() {
+        return allShips.stream()
+            .filter(ship -> ship.getPhyso() != null)
+            .collect(ImmutableList.toImmutableList());
     }
 
     public Optional<ShipData> getShipFromChunk(int chunkX, int chunkZ) {
@@ -155,6 +180,17 @@ public class QueryableShipData implements Iterable<ShipData> {
     }
 
     /**
+     * @return All loaded ships whose AABB intersects with the specified one
+     */
+    public ImmutableList<PhysicsObject> getNearbyLoadedShips(AxisAlignedBB toCheck) {
+        return allShips.stream()
+            .map(ShipData::getPhyso)
+            .filter(Objects::nonNull)
+            .filter(obj -> obj.getShipBB().intersects(toCheck))
+            .collect(ImmutableList.toImmutableList());
+    }
+
+    /**
      * Adds the ship data if it doesn't exist, or replaces the old ship data with the new ship data,
      * while preserving the physics object attached to the old data if there was one.
      */
@@ -162,15 +198,9 @@ public class QueryableShipData implements Iterable<ShipData> {
         Optional<ShipData> old = getShip(ship.getUuid());
         if (old.isPresent()) {
             old.get().setShipTransform(ship.getShipTransform());
-            // old.get().setName(ship.getName());
             old.get().setPhysInfuserPos(ship.getPhysInfuserPos());
             old.get().setShipBB(ship.getShipBB());
             old.get().setPhysicsEnabled(ship.isPhysicsEnabled());
-            // this.updateShipData(old.get(), ship);
-            // PhysicsObject oldPhyso = old.get().getPhyso();
-            // if (oldPhyso != null) {
-            // ship.setPhyso(oldPhyso);
-            // }
         } else {
             this.allShips.add(ship);
         }
@@ -189,16 +219,6 @@ public class QueryableShipData implements Iterable<ShipData> {
      */
     public void updateShipData(Iterable<ShipData> oldData, Iterable<ShipData> newData) {
         this.allShips.update(oldData, newData);
-    }
-
-    /**
-     * Atomically updates ShipData. It must be true that <code>!oldData.equals(newData)</code>
-     *
-     * @param oldData The old data object to replace
-     * @param newData The new data object
-     */
-    public void updateShipData(ShipData oldData, ShipData newData) {
-        this.updateShipData(Collections.singleton(oldData), Collections.singleton(newData));
     }
 
     @Override

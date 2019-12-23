@@ -16,8 +16,6 @@
 
 package org.valkyrienskies.mod.client;
 
-import com.google.common.collect.ImmutableList;
-import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
@@ -44,8 +42,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
-import org.joml.Matrix4d;
-import org.joml.Matrix4dc;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.fixes.SoundFixWrapper;
@@ -53,12 +49,9 @@ import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine;
-import org.valkyrienskies.mod.common.physics.bullet.BulletPhysicsEngine.BulletData;
-import org.valkyrienskies.mod.common.physics.bullet.MeshCreator.Triangle;
-import org.valkyrienskies.mod.common.physics.bullet.MeshDebugOverlayRenderer;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.VSRenderUtils;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -89,7 +82,7 @@ public class EventsClient {
             case START:
                 // Nothing for now
 
-                for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
+                for (PhysicsObject wrapper : QueryableShipData.get(world).getLoadedPhysos()) {
                     // This is necessary because Minecraft will run a raytrace right after this
                     // event to determine what the player is looking at for interaction purposes.
                     // That raytrace will use the render transform, so we must have the render
@@ -255,7 +248,7 @@ public class EventsClient {
         }
 
         if (event.phase == Phase.START) {
-            for (PhysicsObject wrapper : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
+            for (PhysicsObject wrapper : QueryableShipData.get(world).getLoadedPhysos()) {
                 wrapper.getShipTransformationManager().updateRenderTransform(partialTicks);
             }
         }
@@ -270,7 +263,7 @@ public class EventsClient {
             Vector3dc offset =
                 VSRenderUtils.getEntityPartialPosition(mc.player, partialTicks).negate();
 
-            for (PhysicsObject physo : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
+            for (PhysicsObject physo : QueryableShipData.get(world).getLoadedPhysos()) {
                 physo.getShipRenderer().renderDebugInfo(offset);
             }
         }

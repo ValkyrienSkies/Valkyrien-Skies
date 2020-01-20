@@ -31,7 +31,7 @@ public class SpawnPhysObjMessageHandler implements IMessageHandler<SpawnPhysObjM
                     }
                     // Create a new PhysicsObject based on the ShipData.
                     queryableShipData.addOrUpdateShipPreservingPhysObj(toSpawn);
-                    PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, false);
+                    PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, false, null, null, null);
                     toSpawn.setPhyso(physicsObject);
                 }
             }

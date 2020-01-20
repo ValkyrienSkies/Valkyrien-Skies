@@ -203,12 +203,8 @@ public class ValkyrienUtils {
                     }
                     QueryableShipData.get(world).addShip(shipData);
                     IPhysicsEngine engine = ((IHasShipManager) world).getManager().getPhysicsEngine();
-                    PhysicsObject physicsObject = new PhysicsObject(world, shipData, true, engine);
+                    PhysicsObject physicsObject = new PhysicsObject(world, shipData, true, engine, detector, physicsInfuserPos);
                     shipData.setPhyso(physicsObject);
-
-                    physicsObject.assembleShip(creator, detector, physicsInfuserPos);
-                    int i = 1;
-                    // TODO: Do something with this?
                 }, VSExecutors.forWorld((WorldServer) world));
     }
 

@@ -11,6 +11,8 @@ import org.joml.Matrix3dc;
 import org.joml.Matrix4dc;
 import org.joml.Vector3dc;
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractRigidBody {
 
     final Set<RigidBodyObserver> observers = ConcurrentHashMap.newKeySet();
@@ -43,7 +45,6 @@ public abstract class AbstractRigidBody {
         this.boxes.addAll(initial);
 
         this.controller = controller;
-        controller.addRigidBody(this);
     }
 
     public void updateInertiaData(InertiaData newInertiaData) {
@@ -93,9 +94,11 @@ public abstract class AbstractRigidBody {
         this.updateShape(ImmutableSet.of(), ImmutableSet.of(box));
     }
 
-    public void updateShape(ImmutableSet<Box> added, ImmutableSet<Box> removed) {
-        this.boxes.addAll(added);
-        this.boxes.removeAll(removed);
+    public void updateShape(@Nullable ImmutableSet<Box> added, @Nullable ImmutableSet<Box> removed) {
+        if (added != null)
+            this.boxes.addAll(added);
+        if (removed != null)
+            this.boxes.removeAll(removed);
         this.observers.forEach(o -> o.onShapeUpdate(added, removed));
     }
 
@@ -109,7 +112,7 @@ public abstract class AbstractRigidBody {
 
     public interface RigidBodyObserver {
 
-        void onShapeUpdate(ImmutableSet<Box> added, ImmutableSet<Box> removed);
+        void onShapeUpdate(@Nullable ImmutableSet<Box> added, @Nullable ImmutableSet<Box> removed);
 
         void onInertiaUpdate(InertiaData newInertia);
 

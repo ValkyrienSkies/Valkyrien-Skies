@@ -335,8 +335,6 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
 
         List<PhysicsObject> nearbyShips = QueryableShipData.get(World.class.cast(this))
             .getNearbyLoadedShips(playerRangeBB);
-        // Get rid of the Ship that we're not supposed to be RayTracing for
-        nearbyShips.remove(toIgnore);
 
         double reachDistance = playerReachVector.length();
         double worldResultDistFromPlayer = 420000000D;
@@ -345,6 +343,10 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
         }
 
         for (PhysicsObject wrapper : nearbyShips) {
+            if (wrapper == toIgnore) {
+                // Skip the ship we're not ray-tracing against
+                continue;
+            }
             Vec3d playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
 

@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.physics.management.physo;
 
+import com.google.common.collect.ImmutableSet;
 import gnu.trove.iterator.TIntIterator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,10 +40,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
-import org.valkyrienskies.mod.common.physics.AbstractRigidBody;
-import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
-import org.valkyrienskies.mod.common.physics.ITransformController;
-import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
+import org.valkyrienskies.mod.common.physics.*;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.management.BasicCenterOfMassProvider;
@@ -61,7 +59,7 @@ import valkyrienwarfare.api.TransformType;
  * The heart and soul of this mod, and now its broken lol.
  */
 
-public class PhysicsObject extends AbstractRigidBody implements IPhysicsEntity {
+public class PhysicsObject implements IPhysicsEntity {
 
     // region Fields
 
@@ -124,6 +122,9 @@ public class PhysicsObject extends AbstractRigidBody implements IPhysicsEntity {
      */
     private final int hashCode;
 
+    @Getter
+    private final ShipRigidBody shipRigidBody;
+
     // endregion
 
     // region Methods
@@ -137,9 +138,7 @@ public class PhysicsObject extends AbstractRigidBody implements IPhysicsEntity {
      *                         if it was loaded in from the world save.
      */
     public PhysicsObject(World world, ShipData initial, boolean firstTimeCreated,
-        ITransformController engine) {
-        super(engine);
-
+        ITransformController engine, SpatialDetector detector, BlockPos centerInWorld) {
         this.world = world;
         this.shipData = initial;
         this.isRemote = world.isRemote;
@@ -159,14 +158,21 @@ public class PhysicsObject extends AbstractRigidBody implements IPhysicsEntity {
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
+            this.shipRigidBody = null;
         } else {
             this.shipRenderer = null;
+            if (firstTimeCreated) {
+                assembleShip(null, detector, centerInWorld);
+
+            }
             if (!firstTimeCreated) {
                 this.getShipTransformationManager()
                     .updateAllTransforms(this.getData().getShipTransform(), true, true);
                 Objects.requireNonNull(shipData.getBlockPositions())
                     .forEach(voxelFieldAABBMaker::addVoxel);
             }
+            this.shipRigidBody = new ShipRigidBody(this, engine);
+            engine.addRigidBody(shipRigidBody);
         }
     }
 
@@ -204,6 +210,10 @@ public class PhysicsObject extends AbstractRigidBody implements IPhysicsEntity {
             voxelFieldAABBMaker.addVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
         }
 
+        if (shipRigidBody != null) {
+            shipRigidBody.updateBlock(posAt, oldState, newState);
+        }
+
         if (getBlockPositions().isEmpty()) {
             // TODO: Maybe?
             //destroy();
@@ -216,7 +226,7 @@ public class PhysicsObject extends AbstractRigidBody implements IPhysicsEntity {
         centerOfMassProvider.onSetBlockState(this, posAt, oldState, newState);
     }
 
-    public void assembleShip(EntityPlayer player, SpatialDetector detector,
+    private void assembleShip(EntityPlayer player, SpatialDetector detector,
         BlockPos centerInWorld) {
 
         MutableBlockPos pos = new MutableBlockPos();
@@ -650,13 +660,4 @@ public class PhysicsObject extends AbstractRigidBody implements IPhysicsEntity {
         return chunks[x - minChunkX][z - minChunkZ];
     }
 
-    @Override
-    public void onTransformUpdate(Matrix4dc transform) {
-
-    }
-
-    @Override
-    public CollisionShape getShape() {
-        return null;
-    }
 }

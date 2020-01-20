@@ -28,6 +28,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Matrix4d;
@@ -160,7 +162,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
         QueryableShipData.get(mcWorld).getLoadedPhysos()
             .forEach(obj -> {
-                BulletData data = getData(obj);
+                BulletData data = getData(obj.getShipRigidBody());
                 if (data.bulletBody != null) {
                     btRigidBody body = data.bulletBody;
                     Matrix4 worldTransform = body.getWorldTransform();
@@ -202,9 +204,9 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
      */
     private static class BulletData implements RigidBodyObserver {
 
-        btRigidBody bulletBody;
-        btCompoundShape bulletShape;
-        Map<Box, btBoxShape> shapeMap = new HashMap<>();
+        final btRigidBody bulletBody;
+        final btCompoundShape bulletShape;
+        final Map<Box, btBoxShape> shapeMap = new HashMap<>();
 
         // This constructor is only called when a new AbstractRigidBody is registered
         BulletData(AbstractRigidBody observing) {
@@ -219,16 +221,21 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
             btRigidBodyConstructionInfo constructionInfo = new btRigidBodyConstructionInfo(
                 mass, null, bulletShape, getLocalInertia(bulletShape, mass));
 
-            btRigidBody rigidBody = new btRigidBody(constructionInfo);
-            rigidBody.setCollisionShape(bulletShape);
+            bulletBody = new btRigidBody(constructionInfo);
+            bulletBody.setCollisionShape(bulletShape);
+
+
             Matrix4 positionTransform = JOML.toGDX(observing.getTransform());
-            rigidBody.setWorldTransform(positionTransform);
+            bulletBody.setWorldTransform(positionTransform);
         }
 
         @Override
-        public void onShapeUpdate(ImmutableSet<Box> added, ImmutableSet<Box> removed) {
-            removed.forEach(this::removeBox);
-            added.forEach(this::addBox);
+        public void onShapeUpdate(@Nullable ImmutableSet<Box> added, @Nullable ImmutableSet<Box> removed) {
+            if (removed != null)
+                removed.forEach(this::removeBox);
+            if (added != null)
+                added.forEach(this::addBox);
+            bulletBody.activate();
         }
 
         @Override

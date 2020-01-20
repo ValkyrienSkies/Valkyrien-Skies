@@ -46,7 +46,7 @@ public class WorldServerShipManager implements IWorldShipManager {
             // TODO: Temp code. We should only be spawning in ships once a player gets close, and de-spawn them when
             //  players are far.
             if (data.getPhyso() == null) {
-                PhysicsObject physicsObject = new PhysicsObject(world, data, false, physicsEngine);
+                PhysicsObject physicsObject = new PhysicsObject(world, data, false, physicsEngine, null, null);
                 data.setPhyso(physicsObject);
             }
             if (data.getPhyso() != null) {

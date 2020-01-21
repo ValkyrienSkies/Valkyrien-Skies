@@ -20,6 +20,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
 import org.valkyrienskies.mod.common.math.Vector;
@@ -90,6 +92,7 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation, ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + I18n

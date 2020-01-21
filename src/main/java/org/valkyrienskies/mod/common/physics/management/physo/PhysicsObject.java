@@ -386,6 +386,11 @@ public class PhysicsObject implements IPhysicsEntity {
     public void onTick() {
         updateChunkCache();
         if (!getWorld().isRemote) {
+
+            // Update the inertia
+            getShipRigidBody().updateInertiaData(ShipRigidBody.generateInitialForShip(this));
+
+
             TileEntity te = getWorld().getTileEntity(getData().getPhysInfuserPos());
             boolean shouldDeconstructShip;
 

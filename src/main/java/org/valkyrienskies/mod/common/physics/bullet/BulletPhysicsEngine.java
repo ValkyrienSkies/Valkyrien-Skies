@@ -168,8 +168,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
                         btRigidBody body = data.bulletBody;
                         Matrix4 worldTransform = body.getWorldTransform();
                         Matrix4d transform = JOML.convertDouble(worldTransform);
-                        Vector3d centerCoord = JOML.convert(obj.getCenterCoord());
-                        obj.getShipTransformationManager().setCurrentPhysicsTransform(new ShipTransform(transform, centerCoord));
+                        obj.getShipTransformationManager().setCurrentPhysicsTransform(new ShipTransform(transform, data.centerOfMass));
                     }
                 });
     }
@@ -249,6 +248,8 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
         @Override
         public void onShapeUpdate(@Nullable ImmutableSet<Box> added, @Nullable ImmutableSet<Box> removed) {
+            // TODO: This is NOT thread-safe. We should have something like PhysicsEngine.queueShapeUpdate()
+            //       but for now we just pray that nothing breaks.
             if (removed != null)
                 removed.forEach(this::removeBox);
             if (added != null)
@@ -266,7 +267,25 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
             float mass = newInertia.getMass();
             Vector3 inertia = getLocalInertia(boxesShape, mass);
 
+            Vector3dc newCenterOfMass = newInertia.getCenterOfMass();
+
+            // Offset the rigid body collision shape.
+            Matrix4 newTransform = JOML.toGDX(new Matrix4d().translate((float) shipRefPos.x() - newCenterOfMass.x(), (float) shipRefPos.y() - newCenterOfMass.y(), (float) shipRefPos.z() - newCenterOfMass.z()));
+            bulletBodyShape.updateChildTransform(0, newTransform);
+
+
+            // Basically we need to offset the rigid body position by the change of the center of mass.
+            // Otherwise the ship will jiggle when we update the center of mass
+            Vector3d offset = newCenterOfMass.sub(centerOfMass, new Vector3d());
+            Matrix4dc bulletBodyTransform = JOML.convertDouble(bulletBody.getWorldTransform());
+            bulletBodyTransform.transformDirection(offset);
+            bulletBody.translate(JOML.toGDX(offset));
+
+            // Update the mass and inertia matrix
             bulletBody.setMassProps(mass, inertia);
+
+            // Update the stored center of mass
+            this.centerOfMass = newCenterOfMass;
         }
 
         /**

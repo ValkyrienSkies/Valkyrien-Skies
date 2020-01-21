@@ -61,13 +61,11 @@ public class ShipRigidBody extends AbstractRigidBody {
         return ImmutableSet.of(box);
     }
 
-    private static InertiaData generateInitialForShip(PhysicsObject physicsObject) {
+    public static InertiaData generateInitialForShip(PhysicsObject physicsObject) {
         BlockPos referencePos = physicsObject.getReferenceBlockPos();
-        Vector3dc rigidBodyCenter = physicsObject.getCenterCoord().toVector3d().sub(referencePos.getX(), referencePos.getY(), referencePos.getZ(), new Vector3d());
-
 
         // TODO: Temp
-        InertiaData data = new InertiaData(physicsObject.getCenterCoord().toVector3d(), new Matrix3d(), 1000);
+        InertiaData data = new InertiaData(physicsObject.getInertiaData().getGameTickCenterOfMass().toVector3d(), new Matrix3d(), (float) physicsObject.getInertiaData().getGameTickMass());
         return data;
     }
 

@@ -11,12 +11,14 @@ import org.joml.*;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 
+import java.lang.Math;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShipRigidBody extends AbstractRigidBody {
 
-    private final BlockPos referencePos;
+    @Getter
+    private final Vector3dc referencePos;
     private final Map<BlockPos, ImmutableSet<Box>> blockposToBoxes;
 
     /**
@@ -26,7 +28,8 @@ public class ShipRigidBody extends AbstractRigidBody {
      */
     public ShipRigidBody(PhysicsObject physicsObject, ITransformController controller) {
         super(controller, ImmutableSet.of(), generateInitialForShip(physicsObject), generateInitialTransform(physicsObject), false);
-        this.referencePos = physicsObject.getReferenceBlockPos();
+        BlockPos refBlockPos = physicsObject.getReferenceBlockPos();
+        this.referencePos = new Vector3d(refBlockPos.getX(), refBlockPos.getY(), refBlockPos.getZ());
         this.blockposToBoxes = new HashMap<>();
 
         for (BlockPos pos : physicsObject.getData().getBlockPositions()) {
@@ -53,7 +56,7 @@ public class ShipRigidBody extends AbstractRigidBody {
             return ImmutableSet.of();
         }
         Vector3dc halfExtends = new Vector3d(.5, .5, .5);
-        Vector3dc center = new Vector3d(pos.getX() - referencePos.getX() + .5, pos.getY() - referencePos.getY() + .5, pos.getZ() - referencePos.getZ() + .5);
+        Vector3dc center = new Vector3d(pos.getX() + .5 - referencePos.x(), pos.getY() + .5 - referencePos.y(), pos.getZ() + .5 - referencePos.z());
         Box box = new Box(center, halfExtends);
         return ImmutableSet.of(box);
     }
@@ -71,11 +74,9 @@ public class ShipRigidBody extends AbstractRigidBody {
     private static Matrix4dc generateInitialTransform(PhysicsObject physicsObject) {
         ShipTransform shipTransform = physicsObject.getShipTransformationManager().getCurrentTickTransform();
 
-        Matrix4dc rotate = new Matrix4d().rotateXYZ(shipTransform.getPitch(), shipTransform.getYaw(), shipTransform.getRoll());
-        Matrix4dc translate = new Matrix4d().translate(shipTransform.getPosX(), shipTransform.getPosY(), shipTransform.getPosZ());
-
-        // TODO: I think this is right?
-        return translate.mul(rotate, new Matrix4d());
+        return new Matrix4d()
+                .translate(shipTransform.getPosX(), shipTransform.getPosY(), shipTransform.getPosZ())
+                .rotateXYZ(Math.toRadians(shipTransform.getPitch()), Math.toRadians(shipTransform.getYaw()), Math.toRadians(shipTransform.getRoll()));
     }
 
     @Override

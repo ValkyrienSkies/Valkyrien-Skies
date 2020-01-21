@@ -43,6 +43,7 @@ import org.valkyrienskies.mod.common.physics.AbstractRigidBody.Box;
 import org.valkyrienskies.mod.common.physics.AbstractRigidBody.InertiaData;
 import org.valkyrienskies.mod.common.physics.AbstractRigidBody.RigidBodyObserver;
 import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
+import org.valkyrienskies.mod.common.physics.ShipRigidBody;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.VSPreconditions;
@@ -71,7 +72,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         constraintSolver = new btSequentialImpulseConstraintSolver();
         collisionDispatcher = new btCollisionDispatcher(collisionConfig);
         bulletWorld = new btDiscreteDynamicsWorld(collisionDispatcher, broadphase,
-            constraintSolver, collisionConfig);
+                constraintSolver, collisionConfig);
         bulletWorld.setGravity(new Vector3(0f, -9.8f, 0f));
 
         btGImpactCollisionAlgorithm.registerAlgorithm(collisionDispatcher);
@@ -92,7 +93,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
     }
 
     private btCompoundShape generateCollisionShape(Collection<BlockPos> positions,
-        Vector3 centerOfMass) {
+                                                   Vector3 centerOfMass) {
         btCompoundShape collisionShape = new btCompoundShape();
 
         for (BlockPos pos : positions) {
@@ -161,16 +162,16 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         //     System.out.println(data.getRigidBody().getWorldTransform().getTranslation(new Vector3())));
 
         QueryableShipData.get(mcWorld).getLoadedPhysos()
-            .forEach(obj -> {
-                BulletData data = getData(obj.getShipRigidBody());
-                if (data.bulletBody != null) {
-                    btRigidBody body = data.bulletBody;
-                    Matrix4 worldTransform = body.getWorldTransform();
-                    Matrix4d transform = JOML.convertDouble(worldTransform);
-                    Vector3d centerCoord = JOML.convert(obj.getCenterCoord());
-                    obj.getShipTransformationManager().setCurrentPhysicsTransform(new ShipTransform(transform, centerCoord));
-                }
-            });
+                .forEach(obj -> {
+                    BulletData data = getData(obj.getShipRigidBody());
+                    if (data.bulletBody != null) {
+                        btRigidBody body = data.bulletBody;
+                        Matrix4 worldTransform = body.getWorldTransform();
+                        Matrix4d transform = JOML.convertDouble(worldTransform);
+                        Vector3d centerCoord = JOML.convert(obj.getCenterCoord());
+                        obj.getShipTransformationManager().setCurrentPhysicsTransform(new ShipTransform(transform, centerCoord));
+                    }
+                });
     }
 
     public void unload() {
@@ -205,28 +206,45 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
     private static class BulletData implements RigidBodyObserver {
 
         final btRigidBody bulletBody;
-        final btCompoundShape bulletShape;
+        final btCompoundShape boxesShape;
+        final btCompoundShape bulletBodyShape;
         final Map<Box, btBoxShape> shapeMap = new HashMap<>();
+
+        final Vector3dc shipRefPos;
+        Vector3dc centerOfMass;
 
         // This constructor is only called when a new AbstractRigidBody is registered
         BulletData(AbstractRigidBody observing) {
             observing.registerObserver(this);
 
-            bulletShape = new btCompoundShape();
+            boxesShape = new btCompoundShape();
             observing.getInternalShapeSet().forEach(this::addBox);
+
+            shipRefPos = new Vector3d(((ShipRigidBody) observing).getReferencePos());
+            // Remember the old center of mass
+            centerOfMass = new Vector3d(observing.getInertiaData().getCenterOfMass());
+
+            bulletBodyShape = new btCompoundShape();
+
+            Matrix4dc boxShapeTransform = new Matrix4d().translate((float) shipRefPos.x() - centerOfMass.x(), (float) shipRefPos.y() - centerOfMass.y(), (float) shipRefPos.z() - centerOfMass.z());
+
+            bulletBodyShape.addChildShape(JOML.toGDX(boxShapeTransform), boxesShape);
+
+            // bulletBodyShape.createAabbTreeFromChildren();
+            // bulletBodyShape.recalculateLocalAabb();
 
             float mass = observing.getInertiaData().getMass();
 
             // TODO: implement this properly
             btRigidBodyConstructionInfo constructionInfo = new btRigidBodyConstructionInfo(
-                mass, null, bulletShape, getLocalInertia(bulletShape, mass));
+                    mass, null, bulletBodyShape, getLocalInertia(bulletBodyShape, mass));
 
             bulletBody = new btRigidBody(constructionInfo);
-            bulletBody.setCollisionShape(bulletShape);
+            bulletBody.setCollisionShape(bulletBodyShape);
 
 
-            Matrix4 positionTransform = JOML.toGDX(observing.getTransform());
-            bulletBody.setWorldTransform(positionTransform);
+            Matrix4 initialBodyTransform = JOML.toGDX(observing.getTransform());
+            bulletBody.setWorldTransform(initialBodyTransform);
         }
 
         @Override
@@ -235,6 +253,10 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
                 removed.forEach(this::removeBox);
             if (added != null)
                 added.forEach(this::addBox);
+
+            // bulletBodyShape.createAabbTreeFromChildren();
+            // bulletBodyShape.recalculateLocalAabb();
+
             bulletBody.activate();
         }
 
@@ -242,7 +264,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         public void onInertiaUpdate(InertiaData newInertia) {
             // TODO: implement this properly
             float mass = newInertia.getMass();
-            Vector3 inertia = getLocalInertia(bulletShape, mass);
+            Vector3 inertia = getLocalInertia(boxesShape, mass);
 
             bulletBody.setMassProps(mass, inertia);
         }
@@ -252,7 +274,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
          * compound shape
          */
         private void removeBox(Box box) {
-            bulletShape.removeChildShape(shapeMap.remove(box));
+            boxesShape.removeChildShape(shapeMap.remove(box));
         }
 
         /**
@@ -265,7 +287,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
             btBoxShape bulletBox = new btBoxShape(halfExtents);
 
             // Add to the bullet compound shape
-            bulletShape.addChildShape(position, bulletBox);
+            boxesShape.addChildShape(position, bulletBox);
             // Maintain a map
             shapeMap.put(box, bulletBox);
         }

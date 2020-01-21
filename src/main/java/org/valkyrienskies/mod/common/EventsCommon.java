@@ -71,6 +71,9 @@ public class EventsCommon {
             final IPhysicsEngine engine = ((IHasShipManager) chunk.world).getManager().getPhysicsEngine();
 
             for (int yIndex = 0; yIndex < 16; yIndex++) {
+                if (chunk.storageArrays[yIndex] == null) {
+                    continue;
+                }
                 TerrainRigidBody rigidBody = new TerrainRigidBody(engine, chunk, yIndex);
                 engine.addRigidBody(rigidBody);
                 helper.setRigidBody(yIndex, rigidBody);

@@ -93,47 +93,6 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         // groundObject.setWorldTransform();
     }
 
-    private btCompoundShape generateCollisionShape(Collection<BlockPos> positions,
-                                                   Vector3 centerOfMass) {
-        btCompoundShape collisionShape = new btCompoundShape();
-
-        for (BlockPos pos : positions) {
-            Vector3 position = JOML.toGDX(pos).add(0.5f).sub(centerOfMass);
-            Quaternion orientation = new Quaternion();
-
-            Matrix4 transform = new Matrix4().set(position, orientation);
-
-            collisionShape.addChildShape(transform, new btBoxShape(new Vector3(.5f, .5f, .5f)));
-        }
-
-        return collisionShape;
-    }
-
-    /*public void addPhysicsObject(@Nonnull PhysicsObject obj) {
-        // Create the collision shape
-        btCompoundShape collisionShape = generateCollisionShape(
-            obj.getBlockPositions(),
-            JOML.toGDX(obj.getTransform().getCenterCoord()));
-
-        // Generate the construction info for a rigid body from the collision shape and mass
-        // float mass = (float) obj.getInertiaData().getGameTickMass();
-        float mass = 50;
-        btRigidBodyConstructionInfo constructionInfo = new btRigidBodyConstructionInfo(
-            mass, null, collisionShape, getLocalInertia(collisionShape, mass));
-
-        // Create a rigid body from the construction info and collision shape
-        btRigidBody rigidBody = new btRigidBody(constructionInfo);
-        rigidBody.setCollisionShape(collisionShape);
-        Matrix4 positionTransform = JOML.toGDX(obj.getTransform().getPositionTransform());
-        rigidBody.setWorldTransform(positionTransform);
-
-
-        // bulletWorld.addRigidBody(rigidBody);
-
-        // Create BulletData and add to dataMap
-        dataMap.put(obj, observer);
-    }*/
-
     @Override
     public void addRigidBody(AbstractRigidBody body) {
         BulletData observer = new BulletData(body);
@@ -247,8 +206,14 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
             float mass = observing.getInertiaData().getMass();
 
             // TODO: implement this properly
-            btRigidBodyConstructionInfo constructionInfo = new btRigidBodyConstructionInfo(
-                    mass, null, bulletBodyShape, getLocalInertia(bulletBodyShape, mass));
+            btRigidBodyConstructionInfo constructionInfo;
+            if (observing instanceof ShipRigidBody) {
+                constructionInfo = new btRigidBodyConstructionInfo(
+                        mass, null, bulletBodyShape, getLocalInertia(bulletBodyShape, mass));
+            } else {
+                constructionInfo = new btRigidBodyConstructionInfo(
+                        0, null, boxesShape);
+            }
 
             bulletBody = new btRigidBody(constructionInfo);
 
@@ -257,7 +222,11 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
                 bulletBody.setActivationState(5);
             }
 
-            bulletBody.setCollisionShape(bulletBodyShape);
+            if (observing instanceof ShipRigidBody) {
+                bulletBody.setCollisionShape(bulletBodyShape);
+            } else {
+                bulletBody.setCollisionShape(boxesShape);
+            }
 
             Matrix4 initialBodyTransform = JOML.toGDX(observing.getTransform());
             bulletBody.setWorldTransform(initialBodyTransform);

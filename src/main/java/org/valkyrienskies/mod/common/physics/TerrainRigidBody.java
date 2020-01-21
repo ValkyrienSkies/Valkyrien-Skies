@@ -26,7 +26,7 @@ public class TerrainRigidBody extends AbstractRigidBody {
      */
     public TerrainRigidBody(ITransformController controller, Chunk chunk, int yIndex) {
         super(controller, ImmutableSet.of(), new InertiaData(new Vector3d(), new Matrix3d(), 0),
-            new Matrix4d().translate(chunk.x * 16, yIndex * 16, chunk.z * 16), true);
+            new Matrix4d().translate(chunk.x * 16 + 8, yIndex * 16 + 8, chunk.z * 16 + 8), true);
         this.chunk = chunk;
         this.yIndex = yIndex;
 
@@ -46,7 +46,7 @@ public class TerrainRigidBody extends AbstractRigidBody {
 
         for (BlockPos pos : positions) {
             if (!positions.isSurrounded(pos)) {
-                Box box = new Box(JOML.convertDouble(pos).add(0.5, 0.5, 0.5), halfExtents);
+                Box box = new Box(JOML.convertDouble(pos).add(0.5 - 8, 0.5 - (yIndex * 16) - 8, 0.5 - 8), halfExtents);
                 this.addBox(box);
             }
         }

@@ -19,12 +19,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
+import org.valkyrienskies.mod.common.physics.IChunkRigidBodyHelper;
+import org.valkyrienskies.mod.common.physics.TerrainRigidBody;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Mixin(value = Chunk.class, priority = 1001)
-public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
+public abstract class MixinChunk implements ITileEntitiesToRenderProvider, IChunkRigidBodyHelper {
 
     private final Chunk thisAsChunk = Chunk.class.cast(this);
 
@@ -46,12 +48,28 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     // We keep track of these so we can quickly update the tile entities that need rendering.
     private List<TileEntity>[] tileEntitiesByExtendedData = new List[16];
 
+    private final TerrainRigidBody[] rigidBodies = new TerrainRigidBody[16];
+
+    @Override
+    public TerrainRigidBody getRigidBody(int yIndex) {
+        return rigidBodies[yIndex];
+    }
+
+    @Override
+    public void setRigidBody(int yIndex, TerrainRigidBody rigidBody) {
+        if (rigidBodies[yIndex] != null) {
+            throw new IllegalArgumentException("What the heck are you trying to do?! You'll create duplicate bodies" +
+                    "for a given chunk!");
+        }
+        rigidBodies[yIndex] = rigidBody;
+    }
+
     public List<TileEntity> getTileEntitiesToRender(int chunkExtendedDataIndex) {
         return tileEntitiesByExtendedData[chunkExtendedDataIndex];
     }
 
     @Inject(method = "addTileEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", at = @At("TAIL"))
-    public void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn,
+    private void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn,
         CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
@@ -61,7 +79,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     }
 
     @Inject(method = "removeTileEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("TAIL"))
-    public void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
+    private void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
         getPhysicsObject().ifPresent(physo -> physo.onRemoveTileEntity(pos));
@@ -76,7 +94,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     }
 
     @Inject(method = "populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
-    public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator,
+    private void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator,
         CallbackInfo callbackInfo) {
         if (ShipChunkAllocator.isChunkInShipyard(this.x, this.z)) {
             callbackInfo.cancel();

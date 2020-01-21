@@ -22,6 +22,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -37,6 +38,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
+import org.valkyrienskies.mod.common.physics.IChunkRigidBodyHelper;
+import org.valkyrienskies.mod.common.physics.IPhysicsEngine;
+import org.valkyrienskies.mod.common.physics.TerrainRigidBody;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
@@ -53,6 +57,52 @@ public class EventsCommon {
     @Deprecated
     private static final Map<EntityPlayer, double[]> lastPositions = new HashMap<>();
     private static final Logger logger = LogManager.getLogger(EventsCommon.class);
+
+    @SubscribeEvent
+    public static void onChunkLoadEvents(ChunkEvent.Load event) {
+        final Chunk chunk = event.getChunk();
+        if (chunk.world.isRemote) {
+            // Skip
+            return;
+        }
+
+        try {
+            final IChunkRigidBodyHelper helper = (IChunkRigidBodyHelper) chunk;
+            final IPhysicsEngine engine = ((IHasShipManager) chunk.world).getManager().getPhysicsEngine();
+
+            for (int yIndex = 0; yIndex < 16; yIndex++) {
+                TerrainRigidBody rigidBody = new TerrainRigidBody(engine, chunk, yIndex);
+                engine.addRigidBody(rigidBody);
+                helper.setRigidBody(yIndex, rigidBody);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChunkUnloadEvent(ChunkEvent.Unload event) {
+        final Chunk chunk = event.getChunk();
+        if (chunk.world.isRemote) {
+            // Skip
+            return;
+        }
+
+        final IChunkRigidBodyHelper helper = (IChunkRigidBodyHelper) chunk;
+
+        try {
+            final IPhysicsEngine engine = ((IHasShipManager) chunk.world).getManager().getPhysicsEngine();
+
+            for (int yIndex = 0; yIndex < 16; yIndex++) {
+                TerrainRigidBody rigidBody = helper.getRigidBody(yIndex);
+                engine.removeRigidBody(rigidBody);
+            }
+        } catch (Exception e) {
+            return;
+        }
+
+
+    }
 
     @SubscribeEvent
     public static void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event) {

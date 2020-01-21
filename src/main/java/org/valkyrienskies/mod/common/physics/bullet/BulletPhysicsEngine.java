@@ -69,6 +69,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         // objects that manually need to be deconstructed
         collisionConfig = new btDefaultCollisionConfiguration();
         broadphase = new btDbvtBroadphase();
+
         constraintSolver = new btSequentialImpulseConstraintSolver();
         collisionDispatcher = new btCollisionDispatcher(collisionConfig);
         bulletWorld = new btDiscreteDynamicsWorld(collisionDispatcher, broadphase,
@@ -86,9 +87,9 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         btRigidBodyConstructionInfo constructionInfo = new btRigidBodyConstructionInfo(
                 0, null, groundShape);
 
-        btRigidBody rigidBody = new btRigidBody(constructionInfo);
+        // btRigidBody rigidBody = new btRigidBody(constructionInfo);
 
-        bulletWorld.addRigidBody(rigidBody);
+        // bulletWorld.addRigidBody(rigidBody);
         // groundObject.setWorldTransform();
     }
 
@@ -142,8 +143,11 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
     @Override
     public void removeRigidBody(AbstractRigidBody body) {
-        BulletData removed = dataMap.remove(body);
-
+        try {
+            BulletData removed = dataMap.remove(body);
+        } catch (Exception e) {
+            String text = e.toString();
+        }
     }
 
     @PhysicsThreadOnly
@@ -219,7 +223,15 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
             boxesShape = new btCompoundShape();
             observing.getInternalShapeSet().forEach(this::addBox);
 
-            shipRefPos = new Vector3d(((ShipRigidBody) observing).getReferencePos());
+            // TODO: This is REALLY BAD code, but hey, it works for now.
+            if (observing instanceof ShipRigidBody) {
+                shipRefPos = new Vector3d(((ShipRigidBody) observing).getReferencePos());
+            } else {
+                shipRefPos = new Vector3d();
+            }
+            // TODO: bad code end
+
+
             // Remember the old center of mass
             centerOfMass = new Vector3d(observing.getInertiaData().getCenterOfMass());
 
@@ -239,8 +251,12 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
                     mass, null, bulletBodyShape, getLocalInertia(bulletBodyShape, mass));
 
             bulletBody = new btRigidBody(constructionInfo);
-            bulletBody.setCollisionShape(bulletBodyShape);
 
+            if (mass == 0) {
+                bulletBody.setCollisionFlags(bulletBody.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_STATIC_OBJECT);
+            }
+
+            bulletBody.setCollisionShape(bulletBodyShape);
 
             Matrix4 initialBodyTransform = JOML.toGDX(observing.getTransform());
             bulletBody.setWorldTransform(initialBodyTransform);

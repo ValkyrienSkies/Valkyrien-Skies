@@ -34,6 +34,15 @@ public interface IBlockPosSet extends Set<BlockPos> {
         return contains(pos.getX(), pos.getY(), pos.getZ());
     }
 
+    default boolean isSurrounded(BlockPos pos) {
+        return contains(pos.getX() + 1, pos.getY(), pos.getZ()) &&
+            contains(pos.getX(), pos.getY() + 1, pos.getZ()) &&
+            contains(pos.getX(), pos.getY(), pos.getZ() + 1) &&
+            contains(pos.getX() - 1, pos.getY(), pos.getZ()) &&
+            contains(pos.getX(), pos.getY() - 1, pos.getZ()) &&
+            contains(pos.getX(), pos.getY(), pos.getZ() - 1);
+    }
+
     default boolean canStore(BlockPos pos) {
         return canStore(pos.getX(), pos.getY(), pos.getZ());
     }

@@ -3,11 +3,16 @@ package org.valkyrienskies.mod.common.physics;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import org.joml.Matrix3d;
 import org.joml.Matrix4d;
 import org.joml.Matrix4dc;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.IBlockPosSet;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.NaiveBlockPosSet;
+import org.valkyrienskies.mod.common.util.JOML;
 
 public class TerrainRigidBody extends AbstractRigidBody {
 
@@ -20,19 +25,29 @@ public class TerrainRigidBody extends AbstractRigidBody {
      * @param controller The {@link ITransformController} that owns this rigid body
      */
     public TerrainRigidBody(ITransformController controller, Chunk chunk, int yIndex) {
-        super(controller, ImmutableSet.of(), new InertiaData(new Vector3d(), new Matrix3d(), 0), new Matrix4d().translate(chunk.x * 16, yIndex * 16, chunk.z * 16), true);
+        super(controller, ImmutableSet.of(), new InertiaData(new Vector3d(), new Matrix3d(), 0),
+            new Matrix4d().translate(chunk.x * 16, yIndex * 16, chunk.z * 16), true);
         this.chunk = chunk;
         this.yIndex = yIndex;
+
+        IBlockPosSet positions = new NaiveBlockPosSet();
+        Vector3dc halfExtents = new Vector3d(.5, .5, .5);
 
         for (int x = 0; x < 16; x++) {
             for (int y = yIndex * 16; y < yIndex * 16 + 16; y++) {
                 for (int z = 0; z < 16; z++) {
                     IBlockState state = chunk.getBlockState(x, y, z);
                     if (state != Blocks.AIR.getDefaultState()) {
-                        Box box = new Box(new Vector3d(x + .5, y + .5, z + .5), new Vector3d(.5, .5, .5));
-                        this.addBox(box);
+                        positions.add(x, y, z);
                     }
                 }
+            }
+        }
+
+        for (BlockPos pos : positions) {
+            if (!positions.isSurrounded(pos)) {
+                Box box = new Box(JOML.convertDouble(pos).add(0.5, 0.5, 0.5), halfExtents);
+                this.addBox(box);
             }
         }
     }

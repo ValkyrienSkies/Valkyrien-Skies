@@ -75,7 +75,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
         bulletWorld = new btDiscreteDynamicsWorld(collisionDispatcher, broadphase,
                 constraintSolver, collisionConfig);
         bulletWorld.setGravity(new Vector3(0f, -9.8f, 0f));
-
+        bulletWorld.setForceUpdateAllAabbs(false);
         btGImpactCollisionAlgorithm.registerAlgorithm(collisionDispatcher);
 
 
@@ -254,6 +254,7 @@ public class BulletPhysicsEngine implements IPhysicsEngine {
 
             if (mass == 0) {
                 bulletBody.setCollisionFlags(bulletBody.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_STATIC_OBJECT);
+                bulletBody.setActivationState(5);
             }
 
             bulletBody.setCollisionShape(bulletBodyShape);

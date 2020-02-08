@@ -1,0 +1,31 @@
+#PARSE_ESCAPES
+
+# Items
+item.physics_core.name=Фізичне Ядро
+tooltip.valkyrienskies.physics_core=Ядро Фізичного Активатора
+
+# Blocks
+tile.physics_infuser.name=Фізичний Активатор
+tooltip.valkyrienskies.physics_infuser=Перетворює з'єднані з ним блоки в корабель. Не працює на більшість натуральних блоків таких як камінь, земля, Бедрок.
+
+tile.creative_physics_infuser.name=Креативний Фізичний Активатор
+tooltip.valkyrienskies.creative_physics_infuser_1=Перетворює будь-які з'єднані з ним блоки в корабель. Використовувати з обережністю, може перетворити в корабель весь світ.
+tooltip.valkyrienskies.creative_physics_infuser_2=Увага! У блоку немає лімітів, він перетворить в корабель все з чим стикнеться! Використовувати з граничною обережністю.
+
+# Item Tab
+itemGroup.valkyrienskies=Valkyrien Skies
+
+# Gui
+gui.physics_infuser=Фізичний Активатор
+gui.assemble_ship=Створити корабель
+gui.disassemble_ship=Розібрати корабель
+gui.enable_physics=Включити фізику
+gui.disable_physics=Відключити фізику
+gui.align_ship=Вирівняти корабель
+gui.stop_align_ship=Припинити вирівнювання
+
+## Commands
+commands.vs.list-ships.noships=Цей світ не містить кораблів!
+commands.vs.list-ships.ships=Цей світ містить кораблі: %s%n
+
+commands.vs.gc.success=Сміття успішно очищене!

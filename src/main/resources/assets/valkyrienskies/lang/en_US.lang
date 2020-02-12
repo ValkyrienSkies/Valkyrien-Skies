@@ -77,7 +77,9 @@ valkyrienskies.general.relaywirelength.tooltip=How long, in metres, a single rel
 valkyrienskies.general.shipspawndetectorblacklist=Ship spawn detector blacklist
 valkyrienskies.general.shipspawndetectorblacklist.tooltip=Blocks to not be included when assembling a ship
 valkyrienskies.general.blockmass=Block mass
-
+valkyrienskies.general.blockmass.tooltip=
+valkyrienskies.engine=Engine
+valkyrienskies.engine.tooltip=
 valkyrienskies.engine.basicEnginePower=Basic engine power
 valkyrienskies.engine.basicEnginePower.tooltip=
 valkyrienskies.engine.advancedEnginePower=Advanced engine power

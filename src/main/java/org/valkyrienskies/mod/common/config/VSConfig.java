@@ -57,7 +57,7 @@ public class VSConfig extends VSConfigTemplate {
     @Comment({
         "Players can't own more than this many airships at once.",
         "Set to -1 to disable"
-    )
+    })
     public static int maxAirships = -1;
 
     public static int maxShipSize = 15000;

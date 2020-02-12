@@ -1,20 +1,8 @@
 package org.valkyrienskies.mod.common.physmanagement.chunk;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import com.google.common.collect.ImmutableSet;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import net.minecraft.util.math.ChunkPos;
-import org.junit.jupiter.api.Test;
-
 public class VSChunkClaimTest {
 
+    /*
     @Test
     public void testChunkLongs() {
         VSChunkClaim claim = new VSChunkClaim(10, 10, 10);
@@ -61,5 +49,7 @@ public class VSChunkClaimTest {
         assertThat(actualValues, containsInAnyOrder(expectedValues.toArray()));
         assertEquals(expectedValues, actualValues);
     }
+    
+     */
 
 }

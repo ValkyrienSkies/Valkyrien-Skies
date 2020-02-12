@@ -95,8 +95,13 @@ public class PhysObjectRenderManager {
         int minBlockArrayY = Math.max(0, minY >> 4);
         int maxBlockArrayY = Math.min(15, maxY >> 4);
 
-        for (PhysRenderChunk renderChunk : renderChunks.values()) {
-            renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                ChunkPos pos = new ChunkPos(chunkX, chunkZ);
+                if (renderChunks.containsKey(pos)) {
+                    renderChunks.get(pos).updateLayers(minBlockArrayY, maxBlockArrayY);
+                }
+            }
         }
     }
 
@@ -220,9 +225,9 @@ public class PhysObjectRenderManager {
 
         GlStateManager.translate((float) renderTransform.getPosX() + offsetX, (float) renderTransform.getPosY() + offsetY, (float) renderTransform.getPosZ() + offsetZ);
 
-        GlStateManager.rotate((float) renderTransform.getRoll(), 0, 0, 1);
-        GlStateManager.rotate((float) renderTransform.getYaw(), 0, 1, 0);
         GlStateManager.rotate((float) renderTransform.getPitch(), 1, 0, 0);
+        GlStateManager.rotate((float) renderTransform.getYaw(), 0, 1, 0);
+        GlStateManager.rotate((float) renderTransform.getRoll(), 0, 0, 1);
 
         for (ChunkPos claimedChunk : parent.getChunkClaim()) {
             AxisAlignedBB claimBB = new AxisAlignedBB(claimedChunk.getXStart() + .1, renderTransform.getCenterCoord().y() -8 + 0.1, claimedChunk.getZStart() + .1, claimedChunk.getXEnd() + .9, renderTransform.getCenterCoord().y() + 8 - .1, claimedChunk.getZEnd() + .9);
@@ -231,7 +236,7 @@ public class PhysObjectRenderManager {
         }
         GlStateManager.popMatrix();
         // Render claimed chunks end
-        
+
         // Draw the center of mass bounding box.
         GlStateManager.disableDepth();
         RenderGlobal.drawSelectionBoundingBox(centerOfMassBB, 0, 0, 1.0F, 1.0F);

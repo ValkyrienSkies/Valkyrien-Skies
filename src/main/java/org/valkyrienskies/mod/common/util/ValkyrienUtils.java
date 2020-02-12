@@ -1,12 +1,6 @@
 package org.valkyrienskies.mod.common.util;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import gnu.trove.iterator.TIntIterator;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -34,10 +28,19 @@ import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
+import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * This class contains various helper functions for Valkyrien Skies.
@@ -185,12 +188,12 @@ public class ValkyrienUtils {
 
         // Create the ship data that we will use to make the ship with later.
         ShipData shipData = createNewShip(world, physicsInfuserPos);
-        BlockPos centerInWorld = physicsInfuserPos;
+
 
         System.out.println("E!");
         return TickSyncCompletableFuture
                 .supplyAsync(() -> DetectorManager.getDetectorFor(
-                    DetectorManager.DetectorIDs.ShipSpawnerGeneral, centerInWorld, world,
+                    DetectorManager.DetectorIDs.ShipSpawnerGeneral, physicsInfuserPos, world,
                                 VSConfig.maxShipSize + 1, true))
                 .thenAcceptAsync(detector -> {
                     System.out.println("Hello! " + Thread.currentThread().getName());
@@ -205,13 +208,26 @@ public class ValkyrienUtils {
                         }
                         return;
                     }
+
+                    // Fill the chunk claims
+                    TIntIterator blocksIterator = detector.foundSet.iterator();
+                    BlockPos.MutableBlockPos tempPos = new BlockPos.MutableBlockPos();
+                    BlockPos centerDifference = shipData.getChunkClaim().getRegionCenter().subtract(physicsInfuserPos);
+                    while (blocksIterator.hasNext()) {
+                        int hashedPos = blocksIterator.next();
+                        SpatialDetector.setPosWithRespectTo(hashedPos, detector.firstBlock, tempPos);
+
+                        int chunkX = (tempPos.getX() + centerDifference.getX()) >> 4;
+                        int chunkZ = (tempPos.getZ() + centerDifference.getZ()) >> 4;
+
+                        shipData.getChunkClaim().addChunkClaim(chunkX, chunkZ);
+                    }
+
                     QueryableShipData.get(world).addShip(shipData);
                     PhysicsObject physicsObject = new PhysicsObject(world, shipData, true);
                     shipData.setPhyso(physicsObject);
 
                     physicsObject.assembleShip(creator, detector, physicsInfuserPos);
-                    int i = 1;
-                    // TODO: Do something with this?
                 }, VSExecutors.forWorld((WorldServer) world));
     }
 

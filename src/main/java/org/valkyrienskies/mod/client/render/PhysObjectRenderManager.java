@@ -1,15 +1,15 @@
 package org.valkyrienskies.mod.client.render;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.chunk.Chunk;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -17,8 +17,11 @@ import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.proxy.ClientProxy;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Object owned by each physObject responsible for handling all rendering operations
@@ -33,20 +36,14 @@ public class PhysObjectRenderManager {
     // Ship's centerBlockPos
     public final BlockPos offsetPos;
     private final PhysicsObject parent;
-    private final PhysRenderChunk[][] renderChunks;
+    private final Map<ChunkPos, PhysRenderChunk> renderChunks;
 
     public PhysObjectRenderManager(PhysicsObject toRender, BlockPos offsetPos) {
         this.parent = toRender;
         this.offsetPos = offsetPos;
-        this.renderChunks = new PhysRenderChunk[parent.getOwnedChunks().getChunkLengthX()][parent
-                .getOwnedChunks()
-                .getChunkLengthZ()];
-        for (int xChunk = 0; xChunk < parent.getOwnedChunks().getChunkLengthX(); xChunk++) {
-            for (int zChunk = 0; zChunk < parent.getOwnedChunks().getChunkLengthZ(); zChunk++) {
-                renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
-                        .getChunkAt(xChunk + parent.getOwnedChunks().minX(),
-                                zChunk + parent.getOwnedChunks().minZ()));
-            }
+        this.renderChunks = new HashMap<>();
+        for (Chunk chunk : parent.getClaimedChunkCache()) {
+            renderChunks.put(new ChunkPos(chunk.x, chunk.z), new PhysRenderChunk(parent, chunk));
         }
     }
 
@@ -62,10 +59,8 @@ public class PhysObjectRenderManager {
         // GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         applyRenderTransform(partialTicks);
-        for (PhysRenderChunk[] chunkArray : renderChunks) {
-            for (PhysRenderChunk renderChunk : chunkArray) {
-                renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
-            }
+        for (PhysRenderChunk renderChunk : renderChunks.values()) {
+            renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
         }
 
         Minecraft.getMinecraft().entityRenderer.disableLightmap();
@@ -74,10 +69,8 @@ public class PhysObjectRenderManager {
 
     public void killRenderers() {
         if (renderChunks != null) {
-            for (PhysRenderChunk[] chunks : renderChunks) {
-                for (PhysRenderChunk chunk : chunks) {
-                    chunk.killRenderChunk();
-                }
+            for (PhysRenderChunk renderChunk : renderChunks.values()) {
+                renderChunk.killRenderChunk();
             }
         }
     }
@@ -102,37 +95,13 @@ public class PhysObjectRenderManager {
         int minBlockArrayY = Math.max(0, minY >> 4);
         int maxBlockArrayY = Math.min(15, maxY >> 4);
 
-        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
-            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                // TODO: Fix this render bug
-                try {
-                    if (chunkX >= parent.getOwnedChunks().minX() && chunkZ >= parent
-                        .getOwnedChunks().minZ()
-                        && chunkX - parent.getOwnedChunks().minX() < renderChunks.length
-                        && chunkZ - parent.getOwnedChunks().minZ() < renderChunks[0].length) {
-                        PhysRenderChunk renderChunk = renderChunks[chunkX - parent.getOwnedChunks()
-                            .minX()][chunkZ
-                            - parent.getOwnedChunks().minZ()];
-                        if (renderChunk != null) {
-                            renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
-                        } else {
-                            System.err
-                                .println("SHIP RENDER CHUNK CAME OUT NULL! THIS IS VERY WRONG!!");
-                        }
-                    } else {
-                        // ValkyrienSkiesMod.VSLogger.info("updateRange Just attempted to update
-                        // blocks outside of a Ship's block Range. ANY ERRORS PAST THIS ARE LIKELY
-                        // RELATED!");
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        for (PhysRenderChunk renderChunk : renderChunks.values()) {
+            renderChunk.updateLayers(minBlockArrayY, maxBlockArrayY);
         }
     }
 
     public boolean shouldRender() {
-        ICamera camera = ClientProxy.lastCamera;
+        // ICamera camera = ClientProxy.lastCamera;
         return true; // camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 
@@ -245,6 +214,24 @@ public class PhysObjectRenderManager {
         // Draw the bounding box for the ship.
         RenderGlobal.drawSelectionBoundingBox(shipBB, 1.0F, 1.0F, 1.0F, 1.0F);
 
+
+        // Render claimed chunks
+        GlStateManager.pushMatrix();
+
+        GlStateManager.translate((float) renderTransform.getPosX() + offsetX, (float) renderTransform.getPosY() + offsetY, (float) renderTransform.getPosZ() + offsetZ);
+
+        GlStateManager.rotate((float) renderTransform.getRoll(), 0, 0, 1);
+        GlStateManager.rotate((float) renderTransform.getYaw(), 0, 1, 0);
+        GlStateManager.rotate((float) renderTransform.getPitch(), 1, 0, 0);
+
+        for (ChunkPos claimedChunk : parent.getChunkClaim()) {
+            AxisAlignedBB claimBB = new AxisAlignedBB(claimedChunk.getXStart() + .1, renderTransform.getCenterCoord().y() -8 + 0.1, claimedChunk.getZStart() + .1, claimedChunk.getXEnd() + .9, renderTransform.getCenterCoord().y() + 8 - .1, claimedChunk.getZEnd() + .9);
+            claimBB = claimBB.offset(-renderTransform.getCenterCoord().x(), -renderTransform.getCenterCoord().y(), -renderTransform.getCenterCoord().z());
+            RenderGlobal.drawSelectionBoundingBox(claimBB, 0, 1.0F, 0, 1.0F);
+        }
+        GlStateManager.popMatrix();
+        // Render claimed chunks end
+        
         // Draw the center of mass bounding box.
         GlStateManager.disableDepth();
         RenderGlobal.drawSelectionBoundingBox(centerOfMassBB, 0, 0, 1.0F, 1.0F);

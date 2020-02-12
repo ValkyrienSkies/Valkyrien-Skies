@@ -1,15 +1,6 @@
 package org.valkyrienskies.mod.common.physics.management.physo;
 
 import gnu.trove.iterator.TIntIterator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
@@ -24,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
@@ -53,6 +45,10 @@ import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The heart and soul of this mod, and now its broken lol.
@@ -255,10 +251,8 @@ public class PhysicsObject implements IPhysicsEntity {
 
         // We NEED this to fix ship lighting. If this code was removed then ships would have lighting artifacts all
         // over them.
-        for (int x = getOwnedChunks().minX(); x <= getOwnedChunks().maxX(); x++) {
-            for (int z = getOwnedChunks().minZ(); z <= getOwnedChunks().maxZ(); z++) {
-                claimedChunkCache.getChunkAt(x, z).checkLight();
-            }
+        for (ChunkPos chunkPos : getOwnedChunks()) {
+            claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z).checkLight();
         }
 
         // lol
@@ -285,16 +279,15 @@ public class PhysicsObject implements IPhysicsEntity {
 
     public void preloadNewPlayers() {
         Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
-        for (Chunk[] chunkArray : claimedChunkCache.getCacheArray()) {
-            for (Chunk chunk : chunkArray) {
-                SPacketChunkData data = new SPacketChunkData(chunk, 65535);
-                for (EntityPlayerMP player : newWatchers) {
-                    player.connection.sendPacket(data);
-                    ((WorldServer) getWorld()).getEntityTracker()
+        for (Chunk chunk : claimedChunkCache) {
+            SPacketChunkData data = new SPacketChunkData(chunk, 65535);
+            for (EntityPlayerMP player : newWatchers) {
+                player.connection.sendPacket(data);
+                ((WorldServer) getWorld()).getEntityTracker()
                         .sendLeashedEntitiesInChunk(player, chunk);
-                }
             }
         }
+
         SpawnPhysObjMessage physObjMessage = new SpawnPhysObjMessage();
         physObjMessage.initializeData(getData());
         for (EntityPlayerMP player : newWatchers) {
@@ -309,11 +302,9 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     public void onPlayerUntracking(EntityPlayer untracking) {
         getWatchingPlayers().remove(untracking);
-        for (int x = getOwnedChunks().minX(); x <= getOwnedChunks().maxX(); x++) {
-            for (int z = getOwnedChunks().minZ(); z <= getOwnedChunks().maxZ(); z++) {
-                SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
-                ((EntityPlayerMP) untracking).connection.sendPacket(unloadPacket);
-            }
+        for (ChunkPos chunkPos : getOwnedChunks()) {
+            SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(chunkPos.x, chunkPos.z);
+            ((EntityPlayerMP) untracking).connection.sendPacket(unloadPacket);
         }
     }
 
@@ -334,10 +325,8 @@ public class PhysicsObject implements IPhysicsEntity {
 
     public void unloadShipChunksFromWorld() {
         ChunkProviderServer provider = (ChunkProviderServer) getWorld().getChunkProvider();
-        for (int x = getOwnedChunks().minX(); x <= getOwnedChunks().maxX(); x++) {
-            for (int z = getOwnedChunks().minZ(); z <= getOwnedChunks().maxZ(); z++) {
-                provider.queueUnload(claimedChunkCache.getChunkAt(x, z));
-            }
+        for (ChunkPos chunkPos : getOwnedChunks()) {
+            provider.queueUnload(claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z));
         }
     }
 
@@ -408,40 +397,29 @@ public class PhysicsObject implements IPhysicsEntity {
 
     // Generates the blockPos array; must be loaded DIRECTLY after the chunks are
     // setup
-    public void detectBlockPositions() {
-        // int minChunkX = claimedChunks[0][0].x;
-        // int minChunkZ = claimedChunks[0][0].z;
-        int chunkX, chunkZ, index, x, y, z;
-        Chunk chunk;
-        ExtendedBlockStorage storage;
-        Chunk[][] claimedChunks = claimedChunkCache.getCacheArray();
-        int airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
+    private void detectBlockPositions() {
+        final int airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
 
-        for (chunkX = claimedChunks.length - 1; chunkX > -1; chunkX--) {
-            for (chunkZ = claimedChunks[0].length - 1; chunkZ > -1; chunkZ--) {
-                chunk = claimedChunks[chunkX][chunkZ];
-                if (chunk != null) {
-                    for (index = 0; index < 16; index++) {
-                        storage = chunk.getBlockStorageArray()[index];
-                        if (storage != null) {
-                            for (y = 0; y < 16; y++) {
-                                for (x = 0; x < 16; x++) {
-                                    for (z = 0; z < 16; z++) {
-                                        if (storage.data.storage
-                                            .getAt(y << 8 | z << 4 | x)
-                                            != airStateIndex) {
-                                            BlockPos pos = new BlockPos(chunk.x * 16 + x,
-                                                index * 16 + y,
-                                                chunk.z * 16 + z);
-                                            getBlockPositions().add(pos);
-                                            voxelFieldAABBMaker
-                                                .addVoxel(pos.getX(), pos.getY(), pos.getZ());
-                                            if (BlockPhysicsDetails.isBlockProvidingForce(
-                                                getWorld().getBlockState(pos), pos, getWorld())) {
-                                                getPhysicsCalculations()
-                                                    .addPotentialActiveForcePos(pos);
-                                            }
-                                        }
+        for (Chunk chunk : claimedChunkCache) {
+            for (int index = 0; index < 16; index++) {
+                ExtendedBlockStorage storage = chunk.getBlockStorageArray()[index];
+                if (storage != null) {
+                    for (int y = 0; y < 16; y++) {
+                        for (int x = 0; x < 16; x++) {
+                            for (int z = 0; z < 16; z++) {
+                                if (storage.data.storage
+                                    .getAt(y << 8 | z << 4 | x)
+                                    != airStateIndex) {
+                                    BlockPos pos = new BlockPos(chunk.x * 16 + x,
+                                        index * 16 + y,
+                                        chunk.z * 16 + z);
+                                    getBlockPositions().add(pos);
+                                    voxelFieldAABBMaker
+                                        .addVoxel(pos.getX(), pos.getY(), pos.getZ());
+                                    if (BlockPhysicsDetails.isBlockProvidingForce(
+                                        getWorld().getBlockState(pos), pos, getWorld())) {
+                                        getPhysicsCalculations()
+                                            .addPotentialActiveForcePos(pos);
                                     }
                                 }
                             }
@@ -450,7 +428,6 @@ public class PhysicsObject implements IPhysicsEntity {
                 }
             }
         }
-
     }
 
     // endregion
@@ -548,12 +525,10 @@ public class PhysicsObject implements IPhysicsEntity {
     @Deprecated
     public void destroy() {
         List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(getWatchingPlayers());
-        for (int x = getOwnedChunks().minX(); x <= getOwnedChunks().maxX(); x++) {
-            for (int z = getOwnedChunks().minZ(); z <= getOwnedChunks().maxZ(); z++) {
-                SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(x, z);
-                for (EntityPlayerMP wachingPlayer : watchersCopy) {
-                    wachingPlayer.connection.sendPacket(unloadPacket);
-                }
+        for (ChunkPos chunkPos : getOwnedChunks()) {
+            SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(chunkPos.x, chunkPos.z);
+            for (EntityPlayerMP wachingPlayer : watchersCopy) {
+                wachingPlayer.connection.sendPacket(unloadPacket);
             }
             // NOTICE: This method isnt being called to avoid the
             // watchingPlayers.remove(player) call, which is a waste of CPU time

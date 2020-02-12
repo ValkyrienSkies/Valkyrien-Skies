@@ -859,44 +859,44 @@ public class WorldPhysicsCollider {
                 // maxX = Math.min(maxX, minX << 4);
                 // maxZ = Math.min(maxZ, minZ << 4);
 
-                if (parent.getOwnedChunks().containsChunk(minX >> 4, minZ >> 4) && parent
-                        .getOwnedChunks().containsChunk(maxX >> 4, maxZ >> 4)) {
+                Chunk chunkIn00 = parent.getOwnedChunks().containsChunk(minX >> 4, minZ >> 4) ? parent.getChunkAt(minX >> 4, minZ >> 4) : null;
+                Chunk chunkIn01 = parent.getOwnedChunks().containsChunk(minX >> 4, maxZ >> 4) ? parent.getChunkAt(minX >> 4, maxZ >> 4) : null;
+                Chunk chunkIn10 = parent.getOwnedChunks().containsChunk(maxX >> 4, minZ >> 4) ? parent.getChunkAt(maxX >> 4, minZ >> 4) : null;
+                Chunk chunkIn11 = parent.getOwnedChunks().containsChunk(maxX >> 4, maxZ >> 4) ? parent.getChunkAt(maxX >> 4, maxZ >> 4) : null;
 
-                    Chunk chunkIn00 = parent.getChunkAt(minX >> 4, minZ >> 4);
-                    Chunk chunkIn01 = parent.getChunkAt(minX >> 4, maxZ >> 4);
-                    Chunk chunkIn10 = parent.getChunkAt(maxX >> 4, minZ >> 4);
-                    Chunk chunkIn11 = parent.getChunkAt(maxX >> 4, maxZ >> 4);
-
-                    breakThisLoop:
-                    for (int localX = minX; localX < maxX; localX++) {
-                        for (int localZ = minZ; localZ < maxZ; localZ++) {
-                            Chunk theChunk = null;
-                            if (localX >> 4 == minX >> 4) {
-                                if (localZ >> 4 == minZ >> 4) {
-                                    theChunk = chunkIn00;
-                                } else {
-                                    theChunk = chunkIn01;
-                                }
+                breakThisLoop:
+                for (int localX = minX; localX < maxX; localX++) {
+                    for (int localZ = minZ; localZ < maxZ; localZ++) {
+                        Chunk theChunk;
+                        if (localX >> 4 == minX >> 4) {
+                            if (localZ >> 4 == minZ >> 4) {
+                                theChunk = chunkIn00;
                             } else {
-                                if (localZ >> 4 == minZ >> 4) {
-                                    theChunk = chunkIn10;
-                                } else {
-                                    theChunk = chunkIn11;
-                                }
+                                theChunk = chunkIn01;
                             }
-                            for (int localY = minY; localY < maxY; localY++) {
-                                boolean result = checkForCollisionFast(theChunk, localX, localY,
-                                    localZ, x, y, z);
-                                if (result) {
-                                    break breakThisLoop;
-                                }
+                        } else {
+                            if (localZ >> 4 == minZ >> 4) {
+                                theChunk = chunkIn10;
+                            } else {
+                                theChunk = chunkIn11;
+                            }
+                        }
+                        if (theChunk == null) {
+                            // No collision here
+                            continue;
+                        }
+                        for (int localY = minY; localY < maxY; localY++) {
+                            boolean result = checkForCollisionFast(theChunk, localX, localY,
+                                localZ, x, y, z);
+                            if (result) {
+                                break breakThisLoop;
+                            }
 
-                                /*
-                                 * if (false) // TODO: This code isn't thread safe. try { boolean result =
-                                 * tooTiredToName(localX, localY, localZ, x, y, z); if (result) { break
-                                 * breakThisLoop; } } catch (Exception e) { e.printStackTrace(); }
-                                 */
-                            }
+                            /*
+                             * if (false) // TODO: This code isn't thread safe. try { boolean result =
+                             * tooTiredToName(localX, localY, localZ, x, y, z); if (result) { break
+                             * breakThisLoop; } } catch (Exception e) { e.printStackTrace(); }
+                             */
                         }
                     }
                 }

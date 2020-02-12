@@ -27,7 +27,7 @@ public class ShipChunkAllocator {
     /**
      * The size of the square of chunks (default 256 x 256) that are allocated to a ship.
      */
-    public static final int MAX_CHUNK_LENGTH = 32;
+    public static final int MAX_CHUNK_LENGTH = 3200; // Who even really cares tbh
     public static final int MAX_CHUNK_RADIUS = (MAX_CHUNK_LENGTH / 2) - 1;
     public static final int CHUNK_X_START = 320000;
     public static final int CHUNK_Z_START = 0;
@@ -70,7 +70,7 @@ public class ShipChunkAllocator {
      * positions
      */
     public VSChunkClaim allocateNextChunkClaim() {
-        return new VSChunkClaim(lastChunkX, lastChunkZ += MAX_CHUNK_LENGTH, MAX_CHUNK_RADIUS);
+        return new VSChunkClaim(new ChunkPos(lastChunkX, lastChunkZ += MAX_CHUNK_LENGTH));
     }
 
 }

@@ -1,6 +1,5 @@
 package org.valkyrienskies.mod.common.physmanagement.relocation;
 
-import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -10,6 +9,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+
+import java.util.Optional;
 
 public class MoveBlocks {
 
@@ -39,16 +40,7 @@ public class MoveBlocks {
             .set(newPos.getX() & 15, newPos.getY() & 15, newPos.getZ() & 15, newState);
         // Only want to send the update to clients and nothing else, so we use flag 2.
         world.notifyBlockUpdate(newPos, oldState, newState, 2);
-        // Pretty messy to put this here but it works. Basically the ship keeps track of which of its chunks are
-        // actually being used for performance reasons.
-        if (physicsObjectOptional.isPresent()) {
-            int minChunkX = physicsObjectOptional.get()
-                .getOwnedChunks()
-                .minX();
-            int minChunkZ = physicsObjectOptional.get()
-                .getOwnedChunks()
-                .minZ();
-        }
+
         // Now that we've copied the block to the position, copy the tile entity
         copyTileEntityToPos(world, oldPos, newPos, physicsObjectOptional);
     }

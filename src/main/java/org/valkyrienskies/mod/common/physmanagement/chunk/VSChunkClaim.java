@@ -3,55 +3,57 @@ package org.valkyrienskies.mod.common.physmanagement.chunk;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Streams;
-import java.beans.ConstructorProperties;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
-import javax.annotation.concurrent.Immutable;
-import lombok.AllArgsConstructor;
 import lombok.Value;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
+import javax.annotation.concurrent.Immutable;
+import java.beans.ConstructorProperties;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
 /**
- * This stores the chunk claims for a PhysicsObject; not the chunks themselves
+ * This stores the chunk claims for a PhysicsObject; not the chunks themselves.
  *
- * @author thebest108
+ * @author tri0de
  */
 @Immutable
 
 @Value
-@AllArgsConstructor
 public final class VSChunkClaim implements Iterable<ChunkPos> {
 
-    private final int centerX;
-    private final int centerZ;
-    private final int radius;
+    private final ChunkPos centerPos;
+    private final Set<Long> claimedChunks;
 
-    // NON-DATA CACHE FIELDS
-    private final transient ImmutableSet<Long> chunkLongs;
+    public VSChunkClaim(ChunkPos centerPos) {
+        this.centerPos = centerPos;
+        this.claimedChunks = new HashSet<>();
+    }
 
     @JsonCreator // This annotation tells Jackson to use this constructor for the class
     // The below annotation says which JSON properties correspond to which constructor arguments
-    @ConstructorProperties({"centerX", "centerZ", "radius"})
-    public VSChunkClaim(int centerX, int centerZ, int radius) {
-        this.centerX = centerX;
-        this.centerZ = centerZ;
-        this.radius = radius;
-        this.chunkLongs = calculateChunkLongs();
-    }
-
-    public VSChunkClaim(NBTTagCompound readFrom) {
-        this(readFrom.getInteger("centerX"), readFrom.getInteger("centerZ"),
-            readFrom.getInteger("radius"));
+    @ConstructorProperties({"centerPos", "claimedChunks"})
+    private VSChunkClaim(ChunkPos centerPos, Set<Long> claimedChunks) {
+        this.centerPos = centerPos;
+        this.claimedChunks = claimedChunks;
     }
 
     public void writeToNBT(NBTTagCompound toSave) {
-        toSave.setInteger("centerX", getCenterX());
-        toSave.setInteger("centerZ", getCenterZ());
-        toSave.setInteger("radius", getRadius());
+        toSave.setLong("centerPos", getChunkPos(centerPos.x, centerPos.z));
+        // Using an int array instead of a long array because there is no nbt.setLongArray().
+        int[] chunkPositions = new int[claimedChunks.size() * 2];
+        int i = 0;
+        for (Long chunkPos : claimedChunks) {
+            chunkPositions[i] = getChunkX(chunkPos);
+            chunkPositions[i + 1] = getChunkZ(chunkPos);
+            i += 2;
+        }
+        toSave.setIntArray("claimedChunks", chunkPositions);
     }
 
     /**
@@ -62,9 +64,8 @@ public final class VSChunkClaim implements Iterable<ChunkPos> {
      * @return True if the specified chunk is contained within this {@link VSChunkClaim}
      */
     public boolean containsChunk(int chunkX, int chunkZ) {
-        boolean inX = (chunkX >= minX()) && (chunkX <= maxX());
-        boolean inZ = (chunkZ >= minZ()) && (chunkZ <= maxZ());
-        return inX && inZ;
+        long chunkLong = getChunkPos(chunkX, chunkZ);
+        return claimedChunks.contains(chunkLong);
     }
 
     public boolean containsChunk(ChunkPos pos) {
@@ -80,70 +81,27 @@ public final class VSChunkClaim implements Iterable<ChunkPos> {
         return containsChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
-    public ChunkPos absoluteToRelative(ChunkPos pos) {
-        return new ChunkPos(pos.x - minX(), pos.z - minZ());
+    public boolean addChunkClaim(int chunkX, int chunkZ) {
+        long chunkPos = getChunkPos(chunkX, chunkZ);
+        return claimedChunks.add(chunkPos);
     }
 
-    public ChunkPos relativeToAbsolute(ChunkPos pos) {
-        return new ChunkPos(pos.x + minX(), pos.z + minZ());
+    public boolean removeChunkClaim(int chunkX, int chunkZ) {
+        long chunkPos = getChunkPos(chunkX, chunkZ);
+        return claimedChunks.remove(chunkPos);
     }
 
     @Override
     public String toString() {
-        return getCenterX() + ":" + getCenterZ() + ":" + getRadius();
-    }
-
-    /**
-     * @return the maxX
-     */
-    public int maxX() {
-        return getCenterX() + getRadius();
-    }
-
-    /**
-     * @return the maxZ
-     */
-    public int maxZ() {
-        return getCenterZ() + getRadius();
-    }
-
-    /**
-     * @return the minZ
-     */
-    public int minZ() {
-        return getCenterZ() - getRadius();
-    }
-
-    /**
-     * @return the minX
-     */
-    public int minX() {
-        return getCenterX() - getRadius();
-    }
-
-    /**
-     * @return the size of this chunk claim. E.g., if the chunk claim has a radius of 2, then it is
-     * 5x5 and the dimension is 5
-     */
-    public int dimensions() {
-        return getRadius() * 2 + 1;
+        return centerPos + ":" + "claim size " + claimedChunks.size();
     }
 
     public BlockPos getRegionCenter() {
-        return new BlockPos(this.getCenterX() * 16, 128, this.getCenterZ() * 16);
-    }
-
-    public int getChunkLengthX() {
-        return maxX() - minX() + 1;
-    }
-
-    public int getChunkLengthZ() {
-        return maxZ() - minZ() + 1;
+        return new BlockPos(centerPos.getXStart(), 128, centerPos.getZStart());
     }
 
     private ImmutableSet<Long> calculateChunkLongs() {
-        return this.stream()
-            .map(pos -> ChunkPos.asLong(pos.x, pos.z))
+        return claimedChunks.stream()
             .collect(ImmutableSet.toImmutableSet());
     }
 
@@ -168,21 +126,35 @@ public final class VSChunkClaim implements Iterable<ChunkPos> {
     }
 
     class ChunkPosIterator implements Iterator<ChunkPos> {
-        int index = 0;
+        Iterator<Long> chunkLongsIterator = claimedChunks.iterator();
 
         @Override
         public boolean hasNext() {
-            return index < dimensions() * dimensions();
+            return chunkLongsIterator.hasNext();
         }
 
         @Override
         public ChunkPos next() {
             if (!hasNext()) throw new NoSuchElementException();
 
-            int x = (index / dimensions()) + minX();
-            int z = (index % dimensions()) + minZ();
-            index++;
+            long next = chunkLongsIterator.next();
+
+            int x = getChunkX(next);
+            int z = getChunkZ(next);
             return new ChunkPos(x, z);
         }
+    }
+
+    // Helper functions, not meant to be exposed outside of VSChunkClaim
+    private static int getChunkX(long chunkPos) {
+        return (int) (chunkPos & 4294967295L);
+    }
+
+    private static int getChunkZ(long chunkPos) {
+        return (int) ((chunkPos >> 32) & 4294967295L);
+    }
+
+    private static long getChunkPos(int chunkX, int chunkZ) {
+        return ChunkPos.asLong(chunkX, chunkZ);
     }
 }

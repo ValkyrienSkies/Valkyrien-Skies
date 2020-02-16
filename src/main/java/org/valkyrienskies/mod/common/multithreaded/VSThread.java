@@ -1,9 +1,5 @@
 package org.valkyrienskies.mod.common.multithreaded;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -16,6 +12,11 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
@@ -141,12 +142,16 @@ public class VSThread extends Thread {
     // The whole time need to be careful the game thread isn't messing with these
     // values.
     private void physicsTick() {
-        // TODO: Temporary fix:
-//        WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-//            .getManagerForWorld(hostWorld);
         List<PhysicsObject> physicsEntities = ((IHasShipManager) hostWorld).getManager().getAllLoadedPhysObj();
+        // Make a sublist of physics objects to process physics on.
+        List<PhysicsObject> physicsEntitiesToDoPhysics = new ArrayList<>();
+        for (PhysicsObject physicsObject : physicsEntities) {
+            if (physicsObject.isPhysicsEnabled()) {
+                physicsEntitiesToDoPhysics.add(physicsObject);
+            }
+        }
         // Tick ship physics here
-        tickThePhysicsAndCollision(physicsEntities);
+        tickThePhysicsAndCollision(physicsEntitiesToDoPhysics);
         tickSendUpdatesToPlayers(physicsEntities);
     }
 
@@ -158,8 +163,7 @@ public class VSThread extends Thread {
         List<ShipCollisionTask> collisionTasks = new ArrayList<>(
             shipsWithPhysics.size() * 2);
         for (PhysicsObject wrapper : shipsWithPhysics) {
-//            if (!wrapper.firstUpdate) {
-                // Update the physics simulation
+            // Update the physics simulation
             try {
                 wrapper.getPhysicsCalculations().rawPhysTickPreCol(newPhysSpeed);
                 // Update the collision task if necessary
@@ -171,7 +175,6 @@ public class VSThread extends Thread {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//            }
         }
 
         // Process gear physics simulation for the game worlds.
@@ -189,24 +192,15 @@ public class VSThread extends Thread {
         // Then those collision points have to be processed sequentially afterwards, all in
         // this thread. Thankfully this step is not cpu intensive.
         for (ShipCollisionTask task : collisionTasks) {
-            // PhysicsWrapperEntity wrapper = task.getToTask().getParent().getWrapperEntity();
-//            if (!wrapper.firstUpdate) {
-                task.getToTask().processCollisionTask(task);
-//            }
+            task.getToTask().processCollisionTask(task);
         }
 
         for (PhysicsObject wrapper : shipsWithPhysics) {
-//            if (!wrapper.firstUpdate) {
-                try {
-                    wrapper.getPhysicsCalculations().rawPhysTickPostCol();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-//            } else {
-//                wrapper.getPhysicsObject()
-//                    .getShipTransformationManager()
-//                        .updateAllTransforms(false, false);
-//            }
+            try {
+                wrapper.getPhysicsCalculations().rawPhysTickPostCol();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

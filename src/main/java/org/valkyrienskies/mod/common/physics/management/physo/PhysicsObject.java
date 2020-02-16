@@ -241,6 +241,13 @@ public class PhysicsObject implements IPhysicsEntity {
             }
         }
 
+        // We NEED this to fix ship lighting. If this code was removed then ships would have lighting artifacts all
+        // over them.
+        for (ChunkPos chunkPos : getOwnedChunks()) {
+            claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z).setTerrainPopulated(true);
+            claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z).setLightPopulated(true);
+        }
+
         // Then we destroy all the blocks we copied
         iter = detector.foundSet.iterator();
         while (iter.hasNext()) {
@@ -249,11 +256,7 @@ public class PhysicsObject implements IPhysicsEntity {
             getWorld().setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
         }
 
-        // We NEED this to fix ship lighting. If this code was removed then ships would have lighting artifacts all
-        // over them.
-        for (ChunkPos chunkPos : getOwnedChunks()) {
-            claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z).checkLight();
-        }
+
 
         // lol
         // getWrapperEntity().posX += .5;

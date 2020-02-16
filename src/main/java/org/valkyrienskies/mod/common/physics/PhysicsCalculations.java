@@ -1,25 +1,11 @@
 package org.valkyrienskies.mod.common.physics;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.experimental.Delegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.AxisAngle4d;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Quaterniond;
-import org.joml.Quaterniondc;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import org.joml.*;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
@@ -34,6 +20,10 @@ import org.valkyrienskies.mod.common.physics.management.ShipTransformationManage
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipPhysicsData;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.lang.Math;
 
 public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
@@ -117,35 +107,31 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     public void rawPhysTickPreCol(double newPhysSpeed) {
-        if (getParent().getData().isPhysicsEnabled()) {
-            updatePhysSpeedAndIters(newPhysSpeed);
-            updateParentCenterOfMass();
-            calculateFramedMOITensor();
-            if (!parent.isShipAligningToGrid()) {
-                // We are not marked for deconstruction, act normal.
-                if (!actAsArchimedes) {
-                    calculateForces();
-                } else {
-                    calculateForcesArchimedes();
-                }
+        updatePhysSpeedAndIters(newPhysSpeed);
+        updateParentCenterOfMass();
+        calculateFramedMOITensor();
+        if (!parent.isShipAligningToGrid()) {
+            // We are not marked for deconstruction, act normal.
+            if (!actAsArchimedes) {
+                calculateForces();
             } else {
-                // We are trying to deconstruct, try to rotate the ship to grid to align with the grid.
-                calculateForcesDeconstruction();
+                calculateForcesArchimedes();
             }
+        } else {
+            // We are trying to deconstruct, try to rotate the ship to grid to align with the grid.
+            calculateForcesDeconstruction();
         }
     }
 
     public void rawPhysTickPostCol() {
         if (!isPhysicsBroken()) {
-            if (getParent().getData().isPhysicsEnabled()) {
-                // This wasn't implemented very well at all! Maybe in the future I'll try again.
-                // enforceStaticFriction();
-                if (VSConfig.doAirshipRotation) {
-                    integrateAngularVelocity();
-                }
-                if (VSConfig.doAirshipMovement) {
-                    integrateLinearVelocity();
-                }
+            // This wasn't implemented very well at all! Maybe in the future I'll try again.
+            // enforceStaticFriction();
+            if (VSConfig.doAirshipRotation) {
+                integrateAngularVelocity();
+            }
+            if (VSConfig.doAirshipMovement) {
+                integrateLinearVelocity();
             }
         } else {
             getParent().getData().setPhysicsEnabled(false);

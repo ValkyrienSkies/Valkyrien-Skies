@@ -108,7 +108,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public void rawPhysTickPreCol(double newPhysSpeed) {
         updatePhysSpeedAndIters(newPhysSpeed);
-        updateParentCenterOfMass();
+        updatePhysCenterOfMass();
         calculateFramedMOITensor();
         if (!parent.isShipAligningToGrid()) {
             // We are not marked for deconstruction, act normal.
@@ -145,8 +145,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
         getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
         getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
-
-        updatePhysCenterOfMass();
     }
 
     // If the ship is moving at these speeds, its likely something in the physics
@@ -161,46 +159,15 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         return false;
     }
 
-    // The x/y/z variables need to be updated when the centerOfMass location
-    // changes.
-    @Deprecated
-    public void updateParentCenterOfMass() {
-        if (!getParent().getCenterCoord().equals(parent.getInertiaData().getGameTickCenterOfMass())) {
-            Vector CMDif = parent.getCenterCoord()
-                    .getSubtraction(parent.getInertiaData().getGameTickCenterOfMass());
-
-            if (getParent().getShipTransformationManager()
-                    .getCurrentPhysicsTransform() != null) {
-                getParent().getShipTransformationManager()
-                        .getCurrentPhysicsTransform()
-                        .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
-            }
-
-
-            ShipTransform transform = getParent().getTransform();
-            ShipTransform newTransform = getParent().getTransform().toBuilder()
-                    .posX(transform.getPosX() + CMDif.x)
-                    .posY(transform.getPosY() + CMDif.y)
-                    .posZ(transform.getPosZ() + CMDif.z)
-                    .centerCoord(parent.getInertiaData().getGameTickCenterOfMass().toVector3d())
-                .build();
-
-            getParent().updateTransform(newTransform);
-            getParent().getShipTransformationManager().updateAllTransforms(newTransform, false, true);
-
-            getParent().getCenterCoord().setValue(parent.getCenterCoord());
-        }
-    }
-
     /**
      * Updates the physics center of mass to the game center of mass; does not do any transformation
      * updates on its own.
      */
-    @Deprecated
     private void updatePhysCenterOfMass() {
-        if (!physCenterOfMass.equals(parent.getCenterCoord())) {
+        Vector gameTickCM = new Vector(parent.getInertiaData().getGameTickCenterOfMass());
+        if (!physCenterOfMass.equals(gameTickCM)) {
             Vector CMDif = physCenterOfMass
-                    .getSubtraction(parent.getCenterCoord());
+                    .getSubtraction(gameTickCM);
 
             getParent().getShipTransformationManager().getCurrentPhysicsTransform()
                     .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
@@ -208,7 +175,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             physY += CMDif.y;
             physZ += CMDif.z;
 
-            physCenterOfMass.setValue(parent.getCenterCoord());
+            physCenterOfMass.setValue(gameTickCM);
         }
     }
 
@@ -219,7 +186,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * Reference: https://en.wikipedia.org/wiki/Moment_of_inertia#Inertia_matrix_in_different_reference_frames
      */
     private void calculateFramedMOITensor() {
-        physCenterOfMass = new Vector(parent.getCenterCoord());
+        // physCenterOfMass = new Vector(parent.getCenterCoord());
         physTickMass = parent.getInertiaData().getGameTickMass();
 
         // Copy the rotation matrix, ignore the translation and scaling parts.

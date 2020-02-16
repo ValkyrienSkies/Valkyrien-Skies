@@ -256,28 +256,13 @@ public class PhysicsObject implements IPhysicsEntity {
             getWorld().setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
         }
 
-
-
-        // lol
-        // getWrapperEntity().posX += .5;
-        // getWrapperEntity().posY += .5;
-        // getWrapperEntity().posZ += .5;
-
         // Some extra ship crap at the end.
         detectBlockPositions();
 
-        // Note that this updates the ShipData transform.
-        getPhysicsCalculations().updateParentCenterOfMass();
         // This puts the updated ShipData transform into the transformation manager. It also creates the ship bounding
         // box (Which is stored into ShipData).
         this.getShipTransformationManager()
             .updateAllTransforms(this.getData().getShipTransform(), true, true);
-        /*
-        Polygon polygon = new Polygon(bbInShipSpace,
-            getShipTransformationManager().getCurrentTickTransform(),
-            TransformType.SUBSPACE_TO_GLOBAL);
-        getData().setShipBB(polygon.getEnclosedAABB());
-        */
     }
 
     public void preloadNewPlayers() {

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -267,9 +268,13 @@ public class PhysObjectRenderManager {
      */
     private void renderTextBox(String str, double posX, double posY, double posZ, double offsetX, double offsetY, double offsetZ) {
         Minecraft mc = Minecraft.getMinecraft();
+        Entity renderViewEntity = mc.getRenderViewEntity();
+        if (renderViewEntity == null) {
+            return; // Skip rendering
+        }
         final double maxDistance = 64;
         double d0 = new Vec3d(posX, posY, posZ)
-            .squareDistanceTo(mc.getRenderManager().renderViewEntity.getPositionVector());
+            .squareDistanceTo(renderViewEntity.getPositionVector());
 
         if (d0 <= maxDistance * maxDistance) {
             float playerYaw = mc.getRenderManager().playerViewY;

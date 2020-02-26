@@ -109,7 +109,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
                 if (world.isRemote) {
                     attachAsParent(chunk);
                 } else {
-                    injectChunkIntoWorldServer(chunk, x, z, false);
+                    injectChunkIntoWorldServer(chunk, x, z, false, true);
                 }
 
                 chunk.tileEntities.forEach(parent::onSetTileEntity);
@@ -132,13 +132,17 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
 
         claim.forEach((x, z) -> {
             Chunk chunk = new Chunk(world, x, z);
-            injectChunkIntoWorldServer(chunk, x, z, true);
+            injectChunkIntoWorldServer(chunk, x, z, true, true);
             setChunkAt(x, z, chunk);
         });
     }
 
-    public void injectChunkIntoWorldServer(Chunk chunk, int x, int z, boolean putInId2ChunkMap) {
-        VSChunkClaim chunkClaim = parent.getData().getChunkClaim();
+    private void injectChunkIntoWorldServer(Chunk chunk, int x, int z, boolean putInId2ChunkMap, boolean createPlayerEntry) {
+        // Sanity check first
+        if (!((WorldServer) world).isCallingFromMinecraftThread()) {
+            throw new IllegalThreadStateException("We cannot call this crap from another thread!");
+        }
+
         chunk.generateSkylightMap();
         chunk.checkLight();
 
@@ -157,15 +161,29 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
         // We need to set these otherwise certain events like Sponge's PhaseTracker will refuse to work properly with ships!
         chunk.setTerrainPopulated(true);
         chunk.setLightPopulated(true);
+
         // Inject the entry into the player chunk map.
-        // Sanity check first
-        if (!((WorldServer) world).isCallingFromMinecraftThread()) {
-            throw new IllegalThreadStateException("We cannot call this crap from another thread!");
+        if (createPlayerEntry) {
+            PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
+            PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
+            entry.sentToPlayers = true;
+            entry.players = parent.getWatchingPlayers();
         }
-        PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
-        PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
-        entry.sentToPlayers = true;
-        entry.players = parent.getWatchingPlayers();
+    }
+
+    public void deleteShipChunksFromWorld() {
+        parent.getOwnedChunks().forEach((x, z) -> {
+            Chunk chunk = new Chunk(world, x, z);
+            chunk.setTerrainPopulated(true);
+            chunk.setLightPopulated(true);
+            injectChunkIntoWorldServer(chunk, x, z, true, false);
+            PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
+            PlayerChunkMapEntry entry = map.getEntry(x, z);
+            if (entry == null) {
+                throw new IllegalStateException("How did the entry at " + x + " : " + z + " return as null?");
+            }
+            map.removeEntry(entry);
+        });
     }
 
     /**

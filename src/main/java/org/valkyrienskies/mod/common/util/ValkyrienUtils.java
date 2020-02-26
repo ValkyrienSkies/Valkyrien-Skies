@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -221,6 +222,18 @@ public class ValkyrienUtils {
                         int chunkZ = (tempPos.getZ() + centerDifference.getZ()) >> 4;
 
                         shipData.getChunkClaim().addChunkClaim(chunkX, chunkZ);
+                    }
+
+                    int radius = 7;
+
+                    // TEMP CODE
+                    // Eventually want to create mechanisms that control how many chunks are allocated to a ship
+                    // But for now, lets just give them a bunch of chunks.
+                    ChunkPos centerPos = shipData.getChunkClaim().getCenterPos();
+                    for (int chunkX = -radius; chunkX <= radius; chunkX++) {
+                        for (int chunkZ = -radius; chunkZ <= radius; chunkZ++) {
+                            shipData.getChunkClaim().addChunkClaim(centerPos.x + chunkX, centerPos.z + chunkZ);
+                        }
                     }
 
                     QueryableShipData.get(world).addShip(shipData);

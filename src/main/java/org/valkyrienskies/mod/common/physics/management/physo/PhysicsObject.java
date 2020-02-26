@@ -18,11 +18,13 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
+import net.minecraft.world.NextTickListEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 import org.joml.Quaterniondc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
@@ -42,6 +44,7 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingCh
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
@@ -351,10 +354,8 @@ public class PhysicsObject implements IPhysicsEntity {
                 // Mark for deconstruction
                 shipAligningToGrid = true;
                 shouldDeconstructShip = true;
-                getData().setPhysicsEnabled(false);
+                getData().setPhysicsEnabled(true);
             }
-
-            // getData().setPhysicsEnabled(false);
 
             if (shouldDeconstructShip) {
                 this.tryToDeconstructShip();
@@ -467,51 +468,16 @@ public class PhysicsObject implements IPhysicsEntity {
         return Math.toDegrees(shipQuat.angle()) < .5;
     }
 
-    public void tryToDeconstructShip() {
+    private void tryToDeconstructShip() {
         // First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
         if (!canShipBeDeconstructed()) {
             return;
         }
 
-        // We're pretty close to the grid; time 2 go.
-        MutableBlockPos newPos = new MutableBlockPos();
+        // First tell the world to get rid of this ship
+        QueryableShipData.get(world).removeShip(this.shipData);
 
-        ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
-        Vector centerCoord = new Vector(currentTransform.getCenterCoord());
-        Vector position = new Vector(currentTransform.getPosX(), currentTransform.getPosY(),
-            currentTransform.getPosZ());
-
-        BlockPos centerDifference = new BlockPos(
-            Math.round(getCenterCoord().x - position.x),
-            Math.round(getCenterCoord().y - position.y),
-            Math.round(getCenterCoord().z - position.z));
-        // First copy all the blocks from ship to world.
-
-        for (BlockPos oldPos : this.getBlockPositions()) {
-            newPos.setPos(oldPos.getX() - centerDifference.getX(),
-                oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
-            MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.empty());
-        }
-
-        // Just delete the tile entities in ship to prevent any dupe bugs.
-        for (BlockPos oldPos : this.getBlockPositions()) {
-            getWorld().removeTileEntity(oldPos);
-        }
-
-        // Delete old blocks. TODO: Used to use EMPTYCHUNK to do this but that causes crashes?
-        getOwnedChunks().forEach((x, z) -> {
-            Chunk chunk = new Chunk(getWorld(), x, z);
-            chunk.setTerrainPopulated(true);
-            chunk.setLightPopulated(true);
-            claimedChunkCache.injectChunkIntoWorldServer(chunk, x, z, true);
-            claimedChunkCache.setChunkAt(x, z, chunk);
-        });
-        // TODO:
-        this.destroy();
-    }
-
-    @Deprecated
-    public void destroy() {
+        // Then tell the game to stop tracking/loading the chunks
         List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(getWatchingPlayers());
         for (ChunkPos chunkPos : getOwnedChunks()) {
             SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(chunkPos.x, chunkPos.z);
@@ -523,6 +489,47 @@ public class PhysicsObject implements IPhysicsEntity {
             // onPlayerUntracking(wachingPlayer);
         }
         getWatchingPlayers().clear();
+
+        // Finally, copy all the blocks from the ship to the world
+        MutableBlockPos newPos = new MutableBlockPos();
+
+        ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
+        Vector position = new Vector(currentTransform.getPosX(), currentTransform.getPosY(),
+            currentTransform.getPosZ());
+
+        BlockPos centerDifference = new BlockPos(
+            Math.round(getCenterCoord().x - position.x),
+            Math.round(getCenterCoord().y - position.y),
+            Math.round(getCenterCoord().z - position.z));
+
+        for (BlockPos oldPos : this.getBlockPositions()) {
+            newPos.setPos(oldPos.getX() - centerDifference.getX(),
+                oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
+            MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.empty());
+        }
+
+        // Move any pending updates to the world.
+        AxisAlignedBB shipLocalAABB = getVoxelFieldAABBMaker().makeVoxelFieldAABB();
+        if (shipLocalAABB == null) {
+            throw new IllegalStateException("How did getVoxelFieldAABBMaker().makeVoxelFieldAABB() return null?");
+        }
+        StructureBoundingBox shipBlocksBB = new StructureBoundingBox((int) shipLocalAABB.minX, (int) shipLocalAABB.minY, (int) shipLocalAABB.minZ, (int) shipLocalAABB.maxX, (int) shipLocalAABB.maxY, (int) shipLocalAABB.maxZ);
+        List<NextTickListEntry> pendingUpdates = getWorld().getPendingBlockUpdates(shipBlocksBB, true);
+
+        if (pendingUpdates != null) {
+            for (NextTickListEntry entry : pendingUpdates) {
+                BlockPos nextPending = entry.position.subtract(centerDifference);
+                getWorld().updateBlockTick(nextPending, entry.getBlock(), entry.priority, (int) (entry.scheduledTime - getWorld().getWorldInfo().getWorldTotalTime()));
+            }
+        }
+
+        // Just delete the tile entities in ship to prevent any dupe bugs.
+        for (BlockPos oldPos : this.getBlockPositions()) {
+            getWorld().removeTileEntity(oldPos);
+        }
+
+        // Delete all the old ship chunks
+        getClaimedChunkCache().deleteShipChunksFromWorld();
     }
 
     public Vector getCenterCoord() {

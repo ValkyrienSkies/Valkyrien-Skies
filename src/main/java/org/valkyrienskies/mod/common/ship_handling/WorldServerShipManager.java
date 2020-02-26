@@ -77,8 +77,6 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             }
             if (data.getPhyso() != null) {
                 data.getPhyso().onTick();
-                // Add players to the thing
-                data.getPhyso().preloadNewPlayers();
             }
         }
         // Send all players in this world ship data.

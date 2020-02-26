@@ -18,13 +18,11 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
-import net.minecraft.world.NextTickListEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
-import net.minecraft.world.gen.structure.StructureBoundingBox;
 import org.joml.Quaterniondc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
@@ -332,6 +330,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
     public void onTick() {
         updateChunkCache();
+        preloadNewPlayers();
         if (!getWorld().isRemote) {
             TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
             boolean shouldDeconstructShip;
@@ -486,41 +485,28 @@ public class PhysicsObject implements IPhysicsEntity {
         getWatchingPlayers().clear();
 
         // Finally, copy all the blocks from the ship to the world
-        MutableBlockPos newPos = new MutableBlockPos();
+        if (!getBlockPositions().isEmpty()) {
+            MutableBlockPos newPos = new MutableBlockPos();
 
-        ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
-        Vector position = new Vector(currentTransform.getPosX(), currentTransform.getPosY(),
-            currentTransform.getPosZ());
+            ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
+            Vector position = new Vector(currentTransform.getPosX(), currentTransform.getPosY(),
+                    currentTransform.getPosZ());
 
-        BlockPos centerDifference = new BlockPos(
-            Math.round(getCenterCoord().x - position.x),
-            Math.round(getCenterCoord().y - position.y),
-            Math.round(getCenterCoord().z - position.z));
+            BlockPos centerDifference = new BlockPos(
+                    Math.round(getCenterCoord().x - position.x),
+                    Math.round(getCenterCoord().y - position.y),
+                    Math.round(getCenterCoord().z - position.z));
 
-        for (BlockPos oldPos : this.getBlockPositions()) {
-            newPos.setPos(oldPos.getX() - centerDifference.getX(),
-                oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
-            MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.empty());
-        }
-
-        // Move any pending updates to the world.
-        AxisAlignedBB shipLocalAABB = getVoxelFieldAABBMaker().makeVoxelFieldAABB();
-        if (shipLocalAABB == null) {
-            throw new IllegalStateException("How did getVoxelFieldAABBMaker().makeVoxelFieldAABB() return null?");
-        }
-        StructureBoundingBox shipBlocksBB = new StructureBoundingBox((int) shipLocalAABB.minX, (int) shipLocalAABB.minY, (int) shipLocalAABB.minZ, (int) shipLocalAABB.maxX, (int) shipLocalAABB.maxY, (int) shipLocalAABB.maxZ);
-        List<NextTickListEntry> pendingUpdates = getWorld().getPendingBlockUpdates(shipBlocksBB, true);
-
-        if (pendingUpdates != null) {
-            for (NextTickListEntry entry : pendingUpdates) {
-                BlockPos nextPending = entry.position.subtract(centerDifference);
-                getWorld().updateBlockTick(nextPending, entry.getBlock(), entry.priority, (int) (entry.scheduledTime - getWorld().getWorldInfo().getWorldTotalTime()));
+            for (BlockPos oldPos : this.getBlockPositions()) {
+                newPos.setPos(oldPos.getX() - centerDifference.getX(),
+                        oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
+                MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.empty());
             }
-        }
 
-        // Just delete the tile entities in ship to prevent any dupe bugs.
-        for (BlockPos oldPos : this.getBlockPositions()) {
-            getWorld().removeTileEntity(oldPos);
+            // Just delete the tile entities in ship to prevent any dupe bugs.
+            for (BlockPos oldPos : this.getBlockPositions()) {
+                getWorld().removeTileEntity(oldPos);
+            }
         }
 
         // Delete all the old ship chunks

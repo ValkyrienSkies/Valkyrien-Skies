@@ -50,7 +50,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private double physTickTimeDelta;
     private Matrix3dc physMOITensor;
     private Matrix3dc physInvMOITensor;
-    private double physRoll, physPitch, physYaw;
+    private Quaterniondc physRotation;
     private double physX, physY, physZ;
 
     public PhysicsCalculations(PhysicsObject parent) {
@@ -72,6 +72,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         // We need thread safe access to this.
         this.activeForcePositions = ConcurrentHashMap.newKeySet();
         this.physicsRotationNodeWorld = new ImplRotationNodeWorld(this.parent);
+
+        generatePhysicsTransform();
     }
 
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
@@ -89,15 +91,12 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     public void generatePhysicsTransform() {
         // Create a new physics transform.
         ShipTransform parentTransform = getParent().getShipData().getShipTransform();
-        physRoll = parentTransform.getRoll();
-        physPitch = parentTransform.getPitch();
-        physYaw = parentTransform.getYaw();
+        physRotation = parentTransform.getSubspaceToGlobal().getNormalizedRotation(new Quaterniond());
         physX = parentTransform.getPosX();
         physY = parentTransform.getPosY();
         physZ = parentTransform.getPosZ();
         physCenterOfMass.setValue(parentTransform.getCenterCoord());
-        ShipTransform physicsTransform = new ShipTransform(physX, physY, physZ, physPitch,
-                physYaw, physRoll,
+        ShipTransform physicsTransform = new ShipTransform(physX, physY, physZ, physRotation,
                 physCenterOfMass.toVector3d());
         getParent().getShipTransformationManager()
                 .setCurrentPhysicsTransform(physicsTransform);
@@ -140,8 +139,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         }
 
         ShipTransform finalPhysTransform = new ShipTransform(physX, physY, physZ,
-                physPitch, physYaw,
-                physRoll, physCenterOfMass.toVector3d());
+                physRotation, physCenterOfMass.toVector3d());
 
         getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
         getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
@@ -399,29 +397,27 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     /**
-     * This may or may not be correct :/ It seems to work fine but quaternion math is such a headache I'll take whatever works.
+     * I'm pretty sure this is wrong.
+     * Need to do this https://answers.unity.com/questions/49082/rotation-quaternion-to-angular-velocity.html
      */
     private void integrateAngularVelocity() {
         ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
         Vector angularVelocity = getAngularVelocity();
+        if (angularVelocity.isZero()) {
+            // Angular velocity is zero, so the rotation hasn't changed.
+            return;
+        }
 
         AxisAngle4d axisAngle4d = new AxisAngle4d(angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick(), angularVelocity.x, angularVelocity.y, angularVelocity.z);
         axisAngle4d.normalize();
 
-        Matrix3dc rotationChange = new Matrix3d().set(axisAngle4d);
-
         // Take the product of the current rotation with the change in rotation that results from
         // the angular velocity. Then change our pitch/yaw/roll based on the result.
-        Quaterniondc rotationChangeQuat = rotationChange.getNormalizedRotation(new Quaterniond());
+        Quaterniondc rotationChangeQuat = new Quaterniond(axisAngle4d);
         Quaterniondc initialRotation = coordTrans.getCurrentPhysicsTransform()
                 .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaterniondc finalRotation = rotationChangeQuat.mul(initialRotation, new Quaterniond());
 
-        Vector3dc angles = finalRotation.getEulerAnglesXYZ(new Vector3d());
-
-        physPitch = Double.isNaN(angles.x()) ? 0.0f : (float) Math.toDegrees(angles.x());
-        physYaw = Double.isNaN(angles.y()) ? 0.0f : (float) Math.toDegrees(angles.y());
-        physRoll = Double.isNaN(angles.z()) ? 0.0f : (float) Math.toDegrees(angles.z());
+        physRotation = rotationChangeQuat.mul(initialRotation, new Quaterniond()).normalize();
     }
 
     /**

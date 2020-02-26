@@ -4,7 +4,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
-import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
@@ -251,14 +250,11 @@ public class ShipTransformationManager {
 
         Quaterniondc prevRot = prev.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         Quaterniondc curRot = cur.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Quaterniondc partialRot = prevRot.slerp(curRot, partialTick, new Quaterniond());
-
-        Vector3dc angles = partialRot.getEulerAnglesXYZ(new Vector3d());
+        Quaterniondc partialRot = prevRot.slerp(curRot, partialTick, new Quaterniond()).normalize();
 
         // Put it all together to get the render transform.
         renderTransform = new ShipTransform(partialPos.x, partialPos.y,
-            partialPos.z, Math.toDegrees(angles.x()), Math.toDegrees(angles.y()),
-            Math.toDegrees(angles.z()),
+            partialPos.z, partialRot,
                 parent.getCenterCoord().toVector3d());
     }
 

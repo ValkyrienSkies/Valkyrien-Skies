@@ -7,6 +7,8 @@ import li.cil.oc.api.network.SimpleComponent;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Optional;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -43,7 +45,8 @@ public class TileEntityGPS extends TileEntity implements SimpleComponent {
             .getPhysoManagingBlock(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
             ShipTransform transform = physicsObjectOptional.get().getShipTransform();
-            return new Object[]{transform.getYaw(), transform.getPitch(), transform.getRoll()};
+            Vector3dc angles = transform.getSubspaceToGlobal().getEulerAnglesZYX(new Vector3d());
+            return new Object[]{Math.toDegrees(angles.x()), Math.toDegrees(angles.y()), Math.toDegrees(angles.z())};
         }
         return null;
     }

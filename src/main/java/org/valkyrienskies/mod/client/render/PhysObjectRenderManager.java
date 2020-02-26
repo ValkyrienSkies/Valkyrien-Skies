@@ -226,9 +226,11 @@ public class PhysObjectRenderManager {
 
         GlStateManager.translate((float) renderTransform.getPosX() + offsetX, (float) renderTransform.getPosY() + offsetY, (float) renderTransform.getPosZ() + offsetZ);
 
-        GlStateManager.rotate((float) renderTransform.getPitch(), 1, 0, 0);
-        GlStateManager.rotate((float) renderTransform.getYaw(), 0, 1, 0);
-        GlStateManager.rotate((float) renderTransform.getRoll(), 0, 0, 1);
+        Vector3dc angles = renderTransform.getSubspaceToGlobal().getEulerAnglesZYX(new Vector3d());
+
+        GlStateManager.rotate((float) Math.toDegrees(angles.z()), 0, 0, 1);
+        GlStateManager.rotate((float) Math.toDegrees(angles.y()), 0, 1, 0);
+        GlStateManager.rotate((float) Math.toDegrees(angles.x()), 1, 0, 0);
 
         for (ChunkPos claimedChunk : parent.getChunkClaim()) {
             AxisAlignedBB claimBB = new AxisAlignedBB(claimedChunk.getXStart() + .1, renderTransform.getCenterCoord().y() -8 + 0.1, claimedChunk.getZStart() + .1, claimedChunk.getXEnd() + .9, renderTransform.getCenterCoord().y() + 8 - .1, claimedChunk.getZEnd() + .9);

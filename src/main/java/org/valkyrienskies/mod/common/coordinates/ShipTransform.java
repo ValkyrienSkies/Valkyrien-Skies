@@ -1,30 +1,20 @@
 package org.valkyrienskies.mod.common.coordinates;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import javax.annotation.concurrent.Immutable;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Value;
-import lombok.With;
+import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Matrix4d;
-import org.joml.Matrix4dc;
-import org.joml.Quaterniond;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import org.joml.*;
 import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Immutable wrapper around the rotation matrices used by ships. The immutability is extremely
@@ -50,35 +40,31 @@ public class ShipTransform {
      * A transformation matrix used to convert 'subspace' coordinates into 'global' coordinates.
      */
     @JsonDeserialize(as = Matrix4d.class)
-    Matrix4dc subspaceToGlobal;
+    private final Matrix4dc subspaceToGlobal;
     /**
      * A transformation matrix used to convert 'global' coordinates into 'subspace coordinates'
      */
     @JsonDeserialize(as = Matrix4d.class)
-    Matrix4dc globalToSubspace;
+    private final Matrix4dc globalToSubspace;
 
-    double posX, posY, posZ, pitch, yaw, roll;
-    Vector3dc centerCoord;
+    private final double posX, posY, posZ;
+    private final Vector3dc centerCoord;
 
     public ShipTransform(Vector3dc position, Vector3dc centerCoord) {
-        this(position.x(), position.y(), position.z(), 0, 0, 0, centerCoord);
+        this(position.x(), position.y(), position.z(), new Quaterniond(), centerCoord);
     }
 
-    public ShipTransform(double posX, double posY, double posZ, double pitch, double yaw,
-                         double roll, Vector3dc centerCoord) {
+    public ShipTransform(double posX, double posY, double posZ, Quaterniondc rotation, Vector3dc centerCoord) {
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
-        this.pitch = pitch;
-        this.yaw = yaw;
-        this.roll = roll;
         this.centerCoord = centerCoord;
 
         this.subspaceToGlobal = new Matrix4d()
             // Finally we translate the coordinates to where they are in the world.
             .translate(posX, posY, posZ)
             // Then we rotate about the coordinate origin based on the pitch/yaw/roll.
-            .rotateXYZ(Math.toRadians(pitch), Math.toRadians(yaw), Math.toRadians(roll))
+            .rotate(rotation)
             // First translate the block coordinates to coordinates where center of mass is <0,0,0>
             // E.g., move the coordinate origin to <0,0,0>
             .translate(-centerCoord.x(), -centerCoord.y(), -centerCoord.z());

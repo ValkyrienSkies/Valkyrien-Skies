@@ -41,7 +41,6 @@ import org.valkyrienskies.mod.common.physics.management.IPhysicsObjectCenterOfMa
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
-import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -49,7 +48,6 @@ import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,8 +60,8 @@ public class PhysicsObject implements IPhysicsEntity {
     // region Fields
 
     @Getter
-    private final List<EntityPlayerMP> watchingPlayers = new ArrayList<>();
-    private final Set<INodeController> physicsControllers = ConcurrentHashMap.newKeySet();
+    private final List<EntityPlayerMP> watchingPlayers;
+    private final Set<INodeController> physicsControllers;
     private final Set<INodeController> physicsControllersImmutable;
     // Used to iterate over the ship blocks extremely quickly by taking advantage of the cache
     @Getter
@@ -92,9 +90,10 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     @Setter
     @Getter
-    private boolean needsCollisionCacheUpdate = true;
+    private boolean needsCollisionCacheUpdate;
 
-    private boolean shipAligningToGrid = false;
+    @Getter
+    private boolean shipAligningToGrid;
     /**
      * Used to quickly make AABBs
      */
@@ -109,7 +108,7 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     @Delegate
     @Getter
-    private ShipData shipData;
+    private final ShipData shipData;
 
     // endregion
 
@@ -127,7 +126,9 @@ public class PhysicsObject implements IPhysicsEntity {
         // QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
         this.world = world;
         this.shipData = initial;
-        this.referenceBlockPos = getData().getChunkClaim().getRegionCenter();
+        this.referenceBlockPos = getShipData().getChunkClaim().getRegionCenter();
+        this.watchingPlayers = new ArrayList<>();
+        this.physicsControllers = ConcurrentHashMap.newKeySet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.claimedChunkCache = new ClaimedChunkCacheController(this, !firstTimeCreated);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
@@ -135,8 +136,10 @@ public class PhysicsObject implements IPhysicsEntity {
             referenceBlockPos.getZ());
         this.centerOfMassProvider = new BasicCenterOfMassProvider(initial.getInertiaData());
         this.shipTransformationManager = new ShipTransformationManager(this,
-            getData().getShipTransform());
+            getShipData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
+        this.shipAligningToGrid = false;
+        this.needsCollisionCacheUpdate = true;
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
@@ -144,20 +147,16 @@ public class PhysicsObject implements IPhysicsEntity {
             this.shipRenderer = null;
             if (!firstTimeCreated) {
                 this.getShipTransformationManager()
-                    .updateAllTransforms(this.getData().getShipTransform(), true, true);
+                    .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
                 Objects.requireNonNull(shipData.getBlockPositions())
                     .forEach(voxelFieldAABBMaker::addVoxel);
             }
         }
     }
 
-    public ShipData getData() {
-        return shipData;
-    }
-
     public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
         // If the world is remote, or the block is not within the claimed chunks, ignore it!
-        if (getWorld().isRemote || !getData().getChunkClaim().containsBlock(posAt)) {
+        if (getWorld().isRemote || !getShipData().getChunkClaim().containsBlock(posAt)) {
             return;
         }
 
@@ -222,7 +221,7 @@ public class PhysicsObject implements IPhysicsEntity {
             voxelFieldAABBMaker.addVoxel(newPos.getX(), newPos.getY(), newPos.getZ());
         }
         // Update the physics infuser pos.
-        getData().setPhysInfuserPos(getData().getPhysInfuserPos().add(centerDifference));
+        getShipData().setPhysInfuserPos(getShipData().getPhysInfuserPos().add(centerDifference));
 
         // First we destroy all the tile entities we copied.
         iter = detector.foundSet.iterator();
@@ -246,7 +245,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
         // We NEED this to fix ship lighting. If this code was removed then ships would have lighting artifacts all
         // over them.
-        for (ChunkPos chunkPos : getOwnedChunks()) {
+        for (ChunkPos chunkPos : getChunkClaim()) {
             claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z).setTerrainPopulated(true);
             claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z).setLightPopulated(true);
         }
@@ -265,7 +264,7 @@ public class PhysicsObject implements IPhysicsEntity {
         // This puts the updated ShipData transform into the transformation manager. It also creates the ship bounding
         // box (Which is stored into ShipData).
         this.getShipTransformationManager()
-            .updateAllTransforms(this.getData().getShipTransform(), true, true);
+            .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
     }
 
     public void preloadNewPlayers() {
@@ -280,7 +279,7 @@ public class PhysicsObject implements IPhysicsEntity {
         }
 
         SpawnPhysObjMessage physObjMessage = new SpawnPhysObjMessage();
-        physObjMessage.initializeData(getData());
+        physObjMessage.initializeData(getShipData());
         for (EntityPlayerMP player : newWatchers) {
             ValkyrienSkiesMod.physWrapperNetwork.sendTo(physObjMessage, player);
         }
@@ -293,20 +292,16 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     public void onPlayerUntracking(EntityPlayer untracking) {
         getWatchingPlayers().remove(untracking);
-        for (ChunkPos chunkPos : getOwnedChunks()) {
+        for (ChunkPos chunkPos : getChunkClaim()) {
             SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(chunkPos.x, chunkPos.z);
             ((EntityPlayerMP) untracking).connection.sendPacket(unloadPacket);
         }
     }
 
-    public VSChunkClaim getOwnedChunks() {
-        return getData().getChunkClaim();
-    }
-
     /**
      * Called when this entity has been unloaded from the world
      */
-    public void onThisUnload() {
+    private void onThisUnload() {
         if (!getWorld().isRemote) {
             unloadShipChunksFromWorld();
         } else {
@@ -314,9 +309,9 @@ public class PhysicsObject implements IPhysicsEntity {
         }
     }
 
-    public void unloadShipChunksFromWorld() {
+    private void unloadShipChunksFromWorld() {
         ChunkProviderServer provider = (ChunkProviderServer) getWorld().getChunkProvider();
-        for (ChunkPos chunkPos : getOwnedChunks()) {
+        for (ChunkPos chunkPos : getChunkClaim()) {
             provider.queueUnload(claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z));
         }
     }
@@ -338,7 +333,7 @@ public class PhysicsObject implements IPhysicsEntity {
     public void onTick() {
         updateChunkCache();
         if (!getWorld().isRemote) {
-            TileEntity te = getWorld().getTileEntity(getData().getPhysInfuserPos());
+            TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
             boolean shouldDeconstructShip;
 
             if (te instanceof TileEntityPhysicsInfuser) {
@@ -348,13 +343,13 @@ public class PhysicsObject implements IPhysicsEntity {
                     !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
                 shipAligningToGrid =
                     !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
-                getData().setPhysicsEnabled(!physicsCore.canMaintainShip() ||
+                getShipData().setPhysicsEnabled(!physicsCore.canMaintainShip() ||
                     physicsCore.isPhysicsEnabled());
             } else {
                 // Mark for deconstruction
                 shipAligningToGrid = true;
                 shouldDeconstructShip = true;
-                getData().setPhysicsEnabled(true);
+                getShipData().setPhysicsEnabled(true);
             }
 
             if (shouldDeconstructShip) {
@@ -368,7 +363,7 @@ public class PhysicsObject implements IPhysicsEntity {
             ShipTransform physicsTransform = getShipTransformationManager()
                 .getCurrentPhysicsTransform();
             getShipTransformationManager().updateAllTransforms(physicsTransform, false, true);
-            getData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
+            getShipData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
         } else {
             /*
             WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
@@ -380,7 +375,7 @@ public class PhysicsObject implements IPhysicsEntity {
         }
     }
 
-    public void updateChunkCache() {
+    private void updateChunkCache() {
         cachedSurroundingChunks.updateChunkCache();
     }
 
@@ -479,7 +474,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
         // Then tell the game to stop tracking/loading the chunks
         List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(getWatchingPlayers());
-        for (ChunkPos chunkPos : getOwnedChunks()) {
+        for (ChunkPos chunkPos : getChunkClaim()) {
             SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(chunkPos.x, chunkPos.z);
             for (EntityPlayerMP wachingPlayer : watchersCopy) {
                 wachingPlayer.connection.sendPacket(unloadPacket);
@@ -533,11 +528,7 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public Vector getCenterCoord() {
-        return new Vector(this.getData().getShipTransform().getCenterCoord());
-    }
-
-    public boolean isShipAligningToGrid() {
-        return this.shipAligningToGrid;
+        return new Vector(this.getShipData().getShipTransform().getCenterCoord());
     }
 
     // region VS API Functions
@@ -556,18 +547,6 @@ public class PhysicsObject implements IPhysicsEntity {
     }
     // endregion
 
-    // region Encapsulation Code
-
-    public ShipTransform getTransform() {
-        return this.getData().getShipTransform();
-    }
-
-    public void updateTransform(ShipTransform transform) {
-        this.getData().setShipTransform(transform);
-    }
-
-    // endregion
-
     /**
      * Gets the chunk at chunkX and chunkZ.
      *
@@ -578,22 +557,11 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     public AxisAlignedBB getShipBoundingBox() {
-        return getData().getShipBB();
+        return getShipData().getShipBB();
     }
 
     public void setShipBoundingBox(AxisAlignedBB shipBoundingBox) {
-        getData().setShipBB(shipBoundingBox);
+        getShipData().setShipBB(shipBoundingBox);
     }
 
-    @Nullable
-    public Chunk getNearbyChunk(int x, int z) {
-        int minChunkX = cachedSurroundingChunks.getCachedChunks().chunkX;
-        int minChunkZ = cachedSurroundingChunks.getCachedChunks().chunkZ;
-        Chunk[][] chunks = cachedSurroundingChunks.getCachedChunks().chunkArray;
-        if (x < minChunkX || x >= minChunkX + chunks.length || z < minChunkZ
-            || z >= minChunkZ + chunks[0].length) {
-            return null;
-        }
-        return chunks[x - minChunkX][z - minChunkZ];
-    }
 }

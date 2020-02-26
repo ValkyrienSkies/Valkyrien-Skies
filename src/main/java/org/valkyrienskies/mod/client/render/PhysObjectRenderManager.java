@@ -78,7 +78,7 @@ public class PhysObjectRenderManager {
 
     public void updateRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ,
         boolean updateImmediately) {
-        if (renderChunks == null || parent == null || parent.getOwnedChunks() == null) {
+        if (renderChunks == null || parent == null || parent.getChunkClaim() == null) {
             return;
         }
 
@@ -254,7 +254,7 @@ public class PhysObjectRenderManager {
         renderTextBox(centerOfMassStr, renderTransform.getPosX(), renderTransform.getPosY() + .5,
             renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
 
-        String massStr = String.format("Mass: %.2f", parent.getData().getInertiaData().getGameTickMass());
+        String massStr = String.format("Mass: %.2f", parent.getShipData().getInertiaData().getGameTickMass());
 
         renderTextBox(massStr, renderTransform.getPosX(), renderTransform.getPosY() + 1,
             renderTransform.getPosZ(), offsetX, offsetY, offsetZ);

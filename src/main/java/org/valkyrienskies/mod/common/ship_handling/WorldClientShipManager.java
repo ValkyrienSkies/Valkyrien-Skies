@@ -24,7 +24,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
     public void tick() {
         for (PhysicsObject physicsObject : getAllLoadedPhysObj()) {
             physicsObject.getShipTransformationManager()
-                .updateAllTransforms(physicsObject.getData().getShipTransform(), false, false);
+                .updateAllTransforms(physicsObject.getShipData().getShipTransform(), false, false);
         }
     }
 

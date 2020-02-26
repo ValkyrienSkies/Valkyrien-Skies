@@ -61,7 +61,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      * @return The chunk from the cache
      */
     public Chunk getChunkAt(int chunkX, int chunkZ) {
-        VSChunkClaim claim = parent.getData().getChunkClaim();
+        VSChunkClaim claim = parent.getShipData().getChunkClaim();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
 
@@ -78,7 +78,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      * @param chunk  The chunk to cache.
      */
     public void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
-        VSChunkClaim claim = parent.getData().getChunkClaim();
+        VSChunkClaim claim = parent.getShipData().getChunkClaim();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
 
@@ -98,7 +98,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      */
     private void loadLoadedChunks() {
         System.out.println("Loading chunks");
-        VSChunkClaim claim = parent.getData().getChunkClaim();
+        VSChunkClaim claim = parent.getShipData().getChunkClaim();
 
         claim.forEach((x, z) -> {
             // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
@@ -128,7 +128,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      */
     private void loadNewChunks() {
         System.out.println("Loading new chunks");
-        VSChunkClaim claim = parent.getData().getChunkClaim();
+        VSChunkClaim claim = parent.getShipData().getChunkClaim();
 
         claim.forEach((x, z) -> {
             Chunk chunk = new Chunk(world, x, z);
@@ -172,7 +172,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
     }
 
     public void deleteShipChunksFromWorld() {
-        parent.getOwnedChunks().forEach((x, z) -> {
+        parent.getChunkClaim().forEach((x, z) -> {
             Chunk chunk = new Chunk(world, x, z);
             chunk.setTerrainPopulated(true);
             chunk.setLightPopulated(true);

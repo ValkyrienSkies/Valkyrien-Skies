@@ -198,7 +198,7 @@ public class WorldPhysicsCollider {
             if (!(minChunkY > 15 || maxChunkY < 0)) {
                 for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
                     for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                        if (parent.getOwnedChunks().containsChunk(chunkX, chunkZ)) {
+                        if (parent.getChunkClaim().containsChunk(chunkX, chunkZ)) {
                             final Chunk chunkIn = parent.getChunkAt(chunkX, chunkZ);
 
                             int minXToCheck = chunkX << 4;
@@ -309,9 +309,9 @@ public class WorldPhysicsCollider {
 
         Vector positionInBody = collider.entity.getCenter();
         positionInBody.subtract(
-            parent.getTransform().getPosX(),
-            parent.getTransform().getPosY(),
-            parent.getTransform().getPosZ());
+            parent.getShipTransform().getPosX(),
+            parent.getShipTransform().getPosY(),
+            parent.getShipTransform().getPosZ());
 
         double impulseApplied = 1D;
 
@@ -323,9 +323,9 @@ public class WorldPhysicsCollider {
         for (Vector collisionPos : collisionPoints) {
             Vector inBody = collisionPos.getSubtraction(
                 new Vector(
-                    parent.getTransform().getPosX(),
-                    parent.getTransform().getPosY(),
-                    parent.getTransform().getPosZ()));
+                    parent.getShipTransform().getPosX(),
+                    parent.getShipTransform().getPosY(),
+                    parent.getShipTransform().getPosZ()));
             inBody.multiply(-1D);
             Vector momentumAtPoint = calculator
                 .getVelocityAtPoint(inBody);
@@ -859,10 +859,10 @@ public class WorldPhysicsCollider {
                 // maxX = Math.min(maxX, minX << 4);
                 // maxZ = Math.min(maxZ, minZ << 4);
 
-                Chunk chunkIn00 = parent.getOwnedChunks().containsChunk(minX >> 4, minZ >> 4) ? parent.getChunkAt(minX >> 4, minZ >> 4) : null;
-                Chunk chunkIn01 = parent.getOwnedChunks().containsChunk(minX >> 4, maxZ >> 4) ? parent.getChunkAt(minX >> 4, maxZ >> 4) : null;
-                Chunk chunkIn10 = parent.getOwnedChunks().containsChunk(maxX >> 4, minZ >> 4) ? parent.getChunkAt(maxX >> 4, minZ >> 4) : null;
-                Chunk chunkIn11 = parent.getOwnedChunks().containsChunk(maxX >> 4, maxZ >> 4) ? parent.getChunkAt(maxX >> 4, maxZ >> 4) : null;
+                Chunk chunkIn00 = parent.getChunkClaim().containsChunk(minX >> 4, minZ >> 4) ? parent.getChunkAt(minX >> 4, minZ >> 4) : null;
+                Chunk chunkIn01 = parent.getChunkClaim().containsChunk(minX >> 4, maxZ >> 4) ? parent.getChunkAt(minX >> 4, maxZ >> 4) : null;
+                Chunk chunkIn10 = parent.getChunkClaim().containsChunk(maxX >> 4, minZ >> 4) ? parent.getChunkAt(maxX >> 4, minZ >> 4) : null;
+                Chunk chunkIn11 = parent.getChunkClaim().containsChunk(maxX >> 4, maxZ >> 4) ? parent.getChunkAt(maxX >> 4, maxZ >> 4) : null;
 
                 breakThisLoop:
                 for (int localX = minX; localX < maxX; localX++) {
@@ -981,7 +981,7 @@ public class WorldPhysicsCollider {
             for (int localX = minX; localX < maxX; localX++) {
                 for (int localZ = minZ; localZ < maxZ; localZ++) {
                     for (int localY = minY; localY < maxY; localY++) {
-                        if (parent.getOwnedChunks().containsChunk(localX >> 4, localZ >> 4)) {
+                        if (parent.getChunkClaim().containsChunk(localX >> 4, localZ >> 4)) {
                             Chunk chunkIn = parent.getChunkAt(localX >> 4, localZ >> 4);
                             if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
                                 IBitOctreeProvider provider = (IBitOctreeProvider) chunkIn.storageArrays[

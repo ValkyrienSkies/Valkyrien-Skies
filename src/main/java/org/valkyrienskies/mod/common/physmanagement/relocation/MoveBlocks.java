@@ -54,7 +54,7 @@ public class MoveBlocks {
             TileEntity newInstance;
             if (worldTile instanceof IRelocationAwareTile) {
                 newInstance = ((IRelocationAwareTile) worldTile).createRelocatedTile(newPos,
-                    physicsObjectOptional.map(PhysicsObject::getData).orElse(null));
+                    physicsObjectOptional.map(PhysicsObject::getShipData).orElse(null));
             } else {
                 tileEntNBT = worldTile.writeToNBT(tileEntNBT);
                 // Change the block position to be inside of the Ship

@@ -54,7 +54,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private double physX, physY, physZ;
 
     public PhysicsCalculations(PhysicsObject parent) {
-        this(parent, parent.getData().getPhysicsData());
+        this(parent, parent.getShipData().getPhysicsData());
     }
 
     public PhysicsCalculations(PhysicsObject parent, ShipPhysicsData data) {
@@ -88,7 +88,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public void generatePhysicsTransform() {
         // Create a new physics transform.
-        ShipTransform parentTransform = getParent().getData().getShipTransform();
+        ShipTransform parentTransform = getParent().getShipData().getShipTransform();
         physRoll = parentTransform.getRoll();
         physPitch = parentTransform.getPitch();
         physYaw = parentTransform.getYaw();
@@ -134,7 +134,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                 integrateLinearVelocity();
             }
         } else {
-            getParent().getData().setPhysicsEnabled(false);
+            getParent().getShipData().setPhysicsEnabled(false);
             getLinearMomentum().zero();
             getAngularVelocity().zero();
         }

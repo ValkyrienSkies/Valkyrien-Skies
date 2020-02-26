@@ -1,7 +1,5 @@
 package org.valkyrienskies.mod.common.physics;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -10,6 +8,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.valkyrienskies.mod.common.math.Vector;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PhysicsParticleManager {
 
@@ -43,9 +44,9 @@ public class PhysicsParticleManager {
                 if (physicsParticle.addMomentumToShip) {
                     bufferVectorForcePos
                         .setValue(
-                            physicsParticle.posX - parent.getParent().getTransform().getPosX(),
-                            physicsParticle.posY - parent.getParent().getTransform().getPosY(),
-                            physicsParticle.posZ - parent.getParent().getTransform().getPosZ());
+                            physicsParticle.posX - parent.getParent().getShipTransform().getPosX(),
+                            physicsParticle.posY - parent.getParent().getShipTransform().getPosY(),
+                            physicsParticle.posZ - parent.getParent().getShipTransform().getPosZ());
                     bufferVectorForce.setValue(physicsParticle.velX * physicsParticle.mass,
                         physicsParticle.velY * physicsParticle.mass,
                         physicsParticle.velZ * physicsParticle.mass);

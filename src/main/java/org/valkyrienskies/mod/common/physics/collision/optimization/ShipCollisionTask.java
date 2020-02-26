@@ -101,7 +101,7 @@ public class ShipCollisionTask implements Callable<Void> {
     }
 
     public void checkPosition(int x, int y, int z, int positionHash) {
-        if (!toTask.getParent().getOwnedChunks().containsChunk(x >> 4, z >> 4)) {
+        if (!toTask.getParent().getChunkClaim().containsChunk(x >> 4, z >> 4)) {
             return;
         }
         final Chunk chunkIn = toTask.getParent().getChunkAt(x >> 4, z >> 4);

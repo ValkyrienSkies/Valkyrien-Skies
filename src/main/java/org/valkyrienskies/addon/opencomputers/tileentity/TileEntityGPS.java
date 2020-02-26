@@ -30,7 +30,7 @@ public class TileEntityGPS extends TileEntity implements SimpleComponent {
         java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
             .getPhysoManagingBlock(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
-            BlockPos pos = physicsObjectOptional.get().getTransform().getShipPositionBlockPos();
+            BlockPos pos = physicsObjectOptional.get().getShipTransform().getShipPositionBlockPos();
             return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
         }
         return null;
@@ -42,7 +42,7 @@ public class TileEntityGPS extends TileEntity implements SimpleComponent {
         java.util.Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils
             .getPhysoManagingBlock(getWorld(), getPos());
         if (physicsObjectOptional.isPresent()) {
-            ShipTransform transform = physicsObjectOptional.get().getTransform();
+            ShipTransform transform = physicsObjectOptional.get().getShipTransform();
             return new Object[]{transform.getYaw(), transform.getPitch(), transform.getRoll()};
         }
         return null;

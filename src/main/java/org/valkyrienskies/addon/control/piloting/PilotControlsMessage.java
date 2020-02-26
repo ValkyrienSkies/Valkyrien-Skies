@@ -133,7 +133,7 @@ public class PilotControlsMessage implements IMessage {
 
         if (shipPiloting != null) {
             // USED TO BE #getUniqueID
-            shipFor = shipPiloting.getData().getUuid();
+            shipFor = shipPiloting.getShipData().getUuid();
         }
         this.inputType = inputType;
         if (inputType == ControllerInputType.Zepplin) {

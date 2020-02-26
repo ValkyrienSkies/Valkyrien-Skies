@@ -97,7 +97,7 @@ public class BasicCenterOfMassProvider implements IPhysicsObjectCenterOfMassProv
         // crashing the program.
         if (inertiaData.getGameTickMass() + addedMass < .0001) {
             inertiaData.setGameTickMass(.0001);
-            physicsObject.getData().setPhysicsEnabled(false);
+            physicsObject.getShipData().setPhysicsEnabled(false);
         } else {
             inertiaData.setGameTickMass(inertiaData.getGameTickMass() + addedMass);
         }

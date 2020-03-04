@@ -45,6 +45,7 @@ import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VSWorldEventListener;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -113,13 +114,13 @@ public class EventsCommon {
             throw new IllegalStateException("This event should never get called client side");
         }
         World world = event.world;
+        IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(world);
         switch (event.phase) {
             case START:
                 PhysicsTickHandler.onWorldTickStart(world);
+                physObjectWorld.tick();
                 break;
             case END:
-                IHasShipManager shipManager = (IHasShipManager) world;
-                shipManager.getManager().tick();
                 PhysicsTickHandler.onWorldTickEnd(world);
                 EntityDraggable.tickAddedVelocityForWorld(world);
                 break;

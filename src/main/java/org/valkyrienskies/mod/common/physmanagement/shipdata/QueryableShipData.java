@@ -1,20 +1,10 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import static com.googlecode.cqengine.query.QueryFactory.equal;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +15,13 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
 import org.valkyrienskies.mod.common.util.cqengine.UpdatableHashIndex;
 import org.valkyrienskies.mod.common.util.cqengine.UpdatableUniqueIndex;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
+import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 /**
  * A class that keeps track of ship data
@@ -155,9 +152,11 @@ public class QueryableShipData implements Iterable<ShipData> {
     }
 
     /**
-     * Adds the ship data if it doesn't exist, or replaces the old ship data with the new ship data,
-     * while preserving the physics object attached to the old data if there was one.
+     * Adds the ShipData if it doesn't exist, or updates the values of the old ShipData to match the input.
      */
+    @Deprecated // This is a disaster waiting to happen, only allow a few places in code to create a new ShipData.
+    // Don't want to break the Maps in WorldServerShipManager by replacing an old ShipData with a new one that has
+    // the same UUID.
     public void addOrUpdateShipPreservingPhysObj(ShipData ship) {
         Optional<ShipData> old = getShip(ship.getUuid());
         if (old.isPresent()) {

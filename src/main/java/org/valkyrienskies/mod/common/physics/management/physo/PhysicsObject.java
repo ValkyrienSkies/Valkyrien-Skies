@@ -41,7 +41,6 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkC
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
@@ -244,8 +243,9 @@ public class PhysicsObject implements IPhysicsEntity {
         // We NEED this to fix ship lighting. If this code was removed then ships would have lighting artifacts all
         // over them.
         for (ChunkPos chunkPos : getChunkClaim()) {
-            claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z).setTerrainPopulated(true);
-            claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z).setLightPopulated(true);
+            Chunk chunkAt = claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z);
+            chunkAt.setTerrainPopulated(true);
+            chunkAt.setLightPopulated(true);
         }
 
         // Then we destroy all the blocks we copied
@@ -331,30 +331,6 @@ public class PhysicsObject implements IPhysicsEntity {
     public void onTick() {
         updateChunkCache();
         preloadNewPlayers();
-        if (!getWorld().isRemote) {
-            TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
-            boolean shouldDeconstructShip;
-
-            if (te instanceof TileEntityPhysicsInfuser) {
-                TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
-                // Mark for deconstruction
-                shouldDeconstructShip =
-                    !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
-                shipAligningToGrid =
-                    !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
-                getShipData().setPhysicsEnabled(!physicsCore.canMaintainShip() ||
-                    physicsCore.isPhysicsEnabled());
-            } else {
-                // Mark for deconstruction
-                shipAligningToGrid = true;
-                shouldDeconstructShip = true;
-                getShipData().setPhysicsEnabled(true);
-            }
-
-            if (shouldDeconstructShip) {
-                this.tryToDeconstructShip();
-            }
-        }
 
         this.setNeedsCollisionCacheUpdate(true);
 
@@ -363,6 +339,27 @@ public class PhysicsObject implements IPhysicsEntity {
                 .getCurrentPhysicsTransform();
             getShipTransformationManager().updateAllTransforms(physicsTransform, false, true);
             getShipData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
+
+            TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
+            boolean shouldDeconstructShip;
+
+            // Only want to update the status of whether this ship is queued for unload AFTER we've updated from the
+            // physics transform.
+            if (te instanceof TileEntityPhysicsInfuser) {
+                TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
+                // Mark for deconstruction
+                shouldDeconstructShip =
+                        !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
+                shipAligningToGrid =
+                        !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
+                getShipData().setPhysicsEnabled(!physicsCore.canMaintainShip() ||
+                        physicsCore.isPhysicsEnabled());
+            } else {
+                // Mark for deconstruction
+                shipAligningToGrid = true;
+                shouldDeconstructShip = true;
+                getShipData().setPhysicsEnabled(true);
+            }
         } else {
             /*
             WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
@@ -454,23 +451,34 @@ public class PhysicsObject implements IPhysicsEntity {
      * Returns true if this ship is aligned close enough to the grid that it is allowed to
      * deconstruct back to the world.
      */
-    public boolean canShipBeDeconstructed() {
+    public boolean shouldShipBeDestroyed() {
+        TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
+        boolean shouldDeconstructShip;
+        if (te instanceof TileEntityPhysicsInfuser) {
+            TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
+            // Mark for deconstruction
+            shouldDeconstructShip =
+                    !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
+        } else {
+            shouldDeconstructShip = true;
+        }
+
+        if (!shouldDeconstructShip) {
+            return false;
+        }
+
+        return isShipAlignedToWorld();
+    }
+
+    public boolean isShipAlignedToWorld() {
         // The quaternion with the ship's orientation
         Quaterniondc shipQuat = getShipTransformationManager().getCurrentTickTransform()
-            .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+                .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         // Only allow a ship to be deconstructed if the angle between the grid and its orientation is less than half a degree.
         return Math.toDegrees(shipQuat.angle()) < .5;
     }
 
-    private void tryToDeconstructShip() {
-        // First check if the ship orientation is close to that of the grid; if it isn't then don't let this ship deconstruct.
-        if (!canShipBeDeconstructed()) {
-            return;
-        }
-
-        // First tell the world to get rid of this ship
-        QueryableShipData.get(world).removeShip(this.shipData);
-
+    public void destroyShip() {
         // Then tell the game to stop tracking/loading the chunks
         List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(getWatchingPlayers());
         for (ChunkPos chunkPos : getChunkClaim()) {

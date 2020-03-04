@@ -1,44 +1,36 @@
 package org.valkyrienskies.mod.common.util;
 
-import gnu.trove.iterator.TIntIterator;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
-import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.multithreaded.TickSyncCompletableFuture;
-import org.valkyrienskies.mod.common.multithreaded.VSExecutors;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
-import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -173,11 +165,11 @@ public class ValkyrienUtils {
             name, chunkClaim, shipID, initial, axisAlignedBB, physInfuserPos);
     }
 
-    public static Collection<PhysicsObject> getPhysosLoadedInWorld(World world) {
+    public static Iterable<PhysicsObject> getPhysosLoadedInWorld(World world) {
         return ((IHasShipManager) world).getManager().getAllLoadedPhysObj();
     }
 
-    public static TickSyncCompletableFuture<Void> assembleShipAsOrderedByPlayer(World world,
+    public static void assembleShipAsOrderedByPlayer(World world,
         @Nullable EntityPlayerMP creator, BlockPos physicsInfuserPos) {
         if (world.isRemote) {
             throw new IllegalStateException("This method cannot be invoked on client side!");
@@ -191,57 +183,15 @@ public class ValkyrienUtils {
         ShipData shipData = createNewShip(world, physicsInfuserPos);
 
 
-        System.out.println("E!");
-        return TickSyncCompletableFuture
-                .supplyAsync(() -> DetectorManager.getDetectorFor(
-                    DetectorManager.DetectorIDs.ShipSpawnerGeneral, physicsInfuserPos, world,
-                                VSConfig.maxShipSize + 1, true))
-                .thenAcceptAsync(detector -> {
-                    System.out.println("Hello! " + Thread.currentThread().getName());
-                    if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
-                        System.err.println("Ship too big or bedrock detected!");
-                        if (creator != null) {
-                            creator.sendMessage(new TextComponentString(
-                                    "Ship construction canceled because its exceeding the ship size limit; "
-                                            +
-                                            "or because it's attached to bedrock. " +
-                                            "Raise it with /physsettings maxshipsize [number]"));
-                        }
-                        return;
-                    }
+        // Add shipData to the ShipData storage
+        QueryableShipData.get(world).addShip(shipData);
 
-                    // Fill the chunk claims
-                    TIntIterator blocksIterator = detector.foundSet.iterator();
-                    BlockPos.MutableBlockPos tempPos = new BlockPos.MutableBlockPos();
-                    BlockPos centerDifference = shipData.getChunkClaim().getRegionCenter().subtract(physicsInfuserPos);
-                    while (blocksIterator.hasNext()) {
-                        int hashedPos = blocksIterator.next();
-                        SpatialDetector.setPosWithRespectTo(hashedPos, detector.firstBlock, tempPos);
+        // Queue the ship spawn operation
+        ValkyrienUtils.getPhysObjWorld(world).queueShipSpawn(shipData);
+    }
 
-                        int chunkX = (tempPos.getX() + centerDifference.getX()) >> 4;
-                        int chunkZ = (tempPos.getZ() + centerDifference.getZ()) >> 4;
-
-                        shipData.getChunkClaim().addChunkClaim(chunkX, chunkZ);
-                    }
-
-                    int radius = 7;
-
-                    // TEMP CODE
-                    // Eventually want to create mechanisms that control how many chunks are allocated to a ship
-                    // But for now, lets just give them a bunch of chunks.
-                    ChunkPos centerPos = shipData.getChunkClaim().getCenterPos();
-                    for (int chunkX = -radius; chunkX <= radius; chunkX++) {
-                        for (int chunkZ = -radius; chunkZ <= radius; chunkZ++) {
-                            shipData.getChunkClaim().addChunkClaim(centerPos.x + chunkX, centerPos.z + chunkZ);
-                        }
-                    }
-
-                    QueryableShipData.get(world).addShip(shipData);
-                    PhysicsObject physicsObject = new PhysicsObject(world, shipData, true);
-                    shipData.setPhyso(physicsObject);
-
-                    physicsObject.assembleShip(creator, detector, physicsInfuserPos);
-                }, VSExecutors.forWorld((WorldServer) world));
+    public static IPhysObjectWorld getPhysObjWorld(World world) {
+        return ((IHasShipManager) world).getManager();
     }
 
 }

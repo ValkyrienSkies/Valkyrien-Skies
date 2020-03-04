@@ -26,18 +26,11 @@ import static com.googlecode.cqengine.query.QueryFactory.nullableAttribute;
 
 /**
  * One of these objects will represent a ship. You can obtain a physics object for that ship (if one
- * is available), by calling {@link #getPhyso()}.
+ * is available), by calling {@link org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld#getPhysObjectFromData(ShipData)}.
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true) // For Jackson
 public class ShipData {
-
-    /**
-     * The PhysicsObject which is linked with this data. This isn't serialized
-     */
-    @Nullable
-    @Setter
-    private transient PhysicsObject physo;
 
     /**
      * The {@link QueryableShipData} that manages this
@@ -101,12 +94,10 @@ public class ShipData {
 
     // endregion
 
-    public ShipData(@Nullable PhysicsObject physo,
-                    @NonNull ConcurrentUpdatableIndexedCollection<ShipData> owner,
+    public ShipData(@NonNull ConcurrentUpdatableIndexedCollection<ShipData> owner,
                     ShipPhysicsData physicsData, @Nonnull ShipInertiaData inertiaData, @NonNull ShipTransform shipTransform, @NonNull AxisAlignedBB shipBB,
                     boolean physicsEnabled, @NonNull BlockPos physInfuserPos, @NonNull VSChunkClaim chunkClaim, @NonNull UUID uuid,
                     @NonNull String name) {
-        this.physo = physo;
         this.owner = owner;
         this.physicsData = physicsData;
         this.inertiaData = inertiaData;
@@ -127,7 +118,7 @@ public class ShipData {
         ShipTransform shipTransform,
         AxisAlignedBB aabb, BlockPos physInfuserPos) {
 
-        return new ShipData(null, owner, new ShipPhysicsData(), new ShipInertiaData(), shipTransform, aabb,
+        return new ShipData(owner, new ShipPhysicsData(), new ShipInertiaData(), shipTransform, aabb,
             true, physInfuserPos, chunkClaim, shipID, name);
     }
 

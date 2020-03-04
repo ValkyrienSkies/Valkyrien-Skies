@@ -142,17 +142,18 @@ public class VSThread extends Thread {
     // The whole time need to be careful the game thread isn't messing with these
     // values.
     private void physicsTick() {
-        List<PhysicsObject> physicsEntities = ((IHasShipManager) hostWorld).getManager().getAllLoadedPhysObj();
+        // This isn't thread-safe!!!
+        Iterable<PhysicsObject> physicsObjects = ((IHasShipManager) hostWorld).getManager().getAllLoadedPhysObj();
         // Make a sublist of physics objects to process physics on.
         List<PhysicsObject> physicsEntitiesToDoPhysics = new ArrayList<>();
-        for (PhysicsObject physicsObject : physicsEntities) {
+        for (PhysicsObject physicsObject : physicsObjects) {
             if (physicsObject.isPhysicsEnabled()) {
                 physicsEntitiesToDoPhysics.add(physicsObject);
             }
         }
+
         // Tick ship physics here
         tickThePhysicsAndCollision(physicsEntitiesToDoPhysics);
-        tickSendUpdatesToPlayers(physicsEntities);
     }
 
     /**
@@ -202,14 +203,6 @@ public class VSThread extends Thread {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void tickSendUpdatesToPlayers(List<PhysicsObject> ships) {
-//        for (PhysicsWrapperEntity wrapper : ships) {
-//            wrapper.getPhysicsObject().getShipTransformationManager()
-//                .sendPositionToPlayers(physicsTicksCount);
-//        }
-        physicsTicksCount++;
     }
 
     /**

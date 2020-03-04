@@ -16,7 +16,6 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,7 +27,6 @@ import org.valkyrienskies.mod.client.gui.IVSTileGui;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.container.EnumInfuserButton;
-import org.valkyrienskies.mod.common.multithreaded.VSExecutors;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
@@ -109,12 +107,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 // Make sure we don't try to create a ship when we're already in ship space.
                 if (!ShipChunkAllocator.isBlockInShipyard(getPos())) {
                     try {
-                        ValkyrienUtils.assembleShipAsOrderedByPlayer(getWorld(), null, getPos())
-                            .thenRunAsync(() -> {
-                                System.out.println("Spawning ship entity in thread " + Thread.currentThread().getName());
-                                // TODO: Hmmmmmmmm
-                                // getWorld().spawnEntity(ship);
-                            }, VSExecutors.forWorld((WorldServer) world));
+                        ValkyrienUtils.assembleShipAsOrderedByPlayer(getWorld(), null, getPos());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -297,7 +290,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
             .getPhysoManagingBlock(getWorld(), getPos());
         return !physicsObject.isPresent() || physicsObject.get()
-            .canShipBeDeconstructed();
+            .isShipAlignedToWorld();
     }
 
     @Override

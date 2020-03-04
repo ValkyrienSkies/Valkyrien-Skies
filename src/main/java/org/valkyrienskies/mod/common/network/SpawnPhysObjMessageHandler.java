@@ -6,9 +6,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
+import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class SpawnPhysObjMessageHandler implements IMessageHandler<SpawnPhysObjMessage, IMessage> {
 
@@ -24,15 +25,19 @@ public class SpawnPhysObjMessageHandler implements IMessageHandler<SpawnPhysObjM
                 if (Minecraft.getMinecraft().world != null) {
                     // Spawn a PhysicsObject from the ShipData.
                     World world = Minecraft.getMinecraft().world;
+
                     QueryableShipData queryableShipData = QueryableShipData.get(world);
+                    IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(world);
                     ShipData toSpawn = message.shipToSpawnData;
-                    if (toSpawn.getPhyso() != null) {
-                        throw new IllegalStateException("Wtf you can't spawn a ship twice!");
+                    if (physObjectWorld.getPhysObjectFromData(toSpawn) != null) {
+                        throw new IllegalStateException("You can't spawn a ship twice!");
                     }
                     // Create a new PhysicsObject based on the ShipData.
                     queryableShipData.addOrUpdateShipPreservingPhysObj(toSpawn);
-                    PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, false);
-                    toSpawn.setPhyso(physicsObject);
+
+                    physObjectWorld.queueShipLoad(toSpawn);
+                    // PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, false);
+                    // toSpawn.setPhyso(physicsObject);
                 }
             }
         });

@@ -26,24 +26,6 @@ public interface IPhysObjectWorld {
     void onWorldUnload();
 
     /**
-     * Creates a new PhysicsObject for the given ShipData. Throws an exception if a PhysicsObject already exists for
-     * that ShipData.
-     *
-     * @param data
-     * @return
-     */
-    @Nonnull
-    PhysicsObject createPhysObjectFromData(ShipData data) throws IllegalArgumentException;
-
-    /**
-     * Removes the PhysicsObject with the ShipData.
-     *
-     * @param data
-     * @return True if there was a PhysicsObject with ShipData of data, false if there wasn't.
-     */
-    boolean removePhysObject(ShipData data);
-
-    /**
      * @param data
      * @return Null if there wasn't a PhysicsObject for the given data.
      */
@@ -58,6 +40,21 @@ public interface IPhysObjectWorld {
     List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck);
 
     @Nonnull
-    List<PhysicsObject> getAllLoadedPhysObj();
+    Iterable<PhysicsObject> getAllLoadedPhysObj();
+
+    /**
+     * Thread safe way to queue a ship spawn. (Not the same as {@link #queueShipLoad(ShipData)}.
+     */
+    void queueShipSpawn(@Nonnull ShipData data);
+
+    /**
+     * Thread safe way to queue a ship load.
+     */
+    void queueShipLoad(@Nonnull ShipData data);
+
+    /**
+     * Thread safe way to queue a ship unload.
+     */
+    void queueShipUnload(@Nonnull ShipData data);
 
 }

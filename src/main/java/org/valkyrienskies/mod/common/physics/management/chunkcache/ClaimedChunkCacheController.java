@@ -182,6 +182,8 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
             if (entry == null) {
                 throw new IllegalStateException("How did the entry at " + x + " : " + z + " return as null?");
             }
+            // Want to throw away old chunk.
+            entry.chunk = chunk;
             map.removeEntry(entry);
         });
     }

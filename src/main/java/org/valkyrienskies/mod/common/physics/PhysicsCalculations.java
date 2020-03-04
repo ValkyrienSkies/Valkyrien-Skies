@@ -16,14 +16,13 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
-import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
 import org.valkyrienskies.mod.common.physics.management.physo.ShipPhysicsData;
 import valkyrienwarfare.api.TransformType;
 
+import java.lang.Math;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.lang.Math;
 
 public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
@@ -206,7 +205,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         physInvMOITensor = physMOITensor.invert(new Matrix3d());
     }
 
-    protected void calculateForces() {
+    private void calculateForces() {
         applyAirDrag();
         applyGravity();
 
@@ -369,7 +368,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         getAngularVelocity().multiply(drag);
     }
 
-    public void convertTorqueToVelocity() {
+    private void convertTorqueToVelocity() {
         if (!torque.isZero()) {
             Vector3d torqueTransformed = torque.toVector3d();
             getPhysInvMOITensor().transform(torqueTransformed);
@@ -384,7 +383,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         getLinearMomentum().add(forceToApply);
     }
 
-    public void addForceAtPoint(Vector inBodyWO,
+    private void addForceAtPoint(Vector inBodyWO,
                                 Vector forceToApply,
                                 Vector crossVector) {
         crossVector.setCross(inBodyWO, forceToApply);
@@ -392,32 +391,31 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         getLinearMomentum().add(forceToApply);
     }
 
-    public void updatePhysSpeedAndIters(double newPhysSpeed) {
+    private void updatePhysSpeedAndIters(double newPhysSpeed) {
         physTickTimeDelta = newPhysSpeed;
     }
 
     /**
-     * I'm pretty sure this is wrong.
-     * Need to do this https://answers.unity.com/questions/49082/rotation-quaternion-to-angular-velocity.html
+     * Implementation is based on https://gafferongames.com/post/physics_in_3d/
      */
     private void integrateAngularVelocity() {
-        ShipTransformationManager coordTrans = getParent().getShipTransformationManager();
+        // The body angular velocity vector, in World coordinates
         Vector angularVelocity = getAngularVelocity();
         if (angularVelocity.isZero()) {
             // Angular velocity is zero, so the rotation hasn't changed.
             return;
         }
 
-        AxisAngle4d axisAngle4d = new AxisAngle4d(angularVelocity.length() * getPhysicsTimeDeltaPerPhysTick(), angularVelocity.x, angularVelocity.y, angularVelocity.z);
+        Vector3dc angularVelInBody = angularVelocity.toVector3d(); //.rotate(physRotation.invert(new Quaterniond()));
+
+        AxisAngle4d axisAngle4d = new AxisAngle4d(angularVelInBody.length() * getPhysicsTimeDeltaPerPhysTick(), angularVelInBody.x(), angularVelInBody.y(), angularVelInBody.z());
         axisAngle4d.normalize();
 
         // Take the product of the current rotation with the change in rotation that results from
         // the angular velocity. Then change our pitch/yaw/roll based on the result.
-        Quaterniondc rotationChangeQuat = new Quaterniond(axisAngle4d);
-        Quaterniondc initialRotation = coordTrans.getCurrentPhysicsTransform()
-                .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
+        Quaterniondc rotationQuat = new Quaterniond(axisAngle4d);
 
-        physRotation = rotationChangeQuat.mul(initialRotation, new Quaterniond()).normalize();
+        physRotation = physRotation.premul(rotationQuat, new Quaterniond()).normalize();
     }
 
     /**

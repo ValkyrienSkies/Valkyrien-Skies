@@ -1,8 +1,7 @@
 package org.valkyrienskies.mod.common;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityBoat;
@@ -11,9 +10,11 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -35,6 +36,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
@@ -46,6 +49,11 @@ import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class EventsCommon {
@@ -231,35 +239,30 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onExplosionStart(ExplosionEvent.Start event) {
-        /*
         // Only run on server side
         if (!event.getWorld().isRemote) {
             Explosion explosion = event.getExplosion();
-            Vector center = new Vector(explosion.x, explosion.y, explosion.z);
-            Optional<PhysicsObject> optionalPhysicsObject = ValkyrienUtils
-                .getPhysicsObject(event.getWorld(),
-                    new BlockPos(event.getExplosion().getPosition()), true);
+            Vector3dc center = new Vector3d(explosion.x, explosion.y, explosion.z);
+            Optional<PhysicsObject> optionalPhysicsObject = ValkyrienUtils.getPhysoManagingBlock(event.getWorld(),
+                    new BlockPos(event.getExplosion().getPosition()));
             if (optionalPhysicsObject.isPresent()) {
                 return;
             }
             // Explosion radius
             float radius = explosion.size;
-            AxisAlignedBB toCheck = new AxisAlignedBB(center.x - radius, center.y - radius,
-                center.z - radius,
-                center.x + radius, center.y + radius, center.z + radius);
+            AxisAlignedBB toCheck = new AxisAlignedBB(center.x() - radius, center.y() - radius,
+                center.z() - radius,
+                center.x() + radius, center.y() + radius, center.z() + radius);
             // Find nearby ships, we will check if the explosion effects them
-            List<PhysicsWrapperEntity> shipsNear = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                .getManagerForWorld(event.getWorld())
-                .getNearbyPhysObjects(toCheck);
+            List<PhysicsObject> shipsNear = ((IHasShipManager) event.getWorld()).getManager()
+                    .getNearbyPhysObjects(toCheck);
             // Process the explosion on the nearby ships
-            for (PhysicsWrapperEntity ship : shipsNear) {
-                Vector inLocal = new Vector(center);
+            for (PhysicsObject ship : shipsNear) {
+                Vector3d inLocal = new Vector3d(center);
+                inLocal.mulPosition(ship.getShipTransform().getGlobalToSubspace());
 
-                ship.getPhysicsObject().getShipTransformationManager().getCurrentTickTransform()
-                    .transform(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
-
-                Explosion expl = new Explosion(event.getWorld(), null, inLocal.x, inLocal.y,
-                    inLocal.z, radius, explosion.causesFire, true);
+                Explosion expl = new Explosion(event.getWorld(), explosion.exploder, inLocal.x, inLocal.y,
+                    inLocal.z, radius, explosion.causesFire, explosion.damagesTerrain);
 
                 double waterRange = .6D;
 
@@ -282,7 +285,6 @@ public class EventsCommon {
                 event.getExplosion().affectedBlockPositions.addAll(expl.affectedBlockPositions);
             }
         }
-         */
     }
 
 }

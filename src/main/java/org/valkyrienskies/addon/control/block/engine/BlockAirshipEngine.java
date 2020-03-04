@@ -4,7 +4,7 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
 import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;

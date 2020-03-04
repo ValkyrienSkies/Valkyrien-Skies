@@ -2,7 +2,7 @@ package org.valkyrienskies.addon.control.piloting;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 public interface ITileEntityPilotable {
 

@@ -4,7 +4,7 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.ship_handling.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 public class ShipNameAutocompleter implements Iterable<String> {

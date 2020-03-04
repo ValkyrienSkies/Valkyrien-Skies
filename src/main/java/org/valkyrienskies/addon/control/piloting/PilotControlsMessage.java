@@ -3,7 +3,7 @@ package org.valkyrienskies.addon.control.piloting;
 import java.util.UUID;
 
 import org.valkyrienskies.mod.client.VSKeyHandler;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;

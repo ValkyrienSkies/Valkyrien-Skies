@@ -1,8 +1,9 @@
 package org.valkyrienskies.mod.common.physics.management.physo;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
+import org.valkyrienskies.mod.common.ship_handling.ShipData;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ShipDataTest {
 

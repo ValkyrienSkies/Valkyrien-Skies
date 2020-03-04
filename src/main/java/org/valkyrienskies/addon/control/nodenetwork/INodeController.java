@@ -2,7 +2,7 @@ package org.valkyrienskies.addon.control.nodenetwork;
 
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 public interface INodeController extends Comparable<INodeController> {
 

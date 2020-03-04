@@ -2,7 +2,7 @@ package org.valkyrienskies.mod.common.physmanagement.interaction;
 
 import net.minecraft.entity.MoverType;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 /**
  * This interface is really quite bad, and will be removed once subspaces are complete.

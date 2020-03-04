@@ -13,7 +13,7 @@ import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocomplete
 import org.valkyrienskies.mod.common.command.autocompleters.WorldAutocompleter;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.ship_handling.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
 import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;

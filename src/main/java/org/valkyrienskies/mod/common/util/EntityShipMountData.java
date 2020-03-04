@@ -1,7 +1,7 @@
 package org.valkyrienskies.mod.common.util;
 
 import net.minecraft.util.math.Vec3d;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 public class EntityShipMountData {
 

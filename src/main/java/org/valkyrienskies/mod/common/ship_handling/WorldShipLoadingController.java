@@ -1,6 +1,5 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 /**

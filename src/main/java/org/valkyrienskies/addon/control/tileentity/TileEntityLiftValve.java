@@ -1,7 +1,7 @@
 package org.valkyrienskies.addon.control.tileentity;
 
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 public class TileEntityLiftValve extends TileEntityNodeControllerImpl {
 

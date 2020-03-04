@@ -1,7 +1,7 @@
 package org.valkyrienskies.addon.control.piloting;
 
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 /**
  * Todo: Convert to a forge capability.

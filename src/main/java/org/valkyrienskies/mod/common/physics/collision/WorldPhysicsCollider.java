@@ -25,7 +25,7 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PhysCollisionObj
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollisionPointFinder;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import valkyrienwarfare.api.TransformType;
 

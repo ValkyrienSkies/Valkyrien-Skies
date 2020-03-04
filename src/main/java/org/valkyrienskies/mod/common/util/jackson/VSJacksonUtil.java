@@ -3,7 +3,7 @@ package org.valkyrienskies.mod.common.util.jackson;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipData;
+import org.valkyrienskies.mod.common.ship_handling.ShipData;
 import org.valkyrienskies.mod.common.util.jackson.annotations.VSAnnotationIntrospector;
 
 public class VSJacksonUtil {

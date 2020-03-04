@@ -27,7 +27,7 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.ShipPolygon;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;

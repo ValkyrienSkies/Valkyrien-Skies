@@ -6,8 +6,8 @@ import net.minecraft.world.World;
 import org.joml.Matrix3d;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.physo.ShipInertiaData;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.ShipInertiaData;
 
 public class BasicCenterOfMassProvider implements IPhysicsObjectCenterOfMassProvider {
 

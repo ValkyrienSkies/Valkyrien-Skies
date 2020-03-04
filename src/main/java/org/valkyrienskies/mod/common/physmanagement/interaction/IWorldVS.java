@@ -2,7 +2,7 @@ package org.valkyrienskies.mod.common.physmanagement.interaction;
 
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import org.valkyrienskies.mod.common.physics.management.physo.PhysicsObject;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 public interface IWorldVS {
 

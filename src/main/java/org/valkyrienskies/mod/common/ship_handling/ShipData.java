@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.physics.management.physo;
+package org.valkyrienskies.mod.common.ship_handling;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

@@ -74,6 +74,7 @@ public class ShipData {
     /**
      * The position of the physics infuser this ship has.
      */
+    @Setter // This setter is pretty bad style, should be removed eventually.
     private BlockPos physInfuserPos;
 
     /**

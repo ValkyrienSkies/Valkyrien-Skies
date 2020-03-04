@@ -48,6 +48,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
     @Getter private boolean isTryingToAlignShip;
     // Used by the client to store the vertical offset of each core
     private Map<EnumInfuserCore, Double> coreOffsets, coreOffsetsPrevTick;
+    private int disassembleCounter; // # of ticks to wait before resetting isTryingToDisassembleShip
 
     public TileEntityPhysicsInfuser() {
         handler = new ItemStackHandler(EnumInfuserCore.values().length) {
@@ -67,6 +68,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             coreOffsets.put(enumInfuserCore, 0D);
             coreOffsetsPrevTick.put(enumInfuserCore, 0D);
         }
+        disassembleCounter = 0;
     }
 
     @Override
@@ -151,7 +153,9 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
         // Always set tryToAssembleShip and tryToDisassembleShip to false, they only have 1 tick to try to act.
         isTryingToAssembleShip = false;
-        isTryingToDisassembleShip = false;
+        if (disassembleCounter == 0) {
+            isTryingToDisassembleShip = false;
+        }
     }
 
     public boolean canMaintainShip() {
@@ -265,6 +269,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                 } else {
                     // Destroy the ship if possible
                     this.isTryingToDisassembleShip = true;
+                    this.disassembleCounter = 5;
                 }
                 break;
             case ENABLE_PHYSICS:

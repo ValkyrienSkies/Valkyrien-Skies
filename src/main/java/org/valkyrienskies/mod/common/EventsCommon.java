@@ -118,9 +118,9 @@ public class EventsCommon {
         switch (event.phase) {
             case START:
                 PhysicsTickHandler.onWorldTickStart(world);
-                physObjectWorld.tick();
                 break;
             case END:
+                physObjectWorld.tick();
                 PhysicsTickHandler.onWorldTickEnd(world);
                 EntityDraggable.tickAddedVelocityForWorld(world);
                 break;

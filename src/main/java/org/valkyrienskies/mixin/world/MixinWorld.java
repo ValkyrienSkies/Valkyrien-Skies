@@ -52,7 +52,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     // The maximum edge length of a bounding box we'll take seriously
     private static final double BOUNDING_BOX_EDGE_LIMIT = 10000;
     // The maximum volume of a bounding box we'll take seriously
-    private static final double BOUNDING_BOX_SIZE_LIMIT = 1000000;
+    private static final double BOUNDING_BOX_SIZE_LIMIT = 10000000;
     private boolean dontIntercept = false;
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
     private PhysicsWrapperEntity dontInterceptShip = null;

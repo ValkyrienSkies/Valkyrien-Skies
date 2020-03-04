@@ -119,7 +119,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * @param firstTimeCreated True if this ship was just created through a physics infuser, false
      *                         if it was loaded in from the world save.
      */
-    public PhysicsObject(World world, ShipData initial, boolean firstTimeCreated) {
+    PhysicsObject(World world, ShipData initial, boolean firstTimeCreated) {
         // QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
         this.world = world;
         this.shipData = initial;
@@ -193,8 +193,8 @@ public class PhysicsObject implements IPhysicsEntity {
         centerOfMassProvider.onSetBlockState(this, posAt, oldState, newState);
     }
 
-    public void assembleShip(EntityPlayer player, SpatialDetector detector,
-        BlockPos centerInWorld) {
+    void assembleShip(EntityPlayer player, SpatialDetector detector,
+                      BlockPos centerInWorld) {
 
         MutableBlockPos pos = new MutableBlockPos();
 
@@ -265,7 +265,7 @@ public class PhysicsObject implements IPhysicsEntity {
             .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
     }
 
-    public void preloadNewPlayers() {
+    private void preloadNewPlayers() {
         Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
         for (Chunk chunk : claimedChunkCache) {
             SPacketChunkData data = new SPacketChunkData(chunk, 65535);
@@ -328,7 +328,7 @@ public class PhysicsObject implements IPhysicsEntity {
         return newPlayers;
     }
 
-    public void onTick() {
+    void onTick() {
         updateChunkCache();
         preloadNewPlayers();
 
@@ -451,7 +451,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * Returns true if this ship is aligned close enough to the grid that it is allowed to
      * deconstruct back to the world.
      */
-    public boolean shouldShipBeDestroyed() {
+    boolean shouldShipBeDestroyed() {
         TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
         boolean shouldDeconstructShip;
         if (te instanceof TileEntityPhysicsInfuser) {
@@ -478,7 +478,7 @@ public class PhysicsObject implements IPhysicsEntity {
         return Math.toDegrees(shipQuat.angle()) < .5;
     }
 
-    public void destroyShip() {
+    void destroyShip() {
         // Then tell the game to stop tracking/loading the chunks
         List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(getWatchingPlayers());
         for (ChunkPos chunkPos : getChunkClaim()) {

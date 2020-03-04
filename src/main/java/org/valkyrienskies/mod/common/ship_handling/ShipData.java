@@ -74,7 +74,6 @@ public class ShipData {
     /**
      * The position of the physics infuser this ship has.
      */
-    @Setter
     private BlockPos physInfuserPos;
 
     /**
@@ -94,7 +93,7 @@ public class ShipData {
 
     // endregion
 
-    public ShipData(@NonNull ConcurrentUpdatableIndexedCollection<ShipData> owner,
+    private ShipData(@NonNull ConcurrentUpdatableIndexedCollection<ShipData> owner,
                     ShipPhysicsData physicsData, @Nonnull ShipInertiaData inertiaData, @NonNull ShipTransform shipTransform, @NonNull AxisAlignedBB shipBB,
                     boolean physicsEnabled, @NonNull BlockPos physInfuserPos, @NonNull VSChunkClaim chunkClaim, @NonNull UUID uuid,
                     @NonNull String name) {

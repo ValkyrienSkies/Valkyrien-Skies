@@ -147,7 +147,7 @@ public class VSThread extends Thread {
         // Make a sublist of physics objects to process physics on.
         List<PhysicsObject> physicsEntitiesToDoPhysics = new ArrayList<>();
         for (PhysicsObject physicsObject : physicsObjects) {
-            if (physicsObject.isPhysicsEnabled()) {
+            if (physicsObject.isPhysicsEnabled() && physicsObject.getCachedSurroundingChunks() != null) {
                 physicsEntitiesToDoPhysics.add(physicsObject);
             }
         }

@@ -79,11 +79,14 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             }
         }
 
+        // Then execute queued ship spawn operations
+        spawnNewShips();
+
         // Then determine which ships to load and unload
         loadingController.determineLoadAndUnload();
 
-        // Then execute queued ship spawn, load, and unload operations
-        spawnAndLoadAndUnloadShips();
+        // Then execute queued ship load and unload operations
+        loadAndUnloadShips();
 
         // Then tick all the loaded ships
         for (PhysicsObject ship : getAllLoadedPhysObj()) {
@@ -96,7 +99,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         ValkyrienSkiesMod.physWrapperNetwork.sendToDimension(indexDataMessage, world.provider.getDimension());
     }
 
-    private void spawnAndLoadAndUnloadShips() {
+    private void spawnNewShips() {
         while (!spawnQueue.isEmpty()) {
             ShipData toSpawn = spawnQueue.remove();
 
@@ -109,48 +112,48 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                     DetectorManager.DetectorIDs.ShipSpawnerGeneral, physicsInfuserPos, world,
                     VSConfig.maxShipSize + 1, true);
 
-                        System.out.println("Hello! " + Thread.currentThread().getName());
-                        if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
-                            System.err.println("Ship too big or bedrock detected!");
+            System.out.println("Hello! " + Thread.currentThread().getName());
+            if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
+                System.err.println("Ship too big or bedrock detected!");
 
-                            /*
-                            if (creator != null) {
-                                creator.sendMessage(new TextComponentString(
-                                        "Ship construction canceled because its exceeding the ship size limit; "
-                                                +
-                                                "or because it's attached to bedrock. " +
-                                                "Raise it with /physsettings maxshipsize [number]"));
-                            }
+                /*
+                if (creator != null) {
+                    creator.sendMessage(new TextComponentString(
+                            "Ship construction canceled because its exceeding the ship size limit; "
+                                    +
+                                    "or because it's attached to bedrock. " +
+                                    "Raise it with /physsettings maxshipsize [number]"));
+                }
 
-                             */
-                            return;
-                        }
+                 */
+                continue; // Skip ship construction
+            }
 
-                        // Fill the chunk claims
-                        TIntIterator blocksIterator = detector.foundSet.iterator();
-                        BlockPos.MutableBlockPos tempPos = new BlockPos.MutableBlockPos();
-                        BlockPos centerDifference = toSpawn.getChunkClaim().getRegionCenter().subtract(physicsInfuserPos);
-                        while (blocksIterator.hasNext()) {
-                            int hashedPos = blocksIterator.next();
-                            SpatialDetector.setPosWithRespectTo(hashedPos, detector.firstBlock, tempPos);
+            // Fill the chunk claims
+            TIntIterator blocksIterator = detector.foundSet.iterator();
+            BlockPos.MutableBlockPos tempPos = new BlockPos.MutableBlockPos();
+            BlockPos centerDifference = toSpawn.getChunkClaim().getRegionCenter().subtract(physicsInfuserPos);
+            while (blocksIterator.hasNext()) {
+                int hashedPos = blocksIterator.next();
+                SpatialDetector.setPosWithRespectTo(hashedPos, detector.firstBlock, tempPos);
 
-                            int chunkX = (tempPos.getX() + centerDifference.getX()) >> 4;
-                            int chunkZ = (tempPos.getZ() + centerDifference.getZ()) >> 4;
+                int chunkX = (tempPos.getX() + centerDifference.getX()) >> 4;
+                int chunkZ = (tempPos.getZ() + centerDifference.getZ()) >> 4;
 
-                            toSpawn.getChunkClaim().addChunkClaim(chunkX, chunkZ);
-                        }
+                toSpawn.getChunkClaim().addChunkClaim(chunkX, chunkZ);
+            }
 
-                        int radius = 7;
+            int radius = 7;
 
-                        // TEMP CODE
-                        // Eventually want to create mechanisms that control how many chunks are allocated to a ship
-                        // But for now, lets just give them a bunch of chunks.
-                        ChunkPos centerPos = toSpawn.getChunkClaim().getCenterPos();
-                        for (int chunkX = -radius; chunkX <= radius; chunkX++) {
-                            for (int chunkZ = -radius; chunkZ <= radius; chunkZ++) {
-                                toSpawn.getChunkClaim().addChunkClaim(centerPos.x + chunkX, centerPos.z + chunkZ);
-                            }
-                        }
+            // TEMP CODE
+            // Eventually want to create mechanisms that control how many chunks are allocated to a ship
+            // But for now, lets just give them a bunch of chunks.
+            ChunkPos centerPos = toSpawn.getChunkClaim().getCenterPos();
+            for (int chunkX = -radius; chunkX <= radius; chunkX++) {
+                for (int chunkZ = -radius; chunkZ <= radius; chunkZ++) {
+                    toSpawn.getChunkClaim().addChunkClaim(centerPos.x + chunkX, centerPos.z + chunkZ);
+                }
+            }
 
 
             PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, true);
@@ -159,15 +162,21 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
             loadedShips.put(toSpawn, physicsObject);
         }
+    }
 
+    private void loadAndUnloadShips() {
         while (!loadQueue.isEmpty()) {
             ShipData toLoad = loadQueue.remove();
             if (loadedShips.containsKey(toLoad)) {
-                continue; // temp, need to fix WorldShipLoadingController.determineLoadAndUnload()
-                // throw new IllegalStateException("Tried loading a ShipData that was already loaded?\n" + toLoad);
+                // continue; // temp, need to fix WorldShipLoadingController.determineLoadAndUnload()
+                throw new IllegalStateException("Tried loading a ShipData that was already loaded?\n" + toLoad);
             }
+            System.out.println("Attempting to load " + toLoad);
             PhysicsObject physicsObject = new PhysicsObject(world, toLoad, false);
-            loadedShips.put(toLoad, physicsObject);
+            PhysicsObject old = loadedShips.put(toLoad, physicsObject);
+            if (old != null) {
+                throw new IllegalStateException("How did we already have a ship loaded for " + toLoad);
+            }
         }
 
         while (!unloadQueue.isEmpty()) {
@@ -176,8 +185,14 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 throw new IllegalStateException("Tried unloading a ShipData that isn't loaded?\n" + toUnload);
             }
             PhysicsObject physicsObject = getPhysObjectFromData(toUnload);
-            // TODO: unload the physicsObject or something?
-            loadedShips.remove(toUnload);
+            if (physicsObject == null) {
+                throw new IllegalStateException("Tried unloading a ShipData that has a null PhysicsObject?\n" + toUnload);
+            }
+            System.out.println("Attempting to unload " + toUnload);
+            boolean success = loadedShips.remove(toUnload, physicsObject);
+            if (!success) {
+                throw new IllegalStateException("How did we fail to unload " + toUnload);
+            }
         }
     }
 

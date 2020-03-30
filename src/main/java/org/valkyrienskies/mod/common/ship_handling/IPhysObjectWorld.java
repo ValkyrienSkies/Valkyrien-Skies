@@ -41,11 +41,6 @@ public interface IPhysObjectWorld {
     Iterable<PhysicsObject> getAllLoadedPhysObj();
 
     /**
-     * Thread safe way to queue a ship spawn. (Not the same as {@link #queueShipLoad(ShipData)}.
-     */
-    void queueShipSpawn(@Nonnull ShipData data);
-
-    /**
      * Thread safe way to queue a ship load.
      */
     void queueShipLoad(@Nonnull ShipData data);

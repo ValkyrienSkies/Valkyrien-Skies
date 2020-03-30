@@ -9,8 +9,9 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
  */
 class WorldShipLoadingController {
 
-    private static final double LOAD_DISTANCE = 128;
-    private static final double UNLOAD_DISTANCE = 256;
+    private static final double LOAD_DISTANCE = 32; // 128;
+    private static final double LOAD_BACKGROUND_DISTANCE = 50; // 256;
+    private static final double UNLOAD_DISTANCE = 80; // 512;
     private final WorldServerShipManager shipManager;
 
     WorldShipLoadingController(WorldServerShipManager shipManager) {
@@ -25,6 +26,11 @@ class WorldShipLoadingController {
                 EntityPlayer closestPlayer = shipManager.getWorld().getClosestPlayer(transform.getPosX(), transform.getPosY(), transform.getPosZ(), LOAD_DISTANCE, false);
                 if (closestPlayer != null) {
                     shipManager.queueShipLoad(data);
+                } else {
+                    EntityPlayer nextClosestPlayer = shipManager.getWorld().getClosestPlayer(transform.getPosX(), transform.getPosY(), transform.getPosZ(), LOAD_BACKGROUND_DISTANCE, false);
+                    if (nextClosestPlayer != null) {
+                        shipManager.queueShipLoadBackground(data);
+                    }
                 }
             } else {
                 EntityPlayer closestPlayer = shipManager.getWorld().getClosestPlayer(transform.getPosX(), transform.getPosY(), transform.getPosZ(), UNLOAD_DISTANCE, false);

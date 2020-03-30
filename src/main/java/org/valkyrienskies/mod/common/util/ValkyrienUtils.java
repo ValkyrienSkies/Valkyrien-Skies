@@ -18,13 +18,10 @@ import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-import org.valkyrienskies.mod.common.ship_handling.ShipData;
+import org.valkyrienskies.mod.common.ship_handling.*;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
-import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
@@ -187,7 +184,7 @@ public class ValkyrienUtils {
         QueryableShipData.get(world).addShip(shipData);
 
         // Queue the ship spawn operation
-        ValkyrienUtils.getPhysObjWorld(world).queueShipSpawn(shipData);
+        ((WorldServerShipManager) ValkyrienUtils.getPhysObjWorld(world)).queueShipSpawn(shipData);
     }
 
     public static IPhysObjectWorld getPhysObjWorld(World world) {

@@ -83,11 +83,6 @@ public class WorldClientShipManager implements IPhysObjectWorld {
     }
 
     @Override
-    public void queueShipSpawn(@Nonnull ShipData data) {
-        throw new UnsupportedOperationException("Clients are not supposed to spawn ships, they can only load them!");
-    }
-
-    @Override
     public void queueShipLoad(@Nonnull ShipData data) {
         loadQueue.add(data);
     }

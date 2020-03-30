@@ -10,6 +10,8 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.ShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
@@ -153,25 +155,21 @@ public class QueryableShipData implements Iterable<ShipData> {
 
     /**
      * Adds the ShipData if it doesn't exist, or updates the values of the old ShipData to match the input.
+     *
+     * @return reference to the "real" ShipData object used by {@link IPhysObjectWorld} and {@link PhysicsObject}.
      */
-    @Deprecated // This is a disaster waiting to happen, only allow a few places in code to create a new ShipData.
-    // Don't want to break the Maps in WorldServerShipManager by replacing an old ShipData with a new one that has
-    // the same UUID.
-    public void addOrUpdateShipPreservingPhysObj(ShipData ship) {
+    public ShipData addOrUpdateShipPreservingPhysObj(ShipData ship) {
         Optional<ShipData> old = getShip(ship.getUuid());
         if (old.isPresent()) {
             old.get().setShipTransform(ship.getShipTransform());
-            // old.get().setName(ship.getName());
+            old.get().setName(ship.getName());
             old.get().setPhysInfuserPos(ship.getPhysInfuserPos());
             old.get().setShipBB(ship.getShipBB());
             old.get().setPhysicsEnabled(ship.isPhysicsEnabled());
-            // this.updateShipData(old.get(), ship);
-            // PhysicsObject oldPhyso = old.get().getPhyso();
-            // if (oldPhyso != null) {
-            // ship.setPhyso(oldPhyso);
-            // }
+            return old.get();
         } else {
             this.allShips.add(ship);
+            return ship;
         }
     }
 

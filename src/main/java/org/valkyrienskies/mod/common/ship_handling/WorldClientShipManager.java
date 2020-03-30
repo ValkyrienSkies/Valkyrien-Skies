@@ -2,6 +2,7 @@ package org.valkyrienskies.mod.common.ship_handling;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,21 +36,30 @@ public class WorldClientShipManager implements IPhysObjectWorld {
     }
 
     private void loadAndUnloadShips() {
+        QueryableShipData queryableShipData = QueryableShipData.get(world);
+        // Load ships queued for loading
         while (!loadQueue.isEmpty()) {
             ShipData toLoad = loadQueue.remove();
-            if (loadedShips.containsKey(toLoad)) {
-                throw new IllegalStateException("Tried loading a ShipData that was already loaded?\n" + toLoad);
+
+            // There may be duplicate ShipData objects, only use the one from queryableShipData
+            ShipData dataReference = queryableShipData.addOrUpdateShipPreservingPhysObj(toLoad);
+            if (loadedShips.containsKey(dataReference)) {
+                throw new IllegalStateException("Tried loading a ShipData that was already loaded?\n" + dataReference);
             }
-            PhysicsObject physicsObject = new PhysicsObject(world, toLoad, false);
-            loadedShips.put(toLoad, physicsObject);
+            PhysicsObject physicsObject = new PhysicsObject(world, dataReference, false);
+            loadedShips.put(dataReference, physicsObject);
         }
 
+        // Unload ships queued for unloading
         while (!unloadQueue.isEmpty()) {
             ShipData toUnload = unloadQueue.remove();
-            if (!loadedShips.containsKey(toUnload)) {
-                throw new IllegalStateException("Tried unloading a ShipData that isn't loaded?\n" + toUnload);
+
+            // There may be duplicate ShipData objects, only use the one from queryableShipData
+            ShipData dataReference = queryableShipData.addOrUpdateShipPreservingPhysObj(toUnload);
+            if (!loadedShips.containsKey(dataReference)) {
+                throw new IllegalStateException("Tried unloading a ShipData that isn't loaded?\n" + dataReference);
             }
-            loadedShips.remove(toUnload);
+            loadedShips.remove(dataReference);
         }
     }
 

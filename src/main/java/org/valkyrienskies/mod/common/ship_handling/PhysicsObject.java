@@ -9,7 +9,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -19,17 +18,14 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.joml.Quaterniondc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
@@ -265,24 +261,6 @@ public class PhysicsObject implements IPhysicsEntity {
             .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
     }
 
-    private void preloadNewPlayers() {
-        Set<EntityPlayerMP> newWatchers = getPlayersThatJustWatched();
-        for (Chunk chunk : claimedChunkCache) {
-            SPacketChunkData data = new SPacketChunkData(chunk, 65535);
-            for (EntityPlayerMP player : newWatchers) {
-                player.connection.sendPacket(data);
-                ((WorldServer) getWorld()).getEntityTracker()
-                        .sendLeashedEntitiesInChunk(player, chunk);
-            }
-        }
-
-        SpawnPhysObjMessage physObjMessage = new SpawnPhysObjMessage();
-        physObjMessage.initializeData(getShipData());
-        for (EntityPlayerMP player : newWatchers) {
-            ValkyrienSkiesMod.physWrapperNetwork.sendTo(physObjMessage, player);
-        }
-    }
-
     /**
      * TODO: Make this further get the player to stop all further tracking of those physObject
      *
@@ -314,23 +292,8 @@ public class PhysicsObject implements IPhysicsEntity {
         }
     }
 
-    private Set<EntityPlayerMP> getPlayersThatJustWatched() {
-        Set<EntityPlayerMP> newPlayers = new HashSet<>();
-        // for (Object o : ((WorldServer) getWorld()).getEntityTracker()
-        //  .getTrackingPlayers(getWrapperEntity())) {
-        for (EntityPlayer playerLol : getWorld().playerEntities) {
-            EntityPlayerMP player = (EntityPlayerMP) playerLol;
-            if (!getWatchingPlayers().contains(player)) {
-                newPlayers.add(player);
-                getWatchingPlayers().add(player);
-            }
-        }
-        return newPlayers;
-    }
-
     void onTick() {
         updateChunkCache();
-        // preloadNewPlayers();
 
         this.setNeedsCollisionCacheUpdate(true);
 

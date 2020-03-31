@@ -330,7 +330,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
     void onTick() {
         updateChunkCache();
-        preloadNewPlayers();
+        // preloadNewPlayers();
 
         this.setNeedsCollisionCacheUpdate(true);
 

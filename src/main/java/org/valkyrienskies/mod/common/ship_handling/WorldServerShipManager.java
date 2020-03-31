@@ -8,10 +8,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.gen.ChunkProviderServer;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.multithreaded.VSThread;
-import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
 import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -95,10 +93,8 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             ship.onTick();
         }
 
-        // Finally, send updates to nearby players.
-        ShipIndexDataMessage indexDataMessage = new ShipIndexDataMessage();
-        indexDataMessage.addDataToMessage(QueryableShipData.get(world));
-        ValkyrienSkiesMod.physWrapperNetwork.sendToDimension(indexDataMessage, world.provider.getDimension());
+        // Finally, send the players updates about the ships.
+        loadingController.sendUpdatesToPlayers();
     }
 
     private void spawnNewShips() {

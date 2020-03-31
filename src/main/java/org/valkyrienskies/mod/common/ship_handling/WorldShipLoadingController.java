@@ -9,6 +9,7 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
 import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
+import org.valkyrienskies.mod.common.network.UnloadPhysObjMessage;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 import java.util.*;
@@ -91,7 +92,15 @@ class WorldShipLoadingController {
         for (PhysicsObject ship : shipManager.getAllLoadedPhysObj()) {
             ShipData shipData = ship.getShipData();
             if (shipToWatchingPlayers.containsKey(shipData)) {
-                newWatching.put(shipData, new HashSet<>(shipToWatchingPlayers.get(shipData)));
+                Set<EntityPlayerMP> oldWatchingPlayers = shipToWatchingPlayers.get(shipData);
+                Set<EntityPlayerMP> newWatchingPlayers = new HashSet<>();
+                // Do this to prevent players who left the game from propagating to future watching maps.
+                for (EntityPlayer player : shipManager.getWorld().playerEntities) {
+                    if (oldWatchingPlayers.contains(player)) {
+                        newWatchingPlayers.add((EntityPlayerMP) player);
+                    }
+                }
+                newWatching.put(shipData, newWatchingPlayers);
             } else {
                 newWatching.put(shipData, new HashSet<>());
             }
@@ -142,7 +151,23 @@ class WorldShipLoadingController {
             }
         }
 
-        // Then send the ship unload packets (TODO)
+        // Then send the ship unload packets
+        for (ShipData shipData : oldWatching.keySet()) {
+            Set<EntityPlayerMP> removedWatchers = new HashSet<>(oldWatching.get(shipData));
+            if (newWatching.containsKey(shipData)) {
+                removedWatchers.removeAll(newWatching.get(shipData));
+            }
+            if (!removedWatchers.isEmpty()) {
+                UnloadPhysObjMessage unloadMsg = new UnloadPhysObjMessage();
+                unloadMsg.initializeData(shipData);
+                // Send the unload packet
+                for (EntityPlayerMP removedWatcher : removedWatchers) {
+                    ValkyrienSkiesMod.physWrapperNetwork.sendTo(unloadMsg, removedWatcher);
+                    System.out.println("Unload packet sent!");
+                }
+            }
+        }
+
 
         // And finally, send the update packets
         // First create a map for every player to the ship data updates it will receive

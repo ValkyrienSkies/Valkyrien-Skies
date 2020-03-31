@@ -1,11 +1,5 @@
 package org.valkyrienskies.mod.common;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
@@ -25,12 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -44,16 +33,18 @@ import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
-import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
-import org.valkyrienskies.mod.common.network.ShipIndexDataMessageHandler;
-import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
-import org.valkyrienskies.mod.common.network.SpawnPhysObjMessageHandler;
-import org.valkyrienskies.mod.common.network.VSGuiButtonHandler;
-import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.network.*;
 import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Mod(
     modid = ValkyrienSkiesMod.MOD_ID,
@@ -166,8 +157,10 @@ public class ValkyrienSkiesMod {
             ShipIndexDataMessage.class, 0, Side.CLIENT);
         physWrapperNetwork.registerMessage(SpawnPhysObjMessageHandler.class,
             SpawnPhysObjMessage.class, 1, Side.CLIENT);
+        physWrapperNetwork.registerMessage(UnloadPhysObjMessageHandler.class,
+                UnloadPhysObjMessage.class, 2, Side.CLIENT);
         physWrapperNetwork.registerMessage(VSGuiButtonHandler.class,
-            VSGuiButtonMessage.class, 2, Side.SERVER);
+            VSGuiButtonMessage.class, 3, Side.SERVER);
     }
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {

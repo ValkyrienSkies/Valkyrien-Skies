@@ -60,6 +60,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
                 throw new IllegalStateException("Tried unloading a ShipData that isn't loaded?\n" + dataReference);
             }
             loadedShips.remove(dataReference);
+            System.out.println("Successfully unloaded " + toUnload);
         }
     }
 

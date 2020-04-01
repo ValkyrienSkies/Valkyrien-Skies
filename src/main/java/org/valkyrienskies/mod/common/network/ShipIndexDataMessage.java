@@ -3,17 +3,18 @@ package org.valkyrienskies.mod.common.network;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import org.valkyrienskies.mod.common.ship_handling.ShipData;
 import org.valkyrienskies.mod.common.util.jackson.VSJacksonUtil;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ShipIndexDataMessage implements IMessage {
 
     private static final ObjectMapper serializer = VSJacksonUtil.getPacketMapper();
-    protected final List<ShipData> indexedData;
+    final List<ShipData> indexedData;
 
     public ShipIndexDataMessage() {
         indexedData = new ArrayList<>();

@@ -167,7 +167,7 @@ class WorldShipLoadingController {
 
                 // Then send the ship spawn packet
                 SpawnPhysObjMessage physObjMessage = new SpawnPhysObjMessage();
-                physObjMessage.initializeData(shipData);
+                physObjMessage.initializeData(shipData.getUuid());
                 for (EntityPlayerMP player : newWatchers) {
                     ValkyrienSkiesMod.physWrapperNetwork.sendTo(physObjMessage, player);
                 }
@@ -182,7 +182,7 @@ class WorldShipLoadingController {
             }
             if (!removedWatchers.isEmpty()) {
                 UnloadPhysObjMessage unloadMsg = new UnloadPhysObjMessage();
-                unloadMsg.initializeData(shipData);
+                unloadMsg.initializeData(shipData.getUuid());
                 // Send the unload packet
                 for (EntityPlayerMP removedWatcher : removedWatchers) {
                     ValkyrienSkiesMod.physWrapperNetwork.sendTo(unloadMsg, removedWatcher);

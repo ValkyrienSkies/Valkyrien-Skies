@@ -1,48 +1,33 @@
 package org.valkyrienskies.mod.common.network;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import org.valkyrienskies.mod.common.ship_handling.ShipData;
-import org.valkyrienskies.mod.common.util.jackson.VSJacksonUtil;
 
-import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Sending this messages tells a client to unload a Ship.
  */
 public class UnloadPhysObjMessage implements IMessage {
 
-    private static final ObjectMapper serializer = VSJacksonUtil.getPacketMapper();
-    ShipData shipToUnload;
+    UUID toUnloadID;
 
     public UnloadPhysObjMessage() {
-        this.shipToUnload = null;
+        this.toUnloadID = null;
     }
 
-    public void initializeData(ShipData shipToSpawnID) {
-        this.shipToUnload = shipToSpawnID;
+    public void initializeData(UUID toUnloadID) {
+        this.toUnloadID = toUnloadID;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        byte[] bytes = new byte[buf.readableBytes()];
-        buf.readBytes(bytes);
-        try {
-            shipToUnload = serializer.readValue(bytes, ShipData.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        toUnloadID = new UUID(buf.readLong(), buf.readLong());
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        try {
-            byte[] dataBytes = serializer.writeValueAsBytes(shipToUnload);
-            buf.writeBytes(dataBytes);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        buf.writeLong(toUnloadID.getMostSignificantBits());
+        buf.writeLong(toUnloadID.getLeastSignificantBits());
     }
 }

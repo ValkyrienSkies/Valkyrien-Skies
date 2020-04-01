@@ -11,7 +11,7 @@ public class UnloadPhysObjMessageHandler implements IMessageHandler<UnloadPhysOb
     @Override
     public IMessage onMessage(UnloadPhysObjMessage message, MessageContext ctx) {
         // Tell the client ship world to load a ship for the message ship data.
-        ValkyrienUtils.getPhysObjWorld(Minecraft.getMinecraft().world).queueShipUnload(message.shipToUnload.getUuid());
+        ValkyrienUtils.getPhysObjWorld(Minecraft.getMinecraft().world).queueShipUnload(message.toUnloadID);
         return null;
     }
 }

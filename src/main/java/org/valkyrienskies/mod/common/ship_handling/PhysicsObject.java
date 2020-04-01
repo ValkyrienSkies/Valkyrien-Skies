@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Delegate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -261,39 +262,8 @@ public class PhysicsObject implements IPhysicsEntity {
             .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
     }
 
-    /**
-     * TODO: Make this further get the player to stop all further tracking of those physObject
-     *
-     * @param untracking EntityPlayer that stopped tracking
-     */
-    public void onPlayerUntracking(EntityPlayer untracking) {
-        getWatchingPlayers().remove(untracking);
-        for (ChunkPos chunkPos : getChunkClaim()) {
-            SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(chunkPos.x, chunkPos.z);
-            ((EntityPlayerMP) untracking).connection.sendPacket(unloadPacket);
-        }
-    }
-
-    /**
-     * Called when this entity has been unloaded from the world
-     */
-    private void onThisUnload() {
-        if (!getWorld().isRemote) {
-            unloadShipChunksFromWorld();
-        } else {
-            getShipRenderer().killRenderers();
-        }
-    }
-
-    private void unloadShipChunksFromWorld() {
-        ChunkProviderServer provider = (ChunkProviderServer) getWorld().getChunkProvider();
-        for (ChunkPos chunkPos : getChunkClaim()) {
-            provider.queueUnload(claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z));
-        }
-    }
-
     void onTick() {
-        updateChunkCache();
+        cachedSurroundingChunks.updateChunkCache();
 
         this.setNeedsCollisionCacheUpdate(true);
 
@@ -332,10 +302,6 @@ public class PhysicsObject implements IPhysicsEntity {
             }
              */
         }
-    }
-
-    private void updateChunkCache() {
-        cachedSurroundingChunks.updateChunkCache();
     }
 
     // Generates the blockPos array; must be loaded DIRECTLY after the chunks are
@@ -519,6 +485,22 @@ public class PhysicsObject implements IPhysicsEntity {
 
     public void setShipBoundingBox(AxisAlignedBB shipBoundingBox) {
         getShipData().setShipBB(shipBoundingBox);
+    }
+
+    void unload() {
+        watchingPlayers.clear();
+        if (!getWorld().isRemote) {
+            ChunkProviderServer provider = (ChunkProviderServer) getWorld().getChunkProvider();
+            for (ChunkPos chunkPos : getChunkClaim()) {
+                provider.queueUnload(claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z));
+            }
+        } else {
+            ChunkProviderClient provider = (ChunkProviderClient) getWorld().getChunkProvider();
+            for (ChunkPos chunkPos : getChunkClaim()) {
+                provider.unloadChunk(chunkPos.x, chunkPos.z);
+            }
+            getShipRenderer().killRenderers();
+        }
     }
 
 }

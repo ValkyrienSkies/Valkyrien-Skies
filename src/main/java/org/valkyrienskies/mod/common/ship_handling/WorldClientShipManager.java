@@ -56,9 +56,11 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
             // There may be duplicate ShipData objects, only use the one from queryableShipData
             ShipData dataReference = queryableShipData.addOrUpdateShipPreservingPhysObj(toUnload);
-            if (!loadedShips.containsKey(dataReference)) {
+            PhysicsObject removedShip = loadedShips.get(dataReference);
+            if (removedShip == null) {
                 throw new IllegalStateException("Tried unloading a ShipData that isn't loaded?\n" + dataReference);
             }
+            removedShip.unload();
             loadedShips.remove(dataReference);
             System.out.println("Successfully unloaded " + toUnload);
         }

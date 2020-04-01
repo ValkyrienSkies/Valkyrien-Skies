@@ -217,7 +217,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 throw new IllegalStateException("Tried unloading a ShipData that has a null PhysicsObject?\n" + toUnload);
             }
             System.out.println("Attempting to unload " + toUnload);
+            physicsObject.unload();
             boolean success = loadedShips.remove(toUnload, physicsObject);
+
             if (!success) {
                 throw new IllegalStateException("How did we fail to unload " + toUnload);
             }

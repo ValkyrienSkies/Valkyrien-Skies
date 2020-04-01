@@ -44,8 +44,10 @@ class WorldShipLoadingController {
         this.shipToWatchingPlayers = new HashMap<>();
     }
 
+    /**
+     * Tells the WorldServerShipManager which ships to load/unload/load in background.
+     */
     void determineLoadAndUnload() {
-        // For now, just spawn every single ship
         for (ShipData data : QueryableShipData.get(shipManager.getWorld())) {
             ShipTransform transform = data.getShipTransform();
             Vec3d shipPos = transform.getShipPositionVec3d();

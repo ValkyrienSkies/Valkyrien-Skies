@@ -26,7 +26,7 @@ import static com.googlecode.cqengine.query.QueryFactory.nullableAttribute;
 
 /**
  * One of these objects will represent a ship. You can obtain a physics object for that ship (if one
- * is available), by calling {@link org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld#getPhysObjectFromData(ShipData)}.
+ * is available), by calling {@link org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld#getPhysObjectFromUUID(UUID)}.
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true) // For Jackson

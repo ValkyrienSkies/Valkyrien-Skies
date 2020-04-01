@@ -170,6 +170,10 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
         if (createPlayerEntry) {
             PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
             PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
+            // Very important! We must update the chunk field of the entry to prevent old chunk objects from living on.
+            // If this entry already existed and we forget, then we will corrupt the entry by having different chunks
+            // in the world vs in the entries!
+            entry.chunk = chunk;
             entry.sentToPlayers = true;
             entry.players = parent.getWatchingPlayers();
         }

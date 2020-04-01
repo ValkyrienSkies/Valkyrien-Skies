@@ -51,7 +51,7 @@ class WorldShipLoadingController {
         for (ShipData data : QueryableShipData.get(shipManager.getWorld())) {
             ShipTransform transform = data.getShipTransform();
             Vec3d shipPos = transform.getShipPositionVec3d();
-            if (shipManager.getPhysObjectFromData(data) == null) {
+            if (shipManager.getPhysObjectFromUUID(data.getUuid()) == null) {
                 if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, LOAD_DISTANCE)) {
                     shipManager.queueShipLoad(data.getUuid());
                 } else {

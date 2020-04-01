@@ -70,8 +70,8 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Nullable
     @Override
-    public PhysicsObject getPhysObjectFromData(ShipData data) {
-        return loadedShips.get(data.getUuid());
+    public PhysicsObject getPhysObjectFromUUID(UUID shipID) {
+        return loadedShips.get(shipID);
     }
 
     @Nonnull

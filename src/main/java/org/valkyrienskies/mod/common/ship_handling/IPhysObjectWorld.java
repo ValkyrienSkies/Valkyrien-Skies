@@ -25,18 +25,16 @@ public interface IPhysObjectWorld {
     void onWorldUnload();
 
     /**
-     * @param data
-     * @return Null if there wasn't a PhysicsObject for the given data.
+     * @return Null if there doesn't exist a PhysicsObject for the given shipID.
      */
     @Nullable
-    PhysicsObject getPhysObjectFromData(ShipData data);
+    PhysicsObject getPhysObjectFromUUID(@Nonnull UUID shipID);
 
     /**
-     * @param toCheck
-     * @return
+     * @return A list of all the physics objects whose AABB intersect with toCheck.
      */
     @Nonnull
-    List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck);
+    List<PhysicsObject> getNearbyPhysObjects(@Nonnull AxisAlignedBB toCheck);
 
     @Nonnull
     Iterable<PhysicsObject> getAllLoadedPhysObj();

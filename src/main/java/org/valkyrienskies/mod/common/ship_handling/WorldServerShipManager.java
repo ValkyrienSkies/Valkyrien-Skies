@@ -49,11 +49,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     @Override
-    public PhysicsObject getPhysObjectFromData(ShipData data) {
-        return loadedShips.get(data.getUuid());
-    }
-
-    public PhysicsObject getPhysObjectFromData(UUID shipID) {
+    public PhysicsObject getPhysObjectFromUUID(UUID shipID) {
         return loadedShips.get(shipID);
     }
 
@@ -235,7 +231,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                         + toUnloadID);
             }
 
-            PhysicsObject physicsObject = getPhysObjectFromData(toUnloadID);
+            PhysicsObject physicsObject = getPhysObjectFromUUID(toUnloadID);
 
             System.out.println("Attempting to unload " + physicsObject);
             physicsObject.unload();

@@ -25,9 +25,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     @Getter
     private final VSThread physicsThread;
     private final WorldShipLoadingController loadingController;
-    private final Map<ShipData, PhysicsObject> loadedShips;
-    private final ConcurrentLinkedQueue<ShipData> spawnQueue, loadQueue, unloadQueue, backgroundLoadQueue;
-    private final Set<ShipData> loadingInBackground;
+    private final Map<UUID, PhysicsObject> loadedShips;
+    private final ConcurrentLinkedQueue<ShipData> spawnQueue;
+    private final ConcurrentLinkedQueue<UUID> loadQueue, unloadQueue, backgroundLoadQueue;
+    private final Set<UUID> loadingInBackground;
 
     public WorldServerShipManager(World world) {
         this.world = (WorldServer) world;
@@ -49,7 +50,11 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     @Override
     public PhysicsObject getPhysObjectFromData(ShipData data) {
-        return loadedShips.get(data);
+        return loadedShips.get(data.getUuid());
+    }
+
+    public PhysicsObject getPhysObjectFromData(UUID shipID) {
+        return loadedShips.get(shipID);
     }
 
     @Nonnull
@@ -72,7 +77,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 physicsObject.destroyShip();
                 // Then remove the ship from the world
                 QueryableShipData.get(world).removeShip(physicsObject.getShipData());
-                boolean success = this.loadedShips.remove(physicsObject.getShipData(), physicsObject);
+                boolean success = this.loadedShips.remove(physicsObject.getShipData().getUuid(), physicsObject);
                 if (!success) {
                     throw new IllegalStateException("Ship destruction failed!\n" + physicsObject.getShipData());
                 }
@@ -101,7 +106,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         while (!spawnQueue.isEmpty()) {
             ShipData toSpawn = spawnQueue.remove();
 
-            if (loadedShips.containsKey(toSpawn)) {
+            if (loadedShips.containsKey(toSpawn.getUuid())) {
                 throw new IllegalStateException("Tried spawning a ShipData that was already loaded?\n" + toSpawn);
             }
 
@@ -158,70 +163,86 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
             physicsObject.assembleShip(null, detector, physicsInfuserPos);
 
-            loadedShips.put(toSpawn, physicsObject);
+            loadedShips.put(toSpawn.getUuid(), physicsObject);
         }
     }
 
     private void loadAndUnloadShips() {
+        QueryableShipData queryableShipData = QueryableShipData.get(world);
         // Load the ships that are required immediately.
         while (!loadQueue.isEmpty()) {
-            ShipData toLoad = loadQueue.remove();
-            if (loadedShips.containsKey(toLoad)) {
+            UUID toLoadID = loadQueue.remove();
+
+            Optional<ShipData> toLoadOptional = queryableShipData.getShip(toLoadID);
+            if (!toLoadOptional.isPresent()) {
+                throw new IllegalStateException("No ship found for ID:\n" + toLoadID);
+            }
+            ShipData toLoad = toLoadOptional.get();
+            if (loadedShips.containsKey(toLoadID)) {
                 throw new IllegalStateException("Tried loading a ShipData that was already loaded?\n" + toLoad);
             }
-            if (loadingInBackground.contains(toLoad)) {
-                // Ship was being loaded in the background, finish loading here
-                // For now background loading just means loading the chunks in the background.
-                loadingInBackground.remove(toLoad);
-            }
-            System.out.println("Attempting to load " + toLoad);
+
+            // Remove this ship from the background loading set, if it is in it.
+            loadingInBackground.remove(toLoadID);
+            // Finally, load the ship.
+            System.out.println("Attempting to load ship " + toLoad);
             PhysicsObject physicsObject = new PhysicsObject(world, toLoad, false);
-            PhysicsObject old = loadedShips.put(toLoad, physicsObject);
+            PhysicsObject old = loadedShips.put(toLoad.getUuid(), physicsObject);
             if (old != null) {
                 throw new IllegalStateException("How did we already have a ship loaded for " + toLoad);
             }
         }
 
-        // Create background tasks to load ships that aren't required immediately.
+        // Load ships that aren't required immediately in the background.
         while (!backgroundLoadQueue.isEmpty()) {
-            ShipData toLoad = backgroundLoadQueue.remove();
-            if (loadedShips.containsKey(toLoad)) {
-                // continue; // temp, need to fix WorldShipLoadingController.determineLoadAndUnload()
-                throw new IllegalStateException("Tried loading a ShipData that was already loaded?\n" + toLoad);
-            }
-            if (loadingInBackground.contains(toLoad)) {
+            UUID toLoadID = backgroundLoadQueue.remove();
+            // Skip if this ship is already being loaded in the background,.
+            if (loadingInBackground.contains(toLoadID)) {
                 continue; // Already loading this ship in the background
             }
-            loadingInBackground.add(toLoad);
+
+            // Make sure there isn't an already loaded ship with this UUID.
+            if (loadedShips.containsKey(toLoadID)) {
+                // continue; // temp, need to fix WorldShipLoadingController.determineLoadAndUnload()
+                throw new IllegalStateException("Tried loading a ShipData that was already loaded? Ship ID is\n"
+                        + toLoadID);
+            }
+            // Then try getting the ShipData for this UUID.
+            Optional<ShipData> toLoadOptional = queryableShipData.getShip(toLoadID);
+            if (!toLoadOptional.isPresent()) {
+                throw new IllegalStateException("No ship found for ID:\n" + toLoadID);
+            }
+
+            ShipData toLoad = toLoadOptional.get();
+            loadingInBackground.add(toLoadID);
+
             System.out.println("Attempting to load " + toLoad + " in the background.");
-
             ChunkProviderServer chunkProviderServer = world.getChunkProvider();
-
             for (ChunkPos chunkPos : toLoad.getChunkClaim()) {
-                Runnable returnTask = () -> {
+                @Nonnull Runnable returnTask = () -> {
                     System.out.println("Loaded ship chunk " + chunkPos);
-                }; // Just anything that's not null.
+                };
                 chunkProviderServer.loadChunk(chunkPos.x, chunkPos.z, returnTask);
             }
-            // PhysicsObject physicsObject = new PhysicsObject(world, toLoad, false);
         }
 
         // Unload far away ships immediately.
         while (!unloadQueue.isEmpty()) {
-            ShipData toUnload = unloadQueue.remove();
-            if (!loadedShips.containsKey(toUnload)) {
-                throw new IllegalStateException("Tried unloading a ShipData that isn't loaded?\n" + toUnload);
+            UUID toUnloadID = unloadQueue.remove();
+            // Make sure we have a ship with this ID that can be unloaded
+            if (!loadedShips.containsKey(toUnloadID)) {
+                throw new IllegalStateException("Tried unloading a ShipData that isn't loaded? Ship ID is\n"
+                        + toUnloadID);
             }
-            PhysicsObject physicsObject = getPhysObjectFromData(toUnload);
-            if (physicsObject == null) {
-                throw new IllegalStateException("Tried unloading a ShipData that has a null PhysicsObject?\n" + toUnload);
-            }
-            System.out.println("Attempting to unload " + toUnload);
+
+            PhysicsObject physicsObject = getPhysObjectFromData(toUnloadID);
+
+            System.out.println("Attempting to unload " + physicsObject);
             physicsObject.unload();
-            boolean success = loadedShips.remove(toUnload, physicsObject);
+            boolean success = loadedShips.remove(toUnloadID, physicsObject);
 
             if (!success) {
-                throw new IllegalStateException("How did we fail to unload " + toUnload);
+                throw new IllegalStateException("How did we fail to unload " + physicsObject.getShipData());
             }
         }
     }
@@ -233,27 +254,27 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     /**
-     * Thread safe way to queue a ship spawn. (Not the same as {@link #queueShipLoad(ShipData)}.
+     * Thread safe way to queue a ship spawn. (Not the same as {@link #queueShipLoad(UUID)}.
      */
     public void queueShipSpawn(@Nonnull ShipData data) {
         this.spawnQueue.add(data);
     }
 
     @Override
-    public void queueShipLoad(@Nonnull ShipData data) {
-        this.loadQueue.add(data);
+    public void queueShipLoad(@Nonnull UUID shipID) {
+        this.loadQueue.add(shipID);
     }
 
     @Override
-    public void queueShipUnload(@Nonnull ShipData data) {
-        this.unloadQueue.add(data);
+    public void queueShipUnload(@Nonnull UUID shipID) {
+        this.unloadQueue.add(shipID);
     }
 
     /**
      * Thread safe way to queue a ship to be loaded in the background.
      */
-    public void queueShipLoadBackground(@Nonnull ShipData data) {
-        backgroundLoadQueue.add(data);
+    public void queueShipLoadBackground(@Nonnull UUID shipID) {
+        backgroundLoadQueue.add(shipID);
     }
 
     /**
@@ -261,8 +282,13 @@ public class WorldServerShipManager implements IPhysObjectWorld {
      */
     public Iterable<Long> getBackgroundShipChunks() {
         List<Long> backgroundChunks = new ArrayList<>();
-        for (ShipData data : loadingInBackground) {
-            backgroundChunks.addAll(data.getChunkClaim().getClaimedChunks());
+        QueryableShipData queryableShipData = QueryableShipData.get(world);
+        for (UUID shipID : loadingInBackground) {
+            Optional<ShipData> shipDataOptional = queryableShipData.getShip(shipID);
+            if (!shipDataOptional.isPresent()) {
+                throw new IllegalStateException("Ship data not present for:\n" + shipID);
+            }
+            backgroundChunks.addAll(shipDataOptional.get().getChunkClaim().getClaimedChunks());
         }
         return backgroundChunks;
     }

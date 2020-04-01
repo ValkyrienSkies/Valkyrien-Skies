@@ -6,6 +6,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This maps ShipData to their respective PhysicsObjects. Everything in here is designed to be transient. Anything
@@ -43,11 +44,11 @@ public interface IPhysObjectWorld {
     /**
      * Thread safe way to queue a ship load.
      */
-    void queueShipLoad(@Nonnull ShipData data);
+    void queueShipLoad(@Nonnull UUID shipID);
 
     /**
      * Thread safe way to queue a ship unload.
      */
-    void queueShipUnload(@Nonnull ShipData data);
+    void queueShipUnload(@Nonnull UUID shipID);
 
 }

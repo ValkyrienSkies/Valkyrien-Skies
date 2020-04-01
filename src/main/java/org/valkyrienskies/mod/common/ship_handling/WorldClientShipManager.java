@@ -6,17 +6,14 @@ import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WorldClientShipManager implements IPhysObjectWorld {
 
     private final World world;
-    private final Map<ShipData, PhysicsObject> loadedShips;
-    private final ConcurrentLinkedQueue<ShipData> loadQueue, unloadQueue;
+    private final Map<UUID, PhysicsObject> loadedShips;
+    private final ConcurrentLinkedQueue<UUID> loadQueue, unloadQueue;
 
     public WorldClientShipManager(World world) {
         this.world = world;
@@ -39,30 +36,30 @@ public class WorldClientShipManager implements IPhysObjectWorld {
         QueryableShipData queryableShipData = QueryableShipData.get(world);
         // Load ships queued for loading
         while (!loadQueue.isEmpty()) {
-            ShipData toLoad = loadQueue.remove();
-
-            // There may be duplicate ShipData objects, only use the one from queryableShipData
-            ShipData dataReference = queryableShipData.addOrUpdateShipPreservingPhysObj(toLoad);
-            if (loadedShips.containsKey(dataReference)) {
-                throw new IllegalStateException("Tried loading a ShipData that was already loaded?\n" + dataReference);
+            UUID toLoadID = loadQueue.remove();
+            if (loadedShips.containsKey(toLoadID)) {
+                throw new IllegalStateException("Tried loading a for ship that was already loaded? UUID is\n" + toLoadID);
             }
-            PhysicsObject physicsObject = new PhysicsObject(world, dataReference, false);
-            loadedShips.put(dataReference, physicsObject);
+            Optional<ShipData> toLoadOptional = queryableShipData.getShip(toLoadID);
+            if (!toLoadOptional.isPresent()) {
+                throw new IllegalStateException("No ship found for UUID:\n" + toLoadID);
+            }
+            ShipData shipData = toLoadOptional.get();
+            PhysicsObject physicsObject = new PhysicsObject(world, shipData, false);
+            loadedShips.put(toLoadID, physicsObject);
         }
 
         // Unload ships queued for unloading
         while (!unloadQueue.isEmpty()) {
-            ShipData toUnload = unloadQueue.remove();
+            UUID toUnloadID = unloadQueue.remove();
 
-            // There may be duplicate ShipData objects, only use the one from queryableShipData
-            ShipData dataReference = queryableShipData.addOrUpdateShipPreservingPhysObj(toUnload);
-            PhysicsObject removedShip = loadedShips.get(dataReference);
-            if (removedShip == null) {
-                throw new IllegalStateException("Tried unloading a ShipData that isn't loaded?\n" + dataReference);
+            if (!loadedShips.containsKey(toUnloadID)) {
+                throw new IllegalStateException("Tried unloading that isn't loaded? ID is\n" + toUnloadID);
             }
+            PhysicsObject removedShip = loadedShips.get(toUnloadID);
             removedShip.unload();
-            loadedShips.remove(dataReference);
-            System.out.println("Successfully unloaded " + toUnload);
+            loadedShips.remove(toUnloadID);
+            System.out.println("Successfully unloaded " + removedShip.getShipData());
         }
     }
 
@@ -74,7 +71,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
     @Nullable
     @Override
     public PhysicsObject getPhysObjectFromData(ShipData data) {
-        return loadedShips.get(data);
+        return loadedShips.get(data.getUuid());
     }
 
     @Nonnull
@@ -96,13 +93,13 @@ public class WorldClientShipManager implements IPhysObjectWorld {
     }
 
     @Override
-    public void queueShipLoad(@Nonnull ShipData data) {
-        loadQueue.add(data);
+    public void queueShipLoad(@Nonnull UUID shipID) {
+        loadQueue.add(shipID);
     }
 
     @Override
-    public void queueShipUnload(@Nonnull ShipData data) {
-        unloadQueue.add(data);
+    public void queueShipUnload(@Nonnull UUID shipID) {
+        unloadQueue.add(shipID);
     }
 
     @Nonnull

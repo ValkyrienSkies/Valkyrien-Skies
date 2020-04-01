@@ -11,7 +11,7 @@ public class SpawnPhysObjMessageHandler implements IMessageHandler<SpawnPhysObjM
     @Override
     public IMessage onMessage(SpawnPhysObjMessage message, MessageContext ctx) {
         // Tell the client ship world to load a ship for the message ship data.
-        ValkyrienUtils.getPhysObjWorld(Minecraft.getMinecraft().world).queueShipLoad(message.shipToSpawnData);
+        ValkyrienUtils.getPhysObjWorld(Minecraft.getMinecraft().world).queueShipLoad(message.shipToSpawnData.getUuid());
         return null;
     }
 }

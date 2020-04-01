@@ -7,6 +7,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSChunkPhysoCapability;
@@ -104,6 +105,9 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
             // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
             try {
                 Chunk chunk = world.getChunk(x, z);
+                if (chunk instanceof EmptyChunk) {
+                    System.out.println("Why did we put an empty chunk at (" + x + "," + z + ")?");
+                }
 
                 // Do this to get it re-integrated into the world
                 if (world.isRemote) {

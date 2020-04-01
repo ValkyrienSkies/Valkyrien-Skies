@@ -53,15 +53,15 @@ class WorldShipLoadingController {
             Vec3d shipPos = transform.getShipPositionVec3d();
             if (shipManager.getPhysObjectFromData(data) == null) {
                 if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, LOAD_DISTANCE)) {
-                    shipManager.queueShipLoad(data);
+                    shipManager.queueShipLoad(data.getUuid());
                 } else {
                     if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, LOAD_BACKGROUND_DISTANCE)) {
-                        shipManager.queueShipLoadBackground(data);
+                        shipManager.queueShipLoadBackground(data.getUuid());
                     }
                 }
             } else {
                 if (!existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, UNLOAD_DISTANCE)) {
-                    shipManager.queueShipUnload(data);
+                    shipManager.queueShipUnload(data.getUuid());
                 }
             }
         }
@@ -128,7 +128,27 @@ class WorldShipLoadingController {
      * Send load/unload/update packets accordingly.
      */
     private void sendUpdatesPackets(Map<ShipData, Set<EntityPlayerMP>> oldWatching, Map<ShipData, Set<EntityPlayerMP>> newWatching) {
-        // First send ship spawn packets
+        // First send the update packets
+        // Create a map for every player to the ship data updates it will receive
+        Map<EntityPlayerMP, List<ShipData>> updatesMap = new HashMap<>();
+        shipManager.getWorld().playerEntities.forEach((player) -> updatesMap.put((EntityPlayerMP) player, new ArrayList<>()));
+
+        for (PhysicsObject ship : shipManager.getAllLoadedPhysObj()) {
+            ShipData shipData = ship.getShipData();
+            Set<EntityPlayerMP> currentWatchers = newWatching.get(shipData);
+            currentWatchers.forEach((player) -> updatesMap.get(player).add(shipData));
+        }
+        // Then send those updates
+        updatesMap.forEach((player, updates) -> {
+            ShipIndexDataMessage indexDataMessage = new ShipIndexDataMessage();
+            if (!updates.isEmpty()) {
+                indexDataMessage.addDataToMessage(updates);
+                ValkyrienSkiesMod.physWrapperNetwork.sendTo(indexDataMessage, player);
+            }
+        });
+
+
+        // Then send ship spawn packets
         for (PhysicsObject ship : shipManager.getAllLoadedPhysObj()) {
             ShipData shipData = ship.getShipData();
             Set<EntityPlayerMP> newWatchers = new HashSet<>(newWatching.get(shipData));
@@ -154,7 +174,7 @@ class WorldShipLoadingController {
             }
         }
 
-        // Then send the ship unload packets
+        // Finally, send the ship unload packets
         for (ShipData shipData : oldWatching.keySet()) {
             Set<EntityPlayerMP> removedWatchers = new HashSet<>(oldWatching.get(shipData));
             if (newWatching.containsKey(shipData)) {
@@ -170,26 +190,6 @@ class WorldShipLoadingController {
                 }
             }
         }
-
-
-        // And finally, send the update packets
-        // First create a map for every player to the ship data updates it will receive
-        Map<EntityPlayerMP, List<ShipData>> updatesMap = new HashMap<>();
-        shipManager.getWorld().playerEntities.forEach((player) -> updatesMap.put((EntityPlayerMP) player, new ArrayList<>()));
-
-        for (PhysicsObject ship : shipManager.getAllLoadedPhysObj()) {
-            ShipData shipData = ship.getShipData();
-            Set<EntityPlayerMP> currentWatchers = newWatching.get(shipData);
-            currentWatchers.forEach((player) -> updatesMap.get(player).add(shipData));
-        }
-        // Then send those updates
-        updatesMap.forEach((player, updates) -> {
-            ShipIndexDataMessage indexDataMessage = new ShipIndexDataMessage();
-            if (!updates.isEmpty()) {
-                indexDataMessage.addDataToMessage(updates);
-                ValkyrienSkiesMod.physWrapperNetwork.sendTo(indexDataMessage, player);
-            }
-        });
     }
 
     /**

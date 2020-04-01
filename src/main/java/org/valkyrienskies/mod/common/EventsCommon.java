@@ -19,7 +19,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -162,20 +161,8 @@ public class EventsCommon {
     public static void onWorldUnload(WorldEvent.Unload event) {
         // Fixes memory leak; @DaPorkChop please don't leave static maps lying around D:
         lastPositions.clear();
-        // ValkyrienSkiesMod.VS_PHYSICS_MANAGER.removeWorld(event.getWorld());
         IHasShipManager shipManager = (IHasShipManager) event.getWorld();
         shipManager.getManager().onWorldUnload();
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onEntityUntrack(PlayerEvent.StopTracking event) {
-        if (!event.getEntityPlayer().world.isRemote) {
-            Entity ent = event.getTarget();
-//            if (ent instanceof PhysicsWrapperEntity) {
-//                ((PhysicsWrapperEntity) ent).getPhysicsObject()
-//                    .onPlayerUntracking(event.getEntityPlayer());
-//            }
-        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

@@ -40,14 +40,9 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
-import org.valkyrienskies.mod.common.physics.management.PhysicsTickHandler;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.VSWorldEventListener;
-import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
-import org.valkyrienskies.mod.common.ship_handling.WorldClientShipManager;
-import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
+import org.valkyrienskies.mod.common.ship_handling.*;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -117,11 +112,9 @@ public class EventsCommon {
         IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(world);
         switch (event.phase) {
             case START:
-                PhysicsTickHandler.onWorldTickStart(world);
                 break;
             case END:
                 physObjectWorld.tick();
-                PhysicsTickHandler.onWorldTickEnd(world);
                 EntityDraggable.tickAddedVelocityForWorld(world);
                 break;
         }

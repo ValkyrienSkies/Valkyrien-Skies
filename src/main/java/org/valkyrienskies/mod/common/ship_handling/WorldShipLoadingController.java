@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
@@ -22,14 +23,14 @@ import java.util.*;
 class WorldShipLoadingController {
 
     /**
-     * These constants must satisfy these constraints: (TODO: Make test for this)
+     * These constants must satisfy the following constraints: (TODO: Make test for this)
      *
      * WATCH_DISTANCE < UNWATCH_DISTANCE
      * LOAD_DISTANCE < LOAD_BACKGROUND_DISTANCE < UNLOAD_DISTANCE
      * UNWATCH_DISTANCE <= UNLOAD_DISTANCE
      * WATCH_DISTANCE <= LOAD_DISTANCE
      */
-    private static final double UNWATCH_DISTANCE = 80;
+    private static final double UNWATCH_DISTANCE = 50;
     private static final double WATCH_DISTANCE = 32;
 
     private static final double LOAD_DISTANCE = 32; // 128;
@@ -47,19 +48,17 @@ class WorldShipLoadingController {
         // For now, just spawn every single ship
         for (ShipData data : QueryableShipData.get(shipManager.getWorld())) {
             ShipTransform transform = data.getShipTransform();
+            Vec3d shipPos = transform.getShipPositionVec3d();
             if (shipManager.getPhysObjectFromData(data) == null) {
-                EntityPlayer closestPlayer = shipManager.getWorld().getClosestPlayer(transform.getPosX(), transform.getPosY(), transform.getPosZ(), LOAD_DISTANCE, false);
-                if (closestPlayer != null) {
+                if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, LOAD_DISTANCE)) {
                     shipManager.queueShipLoad(data);
                 } else {
-                    EntityPlayer nextClosestPlayer = shipManager.getWorld().getClosestPlayer(transform.getPosX(), transform.getPosY(), transform.getPosZ(), LOAD_BACKGROUND_DISTANCE, false);
-                    if (nextClosestPlayer != null) {
+                    if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, LOAD_BACKGROUND_DISTANCE)) {
                         shipManager.queueShipLoadBackground(data);
                     }
                 }
             } else {
-                EntityPlayer closestPlayer = shipManager.getWorld().getClosestPlayer(transform.getPosX(), transform.getPosY(), transform.getPosZ(), UNLOAD_DISTANCE, false);
-                if (closestPlayer == null) {
+                if (!existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, UNLOAD_DISTANCE)) {
                     shipManager.queueShipUnload(data);
                 }
             }
@@ -109,8 +108,10 @@ class WorldShipLoadingController {
         // Remove players that aren't watching anymore, and add new watching players
         for (PhysicsObject ship : shipManager.getAllLoadedPhysObj()) {
             Vec3d shipPos = ship.getShipTransform().getShipPositionVec3d();
-            newWatching.get(ship.getShipData()).removeIf(watcher -> isPlayerWithinDistanceXZ(watcher, shipPos, UNWATCH_DISTANCE));
+            // Remove players further than the unwatch distance
+            newWatching.get(ship.getShipData()).removeIf(watcher -> !isPlayerWithinDistanceXZ(watcher, shipPos, UNWATCH_DISTANCE));
 
+            // Add players closer than the watch distance
             for (EntityPlayer player : shipManager.getWorld().playerEntities) {
                 if (isPlayerWithinDistanceXZ(player, shipPos, WATCH_DISTANCE)) {
                     newWatching.get(ship.getShipData()).add((EntityPlayerMP) player);
@@ -189,10 +190,25 @@ class WorldShipLoadingController {
         });
     }
 
-    private boolean isPlayerWithinDistanceXZ(EntityPlayer player, Vec3d pos, double distance) {
+    /**
+     * Returns true if player is within distance of pos, only using XZ coordinates
+     */
+    private static boolean isPlayerWithinDistanceXZ(EntityPlayer player, Vec3d pos, double distance) {
         double xDif = player.posX - pos.x;
         double zDif = player.posZ - pos.z;
         return (xDif * xDif + zDif * zDif) < distance * distance;
+    }
+
+    /**
+     * Returns true if there exists a player within world that is within distance of pos, only using XZ coordinates.
+     */
+    private static boolean existsPlayerWithinDistanceXZ(World world, Vec3d pos, double distance) {
+        for (EntityPlayer player : world.playerEntities) {
+            if (isPlayerWithinDistanceXZ(player, pos, distance)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

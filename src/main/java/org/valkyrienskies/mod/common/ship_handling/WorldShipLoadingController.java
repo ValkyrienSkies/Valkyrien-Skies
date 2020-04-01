@@ -23,19 +23,19 @@ import java.util.*;
 class WorldShipLoadingController {
 
     /**
-     * These constants must satisfy the following constraints: (TODO: Make test for this)
+     * These constants must satisfy the following constraints:
      *
      * WATCH_DISTANCE < UNWATCH_DISTANCE
      * LOAD_DISTANCE < LOAD_BACKGROUND_DISTANCE < UNLOAD_DISTANCE
      * UNWATCH_DISTANCE <= UNLOAD_DISTANCE
      * WATCH_DISTANCE <= LOAD_DISTANCE
      */
-    private static final double UNWATCH_DISTANCE = 50;
-    private static final double WATCH_DISTANCE = 32;
+    public static final double UNWATCH_DISTANCE = 50;
+    public static final double WATCH_DISTANCE = 32;
 
-    private static final double LOAD_DISTANCE = 32; // 128;
-    private static final double LOAD_BACKGROUND_DISTANCE = 50; // 256;
-    private static final double UNLOAD_DISTANCE = 80; // 512;
+    public static final double LOAD_DISTANCE = 32; // 128;
+    public static final double LOAD_BACKGROUND_DISTANCE = 50; // 256;
+    public static final double UNLOAD_DISTANCE = 80; // 512;
     private final WorldServerShipManager shipManager;
     private Map<ShipData, Set<EntityPlayerMP>> shipToWatchingPlayers;
 

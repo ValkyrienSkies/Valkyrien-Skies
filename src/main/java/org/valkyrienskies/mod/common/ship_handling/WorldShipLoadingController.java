@@ -9,8 +9,6 @@ import net.minecraft.world.chunk.Chunk;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
-import org.valkyrienskies.mod.common.network.SpawnPhysObjMessage;
-import org.valkyrienskies.mod.common.network.UnloadPhysObjMessage;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 
 import java.util.*;
@@ -138,17 +136,19 @@ class WorldShipLoadingController {
             Set<EntityPlayerMP> currentWatchers = newWatching.get(shipData);
             currentWatchers.forEach((player) -> updatesMap.get(player).add(shipData));
         }
+
+        Map<EntityPlayerMP, ShipIndexDataMessage> playerPacketMap = new HashMap<>();
+
         // Then send those updates
         updatesMap.forEach((player, updates) -> {
             ShipIndexDataMessage indexDataMessage = new ShipIndexDataMessage();
             if (!updates.isEmpty()) {
-                indexDataMessage.addDataToMessage(updates);
-                ValkyrienSkiesMod.physWrapperNetwork.sendTo(indexDataMessage, player);
+                indexDataMessage.addData(updates);
             }
+            playerPacketMap.put(player, indexDataMessage);
         });
 
-
-        // Then send ship spawn packets
+        // Then send ship loads to the packets
         for (PhysicsObject ship : shipManager.getAllLoadedPhysObj()) {
             ShipData shipData = ship.getShipData();
             Set<EntityPlayerMP> newWatchers = new HashSet<>(newWatching.get(shipData));
@@ -165,31 +165,21 @@ class WorldShipLoadingController {
                     }
                 }
 
-                // Then send the ship spawn packet
-                SpawnPhysObjMessage physObjMessage = new SpawnPhysObjMessage();
-                physObjMessage.initializeData(shipData.getUuid());
-                for (EntityPlayerMP player : newWatchers) {
-                    ValkyrienSkiesMod.physWrapperNetwork.sendTo(physObjMessage, player);
-                }
+                newWatchers.forEach(player -> playerPacketMap.get(player).addLoadUUID(shipData.getUuid()));
             }
         }
 
-        // Finally, send the ship unload packets
+        // Then add ship unloads to the packets
         for (ShipData shipData : oldWatching.keySet()) {
             Set<EntityPlayerMP> removedWatchers = new HashSet<>(oldWatching.get(shipData));
             if (newWatching.containsKey(shipData)) {
                 removedWatchers.removeAll(newWatching.get(shipData));
             }
-            if (!removedWatchers.isEmpty()) {
-                UnloadPhysObjMessage unloadMsg = new UnloadPhysObjMessage();
-                unloadMsg.initializeData(shipData.getUuid());
-                // Send the unload packet
-                for (EntityPlayerMP removedWatcher : removedWatchers) {
-                    ValkyrienSkiesMod.physWrapperNetwork.sendTo(unloadMsg, removedWatcher);
-                    System.out.println("Unload packet sent!");
-                }
-            }
+            removedWatchers.forEach(player -> playerPacketMap.get(player).addUnloadUUID(shipData.getUuid()));
         }
+
+        // Finally, send each player their update packet
+        playerPacketMap.forEach((player, packet) -> ValkyrienSkiesMod.physWrapperNetwork.sendTo(packet, player));
     }
 
     /**

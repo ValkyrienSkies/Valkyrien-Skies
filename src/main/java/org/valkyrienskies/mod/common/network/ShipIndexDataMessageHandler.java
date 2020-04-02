@@ -6,8 +6,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.valkyrienskies.mod.common.ship_handling.ShipData;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
+import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.ship_handling.ShipData;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.UUID;
 
 public class ShipIndexDataMessageHandler implements IMessageHandler<ShipIndexDataMessage, IMessage> {
 
@@ -22,10 +26,16 @@ public class ShipIndexDataMessageHandler implements IMessageHandler<ShipIndexDat
             public void run() {
                 if (Minecraft.getMinecraft().world != null) {
                     World world = Minecraft.getMinecraft().world;
-                    // IPhysObjectWorld physObjectWorld = ((IHasShipManager) world).getManager();
+                    IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(Minecraft.getMinecraft().world);
                     QueryableShipData worldData = QueryableShipData.get(world);
                     for (ShipData shipData : message.indexedData) {
                         worldData.addOrUpdateShipPreservingPhysObj(shipData);
+                    }
+                    for (UUID loadID : message.shipsToLoad) {
+                        physObjectWorld.queueShipLoad(loadID);
+                    }
+                    for (UUID unloadID : message.shipsToUnload) {
+                        physObjectWorld.queueShipUnload(unloadID);
                     }
                 }
             }

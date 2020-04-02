@@ -155,12 +155,8 @@ public class ValkyrienSkiesMod {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies");
         physWrapperNetwork.registerMessage(ShipIndexDataMessageHandler.class,
             ShipIndexDataMessage.class, 0, Side.CLIENT);
-        physWrapperNetwork.registerMessage(SpawnPhysObjMessageHandler.class,
-            SpawnPhysObjMessage.class, 1, Side.CLIENT);
-        physWrapperNetwork.registerMessage(UnloadPhysObjMessageHandler.class,
-                UnloadPhysObjMessage.class, 2, Side.CLIENT);
         physWrapperNetwork.registerMessage(VSGuiButtonHandler.class,
-            VSGuiButtonMessage.class, 3, Side.SERVER);
+            VSGuiButtonMessage.class, 1, Side.SERVER);
     }
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {

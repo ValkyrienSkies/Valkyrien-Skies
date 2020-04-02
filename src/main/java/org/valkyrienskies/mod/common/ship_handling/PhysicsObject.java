@@ -22,6 +22,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Quaterniondc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
@@ -42,6 +44,7 @@ import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -503,4 +506,22 @@ public class PhysicsObject implements IPhysicsEntity {
         }
     }
 
+    /**
+     * We allow a ship to be loaded by the client before all the chunks have arrived. So this handles behavior
+     * when a ship chunk arrives for an already loaded ship.
+     */
+    @SideOnly(Side.CLIENT)
+    public void updateChunk(@Nonnull Chunk chunk) {
+        if (!getChunkClaim().containsChunk(chunk.x, chunk.z)) {
+            throw new IllegalStateException("Ship " + getShipData() + " does not contain chunk " + chunk);
+        }
+        if (claimedChunkCache == null) {
+            throw new IllegalStateException("Claimed chunk cache was null for ship " + getShipData());
+        }
+        if (shipRenderer == null) {
+            throw new IllegalStateException("Ship renderer was null for ship " + getShipData());
+        }
+        claimedChunkCache.updateChunk(chunk);
+        shipRenderer.updateChunk(chunk);
+    }
 }

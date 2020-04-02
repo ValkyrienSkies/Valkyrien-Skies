@@ -20,6 +20,7 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
@@ -288,4 +289,15 @@ public class PhysObjectRenderManager {
         }
     }
 
+    /**
+     * Called when a chunk is being replaced with a new one. We replace the old chunk renderer with a new one as well.
+     */
+    public void updateChunk(@Nonnull Chunk chunk) {
+        ChunkPos chunkPos = new ChunkPos(chunk.x, chunk.z);
+        PhysRenderChunk oldRenderer = renderChunks.get(chunkPos);
+        if (oldRenderer != null) {
+            oldRenderer.killRenderChunk();
+        }
+        renderChunks.put(chunkPos, new PhysRenderChunk(parent, chunk));
+    }
 }

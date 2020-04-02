@@ -9,6 +9,8 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSChunkPhysoCapability;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
@@ -78,7 +80,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      * @param chunkZ The Z position of the chunk
      * @param chunk  The chunk to cache.
      */
-    public void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
+    private void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
         VSChunkClaim claim = parent.getShipData().getChunkClaim();
 
         throwIfOutOfBounds(claim, chunkX, chunkZ);
@@ -200,7 +202,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      * Attaches the parent physo to the selected chunk's {@link VSCapabilityRegistry#VS_CHUNK_PHYSO}
      * capability
      */
-    private void attachAsParent(Chunk chunk) {
+    private void attachAsParent(@Nonnull Chunk chunk) {
         VSChunkPhysoCapability physoCapability = Objects.requireNonNull(
             chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null));
         physoCapability.set(parent);
@@ -211,4 +213,14 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
     public Iterator<Chunk> iterator() {
         return claimedChunks.values().iterator();
     }
+
+    /**
+     * Replace an old chunk object with a new one in this cache.
+     */
+    @SideOnly(Side.CLIENT)
+    public void updateChunk(@Nonnull Chunk chunk) {
+        setChunkAt(chunk.x, chunk.z, chunk);
+        attachAsParent(chunk);
+    }
+
 }

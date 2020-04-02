@@ -67,16 +67,15 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     public void tick() {
         // First destroy any ships that want to be destroyed (copy blocks from ship to world, and then unload)
-        for (PhysicsObject physicsObject : getAllLoadedPhysObj()) {
+        Iterator<Map.Entry<UUID, PhysicsObject>> iterator = loadedShips.entrySet().iterator();
+        while (iterator.hasNext()) {
+            PhysicsObject physicsObject = iterator.next().getValue();
             if (physicsObject.shouldShipBeDestroyed()) {
                 // Copy ship blocks to the world
                 physicsObject.destroyShip();
-                // Then remove the ship from the world
+                // Then remove the ship from the world, and the ship map.
                 QueryableShipData.get(world).removeShip(physicsObject.getShipData());
-                boolean success = this.loadedShips.remove(physicsObject.getShipData().getUuid(), physicsObject);
-                if (!success) {
-                    throw new IllegalStateException("Ship destruction failed!\n" + physicsObject.getShipData());
-                }
+                iterator.remove();
             }
         }
 
@@ -159,6 +158,8 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
             physicsObject.assembleShip(null, detector, physicsInfuserPos);
 
+            // Add shipData to the ShipData storage
+            QueryableShipData.get(world).addShip(toSpawn);
             loadedShips.put(toSpawn.getUuid(), physicsObject);
         }
     }

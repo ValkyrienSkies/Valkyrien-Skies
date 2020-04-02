@@ -179,10 +179,6 @@ public class ValkyrienUtils {
         // Create the ship data that we will use to make the ship with later.
         ShipData shipData = createNewShip(world, physicsInfuserPos);
 
-
-        // Add shipData to the ShipData storage
-        QueryableShipData.get(world).addShip(shipData);
-
         // Queue the ship spawn operation
         ((WorldServerShipManager) ValkyrienUtils.getPhysObjWorld(world)).queueShipSpawn(shipData);
     }

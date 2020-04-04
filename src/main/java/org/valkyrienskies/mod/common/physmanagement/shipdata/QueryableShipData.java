@@ -166,6 +166,10 @@ public class QueryableShipData implements Iterable<ShipData> {
             old.get().setPhysInfuserPos(ship.getPhysInfuserPos());
             old.get().setShipBB(ship.getShipBB());
             old.get().setPhysicsEnabled(ship.isPhysicsEnabled());
+            // Update inertia data
+            old.get().getInertiaData().setGameMoITensor(ship.getInertiaData().getGameMoITensor());
+            old.get().getInertiaData().setGameTickMass(ship.getInertiaData().getGameTickMass());
+            old.get().getInertiaData().setGameTickCenterOfMass(ship.getInertiaData().getGameTickCenterOfMass());
             return old.get();
         } else {
             this.allShips.add(ship);

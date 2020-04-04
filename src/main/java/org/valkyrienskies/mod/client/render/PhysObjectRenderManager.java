@@ -22,6 +22,7 @@ import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -209,7 +210,12 @@ public class PhysObjectRenderManager {
         AxisAlignedBB shipBB = parent.getShipBB().offset(offsetX, offsetY, offsetZ);
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
-        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(renderTransform.getShipPositionVec3d(), renderTransform.getShipPositionVec3d())
+        Vector centerOfMass = new Vector(parent.getShipData().getInertiaData().getGameTickCenterOfMass());
+
+        Vector centerOfMassPos = new Vector(centerOfMass);
+        parent.getShipTransformationManager().getRenderTransform().transform(centerOfMassPos, TransformType.SUBSPACE_TO_GLOBAL);
+
+        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(centerOfMassPos.toVec3d(), centerOfMassPos.toVec3d())
             .grow(.1).offset(offsetX, offsetY, offsetZ);
 
         GlStateManager.depthMask(false);
@@ -253,7 +259,7 @@ public class PhysObjectRenderManager {
         GlStateManager.depthMask(true);
 
         // Draw a text box that shows the numerical value of the center of mass.
-        String centerOfMassStr = "Center of Mass: " + renderTransform.getCenterCoord().toString();
+        String centerOfMassStr = "Center of Mass: " + centerOfMass.toVector3d().toString(new DecimalFormat("############.##"));
         renderTextBox(centerOfMassStr, renderTransform.getPosX(), renderTransform.getPosY() + .5,
             renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
 

@@ -250,7 +250,7 @@ public class EventsClient {
         if (mc.getRenderManager().isDebugBoundingBox() && !mc.isReducedDebug() && world != null) {
             float partialTicks = event.getPartialTicks();
             Vector3dc offset =
-                VSRenderUtils.getEntityPartialPosition(mc.player, partialTicks).negate();
+                VSRenderUtils.getEntityPartialPosition(mc.getRenderViewEntity(), partialTicks).negate();
 
             for (PhysicsObject physo : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
                 physo.getShipRenderer().renderDebugInfo(offset);

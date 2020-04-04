@@ -116,14 +116,16 @@ public class PhysObjectRenderManager {
     public void applyRenderTransform(double partialTicks) {
         Vector centerOfRotation = parent.getCenterCoord();
 
-        double p0 = Minecraft.getMinecraft().player.lastTickPosX
-            + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
+        Entity player = Minecraft.getMinecraft().getRenderViewEntity();
+
+        double p0 = player.lastTickPosX
+            + (player.posX -player.lastTickPosX)
             * partialTicks;
-        double p1 = Minecraft.getMinecraft().player.lastTickPosY
-            + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY)
+        double p1 = player.lastTickPosY
+            + (player.posY -player.lastTickPosY)
             * partialTicks;
-        double p2 = Minecraft.getMinecraft().player.lastTickPosZ
-            + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
+        double p2 = player.lastTickPosZ
+            + (player.posZ - player.lastTickPosZ)
             * partialTicks;
 
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
@@ -156,14 +158,16 @@ public class PhysObjectRenderManager {
     public void inverseTransform(double partialTicks) {
         Vector centerOfRotation = parent.getCenterCoord();
 
-        double p0 = Minecraft.getMinecraft().player.lastTickPosX
-            + (Minecraft.getMinecraft().player.posX - Minecraft.getMinecraft().player.lastTickPosX)
+        Entity player = Minecraft.getMinecraft().getRenderViewEntity();
+
+        double p0 = player.lastTickPosX
+            + (player.posX - player.lastTickPosX)
             * partialTicks;
-        double p1 = Minecraft.getMinecraft().player.lastTickPosY
-            + (Minecraft.getMinecraft().player.posY - Minecraft.getMinecraft().player.lastTickPosY)
+        double p1 = player.lastTickPosY
+            + (player.posY - player.lastTickPosY)
             * partialTicks;
-        double p2 = Minecraft.getMinecraft().player.lastTickPosZ
-            + (Minecraft.getMinecraft().player.posZ - Minecraft.getMinecraft().player.lastTickPosZ)
+        double p2 = player.lastTickPosZ
+            + (player.posZ - player.lastTickPosZ)
             * partialTicks;
 
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();

@@ -104,10 +104,9 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVSNodeP
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Iterable<IVSNode> getNetworkedConnections() {
-        return () -> new IteratorCaster(tileNode.getGraph()
-            .getObjects()
-            .iterator());
+        return () -> (Iterator<IVSNode>) (Object) tileNode.getGraph().getObjects().iterator();
     }
 
     public static class GraphData implements Mergeable<GraphData> {
@@ -136,25 +135,6 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVSNodeP
 
         public int getUid() {
             return uid;
-        }
-    }
-
-    private static class IteratorCaster implements Iterator<IVSNode> {
-
-        private final Iterator toCast;
-
-        private IteratorCaster(Iterator toCast) {
-            this.toCast = toCast;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return toCast.hasNext();
-        }
-
-        @Override
-        public IVSNode next() {
-            return (IVSNode) toCast.next();
         }
     }
 

@@ -175,7 +175,13 @@ class WorldShipLoadingController {
             if (newWatching.containsKey(shipData)) {
                 removedWatchers.removeAll(newWatching.get(shipData));
             }
-            removedWatchers.forEach(player -> playerPacketMap.get(player).addUnloadUUID(shipData.getUuid()));
+            for (EntityPlayerMP player : removedWatchers) {
+                // This isn't pretty, but handles the case when a player has left the game/
+                // We cannot send packets to a player that's not in the world anyways; so just skip this case.
+                if (playerPacketMap.containsKey(player)) {
+                    playerPacketMap.get(player).addUnloadUUID(shipData.getUuid());
+                }
+            }
         }
 
         // Finally, send each player their update packet

@@ -41,19 +41,12 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      * This constructor is expensive; it loads all the chunks when it's called. Be warned.
      *
      * @param parent The PhysicsObject that is using this ChunkCacheController
-     * @param loaded Whether or not the chunks that are being cached have been loaded before. e.g.,
-     *               whether they are being loaded from NBT or from the world.
      */
-    public ClaimedChunkCacheController(PhysicsObject parent, boolean loaded) {
+    public ClaimedChunkCacheController(PhysicsObject parent) {
         this.world = parent.getWorld();
         this.parent = parent;
         this.claimedChunks = new HashMap<>();
-
-        if (loaded) {
-            loadLoadedChunks();
-        } else {
-            loadNewChunks();
-        }
+        loadLoadedChunks();
     }
 
     /**
@@ -124,22 +117,6 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
-    }
-
-    /**
-     * Loads chunks that haven't been generated before into the cache. At the moment make sure to
-     * only call this from the game thread. Running it on a separate thread will lead to data
-     * races.
-     */
-    private void loadNewChunks() {
-        System.out.println("Loading new chunks");
-        VSChunkClaim claim = parent.getShipData().getChunkClaim();
-
-        claim.forEach((x, z) -> {
-            Chunk chunk = new Chunk(world, x, z);
-            injectChunkIntoWorldServer(chunk, x, z, true, true);
-            setChunkAt(x, z, chunk);
         });
     }
 

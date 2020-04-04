@@ -111,10 +111,8 @@ public class PhysicsObject implements IPhysicsEntity {
      *
      * @param world            The world this object exists in.
      * @param initial          The ShipData this PhysicsObject will be created with
-     * @param firstTimeCreated True if this ship was just created through a physics infuser, false
-     *                         if it was loaded in from the world save.
      */
-    PhysicsObject(World world, ShipData initial, boolean firstTimeCreated) {
+    PhysicsObject(World world, ShipData initial) {
         // QueryableShipData.get(world).registerUpdateListener(this::shipDataUpdateListener);
         this.world = world;
         this.shipData = initial;
@@ -122,7 +120,7 @@ public class PhysicsObject implements IPhysicsEntity {
         this.watchingPlayers = new ArrayList<>();
         this.physicsControllers = ConcurrentHashMap.newKeySet();
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
-        this.claimedChunkCache = new ClaimedChunkCacheController(this, !firstTimeCreated);
+        this.claimedChunkCache = new ClaimedChunkCacheController(this);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
             referenceBlockPos.getZ());
@@ -137,12 +135,11 @@ public class PhysicsObject implements IPhysicsEntity {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
         } else {
             this.shipRenderer = null;
-            if (!firstTimeCreated) {
-                this.getShipTransformationManager()
-                    .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
-                Objects.requireNonNull(shipData.getBlockPositions())
-                    .forEach(voxelFieldAABBMaker::addVoxel);
-            }
+            this.getShipTransformationManager()
+                .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
+            // TODO: Making this here isn't ideal, it should be done when ShipData is loaded from disk.
+            Objects.requireNonNull(shipData.getBlockPositions())
+                .forEach(voxelFieldAABBMaker::addVoxel);
         }
     }
 

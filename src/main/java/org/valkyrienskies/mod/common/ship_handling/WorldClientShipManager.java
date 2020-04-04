@@ -45,7 +45,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
                 throw new IllegalStateException("No ship found for UUID:\n" + toLoadID);
             }
             ShipData shipData = toLoadOptional.get();
-            PhysicsObject physicsObject = new PhysicsObject(world, shipData, false);
+            PhysicsObject physicsObject = new PhysicsObject(world, shipData);
             loadedShips.put(toLoadID, physicsObject);
         }
 

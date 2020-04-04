@@ -255,7 +255,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
             toSpawn.setPhysInfuserPos(toSpawn.getChunkClaim().getRegionCenter());
 
-            PhysicsObject physicsObject = new PhysicsObject(world, toSpawn, false);
+            PhysicsObject physicsObject = new PhysicsObject(world, toSpawn);
 
             // physicsObject.assembleShip(null, detector, physicsInfuserPos);
 
@@ -294,7 +294,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             loadingInBackground.remove(toLoadID);
             // Finally, load the ship.
             System.out.println("Attempting to load ship " + toLoad);
-            PhysicsObject physicsObject = new PhysicsObject(world, toLoad, false);
+            PhysicsObject physicsObject = new PhysicsObject(world, toLoad);
             PhysicsObject old = loadedShips.put(toLoad.getUuid(), physicsObject);
             if (old != null) {
                 throw new IllegalStateException("How did we already have a ship loaded for " + toLoad);

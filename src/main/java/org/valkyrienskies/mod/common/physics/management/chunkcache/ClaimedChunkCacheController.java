@@ -8,7 +8,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
@@ -98,7 +97,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
             // Added try catch to prevent ships deleting themselves because of a failed tile entity load.
             try {
                 Chunk chunk = world.getChunk(x, z);
-                if (chunk instanceof EmptyChunk) {
+                if (chunk.isEmpty()) { // if (chunk instanceof EmptyChunk) { [Changed because EmptyChunk is a 'client' class]
                     System.out.println("Why did we put an empty chunk at (" + x + "," + z + ")?");
                 }
 

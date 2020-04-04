@@ -1,6 +1,5 @@
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -125,7 +124,10 @@ public class EntityDraggable {
                 double wrappedRotYaw;
                 // We do this because entity.getLook() is calculated differently for EntityLivingBase, it uses
                 // rotationYawHead instead of just rotationYaw.
-                if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
+
+                // if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
+                // [Changed because EntityPlayerSP is a 'client' class]
+                if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer)) {
                     wrappedRotYaw = MathHelper.wrapDegrees(entity.getRotationYawHead());
                 } else {
                     wrappedRotYaw = MathHelper.wrapDegrees(entity.rotationYaw);
@@ -171,7 +173,9 @@ public class EntityDraggable {
             entity.resetPositionToBB();
 
             if (!mountData.isMounted()) {
-                if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
+                // if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
+                // [Changed because EntityPlayerSP is a 'client' class]
+                if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer)) {
                     entity.setRotationYawHead((float) (entity.getRotationYawHead() + draggable.getYawDifVelocity()));
                 } else {
                     entity.rotationYaw += draggable.getYawDifVelocity();

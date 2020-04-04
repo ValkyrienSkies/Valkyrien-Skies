@@ -1,21 +1,21 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
 import org.valkyrienskies.mod.common.math.Vector;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * Stores the data of the ship mas and inertia matrix.
  */
-@Setter
-@Getter
+@Data
 public class ShipInertiaData {
 
     double gameTickMass = 0;
-    @Nullable
-    Matrix3dc gameMoITensor = null;
+    @Nonnull
+    Matrix3dc gameMoITensor = new Matrix3d();
+    @Nonnull
     Vector gameTickCenterOfMass = new Vector();
 }

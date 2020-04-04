@@ -1,13 +1,10 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
-import gnu.trove.iterator.TIntIterator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
@@ -20,7 +17,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -39,7 +35,6 @@ import org.valkyrienskies.mod.common.physics.management.ShipTransformationManage
 import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
-import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
@@ -131,7 +126,7 @@ public class PhysicsObject implements IPhysicsEntity {
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
         this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
             referenceBlockPos.getZ());
-        this.centerOfMassProvider = new BasicCenterOfMassProvider(initial.getInertiaData());
+        this.centerOfMassProvider = new BasicCenterOfMassProvider();
         this.shipTransformationManager = new ShipTransformationManager(this,
             getShipData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
@@ -190,79 +185,7 @@ public class PhysicsObject implements IPhysicsEntity {
             getPhysicsCalculations().onSetBlockState(oldState, newState, posAt);
         }
 
-        centerOfMassProvider.onSetBlockState(this, posAt, oldState, newState);
-    }
-
-    void assembleShip(EntityPlayer player, SpatialDetector detector,
-                      BlockPos centerInWorld) {
-
-        MutableBlockPos pos = new MutableBlockPos();
-
-        BlockPos centerDifference = getReferenceBlockPos().subtract(centerInWorld);
-
-        TIntIterator iter = detector.foundSet.iterator();
-
-        MutableBlockPos oldPos = new MutableBlockPos();
-        MutableBlockPos newPos = new MutableBlockPos();
-
-        // First copy all the blocks from ship to world.
-        while (iter.hasNext()) {
-            int i = iter.next();
-            SpatialDetector.setPosWithRespectTo(i, centerInWorld, oldPos);
-            SpatialDetector.setPosWithRespectTo(i, centerInWorld, newPos);
-            newPos.setPos(newPos.getX() + centerDifference.getX(),
-                newPos.getY() + centerDifference.getY(),
-                newPos.getZ() + centerDifference.getZ());
-
-            MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.of(this));
-            voxelFieldAABBMaker.addVoxel(newPos.getX(), newPos.getY(), newPos.getZ());
-        }
-        // Update the physics infuser pos.
-        getShipData().setPhysInfuserPos(getShipData().getPhysInfuserPos().add(centerDifference));
-
-        // First we destroy all the tile entities we copied.
-        iter = detector.foundSet.iterator();
-        while (iter.hasNext()) {
-            int i = iter.next();
-            SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
-            TileEntity tile = getWorld().getTileEntity(pos);
-            if (tile != null && !tile.isInvalid()) {
-                try {
-                    tile.invalidate();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    getWorld().removeTileEntity(pos);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        // We NEED this to fix ship lighting. If this code was removed then ships would have lighting artifacts all
-        // over them.
-        for (ChunkPos chunkPos : getChunkClaim()) {
-            Chunk chunkAt = claimedChunkCache.getChunkAt(chunkPos.x, chunkPos.z);
-            chunkAt.setTerrainPopulated(true);
-            chunkAt.setLightPopulated(true);
-        }
-
-        // Then we destroy all the blocks we copied
-        iter = detector.foundSet.iterator();
-        while (iter.hasNext()) {
-            int i = iter.next();
-            SpatialDetector.setPosWithRespectTo(i, centerInWorld, pos);
-            getWorld().setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
-        }
-
-        // Some extra ship crap at the end.
-        detectBlockPositions();
-
-        // This puts the updated ShipData transform into the transformation manager. It also creates the ship bounding
-        // box (Which is stored into ShipData).
-        this.getShipTransformationManager()
-            .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
+        centerOfMassProvider.onSetBlockState(shipData.getInertiaData(), posAt, oldState, newState);
     }
 
     void onTick() {
@@ -304,41 +227,6 @@ public class PhysicsObject implements IPhysicsEntity {
                 toUse.applySmoothLerp(this, .6D);
             }
              */
-        }
-    }
-
-    // Generates the blockPos array; must be loaded DIRECTLY after the chunks are
-    // setup
-    private void detectBlockPositions() {
-        final int airStateIndex = Block.getStateId(Blocks.AIR.getDefaultState());
-
-        for (Chunk chunk : claimedChunkCache) {
-            for (int index = 0; index < 16; index++) {
-                ExtendedBlockStorage storage = chunk.getBlockStorageArray()[index];
-                if (storage != null) {
-                    for (int y = 0; y < 16; y++) {
-                        for (int x = 0; x < 16; x++) {
-                            for (int z = 0; z < 16; z++) {
-                                if (storage.data.storage
-                                    .getAt(y << 8 | z << 4 | x)
-                                    != airStateIndex) {
-                                    BlockPos pos = new BlockPos(chunk.x * 16 + x,
-                                        index * 16 + y,
-                                        chunk.z * 16 + z);
-                                    getBlockPositions().add(pos);
-                                    voxelFieldAABBMaker
-                                        .addVoxel(pos.getX(), pos.getY(), pos.getZ());
-                                    if (BlockPhysicsDetails.isBlockProvidingForce(
-                                        getWorld().getBlockState(pos), pos, getWorld())) {
-                                        getPhysicsCalculations()
-                                            .addPotentialActiveForcePos(pos);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 

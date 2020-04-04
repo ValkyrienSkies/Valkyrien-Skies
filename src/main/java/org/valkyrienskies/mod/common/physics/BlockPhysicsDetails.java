@@ -1,8 +1,5 @@
 package org.valkyrienskies.mod.common.physics;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -11,11 +8,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.block.IBlockMassProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class BlockPhysicsDetails {
 
@@ -112,13 +112,8 @@ public class BlockPhysicsDetails {
     /**
      * Get block mass, in kg.
      */
-    public static double getMassFromState(IBlockState state, BlockPos pos, World world) {
-        Block block = state.getBlock();
-        if (block instanceof IBlockMassProvider) {
-            return ((IBlockMassProvider) block).getBlockMass(world, pos, state);
-        } else {
-            return getMassOfBlock(block);
-        }
+    public static double getMassFromState(IBlockState state) {
+        return getMassOfBlock(state.getBlock());
     }
 
     private static double getMassOfMaterial(Material material) {

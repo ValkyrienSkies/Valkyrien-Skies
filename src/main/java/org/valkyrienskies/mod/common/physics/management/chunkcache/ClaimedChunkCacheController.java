@@ -3,24 +3,19 @@ package org.valkyrienskies.mod.common.physics.management.chunkcache;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
-import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
-import org.valkyrienskies.mod.common.capability.VSChunkPhysoCapability;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * The ClaimedChunkCacheController is a chunk cache controller used by the {@link PhysicsObject}. It
@@ -46,7 +41,7 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
         this.world = parent.getWorld();
         this.parent = parent;
         this.claimedChunks = new HashMap<>();
-        loadLoadedChunks();
+        loadChunksIntoCache();
     }
 
     /**
@@ -83,6 +78,9 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
         claimedChunks.put(chunkPos, chunk);
     }
 
+    /**
+     * Throws a ChunkNotInClaimException if (chunkX, chunkZ) isn't a part of the given VSChunkClaim.
+     */
     private static void throwIfOutOfBounds(VSChunkClaim claim, int chunkX, int chunkZ) {
         if (!claim.containsChunk(chunkX, chunkZ)) {
             throw new ChunkNotInClaimException(chunkX, chunkZ);
@@ -90,9 +88,9 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
     }
 
     /**
-     * Loads chunks that have been generated before into the cache
+     * Loads chunks from the world, and puts them into the cache.
      */
-    private void loadLoadedChunks() {
+    private void loadChunksIntoCache() {
         System.out.println("Loading chunks");
         VSChunkClaim claim = parent.getShipData().getChunkClaim();
 
@@ -105,10 +103,16 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
                 }
 
                 // Do this to get it re-integrated into the world
-                if (world.isRemote) {
-                    attachAsParent(chunk);
-                } else {
-                    injectChunkIntoWorldServer(chunk, x, z, false, true);
+                if (!world.isRemote) {
+                    // Inject the entry into the player chunk map.
+                    PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
+                    PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
+                    // Very important! We must update the chunk field of the entry to prevent old chunk objects from living on.
+                    // If this entry already existed and we forget, then we will corrupt the entry by having different chunks
+                    // in the world vs in the entries!
+                    entry.chunk = chunk;
+                    entry.sentToPlayers = true;
+                    entry.players = parent.getWatchingPlayers();
                 }
 
                 chunk.tileEntities.forEach(parent::onSetTileEntity);
@@ -120,69 +124,30 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
         });
     }
 
-    private void injectChunkIntoWorldServer(Chunk chunk, int x, int z, boolean putInId2ChunkMap, boolean createPlayerEntry) {
-        // Sanity check first
-        if (!((WorldServer) world).isCallingFromMinecraftThread()) {
-            throw new IllegalThreadStateException("We cannot call this crap from another thread!");
-        }
-
-        chunk.generateSkylightMap();
-        chunk.checkLight();
-
-        // Make sure this chunk knows we own it
-        attachAsParent(chunk);
-
-        ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
-        chunk.dirty = true;
-        setChunkAt(x, z, chunk);
-
-        if (putInId2ChunkMap) {
-            provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
-        }
-
-        chunk.onLoad();
-        // We need to set these otherwise certain events like Sponge's PhaseTracker will refuse to work properly with ships!
-        chunk.setTerrainPopulated(true);
-        chunk.setLightPopulated(true);
-
-        // Inject the entry into the player chunk map.
-        if (createPlayerEntry) {
-            PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
-            PlayerChunkMapEntry entry = map.getOrCreateEntry(x, z);
-            // Very important! We must update the chunk field of the entry to prevent old chunk objects from living on.
-            // If this entry already existed and we forget, then we will corrupt the entry by having different chunks
-            // in the world vs in the entries!
-            entry.chunk = chunk;
-            entry.sentToPlayers = true;
-            entry.players = parent.getWatchingPlayers();
-        }
-    }
-
     public void deleteShipChunksFromWorld() {
-        parent.getChunkClaim().forEach((x, z) -> {
-            Chunk chunk = new Chunk(world, x, z);
-            chunk.setTerrainPopulated(true);
-            chunk.setLightPopulated(true);
-            injectChunkIntoWorldServer(chunk, x, z, true, false);
-            PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
-            PlayerChunkMapEntry entry = map.getEntry(x, z);
-            if (entry == null) {
-                throw new IllegalStateException("How did the entry at " + x + " : " + z + " return as null?");
+        PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
+
+        // Delete all claimed chunks.
+        claimedChunks.forEach((posLong, chunk) -> {
+            // First delete all the TileEntities in the chunk
+            List<BlockPos> chunkTilesPos = new ArrayList<>(chunk.tileEntities.keySet());
+            for (BlockPos tilePos : chunkTilesPos) {
+                chunk.world.removeTileEntity(tilePos);
             }
-            // Want to throw away old chunk.
-            entry.chunk = chunk;
+            // Then replace all the chunk's block storage with null.
+            for (int i = 0; i < 16; i++) {
+                chunk.storageArrays[i] = null;
+            }
+            chunk.markDirty();
+
+            // Finally, remove the PlayerChunkMapEntry that was watching that chunk
+            PlayerChunkMapEntry entry = map.getEntry(chunk.x, chunk.z);
+            if (entry == null) {
+                // This should be impossible, throw exception if it happens.
+                throw new IllegalStateException("How did the entry at " + chunk.x + " : " + chunk.z + " return as null?");
+            }
             map.removeEntry(entry);
         });
-    }
-
-    /**
-     * Attaches the parent physo to the selected chunk's {@link VSCapabilityRegistry#VS_CHUNK_PHYSO}
-     * capability
-     */
-    private void attachAsParent(@Nonnull Chunk chunk) {
-        VSChunkPhysoCapability physoCapability = Objects.requireNonNull(
-            chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null));
-        physoCapability.set(parent);
     }
 
     @Nonnull
@@ -197,7 +162,6 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
     @SideOnly(Side.CLIENT)
     public void updateChunk(@Nonnull Chunk chunk) {
         setChunkAt(chunk.x, chunk.z, chunk);
-        attachAsParent(chunk);
     }
 
 }

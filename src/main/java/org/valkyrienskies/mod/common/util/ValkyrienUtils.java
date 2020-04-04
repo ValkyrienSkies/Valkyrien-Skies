@@ -18,17 +18,16 @@ import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
-import org.valkyrienskies.mod.common.ship_handling.*;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
+import org.valkyrienskies.mod.common.ship_handling.*;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,8 +47,18 @@ public class ValkyrienUtils {
      * @return The physics object managing that chunk, if present
      */
     public static Optional<PhysicsObject> getPhysoManagingChunk(@Nonnull Chunk chunk) {
-        return Objects.requireNonNull(
-            chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null)).get();
+        // TODO: Only allow this to be called from the game thread.
+        QueryableShipData queryableShipData = QueryableShipData.get(chunk.world);
+        Optional<ShipData> shipData = queryableShipData.getShipFromChunk(chunk.x, chunk.z);
+        if (shipData.isPresent()) {
+            PhysicsObject object = getPhysObjWorld(chunk.world).getPhysObjectFromUUID(shipData.get().getUuid());
+            if (object != null) {
+                return Optional.of(object);
+            }
+        }
+        return Optional.empty();
+        // return Objects.requireNonNull(
+        //    chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null)).get();
     }
 
     /**

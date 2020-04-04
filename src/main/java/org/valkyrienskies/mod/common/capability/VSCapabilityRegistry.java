@@ -1,10 +1,8 @@
 package org.valkyrienskies.mod.common.capability;
 
-import javax.annotation.Nonnull;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -19,6 +17,8 @@ import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityPro
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityStorage;
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityTransientStorage;
 
+import javax.annotation.Nonnull;
+
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class VSCapabilityRegistry {
 
@@ -27,9 +27,6 @@ public class VSCapabilityRegistry {
 
     @CapabilityInject(ICapabilityEntityBackup.class)
     public static final Capability<ICapabilityEntityBackup> VS_ENTITY_BACKUP = getNull();
-
-    @CapabilityInject(VSChunkPhysoCapability.class)
-    public static final Capability<VSChunkPhysoCapability> VS_CHUNK_PHYSO = getNull();
 
     @SubscribeEvent
     public static void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
@@ -45,24 +42,11 @@ public class VSCapabilityRegistry {
             new VSDefaultCapabilityProviderTransient<>(VS_ENTITY_BACKUP));
     }
 
-    @SubscribeEvent
-    public static void attachChunkCapabilities(AttachCapabilitiesEvent<Chunk> event) {
-        event.addCapability(
-            new ResourceLocation(ValkyrienSkiesMod.MOD_ID, "chunk_physo_capability"),
-            new VSDefaultCapabilityProviderTransient<>(VS_CHUNK_PHYSO));
-    }
-
     public static void registerCapabilities() {
         CapabilityManager.INSTANCE.register(
             VSWorldDataCapability.class,
             new VSDefaultCapabilityStorage<>(),
             VSWorldDataCapability::new
-        );
-
-        CapabilityManager.INSTANCE.register(
-            VSChunkPhysoCapability.class,
-            new VSDefaultCapabilityTransientStorage<>(),
-            VSChunkPhysoCapability::new
         );
 
         CapabilityManager.INSTANCE.register(

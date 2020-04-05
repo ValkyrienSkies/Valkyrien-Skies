@@ -46,7 +46,7 @@ public class ValkyrienUtils {
      * @return The PhysicsObject that owns the chunk at pos within the given world.
      */
     public static Optional<PhysicsObject> getPhysoManagingBlock(@Nullable World world,
-                                                           @Nullable BlockPos pos) {
+                                                           @Nullable BlockPos pos) throws CalledFromWrongThreadException {
         QueryableShipData queryableShipData = QueryableShipData.get(world);
         Optional<ShipData> shipData = queryableShipData.getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
         if (shipData.isPresent()) {

@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
+import com.google.common.collect.ImmutableList;
 import gnu.trove.iterator.TIntIterator;
 import lombok.Getter;
 import net.minecraft.block.state.IBlockState;
@@ -38,6 +39,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     private final ConcurrentLinkedQueue<ShipData> spawnQueue;
     private final ConcurrentLinkedQueue<UUID> loadQueue, unloadQueue, backgroundLoadQueue;
     private final Set<UUID> loadingInBackground;
+    private ImmutableList<PhysicsObject> threadSafeLoadedShips;
 
     public WorldServerShipManager(World world) {
         this.world = (WorldServer) world;
@@ -49,7 +51,14 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         this.unloadQueue = new ConcurrentLinkedQueue<>();
         this.backgroundLoadQueue = new ConcurrentLinkedQueue<>();
         this.loadingInBackground = new HashSet<>();
+        this.threadSafeLoadedShips = ImmutableList.of();
         this.physicsThread.start();
+    }
+
+    private void enforceGameThread() {
+        if (!world.isCallingFromMinecraftThread()) {
+            throw new CalledFromWrongThreadException("Wrong thread calling code: " + Thread.currentThread());
+        }
     }
 
     @Override
@@ -58,13 +67,15 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     @Override
-    public PhysicsObject getPhysObjectFromUUID(UUID shipID) {
+    public PhysicsObject getPhysObjectFromUUID(@Nonnull UUID shipID) throws CalledFromWrongThreadException {
+        enforceGameThread();
         return loadedShips.get(shipID);
     }
 
     @Nonnull
     @Override
-    public List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck) {
+    public List<PhysicsObject> getNearbyPhysObjects(@Nonnull AxisAlignedBB toCheck) throws CalledFromWrongThreadException {
+        enforceGameThread();
         List<PhysicsObject> nearby = new ArrayList<>();
         for (PhysicsObject ship : getAllLoadedPhysObj()) {
             if (toCheck.intersects(ship.getShipBB())) {
@@ -104,6 +115,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
         // Finally, send the players updates about the ships.
         loadingController.sendUpdatesToPlayers();
+
+        // And then update the thread safe ship list.
+        this.threadSafeLoadedShips = ImmutableList.copyOf(loadedShips.values());
     }
 
     private void spawnNewShips() {
@@ -265,7 +279,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         }
     }
 
-    private void injectChunkIntoWorldServer(Chunk chunk, int x, int z) {
+    private void injectChunkIntoWorldServer(@Nonnull Chunk chunk, int x, int z) {
         ChunkProviderServer provider = world.getChunkProvider();
         chunk.dirty = true;
         chunk.setTerrainPopulated(true);
@@ -357,8 +371,15 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     @Nonnull
     @Override
-    public Iterable<PhysicsObject> getAllLoadedPhysObj() {
+    public Iterable<PhysicsObject> getAllLoadedPhysObj() throws CalledFromWrongThreadException {
+        enforceGameThread();
         return loadedShips.values();
+    }
+
+    @Nonnull
+    @Override
+    public ImmutableList<PhysicsObject> getAllLoadedThreadSafe() {
+        return threadSafeLoadedShips;
     }
 
     /**
@@ -388,7 +409,8 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     /**
      * Used to prevent the world from unloading the chunks of ships loading in background.
      */
-    public Iterable<Long> getBackgroundShipChunks() {
+    public Iterable<Long> getBackgroundShipChunks() throws CalledFromWrongThreadException {
+        enforceGameThread();
         List<Long> backgroundChunks = new ArrayList<>();
         QueryableShipData queryableShipData = QueryableShipData.get(world);
         for (UUID shipID : loadingInBackground) {

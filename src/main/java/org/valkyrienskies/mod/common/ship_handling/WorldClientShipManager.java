@@ -1,5 +1,7 @@
 package org.valkyrienskies.mod.common.ship_handling;
 
+import com.google.common.collect.ImmutableList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
@@ -14,12 +16,20 @@ public class WorldClientShipManager implements IPhysObjectWorld {
     private final World world;
     private final Map<UUID, PhysicsObject> loadedShips;
     private final ConcurrentLinkedQueue<UUID> loadQueue, unloadQueue;
+    private ImmutableList<PhysicsObject> threadSafeLoadedShips;
 
     public WorldClientShipManager(World world) {
         this.world = world;
         this.loadedShips = new HashMap<>();
         this.loadQueue = new ConcurrentLinkedQueue<>();
         this.unloadQueue = new ConcurrentLinkedQueue<>();
+        this.threadSafeLoadedShips = ImmutableList.of();
+    }
+
+    private void enforceGameThread() throws CalledFromWrongThreadException {
+        if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
+            throw new CalledFromWrongThreadException("Wrong thread calling code: " + Thread.currentThread());
+        }
     }
 
     @Override
@@ -30,6 +40,9 @@ public class WorldClientShipManager implements IPhysObjectWorld {
             physicsObject.getShipTransformationManager()
                 .updateAllTransforms(physicsObject.getShipData().getShipTransform(), false, false);
         }
+
+        // Update the thread safe ship list.
+        this.threadSafeLoadedShips = ImmutableList.copyOf(loadedShips.values());
     }
 
     private void loadAndUnloadShips() {
@@ -70,13 +83,15 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Nullable
     @Override
-    public PhysicsObject getPhysObjectFromUUID(UUID shipID) {
+    public PhysicsObject getPhysObjectFromUUID(@Nonnull UUID shipID) throws CalledFromWrongThreadException {
+        enforceGameThread();
         return loadedShips.get(shipID);
     }
 
     @Nonnull
     @Override
-    public List<PhysicsObject> getNearbyPhysObjects(AxisAlignedBB toCheck) {
+    public List<PhysicsObject> getNearbyPhysObjects(@Nonnull AxisAlignedBB toCheck) throws CalledFromWrongThreadException {
+        enforceGameThread();
         List<PhysicsObject> nearby = new ArrayList<>();
         for (PhysicsObject physicsObject : getAllLoadedPhysObj()) {
             if (toCheck.intersects(physicsObject.getShipBB())) {
@@ -88,8 +103,15 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Nonnull
     @Override
-    public Iterable<PhysicsObject> getAllLoadedPhysObj() {
+    public Iterable<PhysicsObject> getAllLoadedPhysObj() throws CalledFromWrongThreadException {
+        enforceGameThread();
         return loadedShips.values();
+    }
+
+    @Nonnull
+    @Override
+    public ImmutableList<PhysicsObject> getAllLoadedThreadSafe() {
+        return threadSafeLoadedShips;
     }
 
     @Override

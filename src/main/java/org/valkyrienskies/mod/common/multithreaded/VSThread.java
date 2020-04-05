@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.multithreaded;
 
+import com.google.common.collect.ImmutableList;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -10,8 +11,8 @@ import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,8 @@ public class VSThread extends Thread {
     // Used by the game thread to mark this thread for death.
     private volatile boolean threadRunning;
 
-    private Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
+    private Queue<Runnable> taskQueue;
+    private ImmutableList<PhysicsObject> immutableShipsList;
 
     public VSThread(World host) {
         super("VS World Thread " + threadID);
@@ -49,6 +51,8 @@ public class VSThread extends Thread {
         this.physicsTicksCount = 0;
         this.threadRunning = true;
         this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<>();
+        this.taskQueue = new ConcurrentLinkedQueue<>();
+        this.immutableShipsList = ImmutableList.of();
         log.trace(this.getName() + " thread created.");
     }
 
@@ -120,6 +124,9 @@ public class VSThread extends Thread {
     }
 
     private void runGameLoop() {
+        // First update the references to ships from the thread
+        immutableShipsList = ((IHasShipManager) hostWorld).getManager().getAllLoadedThreadSafe();
+
         // Run tasks queued to run on physics thread
         taskQueue.forEach(Runnable::run);
         taskQueue.clear();
@@ -142,11 +149,10 @@ public class VSThread extends Thread {
     // The whole time need to be careful the game thread isn't messing with these
     // values.
     private void physicsTick() {
-        // This isn't thread-safe!!!
-        Iterable<PhysicsObject> physicsObjects = ((IHasShipManager) hostWorld).getManager().getAllLoadedPhysObj();
+
         // Make a sublist of physics objects to process physics on.
         List<PhysicsObject> physicsEntitiesToDoPhysics = new ArrayList<>();
-        for (PhysicsObject physicsObject : physicsObjects) {
+        for (PhysicsObject physicsObject : immutableShipsList) {
             if (physicsObject.isPhysicsEnabled() && physicsObject.getCachedSurroundingChunks() != null) {
                 physicsEntitiesToDoPhysics.add(physicsObject);
             }

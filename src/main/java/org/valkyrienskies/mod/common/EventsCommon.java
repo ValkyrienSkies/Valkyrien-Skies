@@ -17,7 +17,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
@@ -210,11 +209,7 @@ public class EventsCommon {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onBlockBreakFirst(BlockEvent event) {
-        BlockPos pos = event.getPos();
-        Chunk chunk = event.getWorld()
-            .getChunk(pos);
-
-        ValkyrienUtils.getPhysoManagingChunk(chunk)
+        ValkyrienUtils.getPhysoManagingBlock(event.getWorld(), event.getPos())
             .ifPresent(physicsObject -> event.setResult(Result.ALLOW));
     }
 

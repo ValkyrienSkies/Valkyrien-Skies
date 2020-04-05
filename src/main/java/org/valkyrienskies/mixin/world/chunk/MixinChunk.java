@@ -1,8 +1,5 @@
 package org.valkyrienskies.mixin.world.chunk;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -19,9 +16,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(value = Chunk.class, priority = 1001)
 public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
@@ -57,14 +56,14 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
         removeTileEntityFromIndex(pos, yIndex);
         tileEntitiesByExtendedData[yIndex].add(tileEntityIn);
 
-        getPhysicsObject().ifPresent(physo -> physo.onSetTileEntity(pos, tileEntityIn));
+        ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onSetTileEntity(pos, tileEntityIn));
     }
 
     @Inject(method = "removeTileEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("TAIL"))
     public void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
-        getPhysicsObject().ifPresent(physo -> physo.onRemoveTileEntity(pos));
+        ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onRemoveTileEntity(pos));
     }
 
     private void removeTileEntityFromIndex(BlockPos pos, int yIndex) {
@@ -105,7 +104,4 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     @Shadow
     public abstract IBlockState getBlockState(BlockPos pos);
 
-    private Optional<PhysicsObject> getPhysicsObject() {
-        return ValkyrienUtils.getPhysoManagingChunk(thisAsChunk);
-    }
 }

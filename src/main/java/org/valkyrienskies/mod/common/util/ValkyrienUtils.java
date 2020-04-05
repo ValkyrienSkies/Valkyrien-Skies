@@ -8,7 +8,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
@@ -25,7 +24,6 @@ import org.valkyrienskies.mod.common.ship_handling.*;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
@@ -40,28 +38,6 @@ import java.util.UUID;
 public class ValkyrienUtils {
 
     /**
-     * Gets the VS_CHUNK_PHYSO capability from the specified chunk, e.g., the {@link PhysicsObject}
-     * that is managing it, if present
-     *
-     * @param chunk The chunk to get the physics object for
-     * @return The physics object managing that chunk, if present
-     */
-    public static Optional<PhysicsObject> getPhysoManagingChunk(@Nonnull Chunk chunk) {
-        // TODO: Only allow this to be called from the game thread.
-        QueryableShipData queryableShipData = QueryableShipData.get(chunk.world);
-        Optional<ShipData> shipData = queryableShipData.getShipFromChunk(chunk.x, chunk.z);
-        if (shipData.isPresent()) {
-            PhysicsObject object = getPhysObjWorld(chunk.world).getPhysObjectFromUUID(shipData.get().getUuid());
-            if (object != null) {
-                return Optional.of(object);
-            }
-        }
-        return Optional.empty();
-        // return Objects.requireNonNull(
-        //    chunk.getCapability(VSCapabilityRegistry.VS_CHUNK_PHYSO, null)).get();
-    }
-
-    /**
      * The liver of this mod. Returns the PhysicsObject that managed the given pos in the given
      * world.
      *
@@ -71,9 +47,13 @@ public class ValkyrienUtils {
      */
     public static Optional<PhysicsObject> getPhysoManagingBlock(@Nullable World world,
                                                            @Nullable BlockPos pos) {
-        // No physics object manages a null world or a null pos.
-        if (world != null && pos != null && world.isBlockLoaded(pos)) {
-            return getPhysoManagingChunk(world.getChunk(pos));
+        QueryableShipData queryableShipData = QueryableShipData.get(world);
+        Optional<ShipData> shipData = queryableShipData.getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
+        if (shipData.isPresent()) {
+            PhysicsObject object = getPhysObjWorld(world).getPhysObjectFromUUID(shipData.get().getUuid());
+            if (object != null) {
+                return Optional.of(object);
+            }
         }
         return Optional.empty();
     }

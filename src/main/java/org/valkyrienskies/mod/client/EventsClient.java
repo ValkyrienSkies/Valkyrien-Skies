@@ -30,6 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.fixes.SoundFixWrapper;
+import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
@@ -61,32 +62,33 @@ public class EventsClient {
 
     @SubscribeEvent
     public void onClientTick(ClientTickEvent event) {
-        World world = Minecraft.getMinecraft().world;
-        if (world == null) {
-            // There's no world, so there's nothing to run.
-            return;
-        }
-        // Pretend this is the world tick, because diesieben07 doesn't want WorldClient to make world tick events.
-        switch (event.phase) {
-            case START:
-                // Nothing for now
+        for (World world : ClientWorldTracker.getWorlds()) {
+            if (world == null) {
+                // There's no world, so there's nothing to run.
+                return;
+            }
+            // Pretend this is the world tick, because diesieben07 doesn't want WorldClient to make world tick events.
+            switch (event.phase) {
+                case START:
+                    // Nothing for now
 
-                for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
-                    // This is necessary because Minecraft will run a raytrace right after this
-                    // event to determine what the player is looking at for interaction purposes.
-                    // That raytrace will use the render transform, so we must have the render
-                    // transform set to a partialTick of 1.0.
-                    wrapper.getShipTransformationManager()
-                        .updateRenderTransform(1.0);
-                }
+                    for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
+                        // This is necessary because Minecraft will run a raytrace right after this
+                        // event to determine what the player is looking at for interaction purposes.
+                        // That raytrace will use the render transform, so we must have the render
+                        // transform set to a partialTick of 1.0.
+                        wrapper.getShipTransformationManager()
+                                .updateRenderTransform(1.0);
+                    }
 
-                break;
-            case END:
-                // Tick the IShipManager on the world client.
-                IHasShipManager shipManager = (IHasShipManager) world;
-                shipManager.getManager().tick();
-                EntityDraggable.tickAddedVelocityForWorld(world);
-                break;
+                    break;
+                case END:
+                    // Tick the IShipManager on the world client.
+                    IHasShipManager shipManager = (IHasShipManager) world;
+                    shipManager.getManager().tick();
+                    EntityDraggable.tickAddedVelocityForWorld(world);
+                    break;
+            }
         }
     }
 

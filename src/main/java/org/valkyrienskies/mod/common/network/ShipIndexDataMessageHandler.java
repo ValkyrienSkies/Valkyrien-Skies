@@ -6,6 +6,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ship_handling.ShipData;
@@ -24,24 +25,21 @@ public class ShipIndexDataMessageHandler implements IMessageHandler<ShipIndexDat
         mainThread.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                if (Minecraft.getMinecraft().world != null) {
-                    World world = Minecraft.getMinecraft().world;
-                    IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(Minecraft.getMinecraft().world);
-                    QueryableShipData worldData = QueryableShipData.get(world);
-                    for (ShipData shipData : message.indexedData) {
-                        worldData.addOrUpdateShipPreservingPhysObj(shipData);
-                    }
-                    for (UUID loadID : message.shipsToLoad) {
-                        physObjectWorld.queueShipLoad(loadID);
-                    }
-                    for (UUID unloadID : message.shipsToUnload) {
-                        physObjectWorld.queueShipUnload(unloadID);
-                    }
+                World world = ClientWorldTracker.getWorldFor(message.dimensionID);
+                IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(Minecraft.getMinecraft().world);
+                QueryableShipData worldData = QueryableShipData.get(world);
+                for (ShipData shipData : message.indexedData) {
+                    worldData.addOrUpdateShipPreservingPhysObj(shipData);
+                }
+                for (UUID loadID : message.shipsToLoad) {
+                    physObjectWorld.queueShipLoad(loadID);
+                }
+                for (UUID unloadID : message.shipsToUnload) {
+                    physObjectWorld.queueShipUnload(unloadID);
                 }
             }
         });
 
-        // TODO: does nothing
         return null;
     }
 }

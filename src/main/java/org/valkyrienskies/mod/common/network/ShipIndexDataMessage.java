@@ -19,11 +19,13 @@ public class ShipIndexDataMessage implements IMessage {
     private static final ObjectMapper serializer = VSJacksonUtil.getPacketMapper();
     final List<ShipData> indexedData;
     final List<UUID> shipsToLoad, shipsToUnload;
+    int dimensionID;
 
     public ShipIndexDataMessage() {
         this.indexedData = new ArrayList<>();
         this.shipsToLoad = new ArrayList<>();
         this.shipsToUnload = new ArrayList<>();
+        this.dimensionID = -1;
     }
 
     public void addData(Collection<ShipData> toSend) {
@@ -36,6 +38,10 @@ public class ShipIndexDataMessage implements IMessage {
 
     public void addUnloadUUID(UUID toUnload) {
         shipsToUnload.add(toUnload);
+    }
+
+    public void setDimensionID(int dimensionID) {
+        this.dimensionID = dimensionID;
     }
 
     @Override
@@ -62,6 +68,7 @@ public class ShipIndexDataMessage implements IMessage {
         for (int i = 0; i < numberOfUUIDUnload; i++) {
             shipsToUnload.add(packetBuffer.readUniqueId());
         }
+        dimensionID = packetBuffer.readInt();
     }
 
     @Override
@@ -87,5 +94,6 @@ public class ShipIndexDataMessage implements IMessage {
         for (UUID toUnload : shipsToUnload) {
             packetBuffer.writeUniqueId(toUnload);
         }
+        packetBuffer.writeInt(dimensionID);
     }
 }

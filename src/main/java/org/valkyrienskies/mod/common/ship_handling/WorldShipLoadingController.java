@@ -142,6 +142,7 @@ class WorldShipLoadingController {
         // Then send those updates
         updatesMap.forEach((player, updates) -> {
             ShipIndexDataMessage indexDataMessage = new ShipIndexDataMessage();
+            indexDataMessage.setDimensionID(shipManager.getWorld().provider.getDimension());
             if (!updates.isEmpty()) {
                 indexDataMessage.addData(updates);
             }

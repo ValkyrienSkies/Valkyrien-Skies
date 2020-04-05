@@ -36,6 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
@@ -153,6 +154,7 @@ public class EventsCommon {
             shipManager.setManager(WorldServerShipManager::new);
         } else {
             shipManager.setManager(WorldClientShipManager::new);
+            ClientWorldTracker.onWorldLoad(event.getWorld());
         }
     }
 
@@ -162,6 +164,9 @@ public class EventsCommon {
         lastPositions.clear();
         IHasShipManager shipManager = (IHasShipManager) event.getWorld();
         shipManager.getManager().onWorldUnload();
+        if (event.getWorld().isRemote) {
+            ClientWorldTracker.onWorldUnload(event.getWorld());
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

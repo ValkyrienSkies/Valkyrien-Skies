@@ -17,6 +17,7 @@ buildscript {
 }
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id "com.wynprice.cursemaven" version "2.1.1"
 }
 
 ext.configFile = file "project.properties"
@@ -26,7 +27,7 @@ apply plugin: "maven-publish"
 apply plugin: "java"
 
 configFile.withReader {
-    // read config.  it shall from now on be referenced as simply config or as project.config 
+    // read config.  it shall from now on be referenced as simply config or as project.config
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
@@ -111,6 +112,10 @@ dependencies {
     compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
         transitive = false
     }
+
+    // BetterPortals compatibility
+    deobfCompile 'curse.maven:shadowfacts-forgelin:2785465'
+    deobfCompile 'curse.maven:betterportals:2883633'
 
     compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
 
@@ -204,9 +209,12 @@ reobf.jar {
 // region Shaded Dependencies Size Calculation (./gradlew depsize)
 // source: https://gist.github.com/medvedev/968119d7786966d9ed4442ae17aca279
 
-tasks.create("depsize") {
-    listConfigurationDependencies(configurations.default)
-}
+// Commented out becuase results in the following error:
+// > Cannot change dependencies of configuration ':forgeGradleResolvedDeobfCompile' after it has been included in dependency resolution.
+
+// tasks.create("depsize") {
+//     listConfigurationDependencies(configurations.default)
+// }
 
 def listConfigurationDependencies(Configuration configuration) {
     def formatStr = "%,10.2f"
@@ -287,12 +295,15 @@ publishing {
 import java.util.concurrent.atomic.AtomicReference
 
 AtomicReference<String> mixinPath = new AtomicReference<>(null)
-configurations.compile.each {
-    String absolutePath = it.absolutePath
-    if (absolutePath.contains("mixin")) {
-        mixinPath.set(absolutePath)
-    }
-}
+// Commented out becuase results in the following error:
+// > Cannot change dependencies of configuration ':forgeGradleResolvedDeobfCompile' after it has been included in dependency resolution.
+
+// configurations.compile.each {
+//     String absolutePath = it.absolutePath
+//     if (absolutePath.contains("mixin")) {
+//         mixinPath.set(absolutePath)
+//     }
+// }
 if (mixinPath != null) {
     minecraft.clientJvmArgs = minecraft.serverJvmArgs = Arrays.asList(
             "-Dmixin.checks.interfaces=true",

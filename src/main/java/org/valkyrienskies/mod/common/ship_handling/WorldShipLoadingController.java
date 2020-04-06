@@ -177,16 +177,22 @@ class WorldShipLoadingController {
                 removedWatchers.removeAll(newWatching.get(shipData));
             }
             for (EntityPlayerMP player : removedWatchers) {
-                // This isn't pretty, but handles the case when a player has left the game/
-                // We cannot send packets to a player that's not in the world anyways; so just skip this case.
-                if (playerPacketMap.containsKey(player)) {
-                    playerPacketMap.get(player).addUnloadUUID(shipData.getUuid());
+                // Handles the case of players who left the world/dimension. Basically just prevents crashes with
+                // BetterPortals.
+                if (!playerPacketMap.containsKey(player)) {
+                    playerPacketMap.put(player, new ShipIndexDataMessage());
+                    playerPacketMap.get(player).setDimensionID(shipManager.getWorld().provider.getDimension());
                 }
+                playerPacketMap.get(player).addUnloadUUID(shipData.getUuid());
             }
         }
 
         // Finally, send each player their update packet
-        playerPacketMap.forEach((player, packet) -> ValkyrienSkiesMod.physWrapperNetwork.sendTo(packet, player));
+        playerPacketMap.forEach((player, packet) -> {
+            if (!player.hasDisconnected()) {
+                ValkyrienSkiesMod.physWrapperNetwork.sendTo(packet, player);
+            }
+        });
     }
 
     /**

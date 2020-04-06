@@ -26,7 +26,7 @@ public class ShipIndexDataMessageHandler implements IMessageHandler<ShipIndexDat
             @Override
             public void run() {
                 World world = ClientWorldTracker.getWorldFor(message.dimensionID);
-                IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(Minecraft.getMinecraft().world);
+                IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(world);
                 QueryableShipData worldData = QueryableShipData.get(world);
                 for (ShipData shipData : message.indexedData) {
                     worldData.addOrUpdateShipPreservingPhysObj(shipData);

@@ -310,7 +310,7 @@ if (mixinPath != null) {
             "-Dmixin.debug.export=true",
             "-Dmixin.debug.verbose=true",
             "-Dmixin.hotSwap=true",
-            "-javaagent:" + mixinPath,
+//          "-javaagent:" + mixinPath,
             "-ea",
             "-da:io.netty..."
     )

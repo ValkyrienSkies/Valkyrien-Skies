@@ -45,8 +45,11 @@ public class ValkyrienUtils {
      * @param pos   A BlockPos within the physics object space.
      * @return The PhysicsObject that owns the chunk at pos within the given world.
      */
-    public static Optional<PhysicsObject> getPhysoManagingBlock(@Nullable World world,
-                                                           @Nullable BlockPos pos) throws CalledFromWrongThreadException {
+    public static Optional<PhysicsObject> getPhysoManagingBlock(@Nullable World world, @Nullable BlockPos pos)
+            throws CalledFromWrongThreadException {
+        if (world == null || pos == null) {
+            return Optional.empty();
+        }
         QueryableShipData queryableShipData = QueryableShipData.get(world);
         Optional<ShipData> shipData = queryableShipData.getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
         if (shipData.isPresent()) {

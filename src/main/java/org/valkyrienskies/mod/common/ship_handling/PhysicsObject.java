@@ -27,8 +27,6 @@ import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
-import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
-import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.management.BasicCenterOfMassProvider;
 import org.valkyrienskies.mod.common.physics.management.IPhysicsObjectCenterOfMassProvider;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
@@ -36,7 +34,6 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkC
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
-import org.valkyrienskies.mod.common.util.VSIterationUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
@@ -90,8 +87,6 @@ public class PhysicsObject implements IPhysicsEntity {
     /**
      * Used to quickly make AABBs
      */
-    @Getter
-    private final IVoxelFieldAABBMaker voxelFieldAABBMaker;
     private final IPhysicsObjectCenterOfMassProvider centerOfMassProvider;
     @Getter
     private final World world;
@@ -123,8 +118,6 @@ public class PhysicsObject implements IPhysicsEntity {
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.claimedChunkCache = new ClaimedChunkCacheController(this);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
-        this.voxelFieldAABBMaker = new NaiveVoxelFieldAABBMaker(referenceBlockPos.getX(),
-            referenceBlockPos.getZ());
         this.centerOfMassProvider = new BasicCenterOfMassProvider();
         this.shipTransformationManager = new ShipTransformationManager(this,
             getShipData().getShipTransform());
@@ -138,9 +131,6 @@ public class PhysicsObject implements IPhysicsEntity {
             this.shipRenderer = null;
             this.getShipTransformationManager()
                 .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
-            // TODO: Making this here isn't ideal, it should be done when ShipData is loaded from disk.
-            Objects.requireNonNull(shipData.getBlockPositions())
-                .forEach((VSIterationUtils.IntTernaryConsumer) voxelFieldAABBMaker::addVoxel);
         }
     }
 
@@ -166,12 +156,10 @@ public class PhysicsObject implements IPhysicsEntity {
 
         if (isNewAir) {
             getBlockPositions().remove(posAt);
-            voxelFieldAABBMaker.removeVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
         }
 
         if (isOldAir && !isNewAir) {
             getBlockPositions().add(posAt);
-            voxelFieldAABBMaker.addVoxel(posAt.getX(), posAt.getY(), posAt.getZ());
         }
 
         if (getBlockPositions().isEmpty()) {

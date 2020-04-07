@@ -1,16 +1,16 @@
 package org.valkyrienskies.mod.common.physics.collision.meshing;
 
-import java.util.TreeMap;
-import java.util.TreeSet;
-import javax.annotation.Nonnull;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nonnull;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Do not serialize.
  */
 public class NaiveVoxelFieldAABBMaker implements IVoxelFieldAABBMaker {
-
 
     private final BlockPos centerPos;
     private final TreeMap<Integer, TreeSet<TwoInts>> xMap, yMap, zMap;
@@ -216,6 +216,21 @@ public class NaiveVoxelFieldAABBMaker implements IVoxelFieldAABBMaker {
     @Override
     public BlockPos getFieldCenter() {
         return centerPos;
+    }
+
+    @Override
+    public void clear() {
+        this.xMap.clear();
+        this.yMap.clear();
+        this.zMap.clear();
+        this.minCoords = null;
+        this.maxCoords = null;
+        this.voxelCount = 0;
+    }
+
+    @Override
+    public int size() {
+        return voxelCount;
     }
 
     private void assertValidInputs(int x, int y, int z) throws IllegalArgumentException {

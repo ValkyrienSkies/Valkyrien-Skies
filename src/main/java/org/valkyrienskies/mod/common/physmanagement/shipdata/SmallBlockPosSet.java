@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import lombok.Getter;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet.SmallBlockPosSetDeserializer;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet.SmallBlockPosSetSerializer;
@@ -38,8 +39,8 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
     @Nonnull
     private final TIntSet compressedBlockPosSet;
-    private final int centerX;
-    private final int centerZ;
+    @Getter
+    private final int centerX, centerZ;
 
     public SmallBlockPosSet(int centerX, int centerZ) {
         this.compressedBlockPosSet = new TIntHashSet();
@@ -48,7 +49,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
     }
 
     @Override
-    public boolean add(int x, int y, int z) {
+    public boolean add(int x, int y, int z) throws IllegalArgumentException {
         if (!canStore(x, y, z)) {
             throw new IllegalArgumentException("Cannot store block position at <" + x + "," + y + "," + z + ">");
         }

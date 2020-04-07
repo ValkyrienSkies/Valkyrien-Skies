@@ -1,10 +1,11 @@
 package org.valkyrienskies.mod.common.physics.collision.meshing;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.annotation.Nonnull;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Only used for testing, don't actually use this ever. Its inefficient.
@@ -57,6 +58,16 @@ public class ExtremelyNaiveVoxelFieldAABBMaker implements IVoxelFieldAABBMaker {
     @Override
     public BlockPos getFieldCenter() {
         return voxelFieldWorldCenter;
+    }
+
+    @Override
+    public void clear() {
+        blockPosSet.clear();
+    }
+
+    @Override
+    public int size() {
+        return blockPosSet.size();
     }
 
     private void assertValidInputs(int x, int y, int z) throws IllegalArgumentException {

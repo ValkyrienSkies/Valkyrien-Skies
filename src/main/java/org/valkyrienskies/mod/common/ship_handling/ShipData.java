@@ -9,10 +9,9 @@ import lombok.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
+import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.IBlockPosSet;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.*;
 import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
 import org.valkyrienskies.mod.common.util.jackson.annotations.PacketIgnore;
 
@@ -55,9 +54,9 @@ public class ShipData {
      */
     @PacketIgnore
     @Nullable
-    @JsonSerialize(as = SmallBlockPosSet.class)
-    @JsonDeserialize(as = SmallBlockPosSet.class)
-    IBlockPosSet blockPositions;
+    @JsonSerialize(as = WrapperSmallBlockPosSetAABB.class)
+    @JsonDeserialize(as = WrapperSmallBlockPosSetAABB.class)
+    IBlockPosSetAABB blockPositions;
 
     @Setter
     private ShipTransform shipTransform;
@@ -109,8 +108,9 @@ public class ShipData {
         this.uuid = uuid;
         this.name = name;
 
-        this.blockPositions = new SmallBlockPosSet(chunkClaim.getCenterPos().getXStart(),
-                chunkClaim.getCenterPos().getZStart());
+        this.blockPositions = new WrapperSmallBlockPosSetAABB(new SmallBlockPosSet(chunkClaim.getCenterPos().getXStart(),
+                chunkClaim.getCenterPos().getZStart()), new NaiveVoxelFieldAABBMaker(chunkClaim.getCenterPos().getXStart(),
+                chunkClaim.getCenterPos().getZStart()));
     }
 
     public static ShipData createData(ConcurrentUpdatableIndexedCollection<ShipData> owner,

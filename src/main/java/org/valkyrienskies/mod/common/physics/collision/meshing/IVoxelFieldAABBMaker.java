@@ -1,11 +1,12 @@
 package org.valkyrienskies.mod.common.physics.collision.meshing;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import org.joml.Vector3ic;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This class enables the updating of ship AABBs in O(1) time
@@ -66,5 +67,8 @@ public interface IVoxelFieldAABBMaker {
         return this.removeVoxel(vec.x(), vec.y(), vec.z());
     }
 
+    void clear();
+
+    int size();
     // endregion
 }

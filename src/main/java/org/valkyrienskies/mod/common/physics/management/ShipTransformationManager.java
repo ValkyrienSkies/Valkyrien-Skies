@@ -6,7 +6,6 @@ import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
@@ -134,8 +133,7 @@ public class ShipTransformationManager {
 
     // TODO: Use Octrees to optimize this, or more preferably QuickHull3D.
     private void updateParentAABB() {
-        IVoxelFieldAABBMaker aabbMaker = parent.getVoxelFieldAABBMaker();
-        AxisAlignedBB subspaceBB = aabbMaker.makeVoxelFieldAABB();
+        AxisAlignedBB subspaceBB = parent.getBlockPositions().makeAABB();
         if (subspaceBB == null) {
             // The aabbMaker didn't know what the aabb was, just don't update the aabb for now.
             return;

@@ -36,6 +36,7 @@ import org.valkyrienskies.mod.common.physics.management.chunkcache.ClaimedChunkC
 import org.valkyrienskies.mod.common.physics.management.chunkcache.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.physmanagement.relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.mod.common.util.VSIterationUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
@@ -139,7 +140,7 @@ public class PhysicsObject implements IPhysicsEntity {
                 .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
             // TODO: Making this here isn't ideal, it should be done when ShipData is loaded from disk.
             Objects.requireNonNull(shipData.getBlockPositions())
-                .forEach(voxelFieldAABBMaker::addVoxel);
+                .forEach((VSIterationUtils.IntTernaryConsumer) voxelFieldAABBMaker::addVoxel);
         }
     }
 

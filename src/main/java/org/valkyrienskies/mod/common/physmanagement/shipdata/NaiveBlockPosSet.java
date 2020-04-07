@@ -1,12 +1,14 @@
 package org.valkyrienskies.mod.common.physmanagement.shipdata;
 
-import java.util.HashSet;
-import java.util.Set;
 import lombok.experimental.Delegate;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Naive implementation of IBlockPosSet, basically just a wrapper around a HashSet<BlockPos>.
+ * Used for testing purposes only.
  */
 public class NaiveBlockPosSet implements IBlockPosSet {
 

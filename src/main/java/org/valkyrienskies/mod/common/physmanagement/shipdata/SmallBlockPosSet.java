@@ -13,12 +13,14 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.io.IOException;
-import java.util.Iterator;
-import javax.annotation.Nonnull;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet.SmallBlockPosSetDeserializer;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.SmallBlockPosSet.SmallBlockPosSetSerializer;
+import org.valkyrienskies.mod.common.util.VSIterationUtils;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * An implementation of IBlockPosSet that stores block positions as 1 integer. This is accomplished by storing each
@@ -35,12 +37,12 @@ public class SmallBlockPosSet implements IBlockPosSet {
     private static final int BOT_8_BITS = 0x000000FF;
 
     @Nonnull
-    private final TIntSet blockHashSet;
+    private final TIntSet compressedBlockPosSet;
     private final int centerX;
     private final int centerZ;
 
     public SmallBlockPosSet(int centerX, int centerZ) {
-        this.blockHashSet = new TIntHashSet();
+        this.compressedBlockPosSet = new TIntHashSet();
         this.centerX = centerX;
         this.centerZ = centerZ;
     }
@@ -50,7 +52,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
         if (!canStore(x, y, z)) {
             throw new IllegalArgumentException("Cannot store block position at <" + x + "," + y + "," + z + ">");
         }
-        return blockHashSet.add(calculateHash(x, y, z));
+        return compressedBlockPosSet.add(compress(x, y, z));
     }
 
     @Override
@@ -59,7 +61,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
             // Nothing to remove
             return false;
         }
-        return blockHashSet.remove(calculateHash(x, y, z));
+        return compressedBlockPosSet.remove(compress(x, y, z));
     }
 
     @Override
@@ -68,7 +70,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
             // This pos cannot exist in this set
             return false;
         }
-        return blockHashSet.contains(calculateHash(x, y, z));
+        return compressedBlockPosSet.contains(compress(x, y, z));
     }
 
     @Override
@@ -80,30 +82,46 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
     @Override
     public int size() {
-        return blockHashSet.size();
+        return compressedBlockPosSet.size();
     }
 
     @Nonnull
     @Override
     public Iterator<BlockPos> iterator() {
-        return new SmallBlockPosIterator(blockHashSet.iterator());
+        return new SmallBlockPosIterator(compressedBlockPosSet.iterator());
+    }
+
+    @Override
+    public void forEach(@Nonnull VSIterationUtils.IntTernaryConsumer action) {
+        TIntIterator iterator = compressedBlockPosSet.iterator();
+        while (iterator.hasNext()) {
+            int compressed = iterator.next();
+            // Repeated code from decompress() because java has no output parameters.
+            int z = compressed >> 20;
+            int y = (compressed >> 12) & BOT_8_BITS;
+            // this basically left-pads the int when casting so that the sign is preserved
+            // not sure if there is a better way
+            int x = (compressed & BOT_12_BITS) << 20 >> 20;
+            action.accept(x + centerX, y, z + centerZ);
+        }
     }
 
     @Override
     public void clear() {
-        blockHashSet.clear();
+        compressedBlockPosSet.clear();
     }
 
-    public BlockPos deHash(int hashed) {
-        int z = hashed >> 20;
-        int y = (hashed >> 12) & BOT_8_BITS;
+    @Nonnull
+    private BlockPos decompress(int compressed) {
+        int z = compressed >> 20;
+        int y = (compressed >> 12) & BOT_8_BITS;
         // this basically left-pads the int when casting so that the sign is preserved
         // not sure if there is a better way
-        int x = (hashed & BOT_12_BITS) << 20 >> 20;
+        int x = (compressed & BOT_12_BITS) << 20 >> 20;
         return new BlockPos(x + centerX, y, z + centerZ);
     }
 
-    public int calculateHash(int x, int y, int z) {
+    private int compress(int x, int y, int z) {
         // Allocate 12 bits for x, 12 bits for z, and 8 bits for y.
         int xBits = (x - centerX) & BOT_12_BITS;
         int yBits = y & BOT_8_BITS;
@@ -113,7 +131,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
     private class SmallBlockPosIterator implements Iterator<BlockPos> {
 
-        TIntIterator iterator;
+        private final TIntIterator iterator;
 
         SmallBlockPosIterator(TIntIterator intIterator) {
             this.iterator = intIterator;
@@ -126,7 +144,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
         @Override
         public BlockPos next() {
-            return deHash(iterator.next());
+            return decompress(iterator.next());
         }
 
     }
@@ -144,8 +162,8 @@ public class SmallBlockPosSet implements IBlockPosSet {
             gen.writeStartObject();
 
             gen.writeFieldName("positions");
-            gen.writeStartArray(value.blockHashSet.size());
-            TIntIterator iter = value.blockHashSet.iterator();
+            gen.writeStartArray(value.compressedBlockPosSet.size());
+            TIntIterator iter = value.compressedBlockPosSet.iterator();
 
             while (iter.hasNext()) {
                 gen.writeNumber(iter.next());
@@ -177,7 +195,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
             SmallBlockPosSet set = new SmallBlockPosSet(centerX, centerZ);
 
             node.get("positions").forEach(elem -> {
-                set.blockHashSet.add(elem.asInt());
+                set.compressedBlockPosSet.add(elem.asInt());
             });
 
             return set;

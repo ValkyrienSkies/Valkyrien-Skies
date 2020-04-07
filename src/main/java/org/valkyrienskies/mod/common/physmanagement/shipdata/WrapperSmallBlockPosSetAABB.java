@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.mod.common.physics.collision.meshing.IVoxelFieldAABBMaker;
 import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAABBMaker;
+import org.valkyrienskies.mod.common.physmanagement.shipdata.WrapperSmallBlockPosSetAABB.WrapperSmallBlockPosSetAABBDeserializer;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.WrapperSmallBlockPosSetAABB.WrapperSmallBlockPosSetAABBSerializer;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
 
@@ -26,7 +27,7 @@ import java.util.Iterator;
 /**
  * A wrapper around SmallBlockPosSet and IVoxelFieldAABBMaker that implements IBlockPosSetAABB behavior.
  */
-@JsonDeserialize(using = WrapperSmallBlockPosSetAABB.WrapperSmallBlockPosSetAABBDeserializer.class)
+@JsonDeserialize(using = WrapperSmallBlockPosSetAABBDeserializer.class)
 @JsonSerialize(using = WrapperSmallBlockPosSetAABBSerializer.class)
 public class WrapperSmallBlockPosSetAABB implements IBlockPosSetAABB {
 

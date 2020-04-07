@@ -18,6 +18,7 @@ import org.valkyrienskies.mod.common.physics.collision.meshing.NaiveVoxelFieldAA
 import org.valkyrienskies.mod.common.physmanagement.shipdata.WrapperSmallBlockPosSetAABB.WrapperSmallBlockPosSetAABBSerializer;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Iterator;
@@ -93,6 +94,11 @@ public class WrapperSmallBlockPosSetAABB implements IBlockPosSetAABB {
     public void clear() {
         blockPosSet.clear();
         aabbMaker.clear();
+    }
+
+    @Override
+    public void forEach(@Nonnull VSIterationUtils.IntTernaryConsumer action) {
+        blockPosSet.forEach(action);
     }
 
     public static class WrapperSmallBlockPosSetAABBSerializer extends StdSerializer<WrapperSmallBlockPosSetAABB> {

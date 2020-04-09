@@ -56,7 +56,7 @@ pipeline {
         }
         stage("Deploy") {
             when {
-                branch: "master"
+                branch "master"
             }
             steps {
                 sh "./gradlew publishToMavenLocal --no-daemon"

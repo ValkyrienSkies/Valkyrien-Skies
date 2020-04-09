@@ -30,9 +30,6 @@ configFile.withReader {
 }
 
 version = "${config.minecraft_version}-${config.mod_version}"
-if (hasProperty("appendBuildNumber")) {
-    version = version + "-" + appendBuildNumber.toString()
-}
 
 group = "${config.group_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "${config.mod_id_cap}"
@@ -173,20 +170,12 @@ reobf.jar {
     classpath = sourceSets.main.compileClasspath
 }
 
-/*allprojects {
-    // Re-obfuscate only after creating the shadowDevJar
-    tasks.findByName("reobfJar")?.mustRunAfter rootProject.tasks.jar
-}*/
-
 jar {
     from {
         configurations.shade.collect {
             it.isDirectory() ? it : zipTree(it)
         }.unique(true)
     } {
-        /*exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"*/
         exclude "META-INF/*"
     }
 

@@ -20,13 +20,7 @@ void renameJars()   {
     def commitHash = sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).substring(0, 8)
     def branchName = "${BRANCH_NAME}".replaceAll("[^a-zA-Z0-9.]", "_")
 
-    java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("^((?:[^-]*?-){2}[^-]*?)((?:-sources)?\\.jar)\$").matcher("")
-    File dir = new File("build/libs/")
-    for (File file : dir.listFiles())   {
-        if (matcher.reset(file.name).find())   {
-            file.renameTo(new File(dir, String.format("%s-%s-%s%s", matcher.group(1), commitHash, branchName, matcher.group(2))))
-        }
-    }
+    sh "add_jar_suffix.sh ${commitHash}-${branchName}"
 }
 
 pipeline {
@@ -37,11 +31,11 @@ pipeline {
     }
 
     stages {
-        stage("Prepare Workspace")  {
+        /*stage("Prepare Workspace")  {
             steps {
                 sh "./gradlew clean setupDecompWorkspace --no-daemon"
             }
-        }
+        }*/
         stage("Build") {
             steps {
                 sh "./gradlew build --no-daemon"
@@ -68,7 +62,7 @@ pipeline {
         always {
             deleteDir()
 
-            withCredentials([string(credentialsId: "discord_webhook", variable: "discordWebhook")]) {
+            withCredentials([string(credentialsId: "valkyrien_skies_discord_webhook", variable: "discordWebhook")]) {
                 discordSend thumbnail: "https://static.miraheze.org/valkyrienskieswiki/6/63/Logo_128.png",
                         result: currentBuild.currentResult,
                         description: getDiscordMessage(),

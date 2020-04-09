@@ -71,7 +71,6 @@ repositories {
         name = "OpenComputers"
         url = "http://maven.cil.li/"
     }
-    // This one is for graph datastructures.
     maven {
         name = "Dogforce Games"
         url = "http://dogforce-games.com/maven"
@@ -253,22 +252,18 @@ publishing {
 import java.util.concurrent.atomic.AtomicReference
 
 AtomicReference<String> mixinPath = new AtomicReference<>(null)
-// Commented out becuase results in the following error:
-// > Cannot change dependencies of configuration ':forgeGradleResolvedDeobfCompile' after it has been included in dependency resolution.
-
-// configurations.compile.each {
-//     String absolutePath = it.absolutePath
-//     if (absolutePath.contains("mixin")) {
-//         mixinPath.set(absolutePath)
-//     }
-// }
+configurations.shade.each {
+    if (it.absolutePath.contains("mixin")) {
+        mixinPath.set(it.absolutePath)
+    }
+}
 if (mixinPath != null) {
     minecraft.clientJvmArgs = minecraft.serverJvmArgs = Arrays.asList(
             "-Dmixin.checks.interfaces=true",
             "-Dmixin.debug.export=true",
             "-Dmixin.debug.verbose=true",
             "-Dmixin.hotSwap=true",
-//          "-javaagent:" + mixinPath,
+            "-javaagent:" + mixinPath,
             "-ea",
             "-da:io.netty..."
     )

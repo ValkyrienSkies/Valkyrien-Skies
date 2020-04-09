@@ -24,6 +24,11 @@ pipeline {
     }
 
     stages {
+        stage("Prepare Workspace") {
+            steps {
+                sh "./gradlew clean setupDecompWorkspace --no-daemon"
+            }
+        }
         stage("Build") {
             steps {
                 sh "./gradlew build --no-daemon"

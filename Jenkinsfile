@@ -1,5 +1,5 @@
 String getDiscordMessage() {
-    def msg = "**Status:** " + currentBuild.currentResult.toLowerCase() + "\n**Branch:** [${BRANCH_NAME}](https://github.com/ValkyrienSkies/Valkyrien-Skies/tree${BRANCH_NAME})\n**Changes:**\n"
+    def msg = "**Status:** " + currentBuild.currentResult.toLowerCase() + "\n**Branch:** ${BRANCH_NAME}\n**Changes:**\n"
     if (!currentBuild.changeSets.isEmpty()) {
         currentBuild.changeSets.first().getLogs().each {
             msg += "- `" + it.getCommitId().substring(0, 8) + "` *" + it.getComment().substring(0, Math.min(64, it.getComment().length() - 1)) + (it.getComment().length() - 1 > 64 ? "..." : "") + "*\n"
@@ -30,7 +30,7 @@ pipeline {
             }
             post {
                 success {
-                    sh "./add_jar_suffix.sh " + sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).substring(0, 8) + " " + env.BRANCH_NAME.replaceAll("[^a-zA-Z0-9.]", "_")
+                    sh "bash ./add_jar_suffix.sh " + sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).substring(0, 8) + "-" + env.BRANCH_NAME.replaceAll("[^a-zA-Z0-9.]", "_")
                     archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
                     junit "build/test-results/**/*.xml"
                 }

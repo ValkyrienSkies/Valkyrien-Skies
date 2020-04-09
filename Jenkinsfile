@@ -16,13 +16,6 @@ String getDiscordMessage() {
     return msg.length() > 2048 ? msg.substring(0, 2045) + "..." : msg
 }
 
-void renameJars()   {
-    def commitHash = sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).substring(0, 8)
-    def branchName = "${BRANCH_NAME}".replaceAll("[^a-zA-Z0-9.]", "_")
-
-    sh "add_jar_suffix.sh ${commitHash}-${branchName}"
-}
-
 pipeline {
     agent any
     tools {
@@ -31,18 +24,13 @@ pipeline {
     }
 
     stages {
-        /*stage("Prepare Workspace")  {
-            steps {
-                sh "./gradlew clean setupDecompWorkspace --no-daemon"
-            }
-        }*/
         stage("Build") {
             steps {
                 sh "./gradlew build --no-daemon"
             }
             post {
                 success {
-                    renameJars()
+                    sh "./add_jar_suffix.sh " + sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).substring(0, 8) + " " + env.BRANCH_NAME.replaceAll("[^a-zA-Z0-9.]", "_")
                     archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
                     junit "build/test-results/**/*.xml"
                 }

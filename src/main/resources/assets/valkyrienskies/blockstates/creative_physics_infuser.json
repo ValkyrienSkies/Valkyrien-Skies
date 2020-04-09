@@ -1,0 +1,43 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "inventory": [
+      {
+        "model": "valkyrienskies:physics_infuser/physics_infuser_inventorymodel_geo.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "transform": {
+          "gui": {
+            "rotation": [
+              {
+                "x": 30
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 180
+              }
+            ],
+            "scale": 0.625
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              {
+                "x": 180
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "scale": 0.4
+          }
+        }
+      }
+    ]
+  }
+}

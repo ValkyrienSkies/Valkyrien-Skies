@@ -1,6 +1,7 @@
 
 # Valkyrien Skies
 [![CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies.svg?style=svg)](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies)
+[![Jenkins](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienSkies/job/master/badge/icon)](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienSkies/)
 
 See: [LICENSE file](https://github.com/ValkyrienSkies/Valkyrien-Skies/blob/8778e9d45f16c1f60e8149ab6cbdbabbdebc1278/LICENSE), [Project Roadmap](https://github.com/ValkyrienSkies/Valkyrien-Skies/wiki/Roadmap)
 
@@ -9,10 +10,11 @@ The Airships Mod to end all other Airships Mods. Better compatibility, performan
 ## Installation
 
 ### Downloading
-Official and stable releases of the Valkyrien Skies mod can be found on the [CurseForge page](https://minecraft.curseforge.com/projects/valkyrien-skies/files).
+Official and stable releases of the Valkyrien Skies mod can be found on the [CurseForge page](https://www.curseforge.com/minecraft/mc-mods/valkyrien-skies).
 
 Beta releases (warning: may be unstable!) can be found on the following:
-- the [CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies/tree/master) (click on the latest build #, then artifacts, then download the mod JAR file)
+- the [CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies/tree/master) (click on the latest build #, then artifacts, then download the mod `.jar` file)
+- the [Jenkins](https://jenkins.daporkchop.net/job/Minecraft/job/ValkyrienSkies/) (click on the branch name, then download the mod `.jar` file)
 
 ### Installing on your server
 To install Valkyrien Skies, move the downloaded `.jar` file into your Minecraft's `mods/` folder, just as you would any other mod.
@@ -35,3 +37,6 @@ Everything there is for the latest version, for old 0.9 builds see below.
 1.  Clone the repo: `git clone https://github.com/ValkyrienSkies/Valkyrien-Skies`
 2. Run `./gradlew setupDecompWorkspace idea genIntellijRuns`
 3. Open the project in IntelliJ
+4. Import the gradle project, sync gradle
+5. Open settings (Control + Alt + S), and search for `Annotation Processors`
+6. Check the `Enable annotation processing box`, and add `lombok.launch.AnnotationProcessorHider$AnnotationProcessor` to the list of Processor FQ Names

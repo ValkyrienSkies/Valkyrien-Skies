@@ -99,6 +99,7 @@ public class BlockPhysicsDetails {
         blockToMass.put(Blocks.FLOWING_LAVA, 0D);
         blockToMass.put(Blocks.WATER, 0D);
         blockToMass.put(Blocks.LAVA, 0D);
+        blockToMass.put(Blocks.BEDROCK, 50000D);
     }
 
     private static void generateBlocksToNotPhysicsInfuse() {

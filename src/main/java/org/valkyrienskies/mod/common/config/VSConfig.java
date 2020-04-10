@@ -86,6 +86,7 @@ public class VSConfig extends VSConfigTemplate {
 
     @Name("Engine Power")
     @ShortName("enginePower")
+    @Comment("Legacy engine power. Engines must be replaced after changes are made.")
     public static final EnginePower ENGINE_POWER = new EnginePower();
 
     public static class EnginePower {

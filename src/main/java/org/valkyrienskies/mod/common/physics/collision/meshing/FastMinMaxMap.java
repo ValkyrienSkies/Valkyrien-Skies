@@ -43,27 +43,37 @@ public class FastMinMaxMap {
     }
 
     public void increment(int key) throws IllegalArgumentException {
-        ensureCapacity(key);
         int curValue = getValue(key);
         // Update the pointers
         if (size == 0) {
             front = back = key;
             setPrev(key, -1);
             setNext(key, -1);
-        } else if (key < front) {
-            if (curValue != 0) {
-                throw new IllegalStateException("How did we get here?");
+        } else if (curValue == 0) {
+            if (key < front) {
+                setPrev(front, key);
+                setNext(key, front);
+                front = key;
+            } else if (key > back) {
+                setNext(back, key);
+                setPrev(key, back);
+                back = key;
+            } else {
+                // Unfortunately this isn't O(1)
+                int leftKey = -1;
+                for (int i = key - 1; i >= 0; i--) {
+                    if (getValue(i) != 0) {
+                        leftKey = i;
+                        break;
+                    }
+                }
+                int leftsNext = getNext(leftKey);
+                setNext(key, leftsNext);
+                setPrev(key, leftKey);
+
+                setNext(leftKey, key);
+                setPrev(leftsNext, key);
             }
-            setPrev(front, key);
-            setNext(key, front);
-            front = key;
-        } else if (key > back) {
-            if (curValue != 0) {
-                throw new IllegalStateException("How did we get here?");
-            }
-            setNext(back, key);
-            setPrev(key, back);
-            back = key;
         }
         // Update the value
         setValue(key, curValue + 1);
@@ -71,7 +81,6 @@ public class FastMinMaxMap {
     }
 
     public void decrement(int key) throws IllegalArgumentException {
-        ensureCapacity(key);
         if (size <= 0) {
             throw new IllegalArgumentException("Cannot decrement when list is empty");
         }
@@ -112,36 +121,43 @@ public class FastMinMaxMap {
     }
 
     private void setValue(int key, int value) {
+        ensureCapacity(key * 3);
         backing[key * 3] = value;
     }
 
     private void setPrev(int key, int prev) {
+        ensureCapacity(key * 3 + 1);
         backing[key * 3 + 1] = prev;
     }
 
     private void setNext(int key, int next) {
+        ensureCapacity(key * 3 + 2);
         backing[key * 3 + 2] = next;
     }
 
     private int getValue(int key) {
+        ensureCapacity(key * 3);
         return backing[key * 3];
     }
 
     private int getPrev(int key) {
+        ensureCapacity(key * 3 + 1);
         return backing[key * 3 + 1];
     }
 
     private int getNext(int key) {
+        ensureCapacity(key * 3 + 2);
         return backing[key * 3 + 2];
     }
 
     private void ensureCapacity(int key) {
-        if (key < 0 || key > capacity) {
+        if (key < 0 || key > capacity * 3) {
             throw new IllegalArgumentException("Cannot store key of value " + key);
         }
     }
 
     public void clear() {
+        this.size = 0;
         for (int i = 0; i < capacity; i++) {
             setValue(i, 0);
             setPrev(i, -1);

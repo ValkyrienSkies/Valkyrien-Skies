@@ -25,7 +25,6 @@ import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.management.BasicCenterOfMassProvider;
 import org.valkyrienskies.mod.common.physics.management.IPhysicsObjectCenterOfMassProvider;
@@ -134,44 +133,31 @@ public class PhysicsObject implements IPhysicsEntity {
         }
     }
 
-    public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos posAt) {
-        // If the world is remote, or the block is not within the claimed chunks, ignore it!
-        if (getWorld().isRemote || !getShipData().getChunkClaim().containsBlock(posAt)) {
+    public void onSetBlockState(@Nonnull IBlockState oldState, @Nonnull IBlockState newState, @Nonnull BlockPos pos) {
+        if (oldState == null || newState == null || pos == null) {
+            throw new IllegalArgumentException("One of the arguments of this function was null!\nArgs are " + oldState + ", " + newState + ", " + pos);
+        }
+        // If the world is remote, ignore it.
+        if (getWorld().isRemote) {
             return;
         }
-
-        // If the block here is not to be made with physics, just treat it like you'd
-        // treat AIR blocks.
-        if (oldState != null && BlockPhysicsDetails.blocksToNotPhysicsInfuse
-            .contains(oldState.getBlock())) {
-            oldState = Blocks.AIR.getDefaultState();
-        }
-        if (newState != null && BlockPhysicsDetails.blocksToNotPhysicsInfuse
-            .contains(newState.getBlock())) {
-            newState = Blocks.AIR.getDefaultState();
+        // Make sure that pos is even part of this ship
+        if (!getShipData().getChunkClaim().containsBlock(pos)) {
+            throw new IllegalArgumentException("Get onSetBlockState() called for pos " + pos
+                    + ", but this ISN'T a part of the ship " + shipData);
         }
 
-        boolean isOldAir = oldState == null || oldState.getBlock().equals(Blocks.AIR);
-        boolean isNewAir = newState == null || newState.getBlock().equals(Blocks.AIR);
-
-        if (isNewAir) {
-            getBlockPositions().remove(posAt);
-        }
-
-        if (isOldAir && !isNewAir) {
-            getBlockPositions().add(posAt);
-        }
-
-        if (getBlockPositions().isEmpty()) {
-            // TODO: Maybe?
-            //destroy();
+        if (newState.equals(Blocks.AIR.getDefaultState())) {
+            getBlockPositions().remove(pos);
+        } else {
+            getBlockPositions().add(pos);
         }
 
         if (getPhysicsCalculations() != null) {
-            getPhysicsCalculations().onSetBlockState(oldState, newState, posAt);
+            getPhysicsCalculations().onSetBlockState(oldState, newState, pos);
         }
 
-        centerOfMassProvider.onSetBlockState(shipData.getInertiaData(), posAt, oldState, newState);
+        centerOfMassProvider.onSetBlockState(shipData.getInertiaData(), pos, oldState, newState);
     }
 
     void onTick() {

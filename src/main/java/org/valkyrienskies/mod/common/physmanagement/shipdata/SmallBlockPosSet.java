@@ -59,8 +59,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
     @Override
     public boolean remove(int x, int y, int z) {
         if (!canStore(x, y, z)) {
-            // Nothing to remove
-            return false;
+            throw new IllegalArgumentException("Cannot remove block position at <" + x + "," + y + "," + z + ">");
         }
         return compressedBlockPosSet.remove(compress(x, y, z));
     }

@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -24,11 +25,6 @@ import java.util.List;
 
 @Mixin(value = Chunk.class, priority = 1001)
 public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
-
-    private final Chunk thisAsChunk = Chunk.class.cast(this);
-
-    @Shadow
-    public abstract World getWorld();
 
     @Shadow
     @Final
@@ -42,6 +38,9 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     @Final
     public World world;
 
+    @Shadow
+    public abstract IBlockState getBlockState(BlockPos pos);
+
     // We keep track of these so we can quickly update the tile entities that need rendering.
     private List<TileEntity>[] tileEntitiesByExtendedData = new List[16];
 
@@ -50,7 +49,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     }
 
     @Inject(method = "addTileEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", at = @At("TAIL"))
-    public void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn,
+    private void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn,
         CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
@@ -60,7 +59,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     }
 
     @Inject(method = "removeTileEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("TAIL"))
-    public void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
+    private void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
         int yIndex = pos.getY() >> 4;
         removeTileEntityFromIndex(pos, yIndex);
         ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onRemoveTileEntity(pos));
@@ -74,8 +73,23 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
             .removeIf(tile -> tile.getPos().equals(pos) || tile.isInvalid());
     }
 
+    /**
+     * If this chunk is part of a ship, then tell that ship about the IBlockState update.
+     *
+     * Note that we're assuming that a Chunk cannot deny the setBlockState request. Therefore its safe to assume that
+     * the parameter "state" will be the final IBlockState of BlockPos "pos".
+     */
+    @Inject(method = "setBlockState", at = @At("HEAD"))
+    private void pre_setBlockState(BlockPos pos, IBlockState state, CallbackInfoReturnable<IBlockState> cir) {
+        IBlockState oldState = getBlockState(pos);
+        ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onSetBlockState(oldState, state, pos));
+    }
+
+    /**
+     * Don't let Minecraft generate terrain near the ships, its a waste of time.
+     */
     @Inject(method = "populate(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
-    public void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator,
+    private void prePopulateChunk(IChunkProvider provider, IChunkGenerator generator,
         CallbackInfo callbackInfo) {
         if (ShipChunkAllocator.isChunkInShipyard(this.x, this.z)) {
             callbackInfo.cancel();
@@ -83,7 +97,7 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     }
 
     @Inject(method = "addEntity(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
-    public void preAddEntity(Entity entityIn, CallbackInfo callbackInfo) {
+    private void preAddEntity(Entity entityIn, CallbackInfo callbackInfo) {
         World world = this.world;
 
         int i = MathHelper.floor(entityIn.posX / 16.0D);
@@ -100,8 +114,5 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
             }
         }
     }
-
-    @Shadow
-    public abstract IBlockState getBlockState(BlockPos pos);
 
 }

@@ -35,20 +35,18 @@ public class VSWorldEventListener implements IWorldEventListener {
     }
 
     @Override
-    public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState,
-        IBlockState newState, int flags) {
-        ValkyrienUtils.getPhysoManagingBlock(worldIn, pos)
-            .ifPresent(physicsObject -> physicsObject.onSetBlockState(oldState, newState, pos));
+    public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
+
     }
 
     @Override
     public void notifyLightSet(BlockPos pos) {
+
     }
 
     @Override
-    public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY,
-        int maxZ) {
-        // this.markBlocksForUpdate(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1, false);
+    public void markBlockRangeForRenderUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+
     }
 
     @Override
@@ -60,12 +58,14 @@ public class VSWorldEventListener implements IWorldEventListener {
 
     @Override
     public void playRecord(SoundEvent soundIn, BlockPos pos) {
+
     }
 
     @Override
     public void spawnParticle(int particleID, boolean ignoreRange, double x, double y, double z,
         double xSpeed,
         double ySpeed, double zSpeed, int... parameters) {
+
     }
 
     // TODO: Fix conflicts with EventsCommon.onEntityJoinWorldEvent()
@@ -105,10 +105,12 @@ public class VSWorldEventListener implements IWorldEventListener {
 
     @Override
     public void broadcastSound(int soundID, BlockPos pos, int data) {
+
     }
 
     @Override
     public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data) {
+
     }
 
     @Override
@@ -146,6 +148,7 @@ public class VSWorldEventListener implements IWorldEventListener {
         double p_190570_6_, double p_190570_8_, double p_190570_10_, double p_190570_12_,
         double p_190570_14_,
         int... p_190570_16_) {
+
     }
 
 }

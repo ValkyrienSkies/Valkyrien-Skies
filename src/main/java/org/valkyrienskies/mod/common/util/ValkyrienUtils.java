@@ -50,6 +50,9 @@ public class ValkyrienUtils {
         if (world == null || pos == null) {
             return Optional.empty();
         }
+        if (!ShipChunkAllocator.isChunkInShipyard(pos.getX() >> 4, pos.getZ() >> 4)) {
+            return Optional.empty();
+        }
         QueryableShipData queryableShipData = QueryableShipData.get(world);
         Optional<ShipData> shipData = queryableShipData.getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
         if (shipData.isPresent()) {

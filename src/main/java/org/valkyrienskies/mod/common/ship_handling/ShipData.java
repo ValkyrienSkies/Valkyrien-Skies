@@ -8,6 +8,7 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 import lombok.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.IBlockPosSetAABB;
@@ -118,7 +119,7 @@ public class ShipData {
         ShipTransform shipTransform,
         AxisAlignedBB aabb, BlockPos physInfuserPos) {
 
-        return new ShipData(owner, new ShipPhysicsData(), new ShipInertiaData(), shipTransform, aabb,
+        return new ShipData(owner, new ShipPhysicsData(new Vector3d(), new Vector3d()), new ShipInertiaData(), shipTransform, aabb,
             true, physInfuserPos, chunkClaim, shipID, name);
     }
 

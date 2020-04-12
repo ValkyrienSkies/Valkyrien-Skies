@@ -105,11 +105,11 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
 
         if (message.airshipRight_KeyDown) {
             idealAngularDirection.subtract(shipUp);
-            sidePitch -= 10D;
+            sidePitch -= 10;
         }
         if (message.airshipLeft_KeyDown) {
             idealAngularDirection.add(shipUp);
-            sidePitch += 10D;
+            sidePitch += 10;
         }
 
         Vector sidesRotationAxis = new Vector(playerDirection);
@@ -130,24 +130,24 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
         shipUpRotationVector.multiply(shipUpTheta);
 
         idealAngularDirection.add(shipUpRotationVector);
-        idealLinearVelocity.multiply(20D * controlledShip.getPhysicsCalculations().getMass());
+        idealLinearVelocity.multiply(20);
 
         // Move the ship faster if the player holds the sprint key.
         if (message.airshipSprinting) {
-            idealLinearVelocity.multiply(2D);
+            idealLinearVelocity.multiply(2);
         }
 
-        double lerpFactor = .2D;
+        double lerpFactor = .2;
         Vector linearMomentumDif = idealLinearVelocity
-            .getSubtraction(controlledShip.getPhysicsCalculations().getLinearMomentum());
+            .getSubtraction(new Vector(controlledShip.getPhysicsCalculations().getLinearVelocity()));
         Vector angularVelocityDif = idealAngularDirection
-            .getSubtraction(controlledShip.getPhysicsCalculations().getAngularVelocity());
+            .getSubtraction(new Vector(controlledShip.getPhysicsCalculations().getAngularVelocity()));
 
         linearMomentumDif.multiply(lerpFactor);
         angularVelocityDif.multiply(lerpFactor);
 
-        controlledShip.getPhysicsCalculations().getLinearMomentum().subtract(linearMomentumDif);
-        controlledShip.getPhysicsCalculations().getAngularVelocity().subtract(angularVelocityDif);
+        controlledShip.getPhysicsCalculations().getLinearVelocity().sub(linearMomentumDif.toVector3d());
+        controlledShip.getPhysicsCalculations().getAngularVelocity().sub(angularVelocityDif.toVector3d());
     }
 
 }

@@ -1,6 +1,6 @@
 package org.valkyrienskies.mod.common.physics;
 
-import lombok.experimental.Delegate;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
@@ -17,7 +17,6 @@ import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-import org.valkyrienskies.mod.common.ship_handling.ShipPhysicsData;
 import valkyrienwarfare.api.TransformType;
 
 import java.lang.Math;
@@ -28,9 +27,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public static final double DRAG_CONSTANT = .99D;
     public static final double EPSILON = .00000001;
-
-    @Delegate
-    private ShipPhysicsData data;
 
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;
@@ -52,19 +48,21 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private Quaterniondc physRotation;
     private double physX, physY, physZ;
 
-    public PhysicsCalculations(PhysicsObject parent) {
-        this(parent, parent.getShipData().getPhysicsData());
-    }
+    @Getter
+    private final Vector3d linearVelocity;
+    @Getter
+    private final Vector3d angularVelocity;
 
-    public PhysicsCalculations(PhysicsObject parent, ShipPhysicsData data) {
+    public PhysicsCalculations(PhysicsObject parent) {
         this.parent = parent;
         this.worldCollision = new WorldPhysicsCollider(this);
         this.particleManager = new PhysicsParticleManager(this);
 
-        this.data = data;
-
         this.physMOITensor = null;
         this.physInvMOITensor = null;
+
+        this.linearVelocity = new Vector3d(parent.getPhysicsData().getLinearVelocity());
+        this.angularVelocity = new Vector3d(parent.getPhysicsData().getAngularVelocity());
 
         this.physCenterOfMass = new Vector();
         this.torque = new Vector();
@@ -133,7 +131,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             }
         } else {
             getParent().getShipData().setPhysicsEnabled(false);
-            getLinearMomentum().zero();
+            getLinearVelocity().zero();
             getAngularVelocity().zero();
         }
 
@@ -142,14 +140,17 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
         getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
         getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
+        // Save a copy of linear and angular velocity in parent's ShipData
+        getParent().getShipData().getPhysicsData().setAngularVelocity(new Vector3d(angularVelocity));
+        getParent().getShipData().getPhysicsData().setLinearVelocity(new Vector3d(linearVelocity));
     }
 
     // If the ship is moving at these speeds, its likely something in the physics
     // broke. This method helps detect that.
     private boolean isPhysicsBroken() {
-        if (getAngularVelocity().lengthSq() > 50000
-                || getLinearMomentum().lengthSq() * getInvMass() * getInvMass() > 50000 || getAngularVelocity()
-                .isNaN() || getLinearMomentum().isNaN()) {
+        if (getAngularVelocity().lengthSquared() > 50000
+                || getLinearVelocity().lengthSquared() > 50000 || !getAngularVelocity()
+                .isFinite() || !getLinearVelocity().isFinite()) {
             System.out.println("Ship tried moving too fast; freezing it and reseting velocities");
             return true;
         }
@@ -355,17 +356,17 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         idealAngularVelocity.multiply(idealAngularVelocityMultiple);
 
         Vector angularVelocityDif = idealAngularVelocity
-                .getSubtraction(getAngularVelocity());
+                .getSubtraction(new Vector(getAngularVelocity()));
         // Larger values converge faster, but sacrifice collision accuracy
         angularVelocityDif.multiply(.01);
 
-        getAngularVelocity().subtract(angularVelocityDif);
+        getAngularVelocity().sub(angularVelocityDif.toVector3d());
     }
 
     private void applyAirDrag() {
         double drag = getDragForPhysTick();
-        getLinearMomentum().multiply(drag);
-        getAngularVelocity().multiply(drag);
+        getLinearVelocity().mul(drag);
+        getAngularVelocity().mul(drag);
     }
 
     private void convertTorqueToVelocity() {
@@ -380,7 +381,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     public void addForceAtPoint(Vector inBodyWO,
                                 Vector forceToApply) {
         torque.add(inBodyWO.cross(forceToApply));
-        getLinearMomentum().add(forceToApply);
+        getLinearVelocity().add(forceToApply.x * getInvMass(), forceToApply.y * getInvMass(), forceToApply.z * getInvMass());
     }
 
     private void addForceAtPoint(Vector inBodyWO,
@@ -388,7 +389,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                                 Vector crossVector) {
         crossVector.setCross(inBodyWO, forceToApply);
         torque.add(crossVector);
-        getLinearMomentum().add(forceToApply);
+        getLinearVelocity().add(forceToApply.getProduct(getInvMass()).toVector3d());
     }
 
     private void updatePhysSpeedAndIters(double newPhysSpeed) {
@@ -400,7 +401,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      */
     private void integrateAngularVelocity() {
         // The body angular velocity vector, in World coordinates
-        Vector angularVelocity = getAngularVelocity();
+        Vector angularVelocity = new Vector(getAngularVelocity());
         if (angularVelocity.isZero()) {
             // Angular velocity is zero, so the rotation hasn't changed.
             return;
@@ -422,22 +423,19 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * Only run ONCE per phys tick!
      */
     private void integrateLinearVelocity() {
-        double momentMod = getPhysicsTimeDeltaPerPhysTick() * getInvMass();
-
-        physX += (getLinearMomentum().x * momentMod);
-        physY += (getLinearMomentum().y * momentMod);
-        physZ += (getLinearMomentum().z * momentMod);
+        physX += getLinearVelocity().x() * getPhysicsTimeDeltaPerPhysTick();
+        physY += getLinearVelocity().y() * getPhysicsTimeDeltaPerPhysTick();
+        physZ += getLinearVelocity().z() * getPhysicsTimeDeltaPerPhysTick();
         physY = Math.min(Math.max(physY, VSConfig.shipLowerLimit), VSConfig.shipUpperLimit);
     }
 
     public Vector getVelocityAtPoint(
             Vector inBodyWO) {
-        Vector speed = getAngularVelocity().cross(inBodyWO);
-        double invMass = getInvMass();
-        speed.x += (getLinearMomentum().x * invMass);
-        speed.y += (getLinearMomentum().y * invMass);
-        speed.z += (getLinearMomentum().z * invMass);
-        return speed;
+        Vector3d speed = getAngularVelocity().cross(inBodyWO.toVector3d(), new Vector3d());
+        speed.x += getLinearVelocity().x();
+        speed.y += getLinearVelocity().y();
+        speed.z += getLinearVelocity().z();
+        return new Vector(speed);
     }
 
     // These getter methods guarantee that only code within this class can modify

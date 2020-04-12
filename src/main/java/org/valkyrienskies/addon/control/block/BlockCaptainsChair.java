@@ -1,8 +1,5 @@
 package org.valkyrienskies.addon.control.block;
 
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -24,10 +21,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
 
 public class BlockCaptainsChair extends BlockPilotableBasic {
 
@@ -37,7 +38,7 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
         super("captains_chair", Material.WOOD, 4.0F);
     }
 
-    public static double getChairYaw(IBlockState state, BlockPos pos) {
+    public double getChairYaw(IBlockState state, BlockPos pos) {
         EnumFacing enumFace = state.getValue(BlockCaptainsChair.FACING);
         double chairYaw = -enumFace.getHorizontalAngle() - 90;
         return chairYaw;

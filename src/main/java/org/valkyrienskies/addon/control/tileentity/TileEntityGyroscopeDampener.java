@@ -18,10 +18,10 @@ public class TileEntityGyroscopeDampener extends TileEntity {
         physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
             .rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
 
-        double dampingComponent = shipLevelNormal.dot(physicsCalculations.getAngularVelocity());
+        double dampingComponent = shipLevelNormal.dot(new Vector(physicsCalculations.getAngularVelocity()));
         Vector angularChangeAllowed = shipLevelNormal
-            .getProduct(shipLevelNormal.dot(physicsCalculations.getAngularVelocity()));
-        Vector angularVelocityToDamp = physicsCalculations.getAngularVelocity()
+            .getProduct(shipLevelNormal.dot(new Vector(physicsCalculations.getAngularVelocity())));
+        Vector angularVelocityToDamp = new Vector(physicsCalculations.getAngularVelocity())
             .getSubtraction(angularChangeAllowed);
 
         Vector dampingTorque = angularVelocityToDamp

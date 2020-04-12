@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
@@ -25,8 +26,8 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.PhysCollisionObj
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollisionPointFinder;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.*;
@@ -378,7 +379,7 @@ public class WorldPhysicsCollider {
             double collisionVelocity = velocityAtPointOfCollision.dot(axis);
 
             addFrictionToNormalForce(velocityAtPointOfCollision, collisionImpulseForce, inBody);
-            calculator.getLinearMomentum().add(collisionImpulseForce);
+            calculator.getLinearVelocity().add(collisionImpulseForce.getProduct(calculator.getInvMass()).toVector3d(), calculator.getLinearVelocity());
             org.valkyrienskies.mod.common.math.Vector thirdCross = inBody
                 .cross(collisionImpulseForce);
 
@@ -387,7 +388,7 @@ public class WorldPhysicsCollider {
             calculator.getPhysInvMOITensor().transform(thirdCrossTemp);
 
             thirdCross.setValue(thirdCrossTemp);
-            calculator.getAngularVelocity().add(thirdCross);
+            calculator.getAngularVelocity().add(thirdCross.toVector3d(), calculator.getAngularVelocity());
         }
     }
 
@@ -418,21 +419,18 @@ public class WorldPhysicsCollider {
         double inertiaScalarAlongAxis = parent.getPhysicsCalculations()
             .getInertiaAlongRotationAxis();
         // The change in velocity vector
-        org.valkyrienskies.mod.common.math.Vector initialVelocity = new org.valkyrienskies.mod.common.math.Vector(
-            parent.getPhysicsCalculations().getLinearMomentum(),
-            parent.getPhysicsCalculations().getInvMass());
+        Vector3dc initialVelocity = parent.getPhysicsCalculations().getLinearVelocity();
         // Don't forget to multiply by delta t
-        org.valkyrienskies.mod.common.math.Vector deltaVelocity = new org.valkyrienskies.mod.common.math.Vector(
-            frictionVector,
-            parent.getPhysicsCalculations().getInvMass() * parent.getPhysicsCalculations()
+        Vector3d deltaVelocity = frictionVector.toVector3d();
+        deltaVelocity.mul(parent.getPhysicsCalculations().getInvMass() * parent.getPhysicsCalculations()
                 .getDragForPhysTick());
 
-        double A = initialVelocity.lengthSq();
+        double A = initialVelocity.lengthSquared();
         double B = 2 * initialVelocity.dot(deltaVelocity);
-        double C = deltaVelocity.lengthSq();
+        double C = deltaVelocity.lengthSquared();
 
-        org.valkyrienskies.mod.common.math.Vector initialAngularVelocity = parent
-            .getPhysicsCalculations().getAngularVelocity();
+        org.valkyrienskies.mod.common.math.Vector initialAngularVelocity = new Vector(parent
+            .getPhysicsCalculations().getAngularVelocity());
         org.valkyrienskies.mod.common.math.Vector deltaAngularVelocity = inBody
             .cross(frictionVector);
         // This might need to be 1 / inertiaScalarAlongAxis
@@ -445,7 +443,7 @@ public class WorldPhysicsCollider {
         double F = deltaAngularVelocity.lengthSq();
 
         // This is tied to PhysicsCalculations line 430
-        if (initialAngularVelocity.lengthSq() < .05 && initialVelocity.lengthSq() < .05) {
+        if (initialAngularVelocity.lengthSq() < .05 && initialVelocity.lengthSquared() < .05) {
             // Remove rotational friction if we are rotating slow enough
             D = E = F = 0;
         }
@@ -487,13 +485,9 @@ public class WorldPhysicsCollider {
         // jiggling through the ground. God I can't wait for a new physics engine.
         final AxisAlignedBB collisionBB = shipBB
             .grow(AABB_EXPANSION).expand(
-                calculator.getLinearMomentum().x * calculator.getInvMass() * calculator
-                    .getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.getLinearMomentum().y * calculator.getInvMass() * calculator
-                    .getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.getLinearMomentum().z * calculator.getInvMass() * calculator
-                    .getPhysicsTimeDeltaPerPhysTick()
-                    * 5);
+                calculator.getLinearVelocity().x * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
+                calculator.getLinearVelocity().y * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
+                calculator.getLinearVelocity().z * calculator.getPhysicsTimeDeltaPerPhysTick() * 5);
 
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the

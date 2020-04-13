@@ -60,7 +60,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public double getThrustMagnitude() {
+    public double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject) {
         return this.getMaxThrust() * this.getThrustMultiplierGoal();
     }
 

@@ -37,6 +37,7 @@ import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -383,5 +384,18 @@ public class PhysicsObject implements IPhysicsEntity {
         }
         claimedChunkCache.updateChunk(chunk);
         shipRenderer.updateChunk(chunk);
+    }
+
+    /**
+     * A thread safe way of accessing tile entities within a ship. Not guaranteed to provide the most up to do tile.
+     */
+    @Nullable
+    public TileEntity getShipTile(@Nonnull BlockPos pos) {
+        Chunk chunk = claimedChunkCache.getChunkAt(pos.getX() >> 4, pos.getZ() >> 4);
+        if (chunk != null) {
+            return chunk.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+        } else {
+            return null;
+        }
     }
 }

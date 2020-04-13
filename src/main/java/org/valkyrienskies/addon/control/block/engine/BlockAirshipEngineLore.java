@@ -51,9 +51,8 @@ public abstract class BlockAirshipEngineLore extends BlockAirshipEngine {
 
     @Override
     public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state,
-        PhysicsObject physicsObject,
-        double secondsToApply) {
-        TileEntityPropellerEngine engineTile = (TileEntityPropellerEngine) world.getTileEntity(pos);
+        PhysicsObject physicsObject, double secondsToApply) {
+        TileEntityPropellerEngine engineTile = (TileEntityPropellerEngine) physicsObject.getShipTile(pos);
         if (engineTile != null) {
             VectorImmutable forceOutputNormal = engineTile.getForceOutputNormal(secondsToApply,
                 physicsObject);

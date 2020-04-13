@@ -1,7 +1,5 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
-import java.util.List;
-import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -10,16 +8,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
-import org.valkyrienskies.addon.control.block.torque.IRotationNode;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeProvider;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
-import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
+import org.valkyrienskies.addon.control.block.torque.*;
 import org.valkyrienskies.fixes.VSNetwork;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.List;
+import java.util.Optional;
 
 public class TileEntityGiantPropellerPart extends
     TileEntityMultiblockPartForce<GiantPropellerMultiblockSchematic, TileEntityGiantPropellerPart> implements
@@ -74,14 +71,14 @@ public class TileEntityGiantPropellerPart extends
     }
 
     @Override
-    public double getThrustMagnitude() {
+    public double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject) {
         if (!this.isPartOfAssembledMultiblock()) {
             return 0;
         } else {
             if (!this.isMaster()) {
                 TileEntityGiantPropellerPart master = this.getMaster();
                 if (master != null) {
-                    return master.getThrustMagnitude();
+                    return master.getThrustMagnitude(secondsToApply, physicsObject);
                 } else {
                     return 0;
                 }

@@ -139,7 +139,7 @@ public class TileEntityRudderPart extends
     }
 
     @Override
-    public double getThrustMagnitude() {
+    public double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject) {
         return 0;
     }
 

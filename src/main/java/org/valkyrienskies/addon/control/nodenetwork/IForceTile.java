@@ -20,7 +20,7 @@ public interface IForceTile {
             return new Vector();
         }
         Vector forceVector = new Vector(forceVectorNormal);
-        forceVector.multiply(getThrustMagnitude() * secondsToApply);
+        forceVector.multiply(getThrustMagnitude(secondsToApply, physicsObject) * secondsToApply);
         return forceVector;
     }
 
@@ -35,8 +35,10 @@ public interface IForceTile {
 
     /**
      * Returns magnitude of thrust in Newtons being produced.
+     * @param secondsToApply
+     * @param physicsObject
      */
-    double getThrustMagnitude();
+    double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject);
 
     /**
      * Returns the current force multiplier goal.

@@ -1,5 +1,9 @@
 package org.valkyrienskies.addon.control.fuel;
 
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+
+import javax.annotation.Nonnull;
+
 public interface IValkyriumEngine {
 
     double MAX_THRUST_HEIGHT = 500;
@@ -20,5 +24,5 @@ public interface IValkyriumEngine {
     /**
      * Returns between 1 and 0, where 0 is no lift and 1 is 100% lift.
      */
-    double getCurrentValkyriumEfficiency();
+    double getCurrentValkyriumEfficiency(double secondsToApply, @Nonnull PhysicsObject physicsObject);
 }

@@ -1,19 +1,17 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
-import java.util.List;
-import java.util.Optional;
-
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.fuel.IValkyriumEngine;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 public class TileEntityValkyriumCompressorPart extends
     TileEntityMultiblockPartForce<ValkyriumCompressorMultiblockSchematic, TileEntityValkyriumCompressorPart> implements
@@ -59,31 +57,26 @@ public class TileEntityValkyriumCompressorPart extends
     }
 
     @Override
-    public double getThrustMagnitude() {
+    public double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject) {
         if (this.isPartOfAssembledMultiblock() && this
             .getMaster() instanceof TileEntityValkyriumCompressorPart) {
             return this.getMaxThrust() * this.getMaster()
-                .getThrustMultiplierGoal() * this.getCurrentValkyriumEfficiency();
+                .getThrustMultiplierGoal() * this.getCurrentValkyriumEfficiency(secondsToApply, physicsObject);
         } else {
             return 0;
         }
     }
 
     @Override
-    public double getCurrentValkyriumEfficiency() {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
-        if (physicsObject.isPresent()) {
-            Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D,
-                getPos().getZ() + .5D);
-            physicsObject.get()
-                .getShipTransformationManager()
-                .getCurrentPhysicsTransform()
-                .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
-            double yPos = tilePos.y;
-            return IValkyriumEngine.getValkyriumEfficiencyFromHeight(yPos);
-        } else {
-            return 1;
-        }
+    public double getCurrentValkyriumEfficiency(double secondsToApply, @Nonnull PhysicsObject physicsObject) {
+        Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D,
+            getPos().getZ() + .5D);
+        physicsObject
+            .getShipTransformationManager()
+            .getCurrentPhysicsTransform()
+            .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
+        double yPos = tilePos.y;
+        return IValkyriumEngine.getValkyriumEfficiencyFromHeight(yPos);
     }
 
     public double getCurrentKeyframe(double partialTick) {

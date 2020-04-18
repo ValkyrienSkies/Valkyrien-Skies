@@ -9,9 +9,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.joml.*;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.concurrent.Immutable;
@@ -92,17 +92,10 @@ public class ShipTransform {
         getTransformMatrix(transformType).transformDirection(direction);
     }
 
-    @Deprecated
-    public void transform(Vector vector, TransformType transformType) {
-        Vector3d copy = vector.toVector3d();
-        transformPosition(copy, transformType);
-        vector.setValue(copy);
-    }
-
     public Vec3d transform(Vec3d vec3d, TransformType transformType) {
-        Vector vec3dAsVector = new Vector(vec3d);
-        transform(vec3dAsVector, transformType);
-        return vec3dAsVector.toVec3d();
+        Vector3d vec3dAsVector = JOML.convert(vec3d);
+        transformPosition(vec3dAsVector, transformType);
+        return JOML.toMinecraft(vec3dAsVector);
     }
 
     public Vec3d rotate(Vec3d vec3d, TransformType transformType) {
@@ -118,13 +111,6 @@ public class ShipTransform {
             blockPosAsVector.z - .5D);
     }
 
-    @Deprecated
-    public void rotate(Vector vector, TransformType transformType) {
-        Vector3d copy = vector.toVector3d();
-        transformDirection(copy, transformType);
-        vector.setValue(copy);
-    }
-
     public Quaterniond rotationQuaternion(TransformType transformType) {
         return getTransformMatrix(transformType).getNormalizedRotation(new Quaterniond());
     }
@@ -132,18 +118,6 @@ public class ShipTransform {
     public void writeToNBT(NBTTagCompound compound, String name) {
         compound.setByteArray(name,
             ValkyrienNBTUtils.toByteArray(subspaceToGlobal.get(new double[16])));
-    }
-
-    public VectorImmutable transform(VectorImmutable vector, TransformType transformType) {
-        Vector vectorMutable = vector.createMutableVectorCopy();
-        this.transform(vectorMutable, transformType);
-        return vectorMutable.toImmutable();
-    }
-
-    public VectorImmutable rotate(VectorImmutable vector, TransformType transformType) {
-        Vector vectorMutable = vector.createMutableVectorCopy();
-        this.rotate(vectorMutable, transformType);
-        return vectorMutable.toImmutable();
     }
 
     /**
@@ -179,6 +153,6 @@ public class ShipTransform {
 
     @Deprecated
     public void transform(Entity player, TransformType globalToSubspace) {
-        RotationMatrices.applyTransform(getTransformMatrix(globalToSubspace), player);
+        ValkyrienUtils.transformEntity(getTransformMatrix(globalToSubspace), player);
     }
 }

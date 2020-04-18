@@ -2,13 +2,15 @@ package org.valkyrienskies.mixin.client.renderer.entity;
 
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Vec3d;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Mixin(RenderManager.class)
@@ -37,14 +39,14 @@ public abstract class MixinRenderManager {
                 double oldLastPosY = entityIn.lastTickPosY;
                 double oldLastPosZ = entityIn.lastTickPosZ;
 
-                Vector localPosition = new Vector(mountData.getMountPos());
+                Vec3d mountPos = mountData.getMountPos();
 
                 mountData.getMountedShip()
                     .getShipRenderer()
                     .applyRenderTransform(partialTicks);
 
-                if (localPosition != null) {
-                    localPosition = new Vector(localPosition);
+                if (mountPos != null) {
+                    Vector3d localPosition = JOML.convert(mountPos);
 
                     localPosition.x -= mountData.getMountedShip()
                         .getShipRenderer().offsetPos.getX();
@@ -63,7 +65,7 @@ public abstract class MixinRenderManager {
                 hasChanged = false;
 
 
-                if (localPosition != null) {
+                if (mountPos != null) {
                     mountData.getMountedShip()
                         .getShipRenderer()
                         .inverseTransform(partialTicks);

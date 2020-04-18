@@ -22,11 +22,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -54,11 +54,12 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
             if (physicsObject.isPresent()) {
                     TileEntity tileEntity = worldIn.getTileEntity(pos);
                     if (tileEntity instanceof TileEntityCaptainsChair) {
-                        Vector playerPos = new Vector(playerIn);
+                        Vector3d playerPos = new Vector3d(playerIn.posX, playerIn.posY, playerIn.posZ);
 
                         physicsObject.get()
                             .getShipTransformationManager()
-                            .fromLocalToGlobal(playerPos);
+                            .getCurrentTickTransform()
+                            .transformPosition(playerPos, TransformType.SUBSPACE_TO_GLOBAL);
 
                         playerIn.posX = playerPos.x;
                         playerIn.posY = playerPos.y;
@@ -75,8 +76,9 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
 
                         ((TileEntityCaptainsChair) tileEntity).setPilotEntity(playerIn);
                         physicsObject.get()
-                            .getShipTransformationManager()
-                            .fromGlobalToLocal(playerPos);
+                                .getShipTransformationManager()
+                                .getCurrentTickTransform()
+                                .transformPosition(playerPos, TransformType.GLOBAL_TO_SUBSPACE);
 
                         playerIn.posX = playerPos.x;
                         playerIn.posY = playerPos.y;

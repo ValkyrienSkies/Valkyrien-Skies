@@ -22,7 +22,6 @@ import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
 import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -125,15 +124,14 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
             // compassPoint);
         }
 
-        Vector compassDirection = new Vector(compassPoint);
-        compassDirection.subtract(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
+        Vector3d compassDirection = new Vector3d(compassPoint);
+        compassDirection.sub(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
 
         if (physicsObject.isPresent()) {
             physicsObject.get()
                 .getShipTransformationManager()
                 .getCurrentTickTransform()
-                .rotate(compassDirection,
-                    TransformType.GLOBAL_TO_SUBSPACE);
+                .transformDirection(compassDirection, TransformType.GLOBAL_TO_SUBSPACE);
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.wToLTransform,
             // compassDirection);
         }

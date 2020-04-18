@@ -26,7 +26,6 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.management.BasicCenterOfMassProvider;
 import org.valkyrienskies.mod.common.physics.management.IPhysicsObjectCenterOfMassProvider;
@@ -296,9 +295,9 @@ public class PhysicsObject implements IPhysicsEntity {
                     currentTransform.getPosZ());
 
             BlockPos centerDifference = new BlockPos(
-                    Math.round(getCenterCoord().x - position.x()),
-                    Math.round(getCenterCoord().y - position.y()),
-                    Math.round(getCenterCoord().z - position.z()));
+                    Math.round(getCenterCoord().x() - position.x()),
+                    Math.round(getCenterCoord().y() - position.y()),
+                    Math.round(getCenterCoord().z() - position.z()));
 
             for (BlockPos oldPos : this.getBlockPositions()) {
                 newPos.setPos(oldPos.getX() - centerDifference.getX(),
@@ -316,8 +315,8 @@ public class PhysicsObject implements IPhysicsEntity {
         getClaimedChunkCache().deleteShipChunksFromWorld();
     }
 
-    public Vector getCenterCoord() {
-        return new Vector(this.getShipData().getShipTransform().getCenterCoord());
+    public Vector3dc getCenterCoord() {
+        return getShipData().getShipTransform().getCenterCoord();
     }
 
     // region VS API Functions

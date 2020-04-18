@@ -16,8 +16,8 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.util.JOML;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nonnull;
@@ -114,7 +114,7 @@ public class PhysObjectRenderManager {
     }
 
     public void applyRenderTransform(double partialTicks) {
-        Vector centerOfRotation = parent.getCenterCoord();
+        Vector3dc centerOfRotation = parent.getCenterCoord();
 
         Entity player = Minecraft.getMinecraft().getRenderViewEntity();
 
@@ -130,8 +130,8 @@ public class PhysObjectRenderManager {
 
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
-        Vector renderPos = new Vector(centerOfRotation);
-        renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3d renderPos = new Vector3d(centerOfRotation);
+        renderTransform.transformPosition(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
 
         double moddedX = renderPos.x;
         double moddedY = renderPos.y;
@@ -144,9 +144,9 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(angles.y());
         double moddedRoll = Math.toDegrees(angles.z());
         // Offset pos is used to prevent floating point errors when rendering stuff thats very far away.
-        double offsetX = offsetPos.getX() - centerOfRotation.x;
-        double offsetY = offsetPos.getY() - centerOfRotation.y;
-        double offsetZ = offsetPos.getZ() - centerOfRotation.z;
+        double offsetX = offsetPos.getX() - centerOfRotation.x();
+        double offsetY = offsetPos.getY() - centerOfRotation.y();
+        double offsetZ = offsetPos.getZ() - centerOfRotation.z();
 
         GlStateManager.translate(-p0 + moddedX, -p1 + moddedY, -p2 + moddedZ);
         GL11.glRotated(moddedPitch, 1D, 0, 0);
@@ -156,7 +156,7 @@ public class PhysObjectRenderManager {
     }
 
     public void inverseTransform(double partialTicks) {
-        Vector centerOfRotation = parent.getCenterCoord();
+        Vector3dc centerOfRotation = parent.getCenterCoord();
 
         Entity player = Minecraft.getMinecraft().getRenderViewEntity();
 
@@ -172,8 +172,8 @@ public class PhysObjectRenderManager {
 
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
-        Vector renderPos = new Vector(centerOfRotation);
-        renderTransform.transform(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3d renderPos = new Vector3d(centerOfRotation);
+        renderTransform.transformPosition(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
 
         double moddedX = renderPos.x;
         double moddedY = renderPos.y;
@@ -186,9 +186,9 @@ public class PhysObjectRenderManager {
         double moddedYaw = Math.toDegrees(angles.y());
         double moddedRoll = Math.toDegrees(angles.z());
 
-        double offsetX = offsetPos.getX() - centerOfRotation.x;
-        double offsetY = offsetPos.getY() - centerOfRotation.y;
-        double offsetZ = offsetPos.getZ() - centerOfRotation.z;
+        double offsetX = offsetPos.getX() - centerOfRotation.x();
+        double offsetY = offsetPos.getY() - centerOfRotation.y();
+        double offsetZ = offsetPos.getZ() - centerOfRotation.z();
 
         GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
         GL11.glRotated(-moddedRoll, 0, 0, 1D);
@@ -216,10 +216,10 @@ public class PhysObjectRenderManager {
 
         Vector3dc centerOfMass = parent.getShipData().getInertiaData().getGameTickCenterOfMass();
 
-        Vector centerOfMassPos = new Vector(centerOfMass);
-        parent.getShipTransformationManager().getRenderTransform().transform(centerOfMassPos, TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3d centerOfMassPos = new Vector3d(centerOfMass);
+        parent.getShipTransformationManager().getRenderTransform().transformPosition(centerOfMassPos, TransformType.SUBSPACE_TO_GLOBAL);
 
-        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(centerOfMassPos.toVec3d(), centerOfMassPos.toVec3d())
+        AxisAlignedBB centerOfMassBB = new AxisAlignedBB(JOML.toMinecraft(centerOfMassPos), JOML.toMinecraft(centerOfMassPos))
             .grow(.1).offset(offsetX, offsetY, offsetZ);
 
         GlStateManager.depthMask(false);

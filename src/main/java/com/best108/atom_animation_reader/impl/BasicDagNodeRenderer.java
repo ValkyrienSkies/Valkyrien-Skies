@@ -1,29 +1,30 @@
 package com.best108.atom_animation_reader.impl;
 
 import com.best108.atom_animation_reader.IModelRenderer;
-import java.util.List;
 import net.minecraft.client.renderer.GlStateManager;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+
+import java.util.List;
 
 public class BasicDagNodeRenderer {
 
     private final String modelName;
     protected final List<BasicAnimationTransform> transformations;
     private final IModelRenderer modelRenderer;
-    protected VectorImmutable pivot;
+    protected Vector3dc pivot;
 
     public BasicDagNodeRenderer(String modelName, List<BasicAnimationTransform> transformations,
         IModelRenderer modelRenderer) {
         this.modelName = modelName;
         this.transformations = transformations;
         this.modelRenderer = modelRenderer;
-        this.pivot = VectorImmutable.ZERO_VECTOR;
+        this.pivot = new Vector3d();
     }
 
     public void render(double keyframe, int brightness) {
         for (int i = 0; i < transformations.size(); i++) {
-            Vector customPivot = new Vector(pivot);
+            Vector3d customPivot = new Vector3d(pivot);
             for (int j = transformations.size() - 1; j > i; j--) {
                 transformations.get(j).changePivot(customPivot, keyframe);
             }
@@ -36,7 +37,7 @@ public class BasicDagNodeRenderer {
         modelRenderer.renderModel(modelName, brightness);
     }
 
-    public void setPivot(VectorImmutable pivot) {
+    public void setPivot(Vector3dc pivot) {
         this.pivot = pivot;
     }
 

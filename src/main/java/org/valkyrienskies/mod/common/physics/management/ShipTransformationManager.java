@@ -6,7 +6,6 @@ import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
@@ -151,26 +150,6 @@ public class ShipTransformationManager {
     }
 
     /**
-     * Transforms a vector from global coordinates to local coordinates, using the
-     * getCurrentTickTransform()
-     *
-     * @param inGlobal
-     */
-    public void fromGlobalToLocal(Vector inGlobal) {
-        getCurrentTickTransform().transform(inGlobal, TransformType.GLOBAL_TO_SUBSPACE);
-    }
-
-    /**
-     * Transforms a vector from local coordinates to global coordinates, using the
-     * getCurrentTickTransform()
-     *
-     * @param inLocal
-     */
-    public void fromLocalToGlobal(Vector inLocal) {
-        getCurrentTickTransform().transform(inLocal, TransformType.SUBSPACE_TO_GLOBAL);
-    }
-
-    /**
      * @return the current transformation being used this tick.
      */
     public ShipTransform getCurrentTickTransform() {
@@ -236,7 +215,7 @@ public class ShipTransformationManager {
         }
         ShipTransform prev = prevTickTransform;
         ShipTransform cur = currentTickTransform;
-        Vector3d shipCenter = parent.getCenterCoord().toVector3d();
+        Vector3dc shipCenter = parent.getCenterCoord();
 
         Vector3d prevPos = new Vector3d(shipCenter);
         Vector3d curPos = new Vector3d(shipCenter);
@@ -254,8 +233,7 @@ public class ShipTransformationManager {
 
         // Put it all together to get the render transform.
         renderTransform = new ShipTransform(partialPos.x, partialPos.y,
-            partialPos.z, partialRot,
-                parent.getCenterCoord().toVector3d());
+            partialPos.z, partialRot, parent.getCenterCoord());
     }
 
 }

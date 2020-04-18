@@ -5,15 +5,11 @@ import com.best108.atom_animation_reader.IAtomAnimationBuilder;
 import com.best108.atom_animation_reader.IModelRenderer;
 import com.best108.atom_animation_reader.parsers.AtomParser;
 import com.best108.atom_animation_reader.parsers.AtomParserElement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+
+import java.util.*;
 import java.util.regex.Pattern;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.math.Vector;
 
 public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
 
@@ -45,27 +41,25 @@ public class BasicAtomAnimationBuilder implements IAtomAnimationBuilder {
     public IAtomAnimation build(IModelRenderer modelRenderer) {
         // Generate the compiled IAtomAnimation
         List<BasicDagNodeRenderer> dagNodeRenderers = new ArrayList<>();
-        Map<String, VectorImmutable> modelNamesToPivots = new HashMap<String, VectorImmutable>();
+        Map<String, Vector3dc> modelNamesToPivots = new HashMap<>();
         for (DagNode dagNode : renderNodes) {
             // Is this node defining a pivot, or an animation?
             if (dagNode.modelName.endsWith("_pivot")) {
                 // This is a pivot, add it to the local registry.
-                Vector pivotPoint = new Vector();
+                Vector3d pivotPoint = new Vector3d();
                 for (AnimationDataNode animData : dagNode.animationNodes) {
                     if (animData.animationType.equals("translateX")) {
-                        pivotPoint.x = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+                        pivotPoint.x = Double.parseDouble(animData.animKeyframes.keyframes.get(0)[1]);
                     }
                     if (animData.animationType.equals("translateY")) {
-                        pivotPoint.y = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+                        pivotPoint.y = Double.parseDouble(animData.animKeyframes.keyframes.get(0)[1]);
                     }
                     if (animData.animationType.equals("translateZ")) {
-                        pivotPoint.z = Double.valueOf(animData.animKeyframes.keyframes.get(0)[1]);
+                        pivotPoint.z = Double.parseDouble(animData.animKeyframes.keyframes.get(0)[1]);
                     }
                 }
                 // Put the pivot in the local registry.
-                modelNamesToPivots
-                    .put(dagNode.modelName.substring(0, dagNode.modelName.length() - 6),
-                        pivotPoint.toImmutable());
+                modelNamesToPivots.put(dagNode.modelName.substring(0, dagNode.modelName.length() - 6), pivotPoint);
             } else {
                 // This is an animation node.
                 List<BasicAnimationTransform> animations = new ArrayList<BasicAnimationTransform>();

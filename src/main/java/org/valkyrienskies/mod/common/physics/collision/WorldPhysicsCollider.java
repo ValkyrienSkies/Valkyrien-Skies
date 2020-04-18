@@ -1,7 +1,6 @@
 package org.valkyrienskies.mod.common.physics.collision;
 
 import gnu.trove.TCollections;
-import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import net.minecraft.block.state.IBlockState;
@@ -17,14 +16,12 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.physics.collision.optimization.IBitOctree;
 import org.valkyrienskies.mod.common.physics.collision.optimization.IBitOctreeProvider;
 import org.valkyrienskies.mod.common.physics.collision.optimization.ShipCollisionTask;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysCollisionObject;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonCollider;
-import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PolygonCollisionPointFinder;
 import org.valkyrienskies.mod.common.physmanagement.relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
@@ -150,151 +147,6 @@ public class WorldPhysicsCollider {
         task.getCollisionInformationGenerated().clear();
     }
 
-    // Runs through the cache ArrayList, checking each possible BlockPos for SOLID
-    // blocks that can collide, if it finds any it will
-    // move to the next method
-
-    // TODO: Optimize from here, this is taking 10x the processing time of updating
-    // collision cache!
-    private void processPotentialCollisionsAccurately() {
-        final MutableBlockPos localCollisionPos = new MutableBlockPos();
-        final org.valkyrienskies.mod.common.math.Vector inWorld = new org.valkyrienskies.mod.common.math.Vector();
-
-        TIntIterator cachedHitsIterator = cachedPotentialHits.iterator();
-        while (cachedHitsIterator.hasNext()) {
-            // Converts the int to a mutablePos
-            SpatialDetector
-                .setPosWithRespectTo(cachedHitsIterator.next(), centerPotentialHit, mutablePos);
-
-            inWorld.x = mutablePos.getX() + .5;
-            inWorld.y = mutablePos.getY() + .5;
-            inWorld.z = mutablePos.getZ() + .5;
-
-            parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inWorld,
-                TransformType.GLOBAL_TO_SUBSPACE);
-
-            // parent.coordTransform.fromGlobalToLocal(inWorld);
-
-            int minX = MathHelper.floor(inWorld.x - COLLISION_RANGE_CHECK);
-            int minY = MathHelper.floor(inWorld.y - COLLISION_RANGE_CHECK);
-            int minZ = MathHelper.floor(inWorld.z - COLLISION_RANGE_CHECK);
-
-            int maxX = MathHelper.floor(inWorld.x + COLLISION_RANGE_CHECK);
-            int maxY = MathHelper.floor(inWorld.y + COLLISION_RANGE_CHECK);
-            int maxZ = MathHelper.floor(inWorld.z + COLLISION_RANGE_CHECK);
-
-            /*
-              Something here is causing the game to freeze :/
-             */
-
-            int minChunkX = minX >> 4;
-            int minChunkY = minY >> 4;
-            int minChunkZ = minZ >> 4;
-
-            int maxChunkX = maxX >> 4;
-            int maxChunkY = maxY >> 4;
-            int maxChunkZ = maxZ >> 4;
-
-            entireLoop:
-            if (!(minChunkY > 15 || maxChunkY < 0)) {
-                for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
-                    for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                        if (parent.getChunkClaim().containsChunk(chunkX, chunkZ)) {
-                            final Chunk chunkIn = parent.getChunkAt(chunkX, chunkZ);
-
-                            int minXToCheck = chunkX << 4;
-                            int maxXToCheck = minXToCheck + 15;
-
-                            int minZToCheck = chunkZ << 4;
-                            int maxZToCheck = minZToCheck + 15;
-
-                            minXToCheck = Math.max(minXToCheck, minX);
-                            maxXToCheck = Math.min(maxXToCheck, maxX);
-
-                            minZToCheck = Math.max(minZToCheck, minZ);
-                            maxZToCheck = Math.min(maxZToCheck, maxZ);
-
-                            for (int chunkY = minChunkY; chunkY <= maxChunkY; chunkY++) {
-                                ExtendedBlockStorage storage = chunkIn.storageArrays[chunkY];
-                                if (storage != null) {
-                                    int minYToCheck = chunkY << 4;
-                                    int maxYToCheck = minYToCheck + 15;
-
-                                    minYToCheck = Math.max(minYToCheck, minY);
-                                    maxYToCheck = Math.min(maxYToCheck, maxY);
-
-                                    for (int x = minXToCheck; x <= maxXToCheck; x++) {
-                                        for (int z = minZToCheck; z <= maxZToCheck; z++) {
-                                            for (int y = minYToCheck; y <= maxYToCheck; y++) {
-                                                final IBlockState state = storage
-                                                    .get(x & 15, y & 15, z & 15);
-                                                if (state.getMaterial().isSolid()) {
-
-                                                    // Inject the multithreaded code here
-
-                                                    localCollisionPos.setPos(x, y, z);
-
-                                                    boolean brokeAWorldBlock = handleLikelyCollision(
-                                                        mutablePos,
-                                                        localCollisionPos,
-                                                        parent.getCachedSurroundingChunks()
-                                                            .getBlockState(mutablePos),
-                                                        state);
-
-                                                    if (brokeAWorldBlock) {
-                                                        int positionRemoved = SpatialDetector
-                                                            .getHashWithRespectTo(
-                                                                mutablePos.getX(),
-                                                                mutablePos.getY(),
-                                                                mutablePos.getZ(),
-                                                                centerPotentialHit);
-                                                        cachedHitsToRemove.add(positionRemoved);
-                                                        break entireLoop;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Tests two block positions directly against each other, and figures out
-    // whether a collision is occuring or not
-    private boolean handleLikelyCollision(BlockPos inWorldPos, BlockPos inLocalPos,
-        IBlockState inWorldState,
-        IBlockState inLocalState) {
-        // System.out.println("Handling a likely collision");
-        AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(),
-            inLocalPos.getZ(),
-            inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
-        AxisAlignedBB inGlobalBB = new AxisAlignedBB(inWorldPos.getX(), inWorldPos.getY(),
-            inWorldPos.getZ(),
-            inWorldPos.getX() + 1, inWorldPos.getY() + 1, inWorldPos.getZ() + 1);
-
-        // This changes the box bounding box to the real bounding box, not sure if this
-        // is better or worse for this mod
-        // List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
-        // inLocalBB = colBB.get(0);
-
-        Polygon shipInWorld = new Polygon(inLocalBB,
-            parent.getShipTransformationManager().getCurrentPhysicsTransform(),
-            TransformType.SUBSPACE_TO_GLOBAL);
-        Polygon worldPoly = new Polygon(inGlobalBB);
-        PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-            parent.getShipTransformationManager().normals);
-        if (!collider.seperated) {
-            return handleActualCollision(collider, inWorldPos, inLocalPos, inWorldState,
-                inLocalState);
-        }
-
-        return false;
-    }
 
     // Takes the collision data along all axes generated prior, and creates the
     // ideal value that is to be followed
@@ -560,9 +412,9 @@ public class WorldPhysicsCollider {
             || arrayChunkZ > cache.chunkArray[0].length - 1)
             && cache.chunkArray[arrayChunkX][arrayChunkZ] != null) {
 
-            Vector temp1 = new Vector();
-            Vector temp2 = new Vector();
-            Vector temp3 = new Vector();
+            Vector3d temp1 = new Vector3d();
+            Vector3d temp2 = new Vector3d();
+            Vector3d temp3 = new Vector3d();
 
             Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
             for (int storageY = minY >> 4; storageY <= maxY >> 4; storageY++) {
@@ -657,9 +509,9 @@ public class WorldPhysicsCollider {
     }
 
     private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage,
-        IBitOctree octree, Vector inLocal,
-        Vector inBody,
-        Vector speedInBody, AxisAlignedBB shipBB) {
+        IBitOctree octree, Vector3d inLocal,
+        Vector3d inBody,
+        Vector3d speedInBody, AxisAlignedBB shipBB) {
         if (octree.get(x & 15, y & 15, z & 15)) {
             inLocal.x = x + .5D;
             inLocal.y = y + .5D;
@@ -670,10 +522,9 @@ public class WorldPhysicsCollider {
                 && inLocal.y < shipBB.maxY
                 && inLocal.z > shipBB.minZ && inLocal.z < shipBB.maxZ) {
                 parent.getShipTransformationManager().getCurrentPhysicsTransform()
-                    .transform(inLocal,
-                        TransformType.GLOBAL_TO_SUBSPACE);
+                    .transformPosition(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
 
-                inBody.setSubtraction(inLocal, parent.getCenterCoord());
+                inLocal.sub(parent.getCenterCoord(), inBody);
                 // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
                 // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
 

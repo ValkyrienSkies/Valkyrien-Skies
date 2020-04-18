@@ -1,17 +1,18 @@
 package org.valkyrienskies.mixin.util.math;
 
-import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 /**
  * Necessary for now. I just wish Mojang would delete the distance function.
@@ -51,16 +52,15 @@ public abstract class MixinChunkPos {
                 new BlockPos(d0, 127, d1));
 
             if (physicsObject.isPresent()) {
-                Vector entityPosInLocal = new Vector(entityIn);
+                Vector3d entityPosInLocal = new Vector3d(entityIn.posX, entityIn.posY, entityIn.posZ);
                 // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
                 // entityPosInLocal);
                 physicsObject.get()
                     .getShipTransformationManager()
                     .getCurrentTickTransform()
-                    .transform(entityPosInLocal,
-                        TransformType.GLOBAL_TO_SUBSPACE);
-                entityPosInLocal.subtract(d0, entityPosInLocal.y, d1);
-                return entityPosInLocal.lengthSq();
+                    .transformPosition(entityPosInLocal, TransformType.GLOBAL_TO_SUBSPACE);
+                entityPosInLocal.sub(d0, entityPosInLocal.y, d1);
+                return entityPosInLocal.lengthSquared();
             }
         } catch (Exception e) {
             e.printStackTrace();

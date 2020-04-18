@@ -3,11 +3,16 @@ package org.valkyrienskies.mod.common.util;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import org.joml.Matrix4dc;
+import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
@@ -179,6 +184,60 @@ public class ValkyrienUtils {
 
     public static IPhysObjectWorld getPhysObjWorld(World world) {
         return ((IHasShipManager) world).getManager();
+    }
+
+    /**
+     * Applies the given transform matrix to the position/velocity/look of the given entity.
+     * @param transform The transform matrix to be applied.
+     * @param entity The entity that will be transformed.
+     */
+    public static void transformEntity(Matrix4dc transform, Entity entity) {
+        Vec3d entityLookMc = entity.getLook(1.0F);
+
+        Vector3d entityPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
+        Vector3d entityLook = new Vector3d(entityLookMc.x, entityLookMc.y, entityLookMc.z);
+        Vector3d entityMotion = new Vector3d(entity.motionX, entity.motionY, entity.motionZ);
+
+        if (entity instanceof EntityFireball) {
+            EntityFireball ball = (EntityFireball) entity;
+            entityMotion.x = ball.accelerationX;
+            entityMotion.y = ball.accelerationY;
+            entityMotion.z = ball.accelerationZ;
+        }
+
+        transform.transformPosition(entityPos);
+        transform.transformDirection(entityLook);
+        transform.transformDirection(entityMotion);
+
+        entityLook.normalize();
+
+        // This is correct, works properly when tested with cows
+        if (entity instanceof EntityLiving) {
+            EntityLiving living = (EntityLiving) entity;
+            living.rotationYawHead = entity.rotationYaw;
+            living.prevRotationYawHead = entity.rotationYaw;
+        }
+
+        // ===== Fix change the entity rotation to be proper relative to ship space =====
+        Vector3dc entityLookImmutable = new Vector3d(entityLook.x, entityLook.y, entityLook.z);
+        double pitch = VSMath.getPitchFromVector(entityLookImmutable);
+        double yaw = VSMath.getYawFromVector(entityLookImmutable, pitch);
+
+        entity.rotationYaw = (float) yaw;
+        entity.rotationPitch = (float) pitch;
+
+        if (entity instanceof EntityFireball) {
+            EntityFireball ball = (EntityFireball) entity;
+            ball.accelerationX = entityMotion.x;
+            ball.accelerationY = entityMotion.y;
+            ball.accelerationZ = entityMotion.z;
+        }
+
+        entity.motionX = entityMotion.x;
+        entity.motionY = entityMotion.y;
+        entity.motionZ = entityMotion.z;
+
+        entity.setPosition(entityPos.x, entityPos.y, entityPos.z);
     }
 
 }

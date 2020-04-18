@@ -1,8 +1,9 @@
 package com.best108.atom_animation_reader.impl;
 
-import java.util.List;
 import net.minecraft.client.renderer.GlStateManager;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
+
+import java.util.List;
 
 public class BasicAnimationTransform {
 
@@ -49,7 +50,7 @@ public class BasicAnimationTransform {
         }
     }
 
-    public void changePivot(Vector pivotChange, double keyframe) {
+    public void changePivot(Vector3d pivotChange, double keyframe) {
         double value = interpolator.getValue(keyframe);
 
         switch (animationTransform) {

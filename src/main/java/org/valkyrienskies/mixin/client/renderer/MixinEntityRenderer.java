@@ -17,15 +17,11 @@ import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -41,10 +37,10 @@ import valkyrienwarfare.api.TransformType;
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
 
-    protected final Vector eyeVector = new Vector();
-    protected final Vector cachedPosition = new Vector();
-    protected EntityShipMountData mountData;
-    protected float vs_partialTicks;
+    private final Vector3d eyeVector = new Vector3d();
+    private final Vector3d cachedPosition = new Vector3d();
+    private EntityShipMountData mountData;
+    public float vs_partialTicks;
 
     @Shadow
     @Final
@@ -69,7 +65,7 @@ public abstract class MixinEntityRenderer {
             this.vs_partialTicks = partialTicks;
             EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entity);
             this.mountData = mountData.isMounted() ? mountData : null;
-            this.eyeVector.setValue(0.0d, entity.getEyeHeight() + (
+            this.eyeVector.set(0.0d, entity.getEyeHeight() + (
                     entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPlayerSleeping()
                             ? 0.7d : 0.0d), 0.0d);
         }
@@ -77,11 +73,11 @@ public abstract class MixinEntityRenderer {
         if (this.mountData != null) {
 
             mountData.getMountedShip().getShipTransformationManager().getRenderTransform()
-                .rotate(this.eyeVector, TransformType.SUBSPACE_TO_GLOBAL);
+                .transformDirection(this.eyeVector, TransformType.SUBSPACE_TO_GLOBAL);
 
-            this.cachedPosition.setValue(this.mountData.getMountPos());
+            this.cachedPosition.set(JOML.convert(this.mountData.getMountPos()));
             this.mountData.getMountedShip().getShipTransformationManager().getRenderTransform()
-                    .transform(this.cachedPosition, TransformType.SUBSPACE_TO_GLOBAL);
+                    .transformPosition(this.cachedPosition, TransformType.SUBSPACE_TO_GLOBAL);
         }
 
         return entity;
@@ -174,10 +170,10 @@ public abstract class MixinEntityRenderer {
             Entity entity = this.mc.getRenderViewEntity();
 
             if (this.mountData != null) {
-                Vector playerPosInLocal = new Vector(this.mountData.getMountPos());
+                Vector3d playerPosInLocal = JOML.convert(this.mountData.getMountPos());
 
-                playerPosInLocal.subtract(0.5d, 0.6875d, 0.5d);
-                playerPosInLocal.roundToWhole();
+                playerPosInLocal.sub(0.5, 0.6875, 0.5);
+                playerPosInLocal.round();
 
                 BlockPos bedPos = new BlockPos(playerPosInLocal.x, playerPosInLocal.y,
                         playerPosInLocal.z);

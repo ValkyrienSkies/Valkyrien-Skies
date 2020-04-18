@@ -4,7 +4,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.ship_handling.ShipInertiaData;
 
@@ -48,7 +47,7 @@ public class BasicCenterOfMassProvider implements IPhysicsObjectCenterOfMassProv
         transposed.get(gameMoITensor);
 
         double gameTickMass = inertiaData.getGameTickMass();
-        Vector prevCenterOfMass = new Vector(inertiaData.getGameTickCenterOfMass());
+        Vector3d prevCenterOfMass = new Vector3d(inertiaData.getGameTickCenterOfMass());
         if (gameTickMass > .0001D) {
             Vector3d newCenterOfMass = inertiaData.getGameTickCenterOfMass().mul(gameTickMass, new Vector3d());
             newCenterOfMass.add(x * addedMass, y * addedMass, z * addedMass);

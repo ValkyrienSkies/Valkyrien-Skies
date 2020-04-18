@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.physics.collision.CollisionInformationHolder;
 import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.PhysPolygonCollider;
@@ -28,7 +28,7 @@ public class ShipCollisionTask implements Callable<Void> {
     private final int tasksToCheck;
     private final MutableBlockPos mutablePos;
     private final MutableBlockPos inLocalPos;
-    private final Vector inWorld;
+    private final Vector3d inWorld;
     private final List<CollisionInformationHolder> collisionInformationGenerated;
     private IBlockState inWorldState;
     // public TIntArrayList foundPairs = new TIntArrayList();
@@ -38,7 +38,7 @@ public class ShipCollisionTask implements Callable<Void> {
         this.toTask = toTask;
         this.mutablePos = new MutableBlockPos();
         this.inLocalPos = new MutableBlockPos();
-        this.inWorld = new Vector();
+        this.inWorld = new Vector3d();
         this.collisionInformationGenerated = new ArrayList<>();
         this.inWorldState = null;
 
@@ -84,9 +84,8 @@ public class ShipCollisionTask implements Callable<Void> {
         inWorld.y = mutablePos.getY() + .5;
         inWorld.z = mutablePos.getZ() + .5;
 
-//        toTask.getParent().coordTransform.fromGlobalToLocal(inWorld);
         toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
-            .transform(inWorld, TransformType.GLOBAL_TO_SUBSPACE);
+            .transformPosition(inWorld, TransformType.GLOBAL_TO_SUBSPACE);
 
         int midX = MathHelper.floor(inWorld.x + .5D);
         int midY = MathHelper.floor(inWorld.y + .5D);

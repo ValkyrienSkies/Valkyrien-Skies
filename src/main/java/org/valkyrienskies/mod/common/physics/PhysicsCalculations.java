@@ -14,7 +14,6 @@ import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
@@ -394,13 +393,13 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      */
     private void integrateAngularVelocity() {
         // The body angular velocity vector, in World coordinates
-        Vector angularVelocity = new Vector(getAngularVelocity());
-        if (angularVelocity.isZero()) {
+        Vector3d angularVelocity = getAngularVelocity();
+        if (angularVelocity.lengthSquared() < .001) {
             // Angular velocity is zero, so the rotation hasn't changed.
             return;
         }
 
-        Vector3dc angularVelInBody = angularVelocity.toVector3d(); //.rotate(physRotation.invert(new Quaterniond()));
+        Vector3dc angularVelInBody = new Vector3d(angularVelocity);
 
         AxisAngle4d axisAngle4d = new AxisAngle4d(angularVelInBody.length() * getPhysicsTimeDeltaPerPhysTick(), angularVelInBody.x(), angularVelInBody.y(), angularVelInBody.z());
         axisAngle4d.normalize();

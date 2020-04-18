@@ -5,7 +5,7 @@
 
 package org.valkyrienskies.mod.common.network;
 
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
 
 public interface IExtendedCPacketPlayer {
 
@@ -23,7 +23,7 @@ public interface IExtendedCPacketPlayer {
     void setLocalCoords(double localX, double localY, double localZ);
 
     // Returns a vector copy with the local xyz coordinates with reference to the ship.
-    Vector getLocalCoordsVector();
+    Vector3d getLocalCoordsVector();
 
     // Returns the local X coord.
     double getLocalX();

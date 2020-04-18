@@ -11,7 +11,6 @@ import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
 import org.valkyrienskies.mod.common.physics.management.ShipTransformationManager;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -90,7 +89,7 @@ public class EntityDraggable {
             Matrix4d betweenTransform = ShipTransform.createTransform(
                     coordTransform.getPrevTickTransform(), coordTransform.getCurrentTickTransform());
 
-            RotationMatrices.applyTransform(betweenTransform, entity);
+            ValkyrienUtils.transformEntity(betweenTransform, entity);
 
             Vector3dc newPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
 

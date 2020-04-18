@@ -14,9 +14,9 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -118,7 +118,7 @@ public class VSWorldEventListener implements IWorldEventListener {
         if (!worldObj.isRemote) {
             for (EntityPlayer entityplayermp : worldObj.playerEntities) {
                 if (entityplayermp != null && entityplayermp.getEntityId() != breakerId) {
-                    Vector posVector = new Vector(pos.getX(), pos.getY(), pos.getZ());
+                    Vector3d posVector = new Vector3d(pos.getX(), pos.getY(), pos.getZ());
 
                     Optional<PhysicsObject> physicsObject = ValkyrienUtils
                         .getPhysoManagingBlock(worldObj, pos);
@@ -126,8 +126,7 @@ public class VSWorldEventListener implements IWorldEventListener {
                     physicsObject.ifPresent(object -> object
                         .getShipTransformationManager()
                         .getCurrentTickTransform()
-                        .transform(posVector,
-                            TransformType.SUBSPACE_TO_GLOBAL));
+                        .transformPosition(posVector, TransformType.SUBSPACE_TO_GLOBAL));
 
                     double d0 = posVector.x - entityplayermp.posX;
                     double d1 = posVector.y - entityplayermp.posY;

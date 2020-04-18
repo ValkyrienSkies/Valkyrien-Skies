@@ -6,6 +6,7 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkProviderServer;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.Vector;
 import valkyrienwarfare.api.TransformType;
 
@@ -33,23 +34,23 @@ public class PhysicsParticleManager {
         List<PhysicsParticle> aliveParticles = new ArrayList<PhysicsParticle>(
             physicsParticles.size());
         MutableBlockPos bufferBlockPos = new MutableBlockPos();
-        Vector bufferVector = new Vector();
-        Vector bufferVectorForcePos = new Vector();
-        Vector bufferVectorForce = new Vector();
+        Vector3d bufferVector = new Vector3d();
+        Vector3d bufferVectorForcePos = new Vector3d();
+        Vector3d bufferVectorForce = new Vector3d();
         for (PhysicsParticle physicsParticle : physicsParticles) {
             physicsParticle.tickParticle(parent, bufferBlockPos, bufferVector, timeStep);
             if (!physicsParticle.isParticleDead()) {
                 aliveParticles.add(physicsParticle);
             } else {
                 if (physicsParticle.addMomentumToShip) {
-                    bufferVectorForcePos
-                        .setValue(
+                    bufferVectorForcePos.set(
                             physicsParticle.posX - parent.getParent().getShipTransform().getPosX(),
                             physicsParticle.posY - parent.getParent().getShipTransform().getPosY(),
                             physicsParticle.posZ - parent.getParent().getShipTransform().getPosZ());
-                    bufferVectorForce.setValue(physicsParticle.velX * physicsParticle.mass,
-                        physicsParticle.velY * physicsParticle.mass,
-                        physicsParticle.velZ * physicsParticle.mass);
+                    bufferVectorForce.set(
+                            physicsParticle.velX * physicsParticle.mass,
+                            physicsParticle.velY * physicsParticle.mass,
+                            physicsParticle.velZ * physicsParticle.mass);
                     parent.addForceAtPoint(bufferVectorForcePos, bufferVectorForce);
                 }
             }
@@ -90,7 +91,7 @@ public class PhysicsParticleManager {
         }
 
         public void tickParticle(PhysicsCalculations physicsSource, MutableBlockPos bufferBlockPos,
-            Vector bufferVector, float timeStep) {
+            Vector3d bufferVector, float timeStep) {
             // First move the particle forward
             this.posX += velX * timeStep;
             this.posY += velY * timeStep;
@@ -106,10 +107,10 @@ public class PhysicsParticleManager {
             }
             // If the particle still isn't dead then check for collision in ship
             if (!isParticleDead) {
-                bufferVector.setValue(posX, posY, posZ);
+                bufferVector.set(posX, posY, posZ);
                 physicsSource.getParent().getShipTransformationManager()
                     .getCurrentPhysicsTransform()
-                    .transform(bufferVector, TransformType.GLOBAL_TO_SUBSPACE);
+                    .transformPosition(bufferVector, TransformType.GLOBAL_TO_SUBSPACE);
                 bufferBlockPos.setPos(bufferVector.x, bufferVector.y, bufferVector.z);
                 if (!canParticlePassThrough(physicsSource.getParent().getWorld(), bufferBlockPos)) {
                     this.isParticleDead = true;

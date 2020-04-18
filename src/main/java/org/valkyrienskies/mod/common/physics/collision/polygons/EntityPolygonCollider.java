@@ -1,7 +1,7 @@
 package org.valkyrienskies.mod.common.physics.collision.polygons;
 
 import lombok.Getter;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.physics.collision.EntityCollisionObject;
 
 /**
@@ -14,19 +14,19 @@ import org.valkyrienskies.mod.common.physics.collision.EntityCollisionObject;
 public class EntityPolygonCollider {
 
     @Getter
-    private final Vector[] collisionAxes;
+    private final Vector3dc[] collisionAxes;
     @Getter
     private final EntityCollisionObject[] collisions;
     private final EntityPolygon entity;
     private final Polygon block;
-    private final Vector entityVelocity;
+    private final Vector3dc entityVelocity;
     private boolean separated = false;
     @Getter
     private int minDistanceIndex;
     private boolean originallySeparated;
 
-    public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector[] axes,
-        Vector entityVel) {
+    public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector3dc[] axes,
+        Vector3dc entityVel) {
         collisionAxes = axes;
         entity = movable;
         block = stationary;

@@ -1,8 +1,8 @@
 package org.valkyrienskies.addon.control.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.nodenetwork.BasicForceNodeTileEntity;
-import org.valkyrienskies.mod.common.math.Vector;
 
 public class TileEntityPropellerEngine extends BasicForceNodeTileEntity {
 
@@ -11,8 +11,8 @@ public class TileEntityPropellerEngine extends BasicForceNodeTileEntity {
     private boolean isPowered;
     private double propellerAngularVelocity;
 
-    public TileEntityPropellerEngine(Vector normalVeclocityUnoriented,
-        boolean isForceOutputOriented, double maxThrust) {
+    public TileEntityPropellerEngine(Vector3dc normalVeclocityUnoriented,
+                                     boolean isForceOutputOriented, double maxThrust) {
         super(normalVeclocityUnoriented, isForceOutputOriented, maxThrust);
         this.isPowered = false;
         this.propellerAngle = Math.random() * 90D;

@@ -1,8 +1,5 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
-import java.util.List;
-import javax.annotation.Nullable;
-
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -14,10 +11,13 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockGiantPropellerPart extends BaseBlock implements ITileEntityProvider,
     IBlockForceProvider {
@@ -37,11 +37,8 @@ public class BlockGiantPropellerPart extends BaseBlock implements ITileEntityPro
 
     @Nullable
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
-        PhysicsObject physicsObject, double secondsToApply) {
-        if (true) {
-//            return new Vector(0, 1000 * secondsToApply, 0);
-        }
+    public Vector3dc getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+                                              PhysicsObject physicsObject, double secondsToApply) {
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityGiantPropellerPart) {
             TileEntityGiantPropellerPart tileCompressorPart = (TileEntityGiantPropellerPart) tileEntity;

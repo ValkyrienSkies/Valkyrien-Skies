@@ -1,11 +1,12 @@
 package org.valkyrienskies.mod.common.physics.collision.polygons;
 
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.math.VSMath;
-import org.valkyrienskies.mod.common.math.Vector;
 
 public class PhysCollisionObject {
 
-    public final Vector collision_normal;
+    public final Vector3dc collision_normal;
     public final Polygon movable, fixed;
     public double penetrationDistance;
     public boolean seperated;
@@ -13,9 +14,9 @@ public class PhysCollisionObject {
     private double[] blockMinMax;
     private double movMaxFixMin;
     private double movMinFixMax;
-    private Vector firstContactPoint;
+    private Vector3dc firstContactPoint;
 
-    public PhysCollisionObject(Polygon movable_, Polygon stationary, Vector axes) {
+    public PhysCollisionObject(Polygon movable_, Polygon stationary, Vector3dc axes) {
         collision_normal = axes;
         movable = movable_;
         fixed = stationary;
@@ -35,14 +36,14 @@ public class PhysCollisionObject {
         // Set the penetration to be the smaller distance
         if (Math.abs(movMaxFixMin) > Math.abs(movMinFixMax)) {
             penetrationDistance = movMinFixMax;
-            for (Vector v : movable.getVertices()) {
+            for (Vector3dc v : movable.getVertices()) {
                 if (v.dot(collision_normal) == playerMinMax[1]) {
                     firstContactPoint = v;
                 }
             }
         } else {
             penetrationDistance = movMaxFixMin;
-            for (Vector v : movable.getVertices()) {
+            for (Vector3dc v : movable.getVertices()) {
                 if (v.dot(collision_normal) == playerMinMax[0]) {
                     firstContactPoint = v;
                 }
@@ -51,15 +52,16 @@ public class PhysCollisionObject {
         seperated = false;
     }
 
-    public Vector getSecondContactPoint() {
+    /*
+    public Vector3dc getSecondContactPoint() {
         if (Math.abs(movMaxFixMin) > Math.abs(movMinFixMax)) {
-            for (Vector v : fixed.getVertices()) {
+            for (Vector3dc v : fixed.getVertices()) {
                 if (v.dot(collision_normal) == blockMinMax[0]) {
                     return v;
                 }
             }
         } else {
-            for (Vector v : fixed.getVertices()) {
+            for (Vector3dc v : fixed.getVertices()) {
                 if (v.dot(collision_normal) == blockMinMax[1]) {
                     return v;
                 }
@@ -67,14 +69,10 @@ public class PhysCollisionObject {
         }
         return null;
     }
+     */
 
-    public Vector getResponse() {
-        return collision_normal.getProduct(penetrationDistance);
+    public Vector3d getResponse() {
+        return collision_normal.mul(penetrationDistance, new Vector3d());
     }
 
-    public void setResponse(Vector v) {
-        v.x = collision_normal.x * penetrationDistance;
-        v.y = collision_normal.y * penetrationDistance;
-        v.z = collision_normal.z * penetrationDistance;
-    }
 }

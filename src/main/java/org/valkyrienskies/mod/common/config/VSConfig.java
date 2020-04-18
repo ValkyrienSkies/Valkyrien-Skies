@@ -1,18 +1,15 @@
 package org.valkyrienskies.mod.common.config;
 
 import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.Config.Comment;
-import net.minecraftforge.common.config.Config.Name;
-import net.minecraftforge.common.config.Config.RangeInt;
-import net.minecraftforge.common.config.Config.RequiresMcRestart;
-import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.common.config.Config.*;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.command.config.ShortName;
-import org.valkyrienskies.mod.common.math.Vector;
 
 @SuppressWarnings("WeakerAccess") // NOTE: Any forge config option MUST be "public"
 @Config(
@@ -94,16 +91,16 @@ public class VSConfig extends VSConfigTemplate {
         public double basicEnginePower = 2000;
 
         @RequiresMcRestart
-        public double advancedEnginePower = 2500;
+        public double advancedEnginePower = 5000;
 
         @RequiresMcRestart
-        public double eliteEnginePower = 5000;
+        public double eliteEnginePower = 10000;
 
         @RequiresMcRestart
-        public double ultimateEnginePower = 10000;
+        public double ultimateEnginePower = 20000;
 
         @RequiresMcRestart
-        public double redstoneEnginePower = 500;
+        public double redstoneEnginePower = 50000;
 
     }
 
@@ -119,8 +116,8 @@ public class VSConfig extends VSConfigTemplate {
 
     public static String[] blockMass = {"minecraft:grass=1500"};
 
-    public static Vector gravity() {
-        return new Vector(gravityVecX, gravityVecY, gravityVecZ);
+    public static Vector3dc gravity() {
+        return new Vector3d(gravityVecX, gravityVecY, gravityVecZ);
     }
 
     /**

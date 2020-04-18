@@ -308,30 +308,29 @@ public class WorldPhysicsCollider {
             toCollideWith = collider.collisions[collider.minDistanceIndex];
         }
 
-        Vector positionInBody = collider.entity.getCenter();
-        positionInBody.subtract(
+        Vector3d positionInBody = collider.entity.getCenter();
+        positionInBody.sub(
             parent.getShipTransform().getPosX(),
             parent.getShipTransform().getPosY(),
-            parent.getShipTransform().getPosZ());
+            parent.getShipTransform().getPosZ()
+        );
 
         double impulseApplied = 1D;
 
-        Vector[] collisionPoints = PolygonCollisionPointFinder
+        Vector3dc[] collisionPoints = PolygonCollisionPointFinder
             .getPointsOfCollisionForPolygons(toCollideWith);
 
         impulseApplied /= collisionPoints.length;
 
-        for (Vector collisionPos : collisionPoints) {
-            Vector inBody = collisionPos.getSubtraction(
-                new Vector(
-                    parent.getShipTransform().getPosX(),
-                    parent.getShipTransform().getPosY(),
-                    parent.getShipTransform().getPosZ()));
-            inBody.multiply(-1D);
-            Vector momentumAtPoint = calculator
+        for (Vector3dc collisionPos : collisionPoints) {
+            Vector3d inBody = new Vector3d(
+                    collisionPos.x() - parent.getShipTransform().getPosX(),
+                    collisionPos.y() -parent.getShipTransform().getPosY(),
+                    collisionPos.z() - parent.getShipTransform().getPosZ());
+            Vector3d momentumAtPoint = calculator
                 .getVelocityAtPoint(inBody);
-            Vector axis = toCollideWith.collision_normal;
-            Vector offsetVector = toCollideWith.getResponse();
+            Vector3dc axis = toCollideWith.collision_normal;
+            Vector3d offsetVector = toCollideWith.getResponse();
             calculateCollisionImpulseForce(inBody, momentumAtPoint, axis, offsetVector, false,
                 false, impulseApplied);
         }
@@ -341,19 +340,18 @@ public class WorldPhysicsCollider {
 
     // Finally, the end of all this spaghetti code! This step takes all of the math
     // generated before, and it directly adds the result to Ship velocities
-    private void calculateCollisionImpulseForce(org.valkyrienskies.mod.common.math.Vector inBody,
-        Vector velocityAtPointOfCollision,
-        Vector axis,
-        Vector offsetVector, boolean didBlockBreakInShip,
-        boolean didBlockBreakInWorld, double impulseApplied) {
-        Vector firstCross = inBody.cross(axis);
-        Vector3d firstCrossCopy = firstCross.toVector3d();
+    private void calculateCollisionImpulseForce(Vector3dc inBody,
+                                                Vector3dc velocityAtPointOfCollision,
+                                                Vector3dc axis,
+                                                Vector3dc offsetVector,
+                                                boolean didBlockBreakInShip,
+                                                boolean didBlockBreakInWorld,
+                                                double impulseApplied) {
+        Vector3d firstCross = inBody.cross(axis, new Vector3d());
 
-        calculator.getPhysInvMOITensor().transform(firstCrossCopy);
+        calculator.getPhysInvMOITensor().transform(firstCross);
 
-        firstCross.setValue(firstCrossCopy);
-
-        org.valkyrienskies.mod.common.math.Vector secondCross = firstCross.cross(inBody);
+        Vector3d secondCross = firstCross.cross(inBody);
 
         double impulseMagnitude = -velocityAtPointOfCollision.dot(axis)
             / (calculator.getInvMass() + secondCross.dot(axis));
@@ -368,8 +366,7 @@ public class WorldPhysicsCollider {
             // impulseMagnitude *= .5D;
         }
 
-        org.valkyrienskies.mod.common.math.Vector collisionImpulseForce = new org.valkyrienskies.mod.common.math.Vector(
-            axis, impulseMagnitude);
+        Vector3d collisionImpulseForce = axis.mul(impulseMagnitude, new Vector3d());
 
         // This is just an optimized way to add this force as quickly as possible.
         // Added collisionImpulseForce.dot(inBody) > 0 to force all collision to move in
@@ -379,49 +376,40 @@ public class WorldPhysicsCollider {
             double collisionVelocity = velocityAtPointOfCollision.dot(axis);
 
             addFrictionToNormalForce(velocityAtPointOfCollision, collisionImpulseForce, inBody);
-            calculator.getLinearVelocity().add(collisionImpulseForce.getProduct(calculator.getInvMass()).toVector3d(), calculator.getLinearVelocity());
-            org.valkyrienskies.mod.common.math.Vector thirdCross = inBody
-                .cross(collisionImpulseForce);
+            calculator.getLinearVelocity().add(collisionImpulseForce.mul(calculator.getInvMass(), new Vector3d()));
+            Vector3d thirdCross = inBody.cross(collisionImpulseForce, new Vector3d());
 
-            Vector3d thirdCrossTemp = thirdCross.toVector3d();
+            calculator.getPhysInvMOITensor().transform(thirdCross);
 
-            calculator.getPhysInvMOITensor().transform(thirdCrossTemp);
-
-            thirdCross.setValue(thirdCrossTemp);
-            calculator.getAngularVelocity().add(thirdCross.toVector3d(), calculator.getAngularVelocity());
+            calculator.getAngularVelocity().add(thirdCross, calculator.getAngularVelocity());
         }
     }
 
     // Applies the friction force generated by the collision.
     // The magnitude of this vector must be adjusted to minimize energy
-    private void addFrictionToNormalForce(org.valkyrienskies.mod.common.math.Vector momentumAtPoint,
-        org.valkyrienskies.mod.common.math.Vector impulseVector,
-        org.valkyrienskies.mod.common.math.Vector inBody) {
-        org.valkyrienskies.mod.common.math.Vector contactNormal = new org.valkyrienskies.mod.common.math.Vector(
-            impulseVector);
+    private void addFrictionToNormalForce(Vector3dc momentumAtPoint, Vector3d impulseVector, Vector3dc inBody) {
+        Vector3d contactNormal = new Vector3d(impulseVector);
         contactNormal.normalize();
 
-        org.valkyrienskies.mod.common.math.Vector frictionVector = new org.valkyrienskies.mod.common.math.Vector(
-            momentumAtPoint);
+        Vector3d frictionVector = new Vector3d(momentumAtPoint);
         frictionVector.normalize();
-        frictionVector.multiply(impulseVector.length() * KINETIC_FRICTION_COEFFICIENT);
+        frictionVector.mul(impulseVector.length() * KINETIC_FRICTION_COEFFICIENT);
 
         if (frictionVector.dot(momentumAtPoint) > 0) {
-            frictionVector.multiply(-1D);
+            frictionVector.mul(-1D);
         }
 
         // Remove all friction components along the impulse vector
         double frictionImpulseDot = frictionVector.dot(contactNormal);
-        org.valkyrienskies.mod.common.math.Vector toRemove = contactNormal
-            .getProduct(frictionImpulseDot);
-        frictionVector.subtract(toRemove);
+        Vector3d toRemove = contactNormal.mul(frictionImpulseDot, new Vector3d());
+        frictionVector.sub(toRemove);
 
         double inertiaScalarAlongAxis = parent.getPhysicsCalculations()
             .getInertiaAlongRotationAxis();
         // The change in velocity vector
         Vector3dc initialVelocity = parent.getPhysicsCalculations().getLinearVelocity();
         // Don't forget to multiply by delta t
-        Vector3d deltaVelocity = frictionVector.toVector3d();
+        Vector3d deltaVelocity = new Vector3d(frictionVector);
         deltaVelocity.mul(parent.getPhysicsCalculations().getInvMass() * parent.getPhysicsCalculations()
                 .getDragForPhysTick());
 
@@ -429,21 +417,17 @@ public class WorldPhysicsCollider {
         double B = 2 * initialVelocity.dot(deltaVelocity);
         double C = deltaVelocity.lengthSquared();
 
-        org.valkyrienskies.mod.common.math.Vector initialAngularVelocity = new Vector(parent
-            .getPhysicsCalculations().getAngularVelocity());
-        org.valkyrienskies.mod.common.math.Vector deltaAngularVelocity = inBody
-            .cross(frictionVector);
+        Vector3d initialAngularVelocity = new Vector3d(parent.getPhysicsCalculations().getAngularVelocity());
+        Vector3d deltaAngularVelocity = inBody.cross(frictionVector, new Vector3d());
         // This might need to be 1 / inertiaScalarAlongAxis
-        deltaAngularVelocity
-            .multiply(
-                parent.getPhysicsCalculations().getDragForPhysTick() / inertiaScalarAlongAxis);
+        deltaAngularVelocity.mul(parent.getPhysicsCalculations().getDragForPhysTick() / inertiaScalarAlongAxis);
 
-        double D = initialAngularVelocity.lengthSq();
+        double D = initialAngularVelocity.lengthSquared();
         double E = 2 * deltaAngularVelocity.dot(initialAngularVelocity);
-        double F = deltaAngularVelocity.lengthSq();
+        double F = deltaAngularVelocity.lengthSquared();
 
         // This is tied to PhysicsCalculations line 430
-        if (initialAngularVelocity.lengthSq() < .05 && initialVelocity.lengthSquared() < .05) {
+        if (initialAngularVelocity.lengthSquared() < .05 && initialVelocity.lengthSquared() < .05) {
             // Remove rotational friction if we are rotating slow enough
             D = E = F = 0;
         }
@@ -463,7 +447,7 @@ public class WorldPhysicsCollider {
             scaleFactor = 0;
         } else {
             scaleFactor = Math.max(0, Math.min(scaleFactor, 1));
-            frictionVector.multiply(scaleFactor);
+            frictionVector.mul(scaleFactor);
         }
 
         // System.out.println(scaleFactor);

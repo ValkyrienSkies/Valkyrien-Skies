@@ -214,7 +214,7 @@ public class PhysObjectRenderManager {
         AxisAlignedBB shipBB = parent.getShipBB().offset(offsetX, offsetY, offsetZ);
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
-        Vector centerOfMass = new Vector(parent.getShipData().getInertiaData().getGameTickCenterOfMass());
+        Vector3dc centerOfMass = parent.getShipData().getInertiaData().getGameTickCenterOfMass();
 
         Vector centerOfMassPos = new Vector(centerOfMass);
         parent.getShipTransformationManager().getRenderTransform().transform(centerOfMassPos, TransformType.SUBSPACE_TO_GLOBAL);
@@ -263,7 +263,7 @@ public class PhysObjectRenderManager {
         GlStateManager.depthMask(true);
 
         // Draw a text box that shows the numerical value of the center of mass.
-        String centerOfMassStr = "Center of Mass: " + centerOfMass.toVector3d().toString(new DecimalFormat("############.##"));
+        String centerOfMassStr = "Center of Mass: " + (new Vector3d(centerOfMass)).toString(new DecimalFormat("############.##"));
         renderTextBox(centerOfMassStr, renderTransform.getPosX(), renderTransform.getPosY() + .5,
             renderTransform.getPosZ(), offsetX, offsetY, offsetZ);
 

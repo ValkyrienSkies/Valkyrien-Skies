@@ -3,7 +3,8 @@ package org.valkyrienskies.mod.common.ship_handling;
 import lombok.Data;
 import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 
 import javax.annotation.Nonnull;
 
@@ -17,5 +18,5 @@ public class ShipInertiaData {
     @Nonnull
     Matrix3dc gameMoITensor = new Matrix3d();
     @Nonnull
-    Vector gameTickCenterOfMass = new Vector();
+    Vector3dc gameTickCenterOfMass = new Vector3d();
 }

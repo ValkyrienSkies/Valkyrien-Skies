@@ -21,6 +21,8 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
@@ -290,13 +292,13 @@ public class PhysicsObject implements IPhysicsEntity {
             MutableBlockPos newPos = new MutableBlockPos();
 
             ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
-            Vector position = new Vector(currentTransform.getPosX(), currentTransform.getPosY(),
+            Vector3dc position = new Vector3d(currentTransform.getPosX(), currentTransform.getPosY(),
                     currentTransform.getPosZ());
 
             BlockPos centerDifference = new BlockPos(
-                    Math.round(getCenterCoord().x - position.x),
-                    Math.round(getCenterCoord().y - position.y),
-                    Math.round(getCenterCoord().z - position.z));
+                    Math.round(getCenterCoord().x - position.x()),
+                    Math.round(getCenterCoord().y - position.y()),
+                    Math.round(getCenterCoord().z - position.z()));
 
             for (BlockPos oldPos : this.getBlockPositions()) {
                 newPos.setPos(oldPos.getX() - centerDifference.getX(),

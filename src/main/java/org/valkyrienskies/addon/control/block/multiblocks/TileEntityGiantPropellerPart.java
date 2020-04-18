@@ -7,12 +7,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.block.torque.*;
 import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import java.util.List;
@@ -41,8 +42,8 @@ public class TileEntityGiantPropellerPart extends
     }
 
     @Override
-    public VectorImmutable getForceOutputNormal(double secondsToApply,
-        PhysicsObject physicsObject) {
+    public Vector3dc getForceOutputNormal(double secondsToApply,
+                                          PhysicsObject physicsObject) {
         if (!this.isPartOfAssembledMultiblock()) {
             return null;
         } else {
@@ -59,26 +60,26 @@ public class TileEntityGiantPropellerPart extends
                 } else if (this.getRotationNode().get().getAngularVelocity() == 0) {
                     return null;
                 }
-                Vector facingDir = new Vector(this.getPropellerFacing().getDirectionVec());
+                Vector3d facingDir = JOML.convertTo3d(this.getPropellerFacing().getDirectionVec());
                 final double angularVelocity = this.getRotationNode().get().getAngularVelocity();
                 if (angularVelocity != 0) {
                     // We don't want the propeller animation and force to be backwards.
-                    facingDir.multiply(-Math.signum(angularVelocity));
+                    facingDir.mul(-Math.signum(angularVelocity));
                 }
-                return new VectorImmutable(facingDir);
+                return facingDir;
             }
         }
     }
 
     @Override
-    public double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject) {
+    public double getThrustMagnitude(PhysicsObject physicsObject) {
         if (!this.isPartOfAssembledMultiblock()) {
             return 0;
         } else {
             if (!this.isMaster()) {
                 TileEntityGiantPropellerPart master = this.getMaster();
                 if (master != null) {
-                    return master.getThrustMagnitude(secondsToApply, physicsObject);
+                    return master.getThrustMagnitude(physicsObject);
                 } else {
                     return 0;
                 }

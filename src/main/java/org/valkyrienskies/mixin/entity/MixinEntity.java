@@ -1,12 +1,13 @@
 package org.valkyrienskies.mixin.entity;
 
-import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,11 +16,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
@@ -44,7 +47,7 @@ public abstract class MixinEntity implements IDraggable {
     public double posZ;
     private PhysicsObject worldBelowFeet;
     private PhysicsObject forcedRelativeWorldBelowFeet;
-    private Vector velocityAddedToPlayer = new Vector();
+    private Vector3dc velocityAddedToPlayer = new Vector3d();
     private double yawDifVelocity;
     private boolean cancelNextMove = false;
     private Vector positionInShipSpace;
@@ -62,12 +65,12 @@ public abstract class MixinEntity implements IDraggable {
     }
 
     @Override
-    public Vector getVelocityAddedToPlayer() {
+    public Vector3dc getVelocityAddedToPlayer() {
         return velocityAddedToPlayer;
     }
 
     @Override
-    public void setVelocityAddedToPlayer(Vector toSet) {
+    public void setVelocityAddedToPlayer(Vector3dc toSet) {
         velocityAddedToPlayer = toSet;
     }
 

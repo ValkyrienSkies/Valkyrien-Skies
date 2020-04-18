@@ -1,11 +1,5 @@
 package org.valkyrienskies.addon.control.block.engine;
 
-import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
-import org.valkyrienskies.addon.control.util.BaseBlock;
-import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -18,6 +12,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
+import org.valkyrienskies.addon.control.util.BaseBlock;
+import org.valkyrienskies.mod.common.block.IBlockForceProvider;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.util.JOML;
 
 /**
  * All engines should extend this class, that way other kinds of engines can be made without making
@@ -61,9 +62,9 @@ public abstract class BlockAirshipEngine extends BaseBlock implements IBlockForc
     }
 
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
-        PhysicsObject physicsObject, double secondsToApply) {
-        Vector acting = new Vector(0, 0, 0);
+    public Vector3dc getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+                                              PhysicsObject physicsObject, double secondsToApply) {
+        Vector3d acting = new Vector3d(0, 0, 0);
         if (!world.isBlockPowered(pos)) {
             return acting;
         }
@@ -71,8 +72,6 @@ public abstract class BlockAirshipEngine extends BaseBlock implements IBlockForc
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityPropellerEngine) {
             //Just set the Thrust to be the maximum
-            ((TileEntityPropellerEngine) tileEntity)
-                .setThrustMultiplierGoal(this.getEnginePower(world, pos, state, physicsObject));
             ((TileEntityPropellerEngine) tileEntity).updateTicksSinceLastRecievedSignal();
             ((TileEntityPropellerEngine) tileEntity).setThrustMultiplierGoal(1D);
             return ((TileEntityPropellerEngine) tileEntity)
@@ -107,14 +106,13 @@ public abstract class BlockAirshipEngine extends BaseBlock implements IBlockForc
      * Used for calculating force applied to the airship by an engine. Override this in your
      * subclasses to make engines that are more dynamic than simply being faster engines.
      */
-    public double getEnginePower(World world, BlockPos pos, IBlockState state,
-        PhysicsObject physicsObject) {
+    public double getEnginePower() {
         return this.enginePower;
     }
 
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         IBlockState state = getStateFromMeta(meta);
-        return new TileEntityPropellerEngine(new Vector(state.getValue(FACING)), true, enginePower);
+        return new TileEntityPropellerEngine(JOML.convertTo3d(state.getValue(FACING).getOpposite().getDirectionVec()), true, getEnginePower());
     }
 
     public void setEnginePower(double power) {

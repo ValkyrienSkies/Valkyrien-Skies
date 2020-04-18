@@ -181,5 +181,4 @@ public class ShipTransform {
     public void transform(Entity player, TransformType globalToSubspace) {
         RotationMatrices.applyTransform(getTransformMatrix(globalToSubspace), player);
     }
-
 }

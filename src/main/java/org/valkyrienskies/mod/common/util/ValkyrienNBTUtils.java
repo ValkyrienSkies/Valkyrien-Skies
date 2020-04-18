@@ -1,12 +1,14 @@
 package org.valkyrienskies.mod.common.util;
 
-import java.nio.ByteBuffer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+
+import java.nio.ByteBuffer;
 
 /**
  * ValkyrienNBTUtils is filled with helper methods for saving and loading different objects from
@@ -47,14 +49,14 @@ public class ValkyrienNBTUtils {
         return new Matrix3d().set(matrix);
     }
 
-    public static void writeVectorToNBT(String name, Vector vector, NBTTagCompound compound) {
-        compound.setDouble(name + "X", vector.x);
-        compound.setDouble(name + "Y", vector.y);
-        compound.setDouble(name + "Z", vector.z);
+    public static void writeVectorToNBT(String name, Vector3dc vector, NBTTagCompound compound) {
+        compound.setDouble(name + "X", vector.x());
+        compound.setDouble(name + "Y", vector.y());
+        compound.setDouble(name + "Z", vector.z());
     }
 
-    public static Vector readVectorFromNBT(String name, NBTTagCompound compound) {
-        Vector vector = new Vector();
+    public static Vector3d readVectorFromNBT(String name, NBTTagCompound compound) {
+        Vector3d vector = new Vector3d();
         vector.x = compound.getDouble(name + "X");
         vector.y = compound.getDouble(name + "Y");
         vector.z = compound.getDouble(name + "Z");

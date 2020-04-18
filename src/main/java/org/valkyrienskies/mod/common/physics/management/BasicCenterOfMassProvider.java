@@ -3,6 +3,7 @@ package org.valkyrienskies.mod.common.physics.management;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import org.joml.Matrix3d;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.ship_handling.ShipInertiaData;
@@ -49,21 +50,22 @@ public class BasicCenterOfMassProvider implements IPhysicsObjectCenterOfMassProv
         double gameTickMass = inertiaData.getGameTickMass();
         Vector prevCenterOfMass = new Vector(inertiaData.getGameTickCenterOfMass());
         if (gameTickMass > .0001D) {
-            inertiaData.getGameTickCenterOfMass().multiply(gameTickMass);
-            inertiaData.getGameTickCenterOfMass().add(new Vector(x, y, z).getProduct(addedMass));
-            inertiaData.getGameTickCenterOfMass().multiply(1.0D / (gameTickMass + addedMass));
+            Vector3d newCenterOfMass = inertiaData.getGameTickCenterOfMass().mul(gameTickMass, new Vector3d());
+            newCenterOfMass.add(x * addedMass, y * addedMass, z * addedMass);
+            newCenterOfMass.mul(1.0 / (gameTickMass + addedMass));
+            inertiaData.setGameTickCenterOfMass(newCenterOfMass);
         } else {
-            inertiaData.setGameTickCenterOfMass(new Vector(x, y, z));
+            inertiaData.setGameTickCenterOfMass(new Vector3d(x, y, z));
             inertiaData.setGameMoITensor(new Matrix3d().zero());
         }
 
         // This code is pretty awful in hindsight, but it gets the job done.
-        double cmShiftX = prevCenterOfMass.x - inertiaData.getGameTickCenterOfMass().x;
-        double cmShiftY = prevCenterOfMass.y - inertiaData.getGameTickCenterOfMass().y;
-        double cmShiftZ = prevCenterOfMass.z - inertiaData.getGameTickCenterOfMass().z;
-        double rx = x - inertiaData.getGameTickCenterOfMass().x;
-        double ry = y - inertiaData.getGameTickCenterOfMass().y;
-        double rz = z - inertiaData.getGameTickCenterOfMass().z;
+        double cmShiftX = prevCenterOfMass.x - inertiaData.getGameTickCenterOfMass().x();
+        double cmShiftY = prevCenterOfMass.y - inertiaData.getGameTickCenterOfMass().y();
+        double cmShiftZ = prevCenterOfMass.z - inertiaData.getGameTickCenterOfMass().z();
+        double rx = x - inertiaData.getGameTickCenterOfMass().x();
+        double ry = y - inertiaData.getGameTickCenterOfMass().y();
+        double rz = z - inertiaData.getGameTickCenterOfMass().z();
 
         gameMoITensor[0] = gameMoITensor[0] + (cmShiftY * cmShiftY + cmShiftZ * cmShiftZ) * gameTickMass
                 + (ry * ry + rz * rz) * addedMass;

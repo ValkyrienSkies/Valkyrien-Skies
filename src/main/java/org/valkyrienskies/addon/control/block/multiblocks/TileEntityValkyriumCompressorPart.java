@@ -3,9 +3,10 @@ package org.valkyrienskies.addon.control.block.multiblocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.fuel.IValkyriumEngine;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
@@ -17,7 +18,7 @@ public class TileEntityValkyriumCompressorPart extends
     TileEntityMultiblockPartForce<ValkyriumCompressorMultiblockSchematic, TileEntityValkyriumCompressorPart> implements
     IValkyriumEngine {
 
-    private static final VectorImmutable FORCE_NORMAL = new VectorImmutable(0, 1, 0);
+    private static final Vector3dc FORCE_NORMAL = new Vector3d(0, 1, 0);
     private double prevKeyframe;
     private double currentKeyframe;
 
@@ -41,7 +42,7 @@ public class TileEntityValkyriumCompressorPart extends
     }
 
     @Override
-    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
+    public Vector3dc getForceOutputNormal(double secondsToApply, PhysicsObject object) {
         return FORCE_NORMAL;
     }
 
@@ -57,18 +58,18 @@ public class TileEntityValkyriumCompressorPart extends
     }
 
     @Override
-    public double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject) {
+    public double getThrustMagnitude(PhysicsObject physicsObject) {
         if (this.isPartOfAssembledMultiblock() && this
             .getMaster() instanceof TileEntityValkyriumCompressorPart) {
             return this.getMaxThrust() * this.getMaster()
-                .getThrustMultiplierGoal() * this.getCurrentValkyriumEfficiency(secondsToApply, physicsObject);
+                .getThrustMultiplierGoal() * this.getCurrentValkyriumEfficiency(physicsObject);
         } else {
             return 0;
         }
     }
 
     @Override
-    public double getCurrentValkyriumEfficiency(double secondsToApply, @Nonnull PhysicsObject physicsObject) {
+    public double getCurrentValkyriumEfficiency(@Nonnull PhysicsObject physicsObject) {
         Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D,
             getPos().getZ() + .5D);
         physicsObject

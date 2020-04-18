@@ -1,7 +1,6 @@
 package org.valkyrienskies.addon.control.tileentity;
 
 import gigaherz.graph.api.GraphObject;
-import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -13,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
 import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
@@ -21,6 +21,8 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 public class TileEntityLiftLever extends TileEntityPilotableImpl {
 
@@ -94,9 +96,9 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl {
 
             if (physicsObject.isPresent()) {
                 // The linear velocity of the ship
-                Vector linearVel = physicsObject.get()
+                Vector3d linearVel = physicsObject.get()
                     .getPhysicsCalculations()
-                    .getVelocityAtPoint(new Vector());
+                    .getVelocityAtPoint(new Vector3d());
                 // The global coordinates of this tile entity
                 Vector tilePos = new Vector(getPos().getX() + .5, getPos().getY() + .5,
                     getPos().getZ() + .5);

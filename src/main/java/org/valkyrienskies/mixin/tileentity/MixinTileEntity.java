@@ -1,15 +1,17 @@
 package org.valkyrienskies.mixin.tileentity;
 
-import java.util.Optional;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 /**
  * Necessary to allow for rendering and for players to interact with tiles (ex. chests).
@@ -43,17 +45,15 @@ public abstract class MixinTileEntity {
                 Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
 
                 if (physicsObject.isPresent()) {
-                    Vector tilePos = new Vector(pos.getX() + .5D, pos.getY() + .5D,
-                        pos.getZ() + .5D);
+                    Vector3d tilePos = new Vector3d(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
                     physicsObject.get()
-                        .getShipTransformationManager()
-                        .fromLocalToGlobal(tilePos);
+                        .getShipTransformationManager().getCurrentTickTransform().transformPosition(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
 
                     tilePos.x -= x;
                     tilePos.y -= y;
                     tilePos.z -= z;
 
-                    return tilePos.lengthSq();
+                    return tilePos.lengthSquared();
                 }
             }
         }

@@ -8,11 +8,11 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.joml.AxisAngle4d;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
@@ -45,62 +45,57 @@ public class TileEntityRudderPart extends
         }
     }
 
-    public Vector getForcePositionInShipSpace() {
-        Vector facingOffset = getForcePosRelativeToAxleInShipSpace();
+    public Vector3d getForcePositionInShipSpace() {
+        Vector3d facingOffset = getForcePosRelativeToAxleInShipSpace();
         if (facingOffset != null) {
-            return new Vector(facingOffset.x + pos.getX() + .5, facingOffset.y + pos.getY() + .5,
+            return new Vector3d(facingOffset.x + pos.getX() + .5, facingOffset.y + pos.getY() + .5,
                 facingOffset.z + pos.getZ() + .5);
         } else {
             return null;
         }
     }
 
-    private Vector getForcePosRelativeToAxleInShipSpace() {
+    private Vector3d getForcePosRelativeToAxleInShipSpace() {
         if (getRudderAxleSchematic().isPresent()) {
             Vec3i directionFacing = getRudderAxleFacingDirection().get().getDirectionVec();
             Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
-            Vector facingOffset = new Vector(directionFacing.getX(), directionFacing.getY(),
+            Vector3d facingOffset = new Vector3d(directionFacing.getX(), directionFacing.getY(),
                 directionFacing.getZ());
             double axleLength = getRudderAxleLength().get();
             // Then estimate the torque output for both, and use the one that has a positive
             // dot product to torqueAttemptNormal.
-            facingOffset.multiply(axleLength / 2D);
+            facingOffset.mul(axleLength / 2D);
             // Then rotate the offset vector
-            double[] rotationMatrix = RotationMatrices
-                .getRotationMatrix(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ(),
-                    Math.toRadians(rudderAngle));
-            RotationMatrices.applyTransform(rotationMatrix, facingOffset);
+            AxisAngle4d rotation = new AxisAngle4d(Math.toRadians(rudderAngle), directionAxle.getX(), directionAxle.getY(), directionAxle.getZ());
+
+            rotation.transform(facingOffset);
             return facingOffset;
         } else {
             return null;
         }
     }
 
-    public Vector calculateForceFromVelocity(PhysicsObject physicsObject) {
+    public Vector3d calculateForceFromVelocity(PhysicsObject physicsObject) {
         if (getRudderAxleSchematic().isPresent()) {
-            Vector directionFacing = this.getForcePosRelativeToAxleInShipSpace();
-            Vector forcePosRelativeToShipCenter = this.getForcePositionInShipSpace();
-            forcePosRelativeToShipCenter
-                    .subtract(new Vector(physicsObject.getShipTransform().getCenterCoord()));
+            Vector3d directionFacing = this.getForcePosRelativeToAxleInShipSpace();
+            Vector3d forcePosRelativeToShipCenter = this.getForcePositionInShipSpace();
+            forcePosRelativeToShipCenter.sub(physicsObject.getShipTransform().getCenterCoord());
             physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
-                .rotate(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
+                .transformDirection(forcePosRelativeToShipCenter, TransformType.SUBSPACE_TO_GLOBAL);
 
-            Vector velocity = physicsObject.getPhysicsCalculations()
+            Vector3d velocity = physicsObject.getPhysicsCalculations()
                 .getVelocityAtPoint(forcePosRelativeToShipCenter);
             physicsObject.getShipTransformationManager().getCurrentPhysicsTransform()
-                .rotate(velocity, TransformType.GLOBAL_TO_SUBSPACE);
+                .transformDirection(velocity, TransformType.GLOBAL_TO_SUBSPACE);
             // Now we have the velocity in local, the position in local, and the position relative to the axle
             Vec3i directionAxle = this.getRudderAxleAxisDirection().get().getDirectionVec();
-            Vector directionAxleVector = new Vector(directionAxle);
+            Vector3d directionAxleVector = new Vector3d(directionAxle.getX(), directionAxle.getY(), directionAxle.getZ());
 
-            Vector surfaceNormal = directionAxleVector.cross(new Vector(directionFacing));
+            Vector3d surfaceNormal = directionAxleVector.cross(directionFacing, new Vector3d());
             surfaceNormal.normalize();
-            double dragMagnitude = surfaceNormal.dot(velocity);
 
-            Vector dragForceClockwise = new Vector(surfaceNormal, -dragMagnitude);
-            // TODO: :(
-            dragForceClockwise.multiply(100000);
-            return dragForceClockwise;
+            double dragMagnitude = surfaceNormal.dot(velocity) * 10000;
+            return surfaceNormal.mul(-dragMagnitude);
         } else {
             return null;
         }
@@ -129,17 +124,17 @@ public class TileEntityRudderPart extends
     }
 
     @Override
-    public Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+    public Vector3dc getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
         return null;
     }
 
     @Override
-    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
+    public Vector3dc getForceOutputNormal(double secondsToApply, PhysicsObject object) {
         return null;
     }
 
     @Override
-    public double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject) {
+    public double getThrustMagnitude(PhysicsObject physicsObject) {
         return 0;
     }
 

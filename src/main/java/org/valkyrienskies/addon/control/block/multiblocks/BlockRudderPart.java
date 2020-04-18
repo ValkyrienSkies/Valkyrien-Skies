@@ -1,9 +1,5 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nullable;
-
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -15,10 +11,15 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
 
 public class BlockRudderPart extends BaseBlock implements ITileEntityProvider, IBlockForceProvider {
 
@@ -69,16 +70,16 @@ public class BlockRudderPart extends BaseBlock implements ITileEntityProvider, I
     }
 
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+    public Vector3dc getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
         PhysicsObject physicsObject,
         double secondsToApply) {
         if (world.getTileEntity(pos) instanceof TileEntityRudderPart) {
             TileEntityRudderPart tileEntity = (TileEntityRudderPart) world
                 .getTileEntity(pos);
-            Vector forceBeforeTimeScale = tileEntity.calculateForceFromVelocity(physicsObject);
-            if (forceBeforeTimeScale != null && forceBeforeTimeScale.lengthSq() > 1) {
+            Vector3d forceBeforeTimeScale = tileEntity.calculateForceFromVelocity(physicsObject);
+            if (forceBeforeTimeScale != null && forceBeforeTimeScale.lengthSquared() > 1) {
                 // System.out.println(forceBeforeTimeScale.toRoundedString());
-                return forceBeforeTimeScale.getProduct(secondsToApply);
+                return forceBeforeTimeScale.mul(secondsToApply);
             } else {
                 return null;
             }
@@ -88,9 +89,9 @@ public class BlockRudderPart extends BaseBlock implements ITileEntityProvider, I
     }
 
     @Override
-    public Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state,
-        PhysicsObject physicsObject,
-        double secondsToApply) {
+    public Vector3dc getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state,
+                                                 PhysicsObject physicsObject,
+                                                 double secondsToApply) {
         if (world.getTileEntity(pos) instanceof TileEntityRudderPart) {
             TileEntityRudderPart tileEntity = (TileEntityRudderPart) world
                 .getTileEntity(pos);

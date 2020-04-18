@@ -1,17 +1,14 @@
 package org.valkyrienskies.mod.common.math;
 
-import java.util.List;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import org.joml.Matrix3d;
-import org.joml.Matrix3dc;
-import org.joml.Matrix4d;
-import org.joml.Quaterniond;
-import org.joml.Quaterniondc;
-import org.joml.Vector3d;
+import org.joml.*;
 import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
+
+import java.lang.Math;
+import java.util.List;
 
 /**
  * A lot of useful math functions belong here
@@ -87,8 +84,8 @@ public class VSMath {
      *
      * @return true/false
      */
-    public static boolean canStandOnNormal(Vector normal) {
-        double radius = normal.x * normal.x + normal.z * normal.z;
+    public static boolean canStandOnNormal(Vector3dc normal) {
+        double radius = normal.x() * normal.x() + normal.z() * normal.z();
         return radius < STANDING_TOLERANCE;
     }
 

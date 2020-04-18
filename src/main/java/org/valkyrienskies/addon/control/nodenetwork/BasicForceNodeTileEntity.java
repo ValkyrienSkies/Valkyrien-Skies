@@ -1,8 +1,8 @@
 package org.valkyrienskies.addon.control.nodenetwork;
 
 import net.minecraft.nbt.NBTTagCompound;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 
@@ -11,8 +11,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     protected double maxThrust;
     protected double currentThrust;
     private double thrusGoalMultiplier;
-    private Vector forceOutputVector;
-    private Vector normalVelocityUnoriented;
+    private Vector3dc forceOutputVector;
+    private Vector3dc normalVelocityUnoriented;
     private int ticksSinceLastControlSignal;
     // Tells if the tile is in Ship Space, if it isn't then it doesn't try to find a
     // parent Ship object
@@ -26,12 +26,12 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
         this.maxThrust = 5000D;
         this.currentThrust = 0D;
         this.thrusGoalMultiplier = 0D;
-        this.forceOutputVector = new Vector();
+        this.forceOutputVector = new Vector3d();
         this.ticksSinceLastControlSignal = 0;
         this.hasAlreadyCheckedForParent = false;
     }
 
-    public BasicForceNodeTileEntity(Vector normalVelocityUnoriented, boolean isForceOutputOriented,
+    public BasicForceNodeTileEntity(Vector3dc normalVelocityUnoriented, boolean isForceOutputOriented,
         double maxThrust) {
         this();
         this.normalVelocityUnoriented = normalVelocityUnoriented;
@@ -46,8 +46,8 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject object) {
-        return normalVelocityUnoriented.toImmutable();
+    public Vector3dc getForceOutputNormal(double secondsToApply, PhysicsObject object) {
+        return normalVelocityUnoriented;
     }
 
     @Override
@@ -60,7 +60,7 @@ public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity imple
     }
 
     @Override
-    public double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject) {
+    public double getThrustMagnitude(PhysicsObject physicsObject) {
         return this.getMaxThrust() * this.getThrustMultiplierGoal();
     }
 

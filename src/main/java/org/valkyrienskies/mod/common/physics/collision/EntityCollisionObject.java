@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.physics.collision;
 
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 
 /**
@@ -11,18 +12,17 @@ import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
  */
 public class EntityCollisionObject {
 
-    private final Vector axis;
+    private final Vector3dc axis;
     private final Polygon movable, fixed;
     private double penetrationDistance;
     private boolean separated;
     private double[] playerMinMax;
     private double[] blockMinMax;
-    private Vector entityVelocity;
+    private Vector3dc entityVelocity;
     private boolean originallyCollided;
     private double velDot;
 
-    public EntityCollisionObject(Polygon movable_, Polygon stationary, Vector axes,
-        Vector entityVel) {
+    public EntityCollisionObject(Polygon movable_, Polygon stationary, Vector3dc axes, Vector3dc entityVel) {
         axis = axes;
         movable = movable_;
         fixed = stationary;
@@ -102,11 +102,11 @@ public class EntityCollisionObject {
         separated = false;
     }
 
-    public Vector getResponse() {
-        return axis.getProduct(-penetrationDistance);
+    public Vector3d getResponse() {
+        return axis.mul(-penetrationDistance, new Vector3d());
     }
 
-    public Vector getCollisionNormal() {
+    public Vector3dc getCollisionNormal() {
         return axis;
     }
 

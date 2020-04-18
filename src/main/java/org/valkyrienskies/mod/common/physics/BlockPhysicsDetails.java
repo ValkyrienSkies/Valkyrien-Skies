@@ -7,10 +7,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 import java.util.ArrayList;
@@ -136,18 +137,17 @@ public class BlockPhysicsDetails {
      */
     static void getForceFromState(IBlockState state, BlockPos pos, World world,
         double secondsToApply,
-        PhysicsObject obj, Vector toSet) {
+        PhysicsObject obj, Vector3d toSet) {
         Block block = state.getBlock();
         if (block instanceof IBlockForceProvider) {
-            Vector forceVector = ((IBlockForceProvider) block)
-                .getBlockForceInWorldSpace(world, pos, state,
+            Vector3dc forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
                     obj, secondsToApply);
             if (forceVector == null) {
                 toSet.zero();
             } else {
-                toSet.x = forceVector.x;
-                toSet.y = forceVector.y;
-                toSet.z = forceVector.z;
+                toSet.x = forceVector.x();
+                toSet.y = forceVector.y();
+                toSet.z = forceVector.z();
             }
         }
     }

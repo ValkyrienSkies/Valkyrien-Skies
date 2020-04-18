@@ -24,5 +24,5 @@ public interface IValkyriumEngine {
     /**
      * Returns between 1 and 0, where 0 is no lift and 1 is 100% lift.
      */
-    double getCurrentValkyriumEfficiency(double secondsToApply, @Nonnull PhysicsObject physicsObject);
+    double getCurrentValkyriumEfficiency(@Nonnull PhysicsObject physicsObject);
 }

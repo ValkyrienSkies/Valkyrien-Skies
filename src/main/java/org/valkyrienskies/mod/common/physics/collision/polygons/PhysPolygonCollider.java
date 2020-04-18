@@ -1,10 +1,10 @@
 package org.valkyrienskies.mod.common.physics.collision.polygons;
 
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3dc;
 
 public class PhysPolygonCollider {
 
-    public Vector[] potentialSeperatingAxes = null;
+    public final Vector3dc[] potentialSeperatingAxes;
     public boolean seperated = false;
     public PhysCollisionObject[] collisions = null;
     public int minDistanceIndex;
@@ -12,7 +12,7 @@ public class PhysPolygonCollider {
     public Polygon entity;
     public Polygon block;
 
-    public PhysPolygonCollider(Polygon movable, Polygon stationary, Vector[] axes) {
+    public PhysPolygonCollider(Polygon movable, Polygon stationary, Vector3dc[] axes) {
         potentialSeperatingAxes = axes;
         entity = movable;
         block = stationary;

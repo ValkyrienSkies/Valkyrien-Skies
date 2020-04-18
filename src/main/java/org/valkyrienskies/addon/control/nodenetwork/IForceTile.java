@@ -1,7 +1,7 @@
 package org.valkyrienskies.addon.control.nodenetwork;
 
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 public interface IForceTile {
@@ -9,19 +9,18 @@ public interface IForceTile {
     /**
      * Used to tell what direction of force an engine will output at a given instant.
      */
-    VectorImmutable getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject);
+    Vector3dc getForceOutputNormal(double secondsToApply, PhysicsObject physicsObject);
 
     /**
      * Returns the current unoriented force output vector of this engine
      */
-    default Vector getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
-        VectorImmutable forceVectorNormal = getForceOutputNormal(secondsToApply, physicsObject);
+    default Vector3dc getForceOutputUnoriented(double secondsToApply, PhysicsObject physicsObject) {
+        Vector3dc forceVectorNormal = getForceOutputNormal(secondsToApply, physicsObject);
         if (forceVectorNormal == null) {
-            return new Vector();
+            return new Vector3d();
         }
-        Vector forceVector = new Vector(forceVectorNormal);
-        forceVector.multiply(getThrustMagnitude(secondsToApply, physicsObject) * secondsToApply);
-        return forceVector;
+        double thrustMag = getThrustMagnitude(physicsObject) * secondsToApply;
+        return forceVectorNormal.mul(thrustMag, new Vector3d());
     }
 
     /**
@@ -35,10 +34,9 @@ public interface IForceTile {
 
     /**
      * Returns magnitude of thrust in Newtons being produced.
-     * @param secondsToApply
      * @param physicsObject
      */
-    double getThrustMagnitude(double secondsToApply, PhysicsObject physicsObject);
+    double getThrustMagnitude(PhysicsObject physicsObject);
 
     /**
      * Returns the current force multiplier goal.

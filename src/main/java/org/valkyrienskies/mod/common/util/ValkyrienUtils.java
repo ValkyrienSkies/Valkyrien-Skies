@@ -15,7 +15,6 @@ import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.math.VSMath;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.physmanagement.chunk.VSChunkClaim;
@@ -95,10 +94,10 @@ public class ValkyrienUtils {
         return new EntityShipMountData();
     }
 
-    public static void fixEntityToShip(Entity toFix, Vector posInLocal,
+    public static void fixEntityToShip(Entity toFix, Vector3dc posInLocal,
                                        PhysicsObject mountingShip) {
         World world = mountingShip.getWorld();
-        EntityMountable entityMountable = new EntityMountable(world, posInLocal.toVec3d(),
+        EntityMountable entityMountable = new EntityMountable(world, JOML.toMinecraft(posInLocal),
                 CoordinateSpaceType.SUBSPACE_COORDINATES, mountingShip.getReferenceBlockPos());
         world.spawnEntity(entityMountable);
         toFix.startRiding(entityMountable);

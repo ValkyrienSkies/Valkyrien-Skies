@@ -19,6 +19,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
@@ -66,7 +68,7 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
                             .getDraggableFromEntity(playerIn);
                         // Only mount the player if they're standing on the ship.
                         if (entityDraggable.getWorldBelowFeet() == physicsObject.get()) {
-                            Vector localMountPos = getPlayerMountOffset(state, pos);
+                            Vector3dc localMountPos = getPlayerMountOffset(state, pos);
                             ValkyrienUtils.fixEntityToShip(playerIn, localMountPos,
                                     physicsObject.get());
                         }
@@ -97,19 +99,19 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
             .format("tooltip.vs_control.captains_chair_2"));
     }
 
-    private Vector getPlayerMountOffset(IBlockState state, BlockPos pos) {
+    private Vector3dc getPlayerMountOffset(IBlockState state, BlockPos pos) {
         EnumFacing facing = state.getValue(FACING);
         switch (facing) {
             case NORTH:
-                return new Vector(pos.getX() + .5D, pos.getY(), pos.getZ() + .6D);
+                return new Vector3d(pos.getX() + .5D, pos.getY(), pos.getZ() + .6D);
             case SOUTH:
-                return new Vector(pos.getX() + .5D, pos.getY(), pos.getZ() + .4D);
+                return new Vector3d(pos.getX() + .5D, pos.getY(), pos.getZ() + .4D);
             case WEST:
-                return new Vector(pos.getX() + .6D, pos.getY(), pos.getZ() + .5D);
+                return new Vector3d(pos.getX() + .6D, pos.getY(), pos.getZ() + .5D);
             case EAST:
-                return new Vector(pos.getX() + .4D, pos.getY(), pos.getZ() + .5D);
+                return new Vector3d(pos.getX() + .4D, pos.getY(), pos.getZ() + .5D);
             default:
-                return new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+                return new Vector3d(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
         }
     }
 

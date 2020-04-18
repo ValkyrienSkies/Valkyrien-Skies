@@ -57,11 +57,11 @@ public class BlocksValkyrienSkiesControl {
         basicEngine = new BlockNormalEngine("basic", Material.WOOD,
             VSConfig.ENGINE_POWER.basicEnginePower, 5.0F);
         advancedEngine = new BlockNormalEngine("advanced", Material.ROCK,
-            VSConfig.ENGINE_POWER.basicEnginePower, 6.0F);
+            VSConfig.ENGINE_POWER.advancedEnginePower, 6.0F);
         eliteEngine = new BlockNormalEngine("elite", Material.IRON,
-            VSConfig.ENGINE_POWER.basicEnginePower, 8.0F);
+            VSConfig.ENGINE_POWER.eliteEnginePower, 8.0F);
         ultimateEngine = new BlockNormalEngine("ultimate", Material.GROUND,
-            VSConfig.ENGINE_POWER.basicEnginePower, 10.0F);
+            VSConfig.ENGINE_POWER.ultimateEnginePower, 10.0F);
         redstoneEngine = new BlockRedstoneEngine();
 
         compactedValkyrium = new BlockCompactedValkyrium();

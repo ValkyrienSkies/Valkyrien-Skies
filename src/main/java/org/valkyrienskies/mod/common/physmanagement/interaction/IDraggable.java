@@ -1,7 +1,7 @@
 package org.valkyrienskies.mod.common.physmanagement.interaction;
 
 import net.minecraft.entity.MoverType;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 
 /**
@@ -16,9 +16,9 @@ public interface IDraggable {
 
     void setWorldBelowFeet(PhysicsObject toSet);
 
-    Vector getVelocityAddedToPlayer();
+    Vector3dc getVelocityAddedToPlayer();
 
-    void setVelocityAddedToPlayer(Vector toSet);
+    void setVelocityAddedToPlayer(Vector3dc toSet);
 
     double getYawDifVelocity();
 

@@ -2,7 +2,8 @@ package org.valkyrienskies.addon.control.tileentity;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import valkyrienwarfare.api.TransformType;
 
@@ -11,14 +12,14 @@ public class TileEntityGyroscopeStabilizer extends TileEntity {
     // Up to 15,000,000 newton-meters of torque generated.
     public static final double MAXIMUM_TORQUE = 15000000;
     // The direction we are want to align to.
-    private static final Vector GRAVITY_UP = new Vector(0, 1, 0);
+    private static final Vector3dc GRAVITY_UP = new Vector3d(0, 1, 0);
 
-    public Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
-        Vector shipLevelNormal = new Vector(GRAVITY_UP);
+    public Vector3dc getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
+        Vector3d shipLevelNormal = new Vector3d(GRAVITY_UP);
         physicsCalculations.getParent().getShipTransformationManager().getCurrentPhysicsTransform()
-            .rotate(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
-        Vector torqueDir = GRAVITY_UP.cross(shipLevelNormal);
-        double angleBetween = Math.toDegrees(GRAVITY_UP.angleBetween(shipLevelNormal));
+            .transformDirection(shipLevelNormal, TransformType.SUBSPACE_TO_GLOBAL);
+        Vector3d torqueDir = GRAVITY_UP.cross(shipLevelNormal, new Vector3d());
+        double angleBetween = Math.toDegrees(GRAVITY_UP.angle(shipLevelNormal));
         torqueDir.normalize();
 
         double torquePowerFactor = angleBetween / 5;
@@ -27,9 +28,8 @@ public class TileEntityGyroscopeStabilizer extends TileEntity {
 
         // System.out.println(angleBetween);
 
-        torqueDir.multiply(MAXIMUM_TORQUE * torquePowerFactor * physicsCalculations
+        return torqueDir.mul(MAXIMUM_TORQUE * torquePowerFactor * physicsCalculations
             .getPhysicsTimeDeltaPerPhysTick() * -1D);
-        return torqueDir;
     }
 
 }

@@ -1,9 +1,14 @@
 package org.valkyrienskies.mod.common.physics.collision.polygons;
 
+import lombok.Getter;
 import net.minecraft.util.math.AxisAlignedBB;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Vector;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The basis for the entire collision engine, this implementation of Polygon stores normals as well
@@ -15,42 +20,47 @@ import valkyrienwarfare.api.TransformType;
  */
 public class Polygon {
 
-    private final Vector[] vertices;
-    private final Vector[] normals;
+    @Getter
+    private final Vector3dc[] vertices;
+    @Getter
+    private final Vector3dc[] normals;
 
-    public Polygon(AxisAlignedBB bb) {
-        this.vertices = getCornersForAABB(bb);
-        this.normals = Vector.generateAxisAlignedNorms();
+    public Polygon(@Nonnull AxisAlignedBB bb, @Nullable ShipTransform transformation, @Nullable TransformType transformType) {
+        Vector3d[] verticesMutable = getCornersForAABB(bb);
+        Vector3d[] normalsMutable = generateAxisAlignedNorms();
+        if (transformation != null && transformType != null) {
+            transform(verticesMutable, normalsMutable, transformation, transformType);
+        }
+        this.vertices = verticesMutable;
+        this.normals = normalsMutable;
     }
 
-    public Polygon(AxisAlignedBB bb, ShipTransform transformation, TransformType transformType) {
-        this(bb);
-        transform(transformation, transformType);
+    public Polygon(@Nonnull AxisAlignedBB bb) {
+        this(bb, null, null);
     }
 
-    // Copies one polygon onto another.
-    protected Polygon(Polygon other) {
-        this.vertices = new Vector[other.vertices.length];
-        this.normals = other.normals;
+    public static Vector3d[] generateAxisAlignedNorms() {
+        return new Vector3d[]{
+                new Vector3d(1.0D, 0.0D, 0.0D),
+                new Vector3d(0.0D, 1.0D, 0.0D),
+                new Vector3d(0.0D, 0.0D, 1.0D)
+        };
     }
 
-    private static Vector[] getCornersForAABB(AxisAlignedBB bb) {
-        return new Vector[]{new Vector(bb.minX, bb.minY, bb.minZ),
-            new Vector(bb.minX, bb.maxY, bb.minZ),
-            new Vector(bb.minX, bb.minY, bb.maxZ), new Vector(bb.minX, bb.maxY, bb.maxZ),
-            new Vector(bb.maxX, bb.minY, bb.minZ), new Vector(bb.maxX, bb.maxY, bb.minZ),
-            new Vector(bb.maxX, bb.minY, bb.maxZ), new Vector(bb.maxX, bb.maxY, bb.maxZ)};
+    private static Vector3d[] getCornersForAABB(AxisAlignedBB bb) {
+        return new Vector3d[]{
+                new Vector3d(bb.minX, bb.minY, bb.minZ),
+                new Vector3d(bb.minX, bb.maxY, bb.minZ),
+                new Vector3d(bb.minX, bb.minY, bb.maxZ),
+                new Vector3d(bb.minX, bb.maxY, bb.maxZ),
+                new Vector3d(bb.maxX, bb.minY, bb.minZ),
+                new Vector3d(bb.maxX, bb.maxY, bb.minZ),
+                new Vector3d(bb.maxX, bb.minY, bb.maxZ),
+                new Vector3d(bb.maxX, bb.maxY, bb.maxZ)
+        };
     }
 
-    public Vector[] getVertices() {
-        return vertices;
-    }
-
-    public Vector[] getNormals() {
-        return normals;
-    }
-
-    public double[] getProjectionOnVector(Vector axis) {
+    public double[] getProjectionOnVector(Vector3dc axis) {
         double[] distances = new double[vertices.length];
         for (int i = 0; i < vertices.length; i++) {
             distances[i] = axis.dot(vertices[i]);
@@ -58,40 +68,40 @@ public class Polygon {
         return distances;
     }
 
-    public Vector getCenter() {
-        Vector center = new Vector();
-        for (Vector v : vertices) {
+    public Vector3d getCenter() {
+        Vector3d center = new Vector3d();
+        for (Vector3dc v : vertices) {
             center.add(v);
         }
-        center.divide(vertices.length);
+        center.mul(1.0 / vertices.length);
         return center;
     }
 
-    public void transform(ShipTransform transformation, TransformType transformType) {
-        for (Vector vertex : vertices) {
-            transformation.transform(vertex, transformType);
+    private static void transform(Vector3d[] vertices, Vector3d[] normals, ShipTransform transformation, TransformType transformType) {
+        for (Vector3d vertex : vertices) {
+            transformation.transformPosition(vertex, transformType);
         }
-        for (Vector normal : normals) {
-            transformation.rotate(normal, transformType);
+        for (Vector3d normal : normals) {
+            transformation.transformDirection(normal, transformType);
         }
     }
 
     public AxisAlignedBB getEnclosedAABB() {
-        Vector firstVertex = vertices[0];
-        double mnX = firstVertex.x;
-        double mnY = firstVertex.y;
-        double mnZ = firstVertex.z;
-        double mxX = firstVertex.x;
-        double mxY = firstVertex.y;
-        double mxZ = firstVertex.z;
+        Vector3dc firstVertex = vertices[0];
+        double mnX = firstVertex.x();
+        double mnY = firstVertex.y();
+        double mnZ = firstVertex.z();
+        double mxX = firstVertex.x();
+        double mxY = firstVertex.y();
+        double mxZ = firstVertex.z();
         for (int i = 1; i < vertices.length; i++) {
-            Vector vertex = vertices[i];
-            mnX = Math.min(mnX, vertex.x);
-            mnY = Math.min(mnY, vertex.y);
-            mnZ = Math.min(mnZ, vertex.z);
-            mxX = Math.max(mxX, vertex.x);
-            mxY = Math.max(mxY, vertex.y);
-            mxZ = Math.max(mxZ, vertex.z);
+            Vector3dc vertex = vertices[i];
+            mnX = Math.min(mnX, vertex.x());
+            mnY = Math.min(mnY, vertex.y());
+            mnZ = Math.min(mnZ, vertex.z());
+            mxX = Math.max(mxX, vertex.x());
+            mxY = Math.max(mxY, vertex.y());
+            mxZ = Math.max(mxZ, vertex.z());
         }
         return new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
     }

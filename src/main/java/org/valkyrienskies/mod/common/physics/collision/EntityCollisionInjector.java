@@ -1,8 +1,5 @@
 package org.valkyrienskies.mod.common.physics.collision;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nullable;
 import lombok.Value;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlime;
@@ -21,17 +18,22 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.math.VSMath;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.ShipPolygon;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityCollisionInjector {
 
@@ -41,7 +43,7 @@ public class EntityCollisionInjector {
     @Nullable
     public static IntermediateMovementVariableStorage alterEntityMovement(Entity entity,
         MoverType type, double dx, double dy, double dz) {
-        Vector velVec = new Vector(dx, dy, dz);
+        Vector3d velVec = new Vector3d(dx, dy, dz);
         double origDx = dx;
         double origDy = dy;
         double origDz = dz;
@@ -56,7 +58,7 @@ public class EntityCollisionInjector {
         PhysicsObject worldBelow = null;
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
 
-        Vector total = new Vector();
+        Vector3d total = new Vector3d();
 
         // Used to reset the player position after collision processing, effectively
         // using the player to integrate their velocity
@@ -70,12 +72,12 @@ public class EntityCollisionInjector {
                 try {
 
                     EntityPolygonCollider fast = new EntityPolygonCollider(playerBeforeMove,
-                        shipPoly, shipPoly.normals, velVec.getAddition(total));
+                        shipPoly, shipPoly.normals, velVec.add(total, new Vector3d()));
                     if (!fast.arePolygonsSeparated()) {
                         // fastCollisions.add(fast);
                         worldBelow = shipPoly.shipFrom;
 
-                        Vector response = fast.getCollisions()[fast.getMinDistanceIndex()]
+                        Vector3d response = fast.getCollisions()[fast.getMinDistanceIndex()]
                             .getResponse();
                         // TODO: Add more potential yResponses
                         double stepSquared = entity.stepHeight * entity.stepHeight;
@@ -83,24 +85,24 @@ public class EntityCollisionInjector {
                         if (response.y >= 0
                             && VSMath.canStandOnNormal(
                             fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
-                            Vector slowButStopped = new Vector(0,
+                            Vector3d slowButStopped = new Vector3d(0,
                                 -fast.getCollisions()[fast.getMinDistanceIndex()]
                                     .getCollisionPenetrationDistance() / fast
-                                    .getCollisionAxes()[fast.getMinDistanceIndex()].y, 0);
+                                    .getCollisionAxes()[fast.getMinDistanceIndex()].y(), 0);
 
                             response = slowButStopped;
                         }
                         if (isStep) {
                             EntityLivingBase living = (EntityLivingBase) entity;
-                            if (Math.abs(living.moveForward) > .01D
-                                || Math.abs(living.moveStrafing) > .01D) {
+                            if (Math.abs(living.moveForward) > .01
+                                || Math.abs(living.moveStrafing) > .01) {
                                 for (int i = 3; i < 6; i++) {
-                                    Vector tempResponse = fast.getCollisions()[i].getResponse();
+                                    Vector3d tempResponse = fast.getCollisions()[i].getResponse();
                                     if (tempResponse.y > 0
                                         && VSMath.canStandOnNormal(
                                         fast.getCollisions()[i].getCollisionNormal())
-                                        && tempResponse.lengthSq() < stepSquared) {
-                                        if (tempResponse.lengthSq() < .1D) {
+                                        && tempResponse.lengthSquared() < stepSquared) {
+                                        if (tempResponse.lengthSquared() < .1) {
                                             // Too small to be a real step, let it through
                                             response = tempResponse;
                                         } else {

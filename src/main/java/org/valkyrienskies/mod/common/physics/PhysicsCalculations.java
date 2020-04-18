@@ -36,8 +36,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private final IRotationNodeWorld physicsRotationNodeWorld;
 
     public boolean actAsArchimedes = false;
-    private Vector physCenterOfMass;
-    private Vector torque;
+    private Vector3dc physCenterOfMass;
+    private Vector3d torque;
     private double physTickMass;
     // TODO: Get this in one day
     // private double physMass;
@@ -64,8 +64,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         this.linearVelocity = new Vector3d(parent.getPhysicsData().getLinearVelocity());
         this.angularVelocity = new Vector3d(parent.getPhysicsData().getAngularVelocity());
 
-        this.physCenterOfMass = new Vector();
-        this.torque = new Vector();
+        this.physCenterOfMass = new Vector3d();
+        this.torque = new Vector3d();
         // We need thread safe access to this.
         this.activeForcePositions = ConcurrentHashMap.newKeySet();
         this.physicsRotationNodeWorld = new ImplRotationNodeWorld(this.parent);
@@ -92,9 +92,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         physX = parentTransform.getPosX();
         physY = parentTransform.getPosY();
         physZ = parentTransform.getPosZ();
-        physCenterOfMass.setValue(parentTransform.getCenterCoord());
-        ShipTransform physicsTransform = new ShipTransform(physX, physY, physZ, physRotation,
-                physCenterOfMass.toVector3d());
+        physCenterOfMass = parentTransform.getCenterCoord();
+        ShipTransform physicsTransform = new ShipTransform(physX, physY, physZ, physRotation, physCenterOfMass);
         getParent().getShipTransformationManager()
                 .setCurrentPhysicsTransform(physicsTransform);
         // We're doing this afterwards to prevent from prevPhysicsTransform being null.
@@ -135,8 +134,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
             getAngularVelocity().zero();
         }
 
-        ShipTransform finalPhysTransform = new ShipTransform(physX, physY, physZ,
-                physRotation, physCenterOfMass.toVector3d());
+        ShipTransform finalPhysTransform = new ShipTransform(physX, physY, physZ, physRotation, physCenterOfMass);
 
         getParent().getShipTransformationManager().updatePreviousPhysicsTransform();
         getParent().getShipTransformationManager().setCurrentPhysicsTransform(finalPhysTransform);
@@ -162,18 +160,17 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
      * updates on its own.
      */
     private void updatePhysCenterOfMass() {
-        Vector gameTickCM = new Vector(parent.getInertiaData().getGameTickCenterOfMass());
+        Vector3dc gameTickCM = parent.getInertiaData().getGameTickCenterOfMass();
         if (!physCenterOfMass.equals(gameTickCM)) {
-            Vector CMDif = physCenterOfMass
-                    .getSubtraction(gameTickCM);
+            Vector3d CMDif = gameTickCM.sub(physCenterOfMass, new Vector3d());
 
             getParent().getShipTransformationManager().getCurrentPhysicsTransform()
-                    .rotate(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
+                    .transformDirection(CMDif, TransformType.SUBSPACE_TO_GLOBAL);
+
             physX += CMDif.x;
             physY += CMDif.y;
             physZ += CMDif.z;
-
-            physCenterOfMass.setValue(gameTickCM);
+            physCenterOfMass = gameTickCM;
         }
     }
 
@@ -212,9 +209,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
         // Collections.shuffle(activeForcePositions);
 
-        Vector blockForce = new Vector();
-        Vector inBodyWO = new Vector();
-        Vector crossVector = new Vector();
+        Vector3d blockForce = new Vector3d();
+        Vector3d inBodyWO = new Vector3d();
+        Vector3d crossVector = new Vector3d();
         World worldObj = getParent().getWorld();
 
         if (VSConfig.doPhysicsBlocks) {
@@ -241,21 +238,21 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                                 getPhysicsTimeDeltaPerPhysTick(),
                                 getParent(), blockForce);
 
-                        Vector otherPosition = ((IBlockForceProvider) blockAt)
+                        Vector3dc otherPosition = ((IBlockForceProvider) blockAt)
                                 .getCustomBlockForcePosition(worldObj,
                                         pos, state, getParent(), getPhysicsTimeDeltaPerPhysTick());
 
                         if (otherPosition != null) {
-                            inBodyWO.setValue(otherPosition);
-                            inBodyWO.subtract(physCenterOfMass);
+                            inBodyWO.set(otherPosition);
+                            inBodyWO.sub(physCenterOfMass);
                             getParent().getShipTransformationManager().getCurrentPhysicsTransform()
-                                    .rotate(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
+                                    .transformDirection(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
                         } else {
-                            inBodyWO.setValue(pos.getX() + .5,
+                            inBodyWO.set(pos.getX() + .5,
                                     pos.getY() + .5, pos.getZ() + .5);
-                            inBodyWO.subtract(physCenterOfMass);
+                            inBodyWO.sub(physCenterOfMass);
                             getParent().getShipTransformationManager().getCurrentPhysicsTransform()
-                                    .rotate(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
+                                    .transformDirection(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
                         }
 
                         addForceAtPoint(inBodyWO, blockForce, crossVector);
@@ -308,7 +305,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                 List<BlockPos> blockPositions = torqueProviders.get(torqueProviderBlock);
                 for (BlockPos pos : blockPositions) {
                     this.convertTorqueToVelocity();
-                    Vector torqueVector = torqueProviderBlock
+                    Vector3dc torqueVector = torqueProviderBlock
                             .getTorqueInGlobal(this, pos);
                     if (torqueVector != null) {
                         torque.add(torqueVector);
@@ -323,8 +320,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     private void applyGravity() {
         if (VSConfig.doGravity) {
-            addForceAtPoint(new Vector(0, 0, 0),
-                    VSConfig.gravity().getProduct(physTickMass * getPhysicsTimeDeltaPerPhysTick()));
+            addForceAtPoint(new Vector3d(),
+                    VSConfig.gravity().mul(physTickMass * getPhysicsTimeDeltaPerPhysTick(), new Vector3d()));
         }
     }
 
@@ -370,26 +367,23 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     private void convertTorqueToVelocity() {
-        if (!torque.isZero()) {
-            Vector3d torqueTransformed = torque.toVector3d();
-            getPhysInvMOITensor().transform(torqueTransformed);
-            getAngularVelocity().add(torqueTransformed.x, torqueTransformed.y, torqueTransformed.z);
-            torque.zero();
-        }
+        Vector3d torqueTransformed = new Vector3d(torque);
+        getPhysInvMOITensor().transform(torqueTransformed);
+        getAngularVelocity().add(torqueTransformed.x, torqueTransformed.y, torqueTransformed.z);
+        torque.zero();
     }
 
-    public void addForceAtPoint(Vector inBodyWO,
-                                Vector forceToApply) {
-        torque.add(inBodyWO.cross(forceToApply));
-        getLinearVelocity().add(forceToApply.x * getInvMass(), forceToApply.y * getInvMass(), forceToApply.z * getInvMass());
+    public void addForceAtPoint(Vector3dc inBodyWO,
+                                Vector3dc forceToApply) {
+        addForceAtPoint(inBodyWO, forceToApply, new Vector3d());
     }
 
-    private void addForceAtPoint(Vector inBodyWO,
-                                Vector forceToApply,
-                                Vector crossVector) {
-        crossVector.setCross(inBodyWO, forceToApply);
+    private void addForceAtPoint(Vector3dc inBodyWO,
+                                Vector3dc forceToApply,
+                                Vector3d crossVector) {
+        inBodyWO.cross(forceToApply, crossVector);
         torque.add(crossVector);
-        getLinearVelocity().add(forceToApply.getProduct(getInvMass()).toVector3d());
+        getLinearVelocity().add(forceToApply.x() * getInvMass(), forceToApply.y() * getInvMass(), forceToApply.z() * getInvMass());
     }
 
     private void updatePhysSpeedAndIters(double newPhysSpeed) {
@@ -429,13 +423,13 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         physY = Math.min(Math.max(physY, VSConfig.shipLowerLimit), VSConfig.shipUpperLimit);
     }
 
-    public Vector getVelocityAtPoint(
-            Vector inBodyWO) {
-        Vector3d speed = getAngularVelocity().cross(inBodyWO.toVector3d(), new Vector3d());
+    public Vector3d getVelocityAtPoint(
+            Vector3dc inBodyWO) {
+        Vector3d speed = getAngularVelocity().cross(inBodyWO, new Vector3d());
         speed.x += getLinearVelocity().x();
         speed.y += getLinearVelocity().y();
         speed.z += getLinearVelocity().z();
-        return new Vector(speed);
+        return speed;
     }
 
     // These getter methods guarantee that only code within this class can modify
@@ -445,7 +439,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     public double getInvMass() {
-        return 1D / physTickMass;
+        return 1.0 / physTickMass;
     }
 
     public double getPhysicsTimeDeltaPerPhysTick() {

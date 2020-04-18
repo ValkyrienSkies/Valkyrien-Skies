@@ -1,15 +1,5 @@
 package org.valkyrienskies.addon.control.block;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.valkyrienskies.addon.control.util.BaseBlock;
-import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
@@ -18,6 +8,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.valkyrienskies.addon.control.util.BaseBlock;
+import org.valkyrienskies.mod.common.block.IBlockForceProvider;
+import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockCompactedValkyrium extends BaseBlock implements IBlockForceProvider {
 
@@ -30,10 +29,10 @@ public class BlockCompactedValkyrium extends BaseBlock implements IBlockForcePro
      */
     @Nullable
     @Override
-    public Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
-        PhysicsObject physicsObject, double secondsToApply) {
+    public Vector3dc getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+                                              PhysicsObject physicsObject, double secondsToApply) {
         // TODO: Shouldn't this depend on the gravity vector?
-        return new Vector(0, VSConfig.compactedValkyriumLift * secondsToApply, 0);
+        return new Vector3d(0, VSConfig.compactedValkyriumLift * secondsToApply, 0);
     }
 
     /**

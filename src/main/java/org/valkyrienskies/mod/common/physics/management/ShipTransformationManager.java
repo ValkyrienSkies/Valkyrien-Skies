@@ -4,6 +4,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.coordinates.ShipTransform;
 import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
@@ -16,7 +17,7 @@ import valkyrienwarfare.api.TransformType;
 public class ShipTransformationManager {
 
     private final PhysicsObject parent;
-    public Vector[] normals;
+    public Vector3dc[] normals;
     private ShipTransform currentTickTransform;
     private ShipTransform renderTransform;
     private ShipTransform prevTickTransform;
@@ -36,14 +37,14 @@ public class ShipTransformationManager {
         this.normals = createCollisionNormals(initialTransform);
     }
 
-    private static Vector[] createCollisionNormals(ShipTransform transform) {
+    private static Vector3dc[] createCollisionNormals(ShipTransform transform) {
         // We edit a local array instead of normals to avoid data races.
-        final Vector[] newNormals = new Vector[15];
+        final Vector3dc[] newNormals = new Vector3dc[15];
         // Used to generate Normals for the Axis Aligned World
-        final Vector[] alignedNorms = Vector.generateAxisAlignedNorms();
-        final Vector[] rotatedNorms = generateRotationNormals(transform);
+        final Vector3dc[] alignedNorms = Polygon.generateAxisAlignedNorms();
+        final Vector3dc[] rotatedNorms = generateRotationNormals(transform);
         for (int i = 0; i < 6; i++) {
-            Vector currentNorm;
+            Vector3dc currentNorm;
             if (i < 3) {
                 currentNorm = alignedNorms[i];
             } else {
@@ -54,19 +55,20 @@ public class ShipTransformationManager {
         int cont = 6;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                Vector norm = newNormals[i].crossAndUnit(newNormals[j + 3]);
+                Vector3d norm = newNormals[i].cross(newNormals[j + 3], new Vector3d());
+                norm.normalize();
                 newNormals[cont] = norm;
                 cont++;
             }
         }
         for (int i = 0; i < newNormals.length; i++) {
-            if (newNormals[i].isZero()) {
-                newNormals[i] = new Vector(0.0D, 1.0D, 0.0D);
+            if (newNormals[i].lengthSquared() < .01) {
+                newNormals[i] = new Vector3d(0.0D, 1.0D, 0.0D);
             }
         }
-        newNormals[0] = new Vector(1.0D, 0.0D, 0.0D);
-        newNormals[1] = new Vector(0.0D, 1.0D, 0.0D);
-        newNormals[2] = new Vector(0.0D, 0.0D, 1.0D);
+        newNormals[0] = new Vector3d(1, 0, 0);
+        newNormals[1] = new Vector3d(0, 1, 0);
+        newNormals[2] = new Vector3d(0, 0, 1);
 
         return newNormals;
     }
@@ -96,10 +98,10 @@ public class ShipTransformationManager {
     }
      */
 
-    private static Vector[] generateRotationNormals(ShipTransform shipTransform) {
-        Vector[] norms = Vector.generateAxisAlignedNorms();
+    private static Vector3dc[] generateRotationNormals(ShipTransform shipTransform) {
+        Vector3d[] norms = Polygon.generateAxisAlignedNorms();
         for (int i = 0; i < 3; i++) {
-            shipTransform.rotate(norms[i], TransformType.SUBSPACE_TO_GLOBAL);
+            shipTransform.transformDirection(norms[i], TransformType.SUBSPACE_TO_GLOBAL);
         }
         return norms;
     }

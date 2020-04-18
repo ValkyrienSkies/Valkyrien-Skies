@@ -5,22 +5,24 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.world.GameType;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.fixes.ITransformablePacket;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 import org.valkyrienskies.mod.common.math.VSMath;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.util.JOML;
 
 @Mixin(CPacketPlayer.class)
 public class MixinCPacketPlayer implements ITransformablePacket {
 
-    @Shadow public float pitch;
+    @Shadow
+    public float pitch;
     private final CPacketPlayer thisPacket = CPacketPlayer.class.cast(this);
     private GameType cachedPlayerGameType = null;
 
@@ -39,20 +41,19 @@ public class MixinCPacketPlayer implements ITransformablePacket {
         if (isPacketOnMainThread(server, callingFromSponge)) {
             PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
             if (parent != null) {
-
                 EntityPlayerMP playerMP = getPacketPlayer(server);
-                VectorImmutable positionGlobal = new Vector(playerMP.posX, playerMP.posY, playerMP.posZ).toImmutable();
-                VectorImmutable lookVectorGlobal = new Vector(playerMP.getLook(1.0f)).toImmutable();
+                Vector3dc positionGlobal = new Vector3d(playerMP.posX, playerMP.posY, playerMP.posZ);
+                Vector3dc lookVectorGlobal = JOML.convert(playerMP.getLook(1.0f));
 
-                float pitch = (float) VSMath.getPitchFromVectorImmutable(lookVectorGlobal);
-                float yaw = (float) VSMath.getYawFromVectorImmutable(lookVectorGlobal, pitch);
+                float pitch = (float) VSMath.getPitchFromVector(lookVectorGlobal);
+                float yaw = (float) VSMath.getYawFromVector(lookVectorGlobal, pitch);
 
                 // ===== Set the proper position values for the player packet ====
                 thisPacket.moving = true;
                 thisPacket.onGround = true;
-                thisPacket.x = positionGlobal.getX();
-                thisPacket.y = positionGlobal.getY();
-                thisPacket.z = positionGlobal.getZ();
+                thisPacket.x = positionGlobal.x();
+                thisPacket.y = positionGlobal.y();
+                thisPacket.z = positionGlobal.z();
 
                 // ===== Set the proper rotation values for the player packet =====
                 thisPacket.rotating = true;

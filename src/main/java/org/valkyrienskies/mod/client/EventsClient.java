@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
+import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.fixes.SoundFixWrapper;
@@ -34,7 +35,6 @@ import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTra
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
 import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
@@ -101,12 +101,12 @@ public class EventsClient {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
                 .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
             if (physicsObject.isPresent()) {
-                Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(),
+                Vector3d newSoundLocation = new Vector3d(sound.getXPosF(), sound.getYPosF(),
                     sound.getZPosF());
                 physicsObject.get()
                     .getShipTransformationManager()
                     .getCurrentTickTransform()
-                    .transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
+                    .transformPosition(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
 
                 SoundFixWrapper soundFix = new SoundFixWrapper(sound, newSoundLocation);
 

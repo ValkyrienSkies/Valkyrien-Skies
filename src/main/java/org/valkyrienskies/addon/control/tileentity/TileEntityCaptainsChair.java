@@ -4,12 +4,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
+import org.joml.AxisAngle4d;
+import org.joml.Matrix3d;
+import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockCaptainsChair;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
@@ -64,47 +65,48 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
         double pilotYaw = ((BlockCaptainsChair) state.getBlock()).getChairYaw(state, chairPosition);
         double pilotRoll = 0D;
 
-        double[] pilotRotationMatrix = RotationMatrices
-            .getRotationMatrix(pilotPitch, pilotYaw, pilotRoll);
+        Matrix3d pilotRotationMatrix = new Matrix3d();
 
-        Vector playerDirection = new Vector(1, 0, 0);
+        pilotRotationMatrix.rotateXYZ(Math.toRadians(pilotPitch), Math.toRadians(pilotYaw), Math.toRadians(pilotRoll));
 
-        RotationMatrices.applyTransform(pilotRotationMatrix, playerDirection);
+        Vector3d playerDirection = new Vector3d(1, 0, 0);
 
-        Vector upDirection = new Vector(0, 1, 0);
+        pilotRotationMatrix.transform(playerDirection);
 
-        Vector downDirection = new Vector(0, -1, 0);
+        Vector3d upDirection = new Vector3d(0, 1, 0);
 
-        Vector idealAngularDirection = new Vector();
+        Vector3d downDirection = new Vector3d(0, -1, 0);
 
-        Vector idealLinearVelocity = new Vector();
+        Vector3d idealAngularDirection = new Vector3d();
 
-        Vector shipUp = new Vector(0, 1, 0);
-        Vector shipUpPosIdeal = new Vector(0, 1, 0);
+        Vector3d idealLinearVelocity = new Vector3d();
+
+        Vector3d shipUp = new Vector3d(0, 1, 0);
+        Vector3d shipUpPosIdeal = new Vector3d(0, 1, 0);
 
         if (message.airshipForward_KeyDown) {
             idealLinearVelocity.add(playerDirection);
         }
         if (message.airshipBackward_KeyDown) {
-            idealLinearVelocity.subtract(playerDirection);
+            idealLinearVelocity.sub(playerDirection);
         }
 
         controlledShip.getShipTransformationManager().getCurrentTickTransform()
-            .rotate(idealLinearVelocity, TransformType.SUBSPACE_TO_GLOBAL);
+            .transformDirection(idealLinearVelocity, TransformType.SUBSPACE_TO_GLOBAL);
         controlledShip.getShipTransformationManager().getCurrentTickTransform()
-            .rotate(shipUp, TransformType.SUBSPACE_TO_GLOBAL);
+            .transformDirection(shipUp, TransformType.SUBSPACE_TO_GLOBAL);
 
         if (message.airshipUp_KeyDown) {
-            idealLinearVelocity.add(upDirection.getProduct(.5));
+            idealLinearVelocity.add(upDirection.mul(.5, new Vector3d()));
         }
         if (message.airshipDown_KeyDown) {
-            idealLinearVelocity.add(downDirection.getProduct(.5));
+            idealLinearVelocity.add(downDirection.mul(.5, new Vector3d()));
         }
 
         double sidePitch = 0;
 
         if (message.airshipRight_KeyDown) {
-            idealAngularDirection.subtract(shipUp);
+            idealAngularDirection.sub(shipUp);
             sidePitch -= 10;
         }
         if (message.airshipLeft_KeyDown) {
@@ -112,42 +114,41 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
             sidePitch += 10;
         }
 
-        Vector sidesRotationAxis = new Vector(playerDirection);
+        Vector3d sidesRotationAxis = new Vector3d(playerDirection);
         controlledShip.getShipTransformationManager().getCurrentTickTransform()
-            .rotate(sidesRotationAxis, TransformType.SUBSPACE_TO_GLOBAL);
+            .transformDirection(sidesRotationAxis, TransformType.SUBSPACE_TO_GLOBAL);
 
-        double[] rotationSidesTransform = RotationMatrices
-            .getRotationMatrix(sidesRotationAxis.x, sidesRotationAxis.y,
-                sidesRotationAxis.z, Math.toRadians(sidePitch));
-        shipUpPosIdeal.transform(rotationSidesTransform);
+        AxisAngle4d rotationSidesTransform = new AxisAngle4d(Math.toRadians(sidePitch), sidesRotationAxis.x, sidesRotationAxis.y,
+                sidesRotationAxis.z);
 
-        idealAngularDirection.multiply(2);
+        rotationSidesTransform.transform(shipUpPosIdeal);
+
+        idealAngularDirection.mul(2);
         // The vector that points in the direction of the normal of the plane that
         // contains shipUp and shipUpPos. This is our axis of rotation.
-        Vector shipUpRotationVector = shipUp.cross(shipUpPosIdeal);
+        Vector3d shipUpRotationVector = shipUp.cross(shipUpPosIdeal, new Vector3d());
         // This isnt quite right, but it handles the cases quite well.
-        double shipUpTheta = shipUp.angleBetween(shipUpPosIdeal) + Math.PI;
-        shipUpRotationVector.multiply(shipUpTheta);
+        double shipUpTheta = shipUp.angle(shipUpPosIdeal) + Math.PI;
+        shipUpRotationVector.mul(shipUpTheta);
 
         idealAngularDirection.add(shipUpRotationVector);
-        idealLinearVelocity.multiply(20);
+        idealLinearVelocity.mul(20);
 
         // Move the ship faster if the player holds the sprint key.
         if (message.airshipSprinting) {
-            idealLinearVelocity.multiply(2);
+            idealLinearVelocity.mul(2);
         }
 
         double lerpFactor = .2;
-        Vector linearMomentumDif = idealLinearVelocity
-            .getSubtraction(new Vector(controlledShip.getPhysicsCalculations().getLinearVelocity()));
-        Vector angularVelocityDif = idealAngularDirection
-            .getSubtraction(new Vector(controlledShip.getPhysicsCalculations().getAngularVelocity()));
+        Vector3d linearMomentumDif = controlledShip.getPhysicsCalculations().getLinearVelocity().sub(idealLinearVelocity, new Vector3d());
 
-        linearMomentumDif.multiply(lerpFactor);
-        angularVelocityDif.multiply(lerpFactor);
+        Vector3d angularVelocityDif = controlledShip.getPhysicsCalculations().getAngularVelocity().sub(idealAngularDirection, new Vector3d());
 
-        controlledShip.getPhysicsCalculations().getLinearVelocity().sub(linearMomentumDif.toVector3d());
-        controlledShip.getPhysicsCalculations().getAngularVelocity().sub(angularVelocityDif.toVector3d());
+        linearMomentumDif.mul(lerpFactor);
+        angularVelocityDif.mul(lerpFactor);
+
+        controlledShip.getPhysicsCalculations().getLinearVelocity().sub(linearMomentumDif);
+        controlledShip.getPhysicsCalculations().getAngularVelocity().sub(angularVelocityDif);
     }
 
 }

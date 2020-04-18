@@ -1,8 +1,5 @@
 package org.valkyrienskies.fixes;
 
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
@@ -14,9 +11,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A few simple static implementations of functions that send packets, correctly handling for
@@ -43,11 +45,12 @@ public class VSNetwork {
             worldIn = except.world;
         }
         Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(worldIn, pos);
-        Vector packetPosition = new Vector(x, y, z);
+        Vector3d packetPosition = new Vector3d(x, y, z);
         if (physicsObject.isPresent()) {
             physicsObject.get()
                 .getShipTransformationManager()
-                .fromLocalToGlobal(packetPosition);
+                .getCurrentTickTransform()
+                .transformPosition(packetPosition, TransformType.SUBSPACE_TO_GLOBAL);
             // Special treatment for certain packets.
             if (packetIn instanceof SPacketSoundEffect) {
                 SPacketSoundEffect soundEffect = (SPacketSoundEffect) packetIn;

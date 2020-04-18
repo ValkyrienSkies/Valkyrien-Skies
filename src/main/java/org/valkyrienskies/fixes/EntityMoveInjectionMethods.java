@@ -1,18 +1,17 @@
 package org.valkyrienskies.fixes;
 
-import java.util.Optional;
-
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector;
-import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import org.joml.Vector3d;
+import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector;
+import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 /**
  * This class used to do more (We made Entity.java extend this class in the past); but after tons of
@@ -41,11 +40,11 @@ public class EntityMoveInjectionMethods {
                 return null;
             }
 
-            Vector endPos = new Vector(newX, newY, newZ);
+            Vector3d endPos = new Vector3d(newX, newY, newZ);
             physicsObject.get()
                 .getShipTransformationManager()
                 .getCurrentTickTransform()
-                .transform(endPos, TransformType.GLOBAL_TO_SUBSPACE);
+                .transformPosition(endPos, TransformType.GLOBAL_TO_SUBSPACE);
             dx = endPos.x - this_.posX;
             dy = endPos.y - this_.posY;
             dz = endPos.z - this_.posZ;

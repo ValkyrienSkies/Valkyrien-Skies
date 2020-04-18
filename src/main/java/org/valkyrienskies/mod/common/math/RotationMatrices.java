@@ -6,7 +6,7 @@ import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4dc;
 import org.joml.Vector3d;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
+import org.joml.Vector3dc;
 
 /**
  * This is getting deleted. Do NOT Use!
@@ -111,8 +111,6 @@ public class RotationMatrices {
      * @param entity
      */
     public static void applyTransform(Matrix4dc transform, Entity entity) {
-        // ISubspacedEntity entitySubspaceTracker = (ISubspacedEntity) entity;
-
         Vec3d entityLookMc = entity.getLook(1.0F);
 
         Vector3d entityPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
@@ -140,9 +138,9 @@ public class RotationMatrices {
         }
 
         // ===== Fix change the entity rotation to be proper relative to ship space =====
-        VectorImmutable entityLookImmutable = new Vector(entityLook.x, entityLook.y, entityLook.z).toImmutable();
-        double pitch = VSMath.getPitchFromVectorImmutable(entityLookImmutable);
-        double yaw = VSMath.getYawFromVectorImmutable(entityLookImmutable, pitch);
+        Vector3dc entityLookImmutable = new Vector3d(entityLook.x, entityLook.y, entityLook.z);
+        double pitch = VSMath.getPitchFromVector(entityLookImmutable);
+        double yaw = VSMath.getYawFromVector(entityLookImmutable, pitch);
 
         entity.rotationYaw = (float) yaw;
         entity.rotationPitch = (float) pitch;

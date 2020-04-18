@@ -17,7 +17,6 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCom
 import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -67,12 +66,12 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl {
                 Optional<PhysicsObject> physicsObject = ValkyrienUtils
                     .getPhysoManagingBlock(getWorld(), getPos());
                 if (physicsObject.isPresent()) {
-                    Vector currentPos = new Vector(getPos().getX() + .5, getPos().getY() + .5,
+                    Vector3d currentPos = new Vector3d(getPos().getX() + .5, getPos().getY() + .5,
                         getPos().getZ() + .5);
                     physicsObject.get()
                         .getShipTransformationManager()
                         .getCurrentTickTransform()
-                        .transform(currentPos, TransformType.SUBSPACE_TO_GLOBAL);
+                        .transformPosition(currentPos, TransformType.SUBSPACE_TO_GLOBAL);
                     targetYPosition = currentPos.y;
                 } else {
                     targetYPosition = getPos().getY() + .5;
@@ -100,12 +99,12 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl {
                     .getPhysicsCalculations()
                     .getVelocityAtPoint(new Vector3d());
                 // The global coordinates of this tile entity
-                Vector tilePos = new Vector(getPos().getX() + .5, getPos().getY() + .5,
+                Vector3d tilePos = new Vector3d(getPos().getX() + .5, getPos().getY() + .5,
                     getPos().getZ() + .5);
                 physicsObject.get()
                     .getShipTransformationManager()
                     .getCurrentPhysicsTransform()
-                    .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
+                    .transformPosition(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
 
                 // Utilizing a proper PI controller for very smooth control.
                 double heightWithIntegral = tilePos.y + linearVel.y * .3D;

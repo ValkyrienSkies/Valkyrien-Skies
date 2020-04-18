@@ -6,11 +6,11 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.init.Blocks;
+import org.joml.AxisAngle4d;
+import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
 import org.valkyrienskies.mod.client.render.FastBlockModelRenderer;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.math.Vector;
 
 public class ValkyriumCompressorPartTileEntityRenderer extends
     TileEntitySpecialRenderer<TileEntityValkyriumCompressorPart> {
@@ -39,18 +39,15 @@ public class ValkyriumCompressorPartTileEntityRenderer extends
         } else {
             if (tileentity.isMaster()) {
                 double keyframe = tileentity.getCurrentKeyframe(partialTick);
-
                 GlStateManager.pushMatrix();
-
                 float rotationYaw = tileentity.getMultiBlockSchematic().getMultiblockRotation()
                     .getYaw();
 
-                Vector centerOffset = new Vector(.5, 0, .5);
-                RotationMatrices
-                    .applyTransform(RotationMatrices.getRotationMatrix(0, -rotationYaw, 0),
-                        centerOffset);
-                GlStateManager.translate(centerOffset.x, centerOffset.y, centerOffset.z);
+                Vector3d centerOffset = new Vector3d(.5, 0, .5);
+                AxisAngle4d rotation = new AxisAngle4d(Math.toRadians(-rotationYaw), 0, 1, 0);
+                rotation.transform(centerOffset);
 
+                GlStateManager.translate(centerOffset.x, centerOffset.y, centerOffset.z);
                 GlStateManager.translate(.5, 0, .5);
                 GlStateManager.scale(2, 2, 2);
                 GlStateManager.rotate(-rotationYaw, 0, 1, 0);

@@ -15,10 +15,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.EntityShipMountData;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -50,9 +50,9 @@ public abstract class MixinEntity implements IDraggable {
     private Vector3dc velocityAddedToPlayer = new Vector3d();
     private double yawDifVelocity;
     private boolean cancelNextMove = false;
-    private Vector positionInShipSpace;
-    private Vector velocityInShipSpace;
-    private Vector searchVector = null;
+    private Vector3d positionInShipSpace;
+    private Vector3d velocityInShipSpace;
+    private Vector3d searchVector = null;
 
     @Override
     public PhysicsObject getWorldBelowFeet() {
@@ -181,15 +181,16 @@ public abstract class MixinEntity implements IDraggable {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
                 .getPhysoManagingBlock(world, new BlockPos(x, y, z));
             if (physicsObject.isPresent()) {
-                Vector posVec = new Vector(x, y, z);
+                Vector3d posVec = new Vector3d(x, y, z);
                 physicsObject.get()
                     .getShipTransformationManager()
-                    .fromLocalToGlobal(posVec);
+                    .getCurrentTickTransform()
+                    .transformPosition(posVec, TransformType.SUBSPACE_TO_GLOBAL);
                 posVec.x -= this.posX;
                 posVec.y -= this.posY;
                 posVec.z -= this.posZ;
-                if (vanilla > posVec.lengthSq()) {
-                    return posVec.lengthSq();
+                if (vanilla > posVec.lengthSquared()) {
+                    return posVec.lengthSquared();
                 }
             }
         }
@@ -209,15 +210,16 @@ public abstract class MixinEntity implements IDraggable {
         } else {
             Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
             if (physicsObject.isPresent()) {
-                Vector posVec = new Vector(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+                Vector3d posVec = new Vector3d(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
                 physicsObject.get()
                     .getShipTransformationManager()
-                    .fromLocalToGlobal(posVec);
+                    .getCurrentTickTransform()
+                    .transformPosition(posVec, TransformType.SUBSPACE_TO_GLOBAL);
                 posVec.x -= this.posX;
                 posVec.y -= this.posY;
                 posVec.z -= this.posZ;
-                if (vanilla > posVec.lengthSq()) {
-                    return posVec.lengthSq();
+                if (vanilla > posVec.lengthSquared()) {
+                    return posVec.lengthSquared();
                 }
             }
         }
@@ -225,23 +227,23 @@ public abstract class MixinEntity implements IDraggable {
     }
 
     @Redirect(method = "createRunningParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I", ordinal = 0))
-    public int runningParticlesFirstFloor(double d) {
+    private int runningParticlesFirstFloor(double d) {
         PhysicsObject worldBelow = thisAsDraggable.getWorldBelowFeet();
 
         if (worldBelow == null) {
             searchVector = null;
             return MathHelper.floor(d);
         } else {
-            searchVector = new Vector(this.posX, this.posY - 0.20000000298023224D, this.posZ);
+            searchVector = new Vector3d(this.posX, this.posY - 0.20000000298023224D, this.posZ);
 //            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
             worldBelow.getShipTransformationManager().getCurrentTickTransform()
-                .transform(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
+                .transformPosition(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
             return MathHelper.floor(searchVector.x);
         }
     }
 
     @Redirect(method = "createRunningParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I", ordinal = 1))
-    public int runningParticlesSecondFloor(double d) {
+    private int runningParticlesSecondFloor(double d) {
         if (searchVector == null) {
             return MathHelper.floor(d);
         } else {
@@ -264,30 +266,29 @@ public abstract class MixinEntity implements IDraggable {
     }
 
     @Inject(method = "getPositionEyes(F)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
-    public void getPositionEyesInject(float partialTicks,
+    private void getPositionEyesInject(float partialTicks,
         CallbackInfoReturnable<Vec3d> callbackInfo) {
         EntityShipMountData mountData = ValkyrienUtils
             .getMountedShipAndPos(Entity.class.cast(this));
 
         if (mountData.isMounted()) {
-            Vector playerPosition = new Vector(mountData.getMountPos());
+            Vector3d playerPosition = JOML.convert(mountData.getMountPos());
             mountData.getMountedShip()
                 .getShipTransformationManager()
                 .getRenderTransform()
-                .transform(playerPosition,
-                    TransformType.SUBSPACE_TO_GLOBAL);
+                .transformPosition(playerPosition, TransformType.SUBSPACE_TO_GLOBAL);
 
-            Vector playerEyes = new Vector(0, this.getEyeHeight(), 0);
+            Vector3d playerEyes = new Vector3d(0, this.getEyeHeight(), 0);
             // Remove the original position added for the player's eyes
             // RotationMatrices.doRotationOnly(wrapper.wrapping.coordTransform.lToWTransform,
             // playerEyes);
             mountData.getMountedShip()
                 .getShipTransformationManager()
                 .getCurrentTickTransform()
-                .rotate(playerEyes, TransformType.SUBSPACE_TO_GLOBAL);
+                .transformDirection(playerEyes, TransformType.SUBSPACE_TO_GLOBAL);
             // Add the new rotate player eyes to the position
             playerPosition.add(playerEyes);
-            callbackInfo.setReturnValue(playerPosition.toVec3d());
+            callbackInfo.setReturnValue(JOML.toMinecraft(playerPosition));
             callbackInfo.cancel(); // return the value, as opposed to the default one
         }
     }

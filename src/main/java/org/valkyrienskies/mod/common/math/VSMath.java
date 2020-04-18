@@ -5,7 +5,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.joml.*;
-import org.valkyrienskies.mod.common.coordinates.VectorImmutable;
 
 import java.lang.Math;
 import java.util.List;
@@ -49,13 +48,13 @@ public class VSMath {
         return new Matrix3d().set(matrix).transpose();
     }
 
-    public static double getPitchFromVectorImmutable(VectorImmutable vec) {
-        return -Math.asin(vec.getY()) * 180 / Math.PI;
+    public static double getPitchFromVector(Vector3dc vec) {
+        return -Math.asin(vec.y()) * 180 / Math.PI;
     }
 
-    public static double getYawFromVectorImmutable(VectorImmutable vec, double rotPitch) {
+    public static double getYawFromVector(Vector3dc vec, double rotPitch) {
         double f2 = -Math.cos(-rotPitch * (Math.PI / 180));
-        double yawFromRotVec = Math.atan2(vec.getX() / f2, vec.getZ() / f2);
+        double yawFromRotVec = Math.atan2(vec.x() / f2, vec.z() / f2);
         yawFromRotVec += Math.PI;
         yawFromRotVec /= -0.017453292F;
         return yawFromRotVec;

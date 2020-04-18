@@ -258,16 +258,16 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                         addForceAtPoint(inBodyWO, blockForce, crossVector);
                         // Add particles here.
                         if (((IBlockForceProvider) blockAt).doesForceSpawnParticles()) {
-                            Vector particlePos;
+                            Vector3d particlePos;
                             if (otherPosition != null) {
-                                particlePos = new Vector(
+                                particlePos = new Vector3d(
                                         otherPosition);
                             } else {
-                                particlePos = new Vector(
+                                particlePos = new Vector3d(
                                         pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
                             }
                             parent.getShipTransformationManager().getCurrentPhysicsTransform()
-                                    .transform(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
+                                    .transformPosition(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
                             // System.out.println(particlePos);
                             float posX = (float) particlePos.x;
                             float posY = (float) particlePos.y;
@@ -349,15 +349,14 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         double timeStep = 1D;
         double idealAngularVelocityMultiple = idealAxisAngle.angle / timeStep;
 
-        Vector idealAngularVelocity = new Vector(idealAxisAngle.x, idealAxisAngle.y, idealAxisAngle.z);
-        idealAngularVelocity.multiply(idealAngularVelocityMultiple);
+        Vector3d idealAngularVelocity = new Vector3d(idealAxisAngle.x, idealAxisAngle.y, idealAxisAngle.z);
+        idealAngularVelocity.mul(idealAngularVelocityMultiple);
 
-        Vector angularVelocityDif = idealAngularVelocity
-                .getSubtraction(new Vector(getAngularVelocity()));
+        Vector3d angularVelocityDif = idealAngularVelocity.sub(getAngularVelocity(), new Vector3d());
         // Larger values converge faster, but sacrifice collision accuracy
-        angularVelocityDif.multiply(.01);
+        angularVelocityDif.mul(.01);
 
-        getAngularVelocity().sub(angularVelocityDif.toVector3d());
+        getAngularVelocity().add(angularVelocityDif);
     }
 
     private void applyAirDrag() {
@@ -492,16 +491,10 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     }
 
     public double getInertiaAlongRotationAxis() {
-        Vector3d rotationAxis = new Vector(
-            getAngularVelocity()).toVector3d();
+        Vector3d rotationAxis = new Vector3d(getAngularVelocity());
         rotationAxis.normalize();
         getPhysMOITensor().transform(rotationAxis);
         return rotationAxis.length();
-    }
-
-    @Deprecated
-    public Vector getCopyOfPhysCoordinates() {
-        return new Vector(physX, physY, physZ);
     }
 
     public IRotationNodeWorld getPhysicsRotationNodeWorld() {

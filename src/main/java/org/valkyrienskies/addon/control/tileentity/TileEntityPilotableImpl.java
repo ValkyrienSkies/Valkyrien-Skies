@@ -1,6 +1,5 @@
 package org.valkyrienskies.addon.control.tileentity;
 
-import java.util.Optional;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.network.MessageStartPiloting;
 import org.valkyrienskies.addon.control.network.MessageStopPiloting;
@@ -15,10 +15,11 @@ import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.ITileEntityPilotable;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 /**
  * A basic implementation of the ITileEntityPilotable interface, other tile entities can extend this
@@ -127,22 +128,22 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
      * @return true if the passed player is in front of the given blockFacing, false if not.
      */
     protected boolean isPlayerInFront(EntityPlayer player, EnumFacing blockFacing) {
-        Vector tileRelativePos = new Vector(this.getPos().getX() + .5, this.getPos().getY() + .5,
+        Vector3d tileRelativePos = new Vector3d(this.getPos().getX() + .5, this.getPos().getY() + .5,
             this.getPos().getZ() + .5);
         if (this.getParentPhysicsEntity() != null) {
             this.getParentPhysicsEntity().getShipTransformationManager()
                 .getCurrentTickTransform()
-                .transform(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
+                .transformPosition(tileRelativePos, TransformType.SUBSPACE_TO_GLOBAL);
         }
-        tileRelativePos.subtract(player.posX, player.posY, player.posZ);
-        Vector normal = new Vector(blockFacing.getDirectionVec().getX() * -1,
+        tileRelativePos.sub(player.posX, player.posY, player.posZ);
+        Vector3d normal = new Vector3d(blockFacing.getDirectionVec().getX() * -1,
             blockFacing.getDirectionVec().getY(),
             blockFacing.getDirectionVec().getZ());
 
         if (this.getParentPhysicsEntity() != null) {
             this.getParentPhysicsEntity().getShipTransformationManager()
                 .getCurrentTickTransform()
-                .rotate(normal, TransformType.SUBSPACE_TO_GLOBAL);
+                .transformDirection(normal, TransformType.SUBSPACE_TO_GLOBAL);
         }
 
         double dotProduct = tileRelativePos.dot(normal);

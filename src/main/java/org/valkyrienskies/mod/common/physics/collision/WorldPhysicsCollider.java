@@ -308,24 +308,15 @@ public class WorldPhysicsCollider {
             toCollideWith = collider.collisions[collider.minDistanceIndex];
         }
 
-        Vector3d positionInBody = collider.entity.getCenter();
-        positionInBody.sub(
-            parent.getShipTransform().getPosX(),
-            parent.getShipTransform().getPosY(),
-            parent.getShipTransform().getPosZ()
-        );
-
-        double impulseApplied = 1D;
-
         Vector3dc[] collisionPoints = PolygonCollisionPointFinder
             .getPointsOfCollisionForPolygons(toCollideWith);
 
-        impulseApplied /= collisionPoints.length;
+        double impulseApplied = 1.0 / collisionPoints.length;;
 
         for (Vector3dc collisionPos : collisionPoints) {
             Vector3d inBody = new Vector3d(
                     collisionPos.x() - parent.getShipTransform().getPosX(),
-                    collisionPos.y() -parent.getShipTransform().getPosY(),
+                    collisionPos.y() - parent.getShipTransform().getPosY(),
                     collisionPos.z() - parent.getShipTransform().getPosZ());
             Vector3d momentumAtPoint = calculator
                 .getVelocityAtPoint(inBody);
@@ -554,115 +545,6 @@ public class WorldPhysicsCollider {
                 for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
                     updateCollisionCacheSequential(cache, chunkX, chunkZ, minX, minY, minZ, maxX,
                         maxY, maxZ, shipBB);
-                }
-            }
-        }
-    }
-
-    private void updateCollisionCacheParrallel(ChunkCache cache, Queue<Integer> dataQueue,
-        int chunkX, int chunkZ,
-        int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-        int arrayChunkX = chunkX - cache.chunkX;
-        int arrayChunkZ = chunkZ - cache.chunkZ;
-
-        if (cache.chunkArray[arrayChunkX][arrayChunkZ] != null && !(arrayChunkX < 0
-            || arrayChunkZ < 0
-            || arrayChunkX > cache.chunkArray.length - 1
-            || arrayChunkZ > cache.chunkArray[0].length - 1)) {
-
-            Vector temp1 = new Vector();
-            Vector temp2 = new Vector();
-            Vector temp3 = new Vector();
-
-            Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
-            for (int storageY = minY >> 4; storageY <= maxY >> 4; storageY++) {
-                ExtendedBlockStorage extendedblockstorage = chunk.storageArrays[storageY];
-                if (extendedblockstorage != null) {
-                    int minStorageX = chunkX << 4;
-                    int minStorageY = storageY << 4;
-                    int minStorageZ = chunkZ << 4;
-
-                    int maxStorageX = minStorageX + 16;
-                    int maxStorageY = minStorageY + 16;
-                    int maxStorageZ = minStorageZ + 16;
-
-                    IBitOctreeProvider provider = (IBitOctreeProvider) extendedblockstorage.data;
-                    IBitOctree octree = provider.getBitOctree();
-
-                    if (USE_OCTREE_COLLISION) {
-                        for (int levelThree = 0; levelThree < 8; levelThree++) {
-                            int levelThreeIndex = octree.getOctreeLevelThreeIndex(levelThree);
-                            if (octree.getAtIndex(levelThreeIndex)) {
-                                for (int levelTwo = 0; levelTwo < 8; levelTwo++) {
-                                    int levelTwoIndex = octree
-                                        .getOctreeLevelTwoIndex(levelThreeIndex, levelTwo);
-                                    if (octree.getAtIndex(levelTwoIndex)) {
-                                        for (int levelOne = 0; levelOne < 8; levelOne++) {
-                                            int levelOneIndex = octree
-                                                .getOctreeLevelOneIndex(levelTwoIndex, levelOne);
-                                            if (octree.getAtIndex(levelOneIndex)) {
-
-                                                int baseX =
-                                                    ((levelThree % 2) * 8) + ((levelTwo % 2) * 4)
-                                                        + ((levelOne % 2) * 2);
-                                                int baseY = (((levelThree >> 1) % 2) * 8) + (
-                                                    ((levelTwo >> 1) % 2) * 4)
-                                                    + (((levelOne >> 1) % 2) * 2);
-                                                int baseZ = (((levelThree >> 2) % 2) * 8) + (
-                                                    ((levelTwo >> 2) % 2) * 4)
-                                                    + (((levelOne >> 2) % 2) * 2);
-
-                                                int x = baseX + minStorageX;
-                                                int y = baseY + minStorageY;
-                                                int z = baseZ + minStorageZ;
-
-                                                dataQueue.add(0);
-
-                                                if (x >= minX && x <= maxX && y >= minY && y <= maxY
-                                                    && z >= minZ
-                                                    && z <= maxZ && false) {
-                                                    checkForCollision(x, y, z, extendedblockstorage,
-                                                        octree, temp1,
-                                                        temp2, temp3, dataQueue);
-                                                    checkForCollision(x, y, z + 1,
-                                                        extendedblockstorage, octree, temp1,
-                                                        temp2, temp3, dataQueue);
-                                                    checkForCollision(x, y + 1, z,
-                                                        extendedblockstorage, octree, temp1,
-                                                        temp2, temp3, dataQueue);
-                                                    checkForCollision(x, y + 1, z + 1,
-                                                        extendedblockstorage, octree,
-                                                        temp1, temp2, temp3, dataQueue);
-                                                    checkForCollision(x + 1, y, z,
-                                                        extendedblockstorage, octree, temp1,
-                                                        temp2, temp3, dataQueue);
-                                                    checkForCollision(x + 1, y, z + 1,
-                                                        extendedblockstorage, octree,
-                                                        temp1, temp2, temp3, dataQueue);
-                                                    checkForCollision(x + 1, y + 1, z,
-                                                        extendedblockstorage, octree,
-                                                        temp1, temp2, temp3, dataQueue);
-                                                    checkForCollision(x + 1, y + 1, z + 1,
-                                                        extendedblockstorage, octree,
-                                                        temp1, temp2, temp3, dataQueue);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        for (int x = minStorageX; x < maxStorageX; x++) {
-                            for (int y = minStorageY; y < maxStorageY; y++) {
-                                for (int z = minStorageZ; z < maxStorageZ; z++) {
-                                    checkForCollision(x, y, z, extendedblockstorage, octree, temp1,
-                                        temp2, temp3,
-                                        dataQueue);
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -904,79 +786,6 @@ public class WorldPhysicsCollider {
             // }
         }
         return false;
-    }
-
-    private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage,
-        IBitOctree octree, Vector inLocal,
-        Vector inBody, Vector speedInBody,
-        Collection<Integer> collection) {
-        if (octree.get(x & 15, y & 15, z & 15)) {
-            inLocal.x = x + .5D;
-            inLocal.y = y + .5D;
-            inLocal.z = z + .5D;
-            // TODO: Something
-            // parent.coordTransform.fromGlobalToLocal(inLocal);
-            parent.getShipTransformationManager().getCurrentPhysicsTransform().transform(inLocal,
-                TransformType.GLOBAL_TO_SUBSPACE);
-
-            inBody.setSubtraction(inLocal, parent.getCenterCoord());
-            // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
-            // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
-
-            // TODO: This isnt ideal, but we do gain a lot of performance.
-            speedInBody.zero();
-
-            double RANGE_CHECK = 1.8;
-
-            int minX, minY, minZ, maxX, maxY, maxZ;
-            if (speedInBody.x > 0) {
-                minX = MathHelper.floor(inLocal.x - RANGE_CHECK);
-                maxX = MathHelper.floor(inLocal.x + RANGE_CHECK + speedInBody.x);
-            } else {
-                minX = MathHelper.floor(inLocal.x - RANGE_CHECK + speedInBody.x);
-                maxX = MathHelper.floor(inLocal.x + RANGE_CHECK);
-            }
-
-            if (speedInBody.y > 0) {
-                minY = MathHelper.floor(inLocal.y - RANGE_CHECK);
-                maxY = MathHelper.floor(inLocal.y + RANGE_CHECK + speedInBody.y);
-            } else {
-                minY = MathHelper.floor(inLocal.y - RANGE_CHECK + speedInBody.y);
-                maxY = MathHelper.floor(inLocal.y + RANGE_CHECK);
-            }
-
-            if (speedInBody.z > 0) {
-                minZ = MathHelper.floor(inLocal.z - RANGE_CHECK);
-                maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK + speedInBody.z);
-            } else {
-                minZ = MathHelper.floor(inLocal.z - RANGE_CHECK + speedInBody.z);
-                maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK);
-            }
-
-            minY = Math.min(255, Math.max(minY, 0));
-
-            outermostloop:
-            for (int localX = minX; localX < maxX; localX++) {
-                for (int localZ = minZ; localZ < maxZ; localZ++) {
-                    for (int localY = minY; localY < maxY; localY++) {
-                        if (parent.getChunkClaim().containsChunk(localX >> 4, localZ >> 4)) {
-                            Chunk chunkIn = parent.getChunkAt(localX >> 4, localZ >> 4);
-                            if (localY >> 4 < 16 && chunkIn.storageArrays[localY >> 4] != null) {
-                                IBitOctreeProvider provider = (IBitOctreeProvider) chunkIn.storageArrays[
-                                    localY >> 4].getData();
-                                IBitOctree octreeInLocal = provider.getBitOctree();
-                                if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
-                                    int hash = SpatialDetector
-                                        .getHashWithRespectTo(x, y, z, centerPotentialHit);
-                                    collection.add(hash);
-                                    break outermostloop;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     public BlockPos getCenterPotentialHit() {

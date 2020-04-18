@@ -6,14 +6,14 @@ import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3dc;
 
 public class SoundFixWrapper implements ISound {
 
-    private final Vector soundLocation;
+    private final Vector3dc soundLocation;
     private final ISound wrappedSound;
 
-    public SoundFixWrapper(ISound wrappedSound, Vector soundLocation) {
+    public SoundFixWrapper(ISound wrappedSound, Vector3dc soundLocation) {
         this.wrappedSound = wrappedSound;
         this.soundLocation = soundLocation;
     }
@@ -60,17 +60,17 @@ public class SoundFixWrapper implements ISound {
 
     @Override
     public float getXPosF() {
-        return (float) soundLocation.x;
+        return (float) soundLocation.x();
     }
 
     @Override
     public float getYPosF() {
-        return (float) soundLocation.y;
+        return (float) soundLocation.y();
     }
 
     @Override
     public float getZPosF() {
-        return (float) soundLocation.z;
+        return (float) soundLocation.z();
     }
 
     @Override

@@ -7,7 +7,6 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.fuel.IValkyriumEngine;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
@@ -70,12 +69,12 @@ public class TileEntityValkyriumCompressorPart extends
 
     @Override
     public double getCurrentValkyriumEfficiency(@Nonnull PhysicsObject physicsObject) {
-        Vector tilePos = new Vector(getPos().getX() + .5D, getPos().getY() + .5D,
+        Vector3d tilePos = new Vector3d(getPos().getX() + .5D, getPos().getY() + .5D,
             getPos().getZ() + .5D);
         physicsObject
             .getShipTransformationManager()
             .getCurrentPhysicsTransform()
-            .transform(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
+            .transformPosition(tilePos, TransformType.SUBSPACE_TO_GLOBAL);
         double yPos = tilePos.y;
         return IValkyriumEngine.getValkyriumEfficiencyFromHeight(yPos);
     }

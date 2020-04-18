@@ -19,8 +19,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.math.VSMath;
-import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygon;
 import org.valkyrienskies.mod.common.physics.collision.polygons.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
@@ -170,8 +170,8 @@ public class EntityCollisionInjector {
         dz += total.z;
 
         boolean alreadyOnGround = entity.onGround && (dy == origDy) && origDy < 0;
-        Vector original = new Vector(origDx, origDy, origDz);
-        Vector newMov = new Vector(dx - origDx, dy - origDy, dz - origDz);
+        Vector3d original = new Vector3d(origDx, origDy, origDz);
+        Vector3d newMov = new Vector3d(dx - origDx, dy - origDy, dz - origDz);
         entity.collidedHorizontally = original.dot(newMov) < 0;
         entity.collidedVertically = isDifSignificant(dy, origDy);
         entity.onGround = entity.collidedVertically && origDy < 0 || alreadyOnGround;
@@ -182,7 +182,7 @@ public class EntityCollisionInjector {
         double motionYBefore = entity.motionY;
         float oldFallDistance = entity.fallDistance;
 
-        Vector dxyz;
+        Vector3d dxyz;
 
         if (entity instanceof EntityLivingBase) {
             EntityLivingBase base = (EntityLivingBase) entity;
@@ -207,30 +207,13 @@ public class EntityCollisionInjector {
             // base.motionY = 0.0D;
             // }
             // }
-            dxyz = new Vector(dx, dy, dz);
+            dxyz = new Vector3d(dx, dy, dz);
         } else {
-            dxyz = new Vector(dx, dy, dz);
+            dxyz = new Vector3d(dx, dy, dz);
         }
 
-        Vector origDxyz = new Vector(origDx, origDy, origDz);
-        Vector origPosXyz = new Vector(origPosX, origPosY, origPosZ);
-
-        if (worldBelow != null && false) {
-            double playerMass = 100D;
-            Vector impulse = new Vector(total);
-            Vector inBodyPos = new Vector(entity.posX, entity.posY, entity.posZ);
-
-            // inBodyPos.transform(worldBelow.wrapping.coordTransform.wToLRotation);
-            // impulse.transform(worldBelow.wrapping.coordTransform.wToLRotation);
-
-            impulse.multiply(playerMass * -100D);
-            // impulse.multiply();
-
-            // PhysicsQueuedForce queuedForce = new PhysicsQueuedForce(impulse, inBodyPos,
-            // false, 1);
-
-            // worldBelow.wrapping.queueForce(queuedForce);
-        }
+        Vector3d origDxyz = new Vector3d(origDx, origDy, origDz);
+        Vector3d origPosXyz = new Vector3d(origPosX, origPosY, origPosZ);
 
         return new IntermediateMovementVariableStorage(dxyz, origDxyz, origPosXyz, alreadyOnGround,
             motionYBefore,
@@ -239,17 +222,17 @@ public class EntityCollisionInjector {
 
     public static void alterEntityMovementPost(Entity entity,
         IntermediateMovementVariableStorage storage) {
-        double dx = storage.dxyz.x;
-        double dy = storage.dxyz.y;
-        double dz = storage.dxyz.z;
+        double dx = storage.dxyz.x();
+        double dy = storage.dxyz.y();
+        double dz = storage.dxyz.z();
 
-        double origDx = storage.origDxyz.x;
-        double origDy = storage.origDxyz.y;
-        double origDz = storage.origDxyz.z;
+        double origDx = storage.origDxyz.x();
+        double origDy = storage.origDxyz.y();
+        double origDz = storage.origDxyz.z();
 
-        double origPosX = storage.origPosXyz.x;
-        double origPosY = storage.origPosXyz.y;
-        double origPosZ = storage.origPosXyz.z;
+        double origPosX = storage.origPosXyz.x();
+        double origPosY = storage.origPosXyz.y();
+        double origPosZ = storage.origPosXyz.z();
 
         boolean alreadyOnGround = storage.alreadyOnGround;
         double motionYBefore = storage.motionYBefore;
@@ -266,12 +249,11 @@ public class EntityCollisionInjector {
             entity.collidedVertically && origDy < 0 || alreadyOnGround || entity.onGround;
         entity.collided = entity.collidedHorizontally || entity.collidedVertically;
 
-        Vector entityPosInShip = new Vector(entity.posX, entity.posY - 0.20000000298023224D,
+        Vector3d entityPosInShip = new Vector3d(entity.posX, entity.posY - 0.20000000298023224D,
             entity.posZ);
 
         worldBelow.getShipTransformationManager().getCurrentTickTransform()
-            .transform(entityPosInShip,
-                TransformType.GLOBAL_TO_SUBSPACE);
+            .transformPosition(entityPosInShip, TransformType.GLOBAL_TO_SUBSPACE);
 
         int j4 = MathHelper.floor(entityPosInShip.x);
         int l4 = MathHelper.floor(entityPosInShip.y);
@@ -441,13 +423,10 @@ public class EntityCollisionInjector {
             double posY = entity.posY;
             double posZ = entity.posZ;
 
-            Vector entityPos = new Vector(posX, posY, posZ);
+            Vector3d entityPos = new Vector3d(posX, posY, posZ);
 
             wrapper.getShipTransformationManager().getCurrentTickTransform()
-                .transform(entityPos,
-                    TransformType.GLOBAL_TO_SUBSPACE);
-            // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.wToLTransform,
-            // entityPos);
+                .transformPosition(entityPos, TransformType.GLOBAL_TO_SUBSPACE);
 
             setEntityPositionAndUpdateBB(entity, entityPos.x, entityPos.y, entityPos.z);
 
@@ -500,9 +479,9 @@ public class EntityCollisionInjector {
     @Value
     public static class IntermediateMovementVariableStorage {
 
-        public final Vector dxyz;
-        public final Vector origDxyz;
-        public final Vector origPosXyz;
+        public final Vector3dc dxyz;
+        public final Vector3dc origDxyz;
+        public final Vector3dc origPosXyz;
         public final boolean alreadyOnGround;
         public final double motionYBefore;
         public final float oldFallDistance;

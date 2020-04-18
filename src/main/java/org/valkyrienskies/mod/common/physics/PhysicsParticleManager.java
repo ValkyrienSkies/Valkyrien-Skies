@@ -7,7 +7,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.joml.Vector3d;
-import org.valkyrienskies.mod.common.math.Vector;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.ArrayList;
@@ -83,11 +82,6 @@ public class PhysicsParticleManager {
             this.mass = mass;
             this.particleLife = particleLife;
             this.isParticleDead = false;
-        }
-
-        public Vector getParticleMomentum() {
-            return new Vector((double) (velX * mass), (double) (velY * mass),
-                (double) (velZ * mass));
         }
 
         public void tickParticle(PhysicsCalculations physicsSource, MutableBlockPos bufferBlockPos,

@@ -7,11 +7,11 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
+import org.joml.AxisAngle4d;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.math.Vector;
 
 public class RudderPartTileEntityRenderer extends
     TileEntitySpecialRenderer<TileEntityRudderPart> {
@@ -71,14 +71,14 @@ public class RudderPartTileEntityRenderer extends
                         break;
                 }
 
-                Vector facingDirection = new Vector(axleFacing.getDirectionVec().getX(),
+                Vector3d facingDirection = new Vector3d(axleFacing.getDirectionVec().getX(),
                     axleFacing.getDirectionVec().getY(), axleFacing.getDirectionVec().getZ());
 
-                double[] rotationMatrix = RotationMatrices.getRotationMatrix(-pitchRot, 0, 0);
-                // I'll be honest this doesn't make much sense, but it shouldn't matter anywhere outside of here anyway.
-                double[] rotationMatrix2 = RotationMatrices.getRotationMatrix(0, -rollRot, 0);
-                RotationMatrices.applyTransform(rotationMatrix2, facingDirection);
-                RotationMatrices.applyTransform(rotationMatrix, facingDirection);
+                AxisAngle4d rotation1 = new AxisAngle4d(Math.toRadians(-pitchRot), 1, 0, 0);
+                AxisAngle4d rotation2 = new AxisAngle4d(Math.toRadians(-rollRot), 0, 1, 0);
+
+                rotation2.transform(facingDirection);
+                rotation1.transform(facingDirection);
 
                 EnumFacing facingDirectionNew = EnumFacing
                     .getFacingFromVector((float) facingDirection.x, (float) facingDirection.y,

@@ -1,7 +1,6 @@
 package org.valkyrienskies.addon.control.tileentity;
 
 import gigaherz.graph.api.GraphObject;
-import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -15,6 +14,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockShipHelm;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
@@ -26,6 +26,8 @@ import org.valkyrienskies.mod.common.math.Vector;
 import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITickable {
 
@@ -109,7 +111,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
         double wheelAndCompassStateRotation = enumfacing.getHorizontalAngle();
 
         BlockPos spawnPos = getWorld().getSpawnPoint();
-        Vector compassPoint = new Vector(getPos().getX(), getPos().getY(), getPos().getZ());
+        Vector3d compassPoint = new Vector3d(getPos().getX(), getPos().getY(), getPos().getZ());
         compassPoint.add(1D, 2D, 1D);
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
@@ -118,8 +120,7 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
             physicsObject.get()
                 .getShipTransformationManager()
                 .getCurrentTickTransform()
-                .transform(compassPoint,
-                    TransformType.SUBSPACE_TO_GLOBAL);
+                .transformPosition(compassPoint, TransformType.SUBSPACE_TO_GLOBAL);
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // compassPoint);
         }

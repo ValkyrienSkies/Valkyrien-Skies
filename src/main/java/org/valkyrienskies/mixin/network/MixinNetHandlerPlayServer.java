@@ -1,23 +1,24 @@
 package org.valkyrienskies.mixin.network;
 
-import java.util.Optional;
-import java.util.Set;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
+import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Todo: Replace this with forge events and capabilities.
@@ -47,11 +48,11 @@ public abstract class MixinNetHandlerPlayServer {
                 World world = player.getEntityWorld();
                 Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
                 if (physicsObject.isPresent()) {
-                    Vector tpPos = new Vector(x, y, z);
+                    Vector3d tpPos = new Vector3d(x, y, z);
                     physicsObject.get()
                         .getShipTransformationManager()
                         .getCurrentTickTransform()
-                        .transform(tpPos, TransformType.SUBSPACE_TO_GLOBAL);
+                        .transformPosition(tpPos, TransformType.SUBSPACE_TO_GLOBAL);
                     // Now call this again with the transformed position.
                     // player.sendMessage(new TextComponentString("Transformed the player tp from <"
                     // + x + ":" + y + ":" + z + "> to" + tpPos));

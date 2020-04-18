@@ -72,12 +72,8 @@ public class ShipCollisionTask implements Callable<Void> {
      * @return
      */
     public Iterator<CollisionInformationHolder> getCollisionInformationIterator() {
-        // This is preventing the cpu from precaching the rest of the List, slowly things down considerably.
-        if (false && collisionInformationGenerated.size() != 0) {
-            return new QuasiRandomIterator(collisionInformationGenerated);
-        } else {
-            return collisionInformationGenerated.iterator();
-        }
+        // Collections.shuffle(collisionInformationGenerated);
+        return collisionInformationGenerated.iterator();
     }
 
     private void processNumber(int integer) {
@@ -171,7 +167,7 @@ public class ShipCollisionTask implements Callable<Void> {
     private static class QuasiRandomIterator<E> implements Iterator<E> {
 
         // Any large prime number works here.
-        private final static int c = 65537;
+        private static final int c = 65537;
         private final List<E> internalList;
         private final int startIndex;
         private int index;

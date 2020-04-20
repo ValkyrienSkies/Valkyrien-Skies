@@ -14,7 +14,9 @@ import org.valkyrienskies.mod.common.ships.chunk_claims.VSChunkClaim;
 import org.valkyrienskies.mod.common.ships.physics_data.ShipInertiaData;
 import org.valkyrienskies.mod.common.ships.physics_data.ShipPhysicsData;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.util.datastructures.IBlockPosSet;
 import org.valkyrienskies.mod.common.util.datastructures.IBlockPosSetAABB;
+import org.valkyrienskies.mod.common.util.datastructures.SmallBlockPosSet;
 import org.valkyrienskies.mod.common.util.datastructures.SmallBlockPosSetAABB;
 import org.valkyrienskies.mod.common.util.cqengine.ConcurrentUpdatableIndexedCollection;
 import org.valkyrienskies.mod.common.util.jackson.annotations.PacketIgnore;
@@ -52,15 +54,23 @@ public class ShipData {
     private final ShipInertiaData inertiaData;
 
     /**
-     * Has to be concurrent, only exists properly on the server. Do not use this for anything client
-     * side! Contains all of the non-air block positions on the ship. This is used for generating
-     * AABBs and deconstructing the ship.
+     * Do not use this for anything client side! Contains all of the non-air block positions on the ship.
+     * This is used for generating AABBs and deconstructing the ship.
      */
     @PacketIgnore
     @Nullable
     @JsonSerialize(as = SmallBlockPosSetAABB.class)
     @JsonDeserialize(as = SmallBlockPosSetAABB.class)
     public IBlockPosSetAABB blockPositions;
+
+    /**
+     * Do not use this for anything client side! Contains all the positions of force producing blocks on the ship.
+     */
+    @PacketIgnore
+    @Nullable
+    @JsonSerialize(as = SmallBlockPosSet.class)
+    @JsonDeserialize(as = SmallBlockPosSet.class)
+    public IBlockPosSet activeForcePositions;
 
     @Setter
     private ShipTransform shipTransform;
@@ -114,6 +124,7 @@ public class ShipData {
 
         this.blockPositions = new SmallBlockPosSetAABB(chunkClaim.getCenterPos().getXStart(), 0,
                 chunkClaim.getCenterPos().getZStart(), 1024, 1024, 1024);
+        this.activeForcePositions = new SmallBlockPosSet(chunkClaim.getCenterPos().getXStart(), chunkClaim.getCenterPos().getZStart());
     }
 
     public static ShipData createData(ConcurrentUpdatableIndexedCollection<ShipData> owner,

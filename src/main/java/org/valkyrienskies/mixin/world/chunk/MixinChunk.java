@@ -17,11 +17,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
+import org.valkyrienskies.mod.common.ships.QueryableShipData;
+import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.ships.ShipDataMethods;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Mixin(value = Chunk.class, priority = 1001)
 public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
@@ -81,8 +85,12 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
      */
     @Inject(method = "setBlockState", at = @At("HEAD"))
     private void pre_setBlockState(BlockPos pos, IBlockState state, CallbackInfoReturnable<IBlockState> cir) {
-        IBlockState oldState = getBlockState(pos);
-        ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onSetBlockState(oldState, state, pos));
+        if (!world.isRemote) {
+            IBlockState oldState = getBlockState(pos);
+            QueryableShipData queryableShipData = QueryableShipData.get(world);
+            Optional<ShipData> shipDataOptional = queryableShipData.getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
+            shipDataOptional.ifPresent(shipData -> ShipDataMethods.onSetBlockState(shipData, pos, oldState, state));
+        }
     }
 
     /**

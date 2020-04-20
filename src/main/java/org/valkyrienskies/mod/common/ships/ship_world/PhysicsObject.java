@@ -136,33 +136,6 @@ public class PhysicsObject implements IPhysicsEntity {
         }
     }
 
-    public void onSetBlockState(@Nonnull IBlockState oldState, @Nonnull IBlockState newState, @Nonnull BlockPos pos) {
-        if (oldState == null || newState == null || pos == null) {
-            throw new IllegalArgumentException("One of the arguments of this function was null!\nArgs are " + oldState + ", " + newState + ", " + pos);
-        }
-        // If the world is remote, ignore it.
-        if (getWorld().isRemote) {
-            return;
-        }
-        // Make sure that pos is even part of this ship
-        if (!getShipData().getChunkClaim().containsBlock(pos)) {
-            throw new IllegalArgumentException("Get onSetBlockState() called for pos " + pos
-                    + ", but this ISN'T a part of the ship " + shipData);
-        }
-
-        if (newState.equals(Blocks.AIR.getDefaultState())) {
-            getBlockPositions().remove(pos);
-        } else {
-            getBlockPositions().add(pos);
-        }
-
-        if (getPhysicsCalculations() != null) {
-            getPhysicsCalculations().onSetBlockState(oldState, newState, pos);
-        }
-
-        centerOfMassProvider.onSetBlockState(shipData.getInertiaData(), pos, oldState, newState);
-    }
-
     void onTick() {
         cachedSurroundingChunks.updateChunkCache();
 

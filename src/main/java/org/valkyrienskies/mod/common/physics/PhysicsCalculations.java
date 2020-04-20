@@ -30,8 +30,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;
     private final PhysicsParticleManager particleManager;
-    // CopyOnWrite to provide concurrency between threads.
-    private final Set<BlockPos> activeForcePositions;
     private final IRotationNodeWorld physicsRotationNodeWorld;
 
     public boolean actAsArchimedes = false;
@@ -65,23 +63,9 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
         this.physCenterOfMass = new Vector3d();
         this.torque = new Vector3d();
-        // We need thread safe access to this.
-        this.activeForcePositions = ConcurrentHashMap.newKeySet();
         this.physicsRotationNodeWorld = new ImplRotationNodeWorld(this.parent);
 
         generatePhysicsTransform();
-    }
-
-    public void onSetBlockState(IBlockState oldState, IBlockState newState, BlockPos pos) {
-        World worldObj = getParent().getWorld();
-        if (!newState.equals(oldState)) {
-            // TODO: Axe this too.
-            if (BlockPhysicsDetails.isBlockProvidingForce(newState, pos, worldObj)) {
-                activeForcePositions.add(pos);
-            } else {
-                activeForcePositions.remove(pos);
-            }
-        }
     }
 
     public void generatePhysicsTransform() {
@@ -206,8 +190,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         applyAirDrag();
         applyGravity();
 
-        // Collections.shuffle(activeForcePositions);
-
         Vector3d blockForce = new Vector3d();
         Vector3d inBodyWO = new Vector3d();
         Vector3d crossVector = new Vector3d();
@@ -225,21 +207,25 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
             this.physicsRotationNodeWorld.processTorquePhysics(getPhysicsTimeDeltaPerPhysTick());
 
-            SortedMap<IBlockTorqueProvider, List<BlockPos>> torqueProviders = new TreeMap<IBlockTorqueProvider, List<BlockPos>>();
-            for (BlockPos pos : activeForcePositions) {
-                IBlockState state = getParent().getChunkAt(pos.getX() >> 4, pos.getZ() >> 4)
-                        .getBlockState(pos);
+            SortedMap<IBlockTorqueProvider, List<BlockPos>> torqueProviders = new TreeMap<>();
+
+            BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+            // Note that iterating over "activeForcePositions" is not thread safe, so this could lead to problems.
+            // However we're going to completely replace this code soon anyways, so its not a big deal.
+            parent.getShipData().activeForcePositions.forEach((x, y, z) -> {
+                mutablePos.setPos(x, y, z);
+                IBlockState state = getParent().getChunkAt(mutablePos.getX() >> 4, mutablePos.getZ() >> 4).getBlockState(mutablePos);
                 Block blockAt = state.getBlock();
 
                 if (blockAt instanceof IBlockForceProvider) {
                     try {
-                        BlockPhysicsDetails.getForceFromState(state, pos, worldObj,
+                        BlockPhysicsDetails.getForceFromState(state, mutablePos, worldObj,
                                 getPhysicsTimeDeltaPerPhysTick(),
                                 getParent(), blockForce);
 
                         Vector3dc otherPosition = ((IBlockForceProvider) blockAt)
                                 .getCustomBlockForcePosition(worldObj,
-                                        pos, state, getParent(), getPhysicsTimeDeltaPerPhysTick());
+                                        mutablePos, state, getParent(), getPhysicsTimeDeltaPerPhysTick());
 
                         if (otherPosition != null) {
                             inBodyWO.set(otherPosition);
@@ -247,8 +233,8 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                             getParent().getShipTransformationManager().getCurrentPhysicsTransform()
                                     .transformDirection(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
                         } else {
-                            inBodyWO.set(pos.getX() + .5,
-                                    pos.getY() + .5, pos.getZ() + .5);
+                            inBodyWO.set(mutablePos.getX() + .5, mutablePos.getY() + .5,
+                                    mutablePos.getZ() + .5);
                             inBodyWO.sub(physCenterOfMass);
                             getParent().getShipTransformationManager().getCurrentPhysicsTransform()
                                     .transformDirection(inBodyWO, TransformType.SUBSPACE_TO_GLOBAL);
@@ -263,7 +249,7 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                                         otherPosition);
                             } else {
                                 particlePos = new Vector3d(
-                                        pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+                                        mutablePos.getX() + .5, mutablePos.getY() + .5, mutablePos.getZ() + .5);
                             }
                             parent.getShipTransformationManager().getCurrentPhysicsTransform()
                                     .transformPosition(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
@@ -293,11 +279,11 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                     // after the gyroscope stabilizers.
                     IBlockTorqueProvider torqueProviderBlock = (IBlockTorqueProvider) blockAt;
                     if (!torqueProviders.containsKey(torqueProviderBlock)) {
-                        torqueProviders.put(torqueProviderBlock, new LinkedList<BlockPos>());
+                        torqueProviders.put(torqueProviderBlock, new LinkedList<>());
                     }
-                    torqueProviders.get(torqueProviderBlock).add(pos);
+                    torqueProviders.get(torqueProviderBlock).add(new BlockPos(x, y, z));
                 }
-            }
+            });
 
             // Now add the torque from the torque providers, in a sorted order!
             for (IBlockTorqueProvider torqueProviderBlock : torqueProviders.keySet()) {
@@ -446,10 +432,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     public double getDragForPhysTick() {
         return Math.pow(DRAG_CONSTANT, getPhysicsTimeDeltaPerPhysTick() * 20D);
-    }
-
-    public void addPotentialActiveForcePos(BlockPos pos) {
-        this.activeForcePositions.add(pos);
     }
 
     /**

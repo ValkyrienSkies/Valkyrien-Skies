@@ -79,7 +79,7 @@ public class WorldPhysicsCollider {
         this.cachedHitsToRemove = new TIntArrayList();
         this.rand = new Random();
         this.mutablePos = new MutableBlockPos();
-        this.tasks = new ArrayList<ShipCollisionTask>();
+        this.tasks = new ArrayList<>();
         this.ticksSinceCacheUpdate = 25D;
         this.updateCollisionTasksCache = true;
         this.centerPotentialHit = null;
@@ -365,7 +365,7 @@ public class WorldPhysicsCollider {
 
             for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
                 for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
-                    tasks.add(new Tuple<Integer, Integer>(chunkX, chunkZ));
+                    tasks.add(new Tuple<>(chunkX, chunkZ));
                 }
             }
 

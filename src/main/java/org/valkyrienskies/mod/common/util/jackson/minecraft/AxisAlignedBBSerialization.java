@@ -52,7 +52,7 @@ public class AxisAlignedBBSerialization {
         @Override
         public void serialize(AxisAlignedBB value, JsonGenerator gen, SerializerProvider provider)
             throws IOException {
-            gen.writeStartObject();;
+            gen.writeStartObject();
             gen.writeNumberField("minX", value.minX);
             gen.writeNumberField("minY", value.minY);
             gen.writeNumberField("minZ", value.minZ);

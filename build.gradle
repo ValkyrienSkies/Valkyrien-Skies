@@ -17,6 +17,7 @@ buildscript {
 }
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id "org.jetbrains.kotlin.jvm" version "1.3.72"
     id "com.wynprice.cursemaven" version "2.1.1"
 }
 
@@ -115,6 +116,7 @@ dependencies {
 
     compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
 
+    shade "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     shade "gigaherz.graph:GraphLib:$graphlibVersion"
     shade "com.github.ValkyrienSkies:Valkyrien-Skies-API:$vsApiVersion"
 
@@ -145,6 +147,11 @@ dependencies {
 
     // Include all dependencies in the /dependencies folder
     shade fileTree(include: ["*.jar"], dir: "dependencies")
+
+    // 1MB
+    shade group: 'org.jgrapht', name: 'jgrapht-core', version: '1.4.0'
+    // 424KB
+    shade group: 'org.jgrapht', name: 'jgrapht-io', version: '1.4.0'
 
     // lombok
     compileOnly "org.projectlombok:lombok:$lombokVersion"
@@ -244,6 +251,12 @@ publishing {
                 classifier "sources"
             }
         }
+    }
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 

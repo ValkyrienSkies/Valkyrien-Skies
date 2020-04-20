@@ -1,6 +1,6 @@
-package com.best108.atom_animation_reader.impl;
+package org.valkyrienskies.mod.client.atom_animation_parser.impl;
 
-import com.best108.atom_animation_reader.IAtomAnimation;
+import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
 import java.util.List;
 import net.minecraft.client.renderer.GlStateManager;
 

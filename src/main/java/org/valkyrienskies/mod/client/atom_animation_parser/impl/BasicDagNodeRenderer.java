@@ -1,6 +1,6 @@
-package com.best108.atom_animation_reader.impl;
+package org.valkyrienskies.mod.client.atom_animation_parser.impl;
 
-import com.best108.atom_animation_reader.IModelRenderer;
+import org.valkyrienskies.mod.client.atom_animation_parser.IModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;

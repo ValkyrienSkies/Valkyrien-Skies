@@ -1,9 +1,9 @@
 package org.valkyrienskies.mod.client.render;
 
-import com.best108.atom_animation_reader.IAtomAnimation;
-import com.best108.atom_animation_reader.IAtomAnimationBuilder;
-import com.best108.atom_animation_reader.impl.BasicAtomAnimationBuilder;
-import com.best108.atom_animation_reader.parsers.AtomParser;
+import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
+import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimationBuilder;
+import org.valkyrienskies.mod.client.atom_animation_parser.impl.BasicAtomAnimationBuilder;
+import org.valkyrienskies.mod.client.atom_animation_parser.parsers.AtomParser;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

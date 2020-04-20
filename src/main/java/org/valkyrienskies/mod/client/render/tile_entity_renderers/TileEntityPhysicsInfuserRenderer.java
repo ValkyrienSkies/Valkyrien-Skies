@@ -1,6 +1,6 @@
 package org.valkyrienskies.mod.client.render.tile_entity_renderers;
 
-import com.best108.atom_animation_reader.IAtomAnimation;
+import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;

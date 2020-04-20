@@ -1,10 +1,10 @@
-package com.best108.atom_animation_reader.impl;
+package org.valkyrienskies.mod.client.atom_animation_parser.impl;
 
-import com.best108.atom_animation_reader.IAtomAnimation;
-import com.best108.atom_animation_reader.IAtomAnimationBuilder;
-import com.best108.atom_animation_reader.IModelRenderer;
-import com.best108.atom_animation_reader.parsers.AtomParser;
-import com.best108.atom_animation_reader.parsers.AtomParserElement;
+import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
+import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimationBuilder;
+import org.valkyrienskies.mod.client.atom_animation_parser.IModelRenderer;
+import org.valkyrienskies.mod.client.atom_animation_parser.parsers.AtomParser;
+import org.valkyrienskies.mod.client.atom_animation_parser.parsers.AtomParserElement;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 

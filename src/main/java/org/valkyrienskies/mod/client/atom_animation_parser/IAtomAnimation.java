@@ -1,4 +1,4 @@
-package com.best108.atom_animation_reader;
+package org.valkyrienskies.mod.client.atom_animation_parser;
 
 /**
  * Completely immutable, allows the client to render the animation at a given keyframe.

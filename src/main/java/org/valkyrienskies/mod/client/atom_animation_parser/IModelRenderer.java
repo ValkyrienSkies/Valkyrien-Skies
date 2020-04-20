@@ -1,4 +1,4 @@
-package com.best108.atom_animation_reader;
+package org.valkyrienskies.mod.client.atom_animation_parser;
 
 /**
  * Must be implemented by the client. This is what the AtomAnimation uses to render its models.

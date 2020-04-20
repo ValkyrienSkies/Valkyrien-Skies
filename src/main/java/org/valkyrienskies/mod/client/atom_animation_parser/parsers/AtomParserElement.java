@@ -1,4 +1,4 @@
-package com.best108.atom_animation_reader.parsers;
+package org.valkyrienskies.mod.client.atom_animation_parser.parsers;
 
 import java.util.ArrayList;
 import java.util.List;

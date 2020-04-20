@@ -27,7 +27,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.valkyrienskies.mod.client.gui.VS_Gui_Enum;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
+import org.valkyrienskies.mod.common.ships.block_relocation.DetectorManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 @ParametersAreNonnullByDefault

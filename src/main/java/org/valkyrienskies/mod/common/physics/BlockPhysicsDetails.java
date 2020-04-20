@@ -12,7 +12,7 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;

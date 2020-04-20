@@ -8,7 +8,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.command.DebugCommand.GetClientPhysicsObjects;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
+import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.HelpCommand;

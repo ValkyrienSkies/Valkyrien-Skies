@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.fixes.ITransformablePacket;
-import org.valkyrienskies.mod.common.math.VSMath;
-import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.fixes.ITransformablePacket;
+import org.valkyrienskies.mod.common.util.VSMath;
+import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.JOML;
 
 @Mixin(CPacketPlayer.class)

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import org.valkyrienskies.mod.common.ship_handling.ShipData;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.util.jackson.VSJacksonUtil;
 
 import java.io.IOException;

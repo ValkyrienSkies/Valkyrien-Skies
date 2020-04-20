@@ -37,11 +37,10 @@ import org.apache.logging.log4j.Logger;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
+import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
-import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
-import org.valkyrienskies.mod.common.physmanagement.interaction.VSWorldEventListener;
-import org.valkyrienskies.mod.common.ship_handling.*;
+import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.ships.ship_world.*;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 

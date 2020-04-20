@@ -3,7 +3,7 @@ package org.valkyrienskies.addon.control.nodenetwork;
 import net.minecraft.nbt.NBTTagCompound;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 
 public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {

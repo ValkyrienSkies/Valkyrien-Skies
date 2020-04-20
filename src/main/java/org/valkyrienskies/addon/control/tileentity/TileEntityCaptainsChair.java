@@ -11,7 +11,7 @@ import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockCaptainsChair;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 public class TileEntityCaptainsChair extends TileEntityPilotableImpl {

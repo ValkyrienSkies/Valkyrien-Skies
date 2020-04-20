@@ -1,6 +1,6 @@
 package org.valkyrienskies.addon.control.block.torque;
 
-import org.valkyrienskies.mod.common.multithreaded.VSThread;
+import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
 
 public class PhysicsAssert {
 

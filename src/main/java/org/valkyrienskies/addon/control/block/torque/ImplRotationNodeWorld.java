@@ -15,7 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 public class ImplRotationNodeWorld implements IRotationNodeWorld {
 

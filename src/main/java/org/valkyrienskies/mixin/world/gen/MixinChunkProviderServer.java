@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.ship_handling.WorldServerShipManager;
+import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import java.util.Set;

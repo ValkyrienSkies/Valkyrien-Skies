@@ -3,7 +3,7 @@ package org.valkyrienskies.mod.common.entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
+import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
 
 public class EntityMountableChair extends EntityMountable {
 

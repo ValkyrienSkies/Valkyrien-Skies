@@ -6,8 +6,8 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
-import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.network.VSNetwork;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**

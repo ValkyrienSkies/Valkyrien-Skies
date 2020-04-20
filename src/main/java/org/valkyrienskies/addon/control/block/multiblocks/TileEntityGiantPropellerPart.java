@@ -11,8 +11,8 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.block.torque.*;
-import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.network.VSNetwork;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 

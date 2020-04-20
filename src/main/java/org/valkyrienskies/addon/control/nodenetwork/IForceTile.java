@@ -2,7 +2,7 @@ package org.valkyrienskies.addon.control.nodenetwork;
 
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 public interface IForceTile {
 

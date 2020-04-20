@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.IShipPilot;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-import org.valkyrienskies.mod.common.ship_handling.ShipData;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 

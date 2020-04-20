@@ -1,6 +1,6 @@
 package org.valkyrienskies.mod.common.util.names;
 
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 /**
  * Generates names for use of naming things like

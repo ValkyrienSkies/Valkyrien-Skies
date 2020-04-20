@@ -1,6 +1,6 @@
 package org.valkyrienskies.addon.control.fuel;
 
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 import javax.annotation.Nonnull;
 

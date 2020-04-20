@@ -3,13 +3,13 @@ package org.valkyrienskies.mod.common.block;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import net.minecraft.block.material.Material;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.physmanagement.relocation.DetectorManager;
+import org.valkyrienskies.mod.common.ships.block_relocation.DetectorManager;
 
 @ParametersAreNonnullByDefault
 public class BlockPhysicsInfuserCreative extends BlockPhysicsInfuser {

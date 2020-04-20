@@ -12,8 +12,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.network.VSNetwork;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 public class VSNode_TileEntity implements IVSNode {
 

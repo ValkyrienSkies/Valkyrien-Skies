@@ -11,10 +11,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
+import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.entity.EntityMountableChair;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 

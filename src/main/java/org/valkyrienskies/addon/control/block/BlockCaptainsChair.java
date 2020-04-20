@@ -22,9 +22,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
-import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
-import org.valkyrienskies.mod.common.physmanagement.interaction.IDraggable;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 

@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
-import org.valkyrienskies.fixes.VSNetwork;
+import org.valkyrienskies.mod.common.network.VSNetwork;
 
 /**
  * Just a simple implementation of the interfaces.

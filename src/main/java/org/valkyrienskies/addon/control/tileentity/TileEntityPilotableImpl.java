@@ -15,7 +15,7 @@ import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.ITileEntityPilotable;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 

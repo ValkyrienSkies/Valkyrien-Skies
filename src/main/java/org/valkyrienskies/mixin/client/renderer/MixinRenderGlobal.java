@@ -27,9 +27,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
+import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.proxy.ClientProxy;
 

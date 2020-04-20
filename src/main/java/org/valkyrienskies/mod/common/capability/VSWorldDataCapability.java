@@ -2,7 +2,7 @@ package org.valkyrienskies.mod.common.capability;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapability;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.VSWorldData;
+import org.valkyrienskies.mod.common.ships.ship_world.VSWorldData;
 
 /**
  * This sort of class basically only exists because Java generics are trash

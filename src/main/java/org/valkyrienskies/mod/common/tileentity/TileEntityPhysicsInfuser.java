@@ -22,14 +22,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.valkyrienskies.fixes.VSNetwork;
+import org.valkyrienskies.mod.common.network.VSNetwork;
 import org.valkyrienskies.mod.client.gui.IVSTileGui;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.container.EnumInfuserButton;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
-import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
-import org.valkyrienskies.mod.common.physmanagement.chunk.ShipChunkAllocator;
+import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import java.util.ArrayList;

@@ -17,7 +17,7 @@ import org.valkyrienskies.addon.control.block.BlockSpeedTelegraph;
 import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.fixes.VSNetwork;
+import org.valkyrienskies.mod.common.network.VSNetwork;
 
 public class TileEntitySpeedTelegraph extends TileEntityPilotableImpl implements ITickable {
 

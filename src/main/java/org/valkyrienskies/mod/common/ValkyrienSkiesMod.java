@@ -34,7 +34,7 @@ import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
 import org.valkyrienskies.mod.common.network.*;
-import org.valkyrienskies.mod.common.physmanagement.VS_APIPhysicsEntityManager;
+import org.valkyrienskies.mod.common.ships.deprecated_api.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;

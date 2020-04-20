@@ -16,9 +16,9 @@ import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.ValkyriumEngineTorqueFunction;
-import org.valkyrienskies.fixes.VSNetwork;
-import org.valkyrienskies.mod.common.math.VSMath;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.network.VSNetwork;
+import org.valkyrienskies.mod.common.util.VSMath;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class TileEntityValkyriumEnginePart extends

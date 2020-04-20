@@ -17,7 +17,7 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
 import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.JOML;
 
 /**

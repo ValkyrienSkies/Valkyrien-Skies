@@ -7,9 +7,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.QueryableShipData;
-import org.valkyrienskies.mod.common.ship_handling.IPhysObjectWorld;
-import org.valkyrienskies.mod.common.ship_handling.ShipData;
+import org.valkyrienskies.mod.common.ships.QueryableShipData;
+import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import java.util.UUID;

@@ -5,8 +5,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;

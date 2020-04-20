@@ -15,7 +15,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 import javax.annotation.Nullable;
 import java.util.List;

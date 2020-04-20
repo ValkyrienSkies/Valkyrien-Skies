@@ -13,9 +13,9 @@ import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.physics.collision.WorldPhysicsCollider;
-import org.valkyrienskies.mod.common.ship_handling.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.collision.WorldPhysicsCollider;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 import java.lang.Math;

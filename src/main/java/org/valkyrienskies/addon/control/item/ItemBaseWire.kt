@@ -1,104 +1,95 @@
-package org.valkyrienskies.addon.control.item;
+package org.valkyrienskies.addon.control.item
 
-import java.util.List;
-import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
-import org.valkyrienskies.addon.control.nodenetwork.EnumWireType;
-import org.valkyrienskies.addon.control.nodenetwork.IVSNode;
-import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
-import org.valkyrienskies.addon.control.util.BaseItem;
-import org.valkyrienskies.mod.common.config.VSConfig;
+import net.minecraft.client.resources.I18n
+import net.minecraft.client.util.ITooltipFlag
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.ItemStack
+import net.minecraft.util.EnumActionResult
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.EnumHand
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TextComponentString
+import net.minecraft.util.text.TextFormatting
+import net.minecraft.world.World
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl
+import org.valkyrienskies.addon.control.capability.VSControlCapabilityRegistry
+import org.valkyrienskies.addon.control.nodenetwork.EnumWireType
+import org.valkyrienskies.addon.control.util.BaseItem
+import org.valkyrienskies.mod.common.config.VSConfig
+import kotlin.math.pow
 
-public class ItemBaseWire extends BaseItem {
-    private EnumWireType wireType = EnumWireType.RELAY;
+open class ItemBaseWire(val wireType: EnumWireType) : BaseItem(wireType.toString(), true) {
 
-    public ItemBaseWire(EnumWireType wireType) {
-		super(wireType.toString(), true);
-        this.setMaxDamage(80);
-        this.wireType = wireType;
+    init {
+        this.maxDamage = 80
     }
 
-    @Override
-    public void addInformation(ItemStack stack, @Nullable World player,
-        List<String> itemInformation,
-        ITooltipFlag advanced) {
-        itemInformation.add(TextFormatting.BLUE + I18n.format("tooltip.vs_control." + this.wireType.toString()));
+    override fun addInformation(
+            stack: ItemStack, player: World?,
+            itemInformation: MutableList<String>,
+            advanced: ITooltipFlag
+    ) {
+        itemInformation.add(
+                TextFormatting.BLUE.toString() +
+                        I18n.format("tooltip.vs_control.$wireType")
+        )
     }
 
-    @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos,
-        EnumHand hand,
-        EnumFacing facing, float hitX, float hitY, float hitZ) {
-        IBlockState clickedState = worldIn.getBlockState(pos);
-        Block block = clickedState.getBlock();
-        TileEntity currentTile = worldIn.getTileEntity(pos);
-        ItemStack stack = player.getHeldItem(hand);
+    override fun onItemUse(
+            player: EntityPlayer, world: World, pos: BlockPos,
+            hand: EnumHand, facing: EnumFacing,
+            hitX: Float, hitY: Float, hitZ: Float
+    ): EnumActionResult {
+        val stack = player.getHeldItem(hand)
 
-        if (currentTile instanceof IVSNodeProvider && !worldIn.isRemote) {
-            ICapabilityLastRelay inst = stack.getCapability(ValkyrienSkiesControl.lastRelayCapability, null);
-            if (inst != null) {
-                if (!inst.hasLastRelay()) {
-                    inst.setLastRelay(pos);
-                    // Draw a wire in the player's hand after this
-                } else {
-                    BlockPos lastPos = inst.getLastRelay();
-                    double distanceSq = lastPos.distanceSq(pos);
-                    TileEntity lastPosTile = worldIn.getTileEntity(lastPos);
+        // Get the world node network
+        val network = VSControlCapabilityRegistry.getControlData(world).nodeNetwork
+        // Get the node being right clicked
+        val node = network.map[pos]
+                ?: return EnumActionResult.PASS
+        // Get the capability with the position of the last node clicked by this item
+        val cap = stack.getCapability(ValkyrienSkiesControl.lastRelayCapability, null)
+                ?: return EnumActionResult.PASS
 
-                    if (!lastPos.equals(pos) && lastPosTile != null && currentTile != null) {
-                        if (distanceSq < VSConfig.relayWireLength * VSConfig.relayWireLength) {
-                            IVSNode lastPosNode = ((IVSNodeProvider) lastPosTile).getNode();
-                            IVSNode currentPosNode = ((IVSNodeProvider) currentTile).getNode();
-                            if (lastPosNode != null && currentPosNode != null) {
-                                if (currentPosNode.isLinkedToNode(lastPosNode)) {
-                                    currentPosNode.breakConnection(lastPosNode);
-                                    // Break connection and give player the correct wire back
-                                    ItemStack drop = new ItemStack(wireType.toItem());
-                                    if (player.inventory.addItemStackToInventory(drop)) {
-                                        player.dropItem(drop, false);
-                                    }
-                                } else if (currentPosNode.canLinkToOtherNode(lastPosNode)) {
-                                    currentPosNode.makeConnection(lastPosNode, this.wireType);
-                                    stack.damageItem(1, player);
-                                } else {
-                                    player.sendMessage(new TextComponentString(TextFormatting.RED +
-                                        I18n.format("message.vs_control.error_relay_wire_limit", VSConfig.networkRelayLimit)));
-                                }
-                                inst.setLastRelay(null);
-                            }
-                        } else {
-                            player.sendMessage(new TextComponentString(TextFormatting.RED
-                                + I18n.format("message.vs_control.error_relay_wire_length")));
-                            inst.setLastRelay(null);
-                        }
-                    } else {
-                        inst.setLastRelay(pos);
-                    }
-                }
+        val lastPos = cap.lastRelay
+        val graph = network.graph;
+
+        if (lastPos == null) {
+            // TODO: Draw a wire in the player's hand
+        } else {
+            val distanceSq = lastPos.distanceSq(pos)
+            val lastNode = network.map[lastPos] ?: return EnumActionResult.PASS
+
+            if (lastPos == pos) {
+                cap.lastRelay = pos
+                return EnumActionResult.PASS
             }
+
+            if (distanceSq < VSConfig.relayWireLength.pow(2)) {
+                if (graph.containsEdge(node, lastNode)) {
+                    graph.removeEdge(node, lastNode)
+                    // Break connection and give player the correct wire back
+                    val drop = ItemStack(wireType.toItem())
+                    if (player.inventory.addItemStackToInventory(drop)) {
+                        player.dropItem(drop, false)
+                    }
+                } else if (graph.canConnect(node, lastNode)) {
+                    graph.addEdge(node, lastNode)
+                    stack.damageItem(1, player)
+                } else {
+                    player.sendMessage(TextComponentString(
+                            TextFormatting.RED.toString() + I18n.format("message.vs_control.error_relay_wire_limit",
+                                    VSConfig.networkRelayLimit)))
+                }
+                cap.lastRelay = null
+            } else {
+                player.sendMessage(TextComponentString(
+                        TextFormatting.RED.toString() + I18n.format("message.vs_control.error_relay_wire_length")))
+                cap.lastRelay = null
+            }
+
         }
 
-        if (currentTile instanceof IVSNodeProvider) {
-            return EnumActionResult.SUCCESS;
-        }
-
-        return EnumActionResult.PASS;
+        return EnumActionResult.PASS
     }
-
 }

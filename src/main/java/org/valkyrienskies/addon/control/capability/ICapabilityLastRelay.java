@@ -6,9 +6,9 @@ import net.minecraft.util.math.BlockPos;
 public interface ICapabilityLastRelay {
 
     @Nullable
-    public BlockPos getLastRelay();
+    BlockPos getLastRelay();
 
-    public void setLastRelay(BlockPos pos);
+    void setLastRelay(BlockPos pos);
 
-    public boolean hasLastRelay();
+    boolean hasLastRelay();
 }

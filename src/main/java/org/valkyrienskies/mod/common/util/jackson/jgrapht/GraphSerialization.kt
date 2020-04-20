@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.jgrapht.Graph
+import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.DefaultUndirectedGraph
 import org.jgrapht.nio.IntegerIdProvider
 import java.io.IOException
@@ -45,8 +46,11 @@ class GraphSerialization {
 
                 gen.writeStringField("source", source)
                 gen.writeStringField("target", target)
-                gen.writeFieldName("data")
-                gen.codec.writeValue(gen, e)
+
+                if (e::class != DefaultEdge::class) {
+                    gen.writeFieldName("data")
+                    gen.codec.writeValue(gen, e)
+                }
 
                 gen.writeEndObject()
             }
@@ -103,7 +107,6 @@ class GraphSerialization {
             assert(edges.isArray)
 
             for (edge in edges) {
-                val data = edge["data"].traverse(p.codec).readValueAs(edgeAs) as E
                 val source = idMap[edge["source"].asText()]
                 val target = idMap[edge["target"].asText()]
 
@@ -111,7 +114,12 @@ class GraphSerialization {
                     throw IOException("Invalid edge ID")
                 }
 
-                graph.addEdge(source, target, data)
+                if (edgeAs == DefaultEdge::class.java) {
+                    graph.addEdge(source, target)
+                } else {
+                    val data = edge["data"].traverse(p.codec).readValueAs(edgeAs) as E
+                    graph.addEdge(source, target, data)
+                }
             }
 
             return graph

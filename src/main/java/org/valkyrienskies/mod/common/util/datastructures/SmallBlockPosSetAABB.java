@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.mod.common.util.datastructures.SmallBlockPosSetAABB.WrapperSmallBlockPosSetAABBDeserializer;
 import org.valkyrienskies.mod.common.util.datastructures.SmallBlockPosSetAABB.WrapperSmallBlockPosSetAABBSerializer;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
@@ -112,8 +111,8 @@ public class SmallBlockPosSetAABB implements IBlockPosSetAABB {
         return blockPosSet.size();
     }
 
-    @NotNull
     @Override
+	@Nonnull
     public Iterator<BlockPos> iterator() {
         return blockPosSet.iterator();
     }

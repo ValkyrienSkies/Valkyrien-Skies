@@ -3,13 +3,16 @@ package org.valkyrienskies.mixin.world;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.*;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.Interface.Remap;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,6 +22,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
 import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
+import org.valkyrienskies.mod.common.collision.EntityPolygon;
+import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
+import org.valkyrienskies.mod.common.collision.ShipPolygon;
+import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.fixes.MixinWorldIntrinsicMethods;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.collision.Polygon;
@@ -139,6 +146,13 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     @Shadow
     public abstract Chunk getChunk(int chunkX, int chunkZ);
 
+    @Shadow
+    public abstract List<AxisAlignedBB> getCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb);
+
+    /**
+     * Used for two purposes. The first, is to prevent the game from freezing by limiting the size of aabb. The second
+     * is to fix player sneaking on ships.
+     */
     @Inject(method = "getCollisionBoxes(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;ZLjava/util/List;)Z", at = @At("HEAD"), cancellable = true)
     private void preGetCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb,
         boolean p_191504_3_,
@@ -151,6 +165,51 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
             new Exception().printStackTrace();
             callbackInfo.setReturnValue(Boolean.FALSE);
             callbackInfo.cancel();
+        }
+
+        // Fix player sneaking. I know its strange that the fix would be here of all places, but check
+        // Entity.moveEntity() to see for yourself. Minecraft checks if there's any colliding bounding boxes in a given
+        // direction, and uses that to determine if can you sneak.
+        if (entityIn instanceof EntityPlayer && entityIn.isSneaking()) {
+            // Add at most once ship block AABB that is colliding with the player. This is ONLY to properly allow
+            // players to sneak while on ships.
+            List<PhysicsObject> ships = getManager().getNearbyPhysObjects(aabb);
+            for (PhysicsObject wrapper : ships) {
+                Polygon playerInLocal = new Polygon(aabb,
+                        wrapper.getShipTransformationManager()
+                                .getCurrentTickTransform(),
+                        TransformType.GLOBAL_TO_SUBSPACE);
+                AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
+
+                if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
+                    // This is too big, something went wrong here
+                    System.err.println("Why did transforming a players bounding box result in a giant bounding box?");
+                    System.err.println(bb + "\n" + wrapper.getShipData() + "\n" + entityIn.toString());
+                    new Exception().printStackTrace();
+                    return;
+                }
+
+                List<AxisAlignedBB> collidingBBs = getCollisionBoxes(null, bb);
+                EntityPolygon entityPoly = new EntityPolygon(aabb.grow(-.2, 0, -.2), entityIn);
+                for (AxisAlignedBB inLocal : collidingBBs) {
+                    ShipPolygon poly = new ShipPolygon(inLocal,
+                            wrapper.getShipTransformationManager()
+                                    .getCurrentTickTransform(),
+                            TransformType.SUBSPACE_TO_GLOBAL,
+                            wrapper.getShipTransformationManager().normals,
+                            wrapper);
+
+                    EntityPolygonCollider collider = new EntityPolygonCollider(entityPoly, poly, poly.normals, new Vector3d());
+                    collider.processData();
+
+                    if (!collider.arePolygonsSeparated()) {
+                        outList.add(inLocal);
+                        // We only want to add at most ONE aabb to the return value. Once we have at least one, the
+                        // vanilla sneak code will work correctly.
+                        return;
+                    }
+                }
+            }
         }
     }
 

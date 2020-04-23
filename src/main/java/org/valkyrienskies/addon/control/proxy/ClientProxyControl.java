@@ -83,7 +83,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
     private static void registerTileEntityRenderers() {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityNetworkRelay.class,
-            new NetworkRelayTileEntityRenderer());
+            new BasicNodeTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class,
             new ShipHelmTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySpeedTelegraph.class,

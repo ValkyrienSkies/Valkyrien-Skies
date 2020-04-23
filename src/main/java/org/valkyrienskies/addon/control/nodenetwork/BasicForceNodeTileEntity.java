@@ -1,15 +1,12 @@
 package org.valkyrienskies.addon.control.nodenetwork;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ITickable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.addon.control.tileentity.behaviour.NodeTEBehaviour;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
-import org.valkyrienskies.mod.common.tileentity.behaviour.BehaviourControlledTileEntity;
 import org.valkyrienskies.mod.common.util.ValkyrienNBTUtils;
 
-public abstract class BasicForceNodeTileEntity extends BehaviourControlledTileEntity implements IForceTile, ITickable {
+public abstract class BasicForceNodeTileEntity extends BasicNodeTileEntity implements IForceTile {
 
     protected double maxThrust;
     protected double currentThrust;
@@ -26,7 +23,6 @@ public abstract class BasicForceNodeTileEntity extends BehaviourControlledTileEn
      * first
      */
     public BasicForceNodeTileEntity() {
-        super(NodeTEBehaviour.getFactory());
         this.maxThrust = 5000D;
         this.currentThrust = 0D;
         this.thrusGoalMultiplier = 0D;
@@ -111,6 +107,7 @@ public abstract class BasicForceNodeTileEntity extends BehaviourControlledTileEn
 
     @Override
     public void update() {
+        super.update();
         ticksSinceLastControlSignal++;
         if (ticksSinceLastControlSignal > 5 && getThrustMultiplierGoal() != 0) {
             setThrustMultiplierGoal(this.getThrustMultiplierGoal() * .9D);

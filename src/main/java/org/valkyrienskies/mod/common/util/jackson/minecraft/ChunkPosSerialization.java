@@ -47,7 +47,7 @@ public class ChunkPosSerialization {
         @Override
         public void serialize(ChunkPos value, JsonGenerator gen, SerializerProvider provider)
             throws IOException {
-            gen.writeStartObject();
+            gen.writeStartObject();;
             gen.writeNumberField("chunkPos", ChunkPos.asLong(value.x, value.z));
             gen.writeEndObject();
         }

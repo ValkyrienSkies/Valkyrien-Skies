@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.tileentity;
 
+import gigaherz.graph.api.GraphObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -8,23 +9,21 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
-import org.valkyrienskies.addon.control.nodenetwork.VSNode;
+import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.addon.control.tileentity.behaviour.NodeTEBehaviour;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.Optional;
 
-public class TileEntityLiftLever extends TileEntityPilotableImpl implements ITickable {
+public class TileEntityLiftLever extends TileEntityPilotableImpl {
 
     private static final double LEVER_PULL_RATE = .075D;
     // Between 0 and 1, where .5 is the middle.
@@ -90,7 +89,7 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl implements ITic
                 targetYPosition += (leverOffset - .5) * 1.25D;
             }
 
-            VSNode thisNode = this.getBehaviour(NodeTEBehaviour.class).getNode();
+            VSNode_TileEntity thisNode = this.getNode();
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
                 .getPhysoManagingBlock(getWorld(), getPos());
 
@@ -113,8 +112,9 @@ public class TileEntityLiftLever extends TileEntityPilotableImpl implements ITic
                 double multiplier = heightDelta / 2D;
                 multiplier = Math.max(0, Math.min(1, multiplier));
 
-                for (VSNode otherNode : thisNode.dfsIterable()) {
-                    TileEntity tile = otherNode.getOwner();
+                for (GraphObject object : thisNode.getGraph().getObjects()) {
+                    VSNode_TileEntity otherNode = (VSNode_TileEntity) object;
+                    TileEntity tile = otherNode.getParentTile();
                     if (tile instanceof TileEntityValkyriumCompressorPart) {
                         BlockPos masterPos = ((TileEntityValkyriumCompressorPart) tile)
                             .getMultiblockOrigin();

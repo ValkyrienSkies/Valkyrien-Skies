@@ -7,9 +7,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
-import org.valkyrienskies.addon.control.tileentity.behaviour.NodeTEBehaviour;
+import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.mod.common.network.VSNetwork;
-import org.valkyrienskies.mod.common.tileentity.behaviour.BehaviourControlledTileEntity;
 
 /**
  * Just a simple implementation of the interfaces.
@@ -18,7 +17,7 @@ import org.valkyrienskies.mod.common.tileentity.behaviour.BehaviourControlledTil
  * @param <F> The type of class extending this class.
  */
 public abstract class TileEntityMultiblockPart<E extends IMultiblockSchematic, F extends TileEntityMultiblockPart> extends
-    BehaviourControlledTileEntity implements ITileEntityMultiblockPart<E, F> {
+    BasicNodeTileEntity implements ITileEntityMultiblockPart<E, F> {
 
     private boolean isAssembled;
     private boolean isMaster;
@@ -27,7 +26,7 @@ public abstract class TileEntityMultiblockPart<E extends IMultiblockSchematic, F
     private E multiblockSchematic;
 
     public TileEntityMultiblockPart() {
-        super(NodeTEBehaviour.getFactory());
+        super();
         this.isAssembled = false;
         this.isMaster = false;
         this.offsetPos = BlockPos.ORIGIN;

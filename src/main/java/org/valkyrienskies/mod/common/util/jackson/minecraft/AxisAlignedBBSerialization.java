@@ -7,8 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import java.io.IOException;
 import net.minecraft.util.math.AxisAlignedBB;
+
+import java.io.IOException;
 
 public class AxisAlignedBBSerialization {
 
@@ -52,7 +53,7 @@ public class AxisAlignedBBSerialization {
         @Override
         public void serialize(AxisAlignedBB value, JsonGenerator gen, SerializerProvider provider)
             throws IOException {
-            gen.writeStartObject();
+            gen.writeStartObject();;
             gen.writeNumberField("minX", value.minX);
             gen.writeNumberField("minY", value.minY);
             gen.writeNumberField("minZ", value.minZ);

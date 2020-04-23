@@ -1,9 +1,9 @@
 package org.valkyrienskies.addon.control.item;
 
-import org.valkyrienskies.addon.control.nodenetwork.WireType;
+import org.valkyrienskies.addon.control.nodenetwork.EnumWireType;
 
 public class ItemRelayWire extends ItemBaseWire {
     public ItemRelayWire() {
-        super(WireType.RELAY);
+        super(EnumWireType.RELAY);
     }
 }

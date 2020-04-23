@@ -52,7 +52,6 @@ public class VSJacksonUtil {
     public static void configureMapper(ObjectMapper mapper) {
         mapper.registerModule(new MinecraftSerializationModule())
             .registerModule(new JOMLSerializationModule())
-			.registerModule(new JGraphTSerializationModule())
             .setVisibility(mapper.getVisibilityChecker()
                 .withFieldVisibility(Visibility.ANY)
                 .withGetterVisibility(Visibility.NONE)

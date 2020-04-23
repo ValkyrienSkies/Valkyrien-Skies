@@ -1,14 +1,15 @@
 package org.valkyrienskies.addon.control.capability;
 
-import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nullable;
 
 public interface ICapabilityLastRelay {
 
     @Nullable
-    BlockPos getLastRelay();
+    public BlockPos getLastRelay();
 
-    void setLastRelay(BlockPos pos);
+    public void setLastRelay(BlockPos pos);
 
-    boolean hasLastRelay();
+    public boolean hasLastRelay();
 }

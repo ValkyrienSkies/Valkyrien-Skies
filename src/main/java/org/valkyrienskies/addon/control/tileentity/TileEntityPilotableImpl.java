@@ -11,12 +11,11 @@ import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.network.MessageStartPiloting;
 import org.valkyrienskies.addon.control.network.MessageStopPiloting;
+import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.ITileEntityPilotable;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.addon.control.tileentity.behaviour.NodeTEBehaviour;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
-import org.valkyrienskies.mod.common.tileentity.behaviour.BehaviourControlledTileEntity;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -28,13 +27,13 @@ import java.util.Optional;
  *
  * @author thebest108
  */
-public abstract class TileEntityPilotableImpl extends BehaviourControlledTileEntity implements
+public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implements
     ITileEntityPilotable {
 
     private EntityPlayer pilotPlayerEntity;
 
     TileEntityPilotableImpl() {
-        super(NodeTEBehaviour.getFactory());
+        super();
         this.pilotPlayerEntity = null;
     }
 

@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.tileentity;
 
+import gigaherz.graph.api.GraphObject;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -17,10 +18,9 @@ import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockShipHelm;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
-import org.valkyrienskies.addon.control.nodenetwork.VSNode;
+import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.addon.control.tileentity.behaviour.NodeTEBehaviour;
 import org.valkyrienskies.mod.common.network.VSNetwork;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -59,10 +59,11 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
                 }
             }
 
-            VSNode thisNode = getBehaviour(NodeTEBehaviour.class).getNode();
+            VSNode_TileEntity thisNode = this.getNode();
 
-            for (VSNode node : thisNode.dfsIterable()) {
-                TileEntity tile = node.getOwner();
+            for (GraphObject object : thisNode.getGraph().getObjects()) {
+                VSNode_TileEntity otherNode = (VSNode_TileEntity) object;
+                TileEntity tile = otherNode.getParentTile();
                 if (tile instanceof TileEntityRudderPart) {
                     BlockPos masterPos = ((TileEntityRudderPart) tile).getMultiblockOrigin();
                     TileEntityRudderPart masterTile = (TileEntityRudderPart) tile.getWorld()

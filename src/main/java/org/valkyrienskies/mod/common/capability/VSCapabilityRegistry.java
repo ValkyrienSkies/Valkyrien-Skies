@@ -16,16 +16,17 @@ import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityPro
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityProviderTransient;
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityStorage;
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityTransientStorage;
-import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import javax.annotation.Nonnull;
 
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class VSCapabilityRegistry {
 
     @CapabilityInject(VSWorldDataCapability.class)
-    public static final Capability<VSWorldDataCapability> VS_WORLD_DATA = ValkyrienUtils.getFakeNull();
+    public static final Capability<VSWorldDataCapability> VS_WORLD_DATA = getNull();
 
     @CapabilityInject(ICapabilityEntityBackup.class)
-    public static final Capability<ICapabilityEntityBackup> VS_ENTITY_BACKUP = ValkyrienUtils.getFakeNull();
+    public static final Capability<ICapabilityEntityBackup> VS_ENTITY_BACKUP = getNull();
 
     @SubscribeEvent
     public static void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {
@@ -53,6 +54,20 @@ public class VSCapabilityRegistry {
             new VSDefaultCapabilityTransientStorage<>(),
             ImplCapabilityEntityBackup::new
         );
+    }
+
+
+    /**
+     * Used to trick the IDE into thinking that a capability is not null
+     *
+     * @return null
+     * @see <a href="https://stackoverflow.com/questions/46512161/disable-constant-conditions-except
+     * ions-inspection-for-field-in-intellij-idea">StackOverflow</a>
+     */
+    @Nonnull
+    @SuppressWarnings({"ConstantConditions", "SameReturnValue"})
+    public static <T> T getNull() {
+        return null;
     }
 
 }

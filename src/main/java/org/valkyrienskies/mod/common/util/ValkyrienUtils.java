@@ -33,7 +33,6 @@ import org.valkyrienskies.mod.common.util.multithreaded.CalledFromWrongThreadExc
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
@@ -46,19 +45,6 @@ import java.util.UUID;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class ValkyrienUtils {
-
-    /**
-     * Used to trick the IDE into thinking that a capability is not null
-     *
-     * @return null
-     * @see <a href="https://stackoverflow.com/questions/46512161/disable-constant-conditions-except
-     * ions-inspection-for-field-in-intellij-idea">StackOverflow</a>
-     */
-    @Nonnull
-    @SuppressWarnings({"ConstantConditions", "SameReturnValue"})
-    public <T> T getFakeNull() {
-        return null;
-    }
 
     /**
      * The liver of this mod. Returns the PhysicsObject that managed the given pos in the given

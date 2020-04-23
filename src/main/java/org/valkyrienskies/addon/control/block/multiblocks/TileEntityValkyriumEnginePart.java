@@ -5,7 +5,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
@@ -21,7 +20,7 @@ import java.util.Optional;
 
 public class TileEntityValkyriumEnginePart extends
     TileEntityMultiblockPart<ValkyriumEngineMultiblockSchematic, TileEntityValkyriumEnginePart> implements
-    IRotationNodeProvider<TileEntityValkyriumEnginePart>, ITickable {
+    IRotationNodeProvider<TileEntityValkyriumEnginePart> {
 
     private static final int ROTATION_NODE_SORT_PRIORITY = 10000;
     @SuppressWarnings("WeakerAccess")
@@ -42,6 +41,7 @@ public class TileEntityValkyriumEnginePart extends
 
     @Override
     public void update() {
+        super.update();
         if (!this.getWorld().isRemote) {
             if (firstUpdate) {
                 this.rotationNode.markInitialized();

@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 /**
  * @param <K> The {@link VSDefaultCapability} that we're storing
  */
-public class VSDefaultCapabilityStorage<K extends VSDefaultCapability<?>>
+public class VSDefaultCapabilityStorage<K extends VSDefaultCapability>
     implements Capability.IStorage<K> {
 
     @Nullable

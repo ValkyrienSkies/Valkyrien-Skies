@@ -17,23 +17,8 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEnginePart;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationAxle;
-import org.valkyrienskies.addon.control.renderer.BasicNodeTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.GearboxTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.GiantPropellerPartTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.LiftLeverTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.PropellerEngineTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.RotationAxleTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.RudderPartTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.ShipHelmTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.SpeedTelegraphTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.ValkyriumCompressorPartTileEntityRenderer;
-import org.valkyrienskies.addon.control.renderer.ValkyriumEnginePartTileEntityRenderer;
-import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
-import org.valkyrienskies.addon.control.tileentity.TileEntityLiftLever;
-import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkRelay;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
-import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
-import org.valkyrienskies.addon.control.tileentity.TileEntitySpeedTelegraph;
+import org.valkyrienskies.addon.control.renderer.*;
+import org.valkyrienskies.addon.control.tileentity.*;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 
@@ -98,7 +83,7 @@ public class ClientProxyControl extends CommonProxyControl {
 
     private static void registerTileEntityRenderers() {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityNetworkRelay.class,
-            new BasicNodeTileEntityRenderer());
+            new NetworkRelayTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityShipHelm.class,
             new ShipHelmTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySpeedTelegraph.class,

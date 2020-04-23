@@ -1,8 +1,5 @@
 package org.valkyrienskies.addon.control.tileentity;
 
-import gigaherz.graph.api.GraphObject;
-import java.util.Collection;
-import java.util.Optional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,10 +11,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.block.BlockSpeedTelegraph;
-import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
+import org.valkyrienskies.addon.control.nodenetwork.VSNode;
 import org.valkyrienskies.addon.control.piloting.ControllerInputType;
 import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
+import org.valkyrienskies.addon.control.tileentity.behaviour.NodeTEBehaviour;
 import org.valkyrienskies.mod.common.network.VSNetwork;
+
+import java.util.Optional;
 
 public class TileEntitySpeedTelegraph extends TileEntityPilotableImpl implements ITickable {
 
@@ -82,27 +82,15 @@ public class TileEntitySpeedTelegraph extends TileEntityPilotableImpl implements
 
     @Override
     public void update() {
-        if (this.getNode() == null || this.getNode()
-            .getGraph() == null) {
-            this.tileEntityInvalid = true;
-        }
         if (getWorld().isRemote) {
             this.prevHandleRotation = this.handleRotation;
             this.handleRotation = this.handleRotation
                 + (this.nextTelegraphState.renderRotation - this.handleRotation) * .5;
             this.telegraphState = nextTelegraphState;
         } else {
-            Collection<GraphObject> connectedGraphObjects = getNode().getGraph()
-                .getObjects();
-            if (connectedGraphObjects == null) {
-                new IllegalStateException(
-                    "Graph object neighbors are null! Skipping ship telegraph update.")
-                    .printStackTrace();
-                return;
-            }
-            for (GraphObject object : connectedGraphObjects) {
-                VSNode_TileEntity otherNode = (VSNode_TileEntity) object;
-                TileEntity tile = otherNode.getParentTile();
+            VSNode node = getBehaviour(NodeTEBehaviour.class).getNode();
+            for (VSNode otherNode : node.dfsIterable()) {
+                TileEntity tile = otherNode.getOwner();
                 if (tile instanceof TileEntityGearbox) {
                     TileEntityGearbox masterTile = (TileEntityGearbox) tile;
                     // This is a transient problem that only occurs during world loading.

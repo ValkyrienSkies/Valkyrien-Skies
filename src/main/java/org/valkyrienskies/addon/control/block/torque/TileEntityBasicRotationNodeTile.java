@@ -1,19 +1,21 @@
 package org.valkyrienskies.addon.control.block.torque;
 
-import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
-import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
+import org.valkyrienskies.addon.control.tileentity.behaviour.NodeTEBehaviour;
 import org.valkyrienskies.mod.common.network.VSNetwork;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.tileentity.behaviour.BehaviourControlledTileEntity;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 /**
  * A carbon copy of TileEntityBasicRotationTile except it extends BasicNodeTileEntity
  */
-public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity implements
+public class TileEntityBasicRotationNodeTile extends BehaviourControlledTileEntity implements
     IRotationNodeProvider, ITickable {
 
     protected final IRotationNode rotationNode;
@@ -24,7 +26,7 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
     private boolean firstUpdate;
 
     public TileEntityBasicRotationNodeTile() {
-        super();
+        super(NodeTEBehaviour.getFactory());
         this.rotationNode = new ImplRotationNode<>(this, .1);
         this.rotation = 0;
         this.lastRotation = 0;
@@ -105,12 +107,6 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         nextRotation = pkt.getNbtCompound().getDouble("rotation");
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        rotationNode.queueNodeForDeletion();
     }
 
 }

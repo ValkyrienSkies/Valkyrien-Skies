@@ -1,9 +1,9 @@
 package org.valkyrienskies.addon.control.item;
 
-import org.valkyrienskies.addon.control.nodenetwork.EnumWireType;
+import org.valkyrienskies.addon.control.nodenetwork.WireType;
 
 public class ItemVanishingWire extends ItemBaseWire {
     public ItemVanishingWire() {
-        super(EnumWireType.VANISHING);
+        super(WireType.VANISHING);
     }
 }

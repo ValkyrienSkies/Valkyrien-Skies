@@ -1,29 +1,27 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
-import java.util.List;
-import java.util.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
-import org.valkyrienskies.addon.control.block.torque.IRotationNode;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeProvider;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
-import org.valkyrienskies.addon.control.block.torque.ImplRotationNode;
+import org.valkyrienskies.addon.control.block.torque.*;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.ValkyriumEngineTorqueFunction;
 import org.valkyrienskies.mod.common.network.VSNetwork;
-import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.List;
+import java.util.Optional;
 
 public class TileEntityValkyriumEnginePart extends
     TileEntityMultiblockPart<ValkyriumEngineMultiblockSchematic, TileEntityValkyriumEnginePart> implements
-    IRotationNodeProvider<TileEntityValkyriumEnginePart> {
+    IRotationNodeProvider<TileEntityValkyriumEnginePart>, ITickable {
 
     private static final int ROTATION_NODE_SORT_PRIORITY = 10000;
     @SuppressWarnings("WeakerAccess")
@@ -44,7 +42,6 @@ public class TileEntityValkyriumEnginePart extends
 
     @Override
     public void update() {
-        super.update();
         if (!this.getWorld().isRemote) {
             if (firstUpdate) {
                 this.rotationNode.markInitialized();

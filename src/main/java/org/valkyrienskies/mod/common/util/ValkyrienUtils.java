@@ -16,15 +16,15 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
-import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
-import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
-import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.collision.Polygon;
+import org.valkyrienskies.mod.common.entity.EntityMountable;
+import org.valkyrienskies.mod.common.ships.QueryableShipData;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.ships.chunk_claims.VSChunkClaim;
-import org.valkyrienskies.mod.common.ships.QueryableShipData;
-import org.valkyrienskies.mod.common.ships.*;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityShipMountData;
+import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
@@ -56,7 +56,7 @@ public class ValkyrienUtils {
      */
     @Nonnull
     @SuppressWarnings({"ConstantConditions", "SameReturnValue"})
-    public <T> T getNull() {
+    public <T> T getFakeNull() {
         return null;
     }
 

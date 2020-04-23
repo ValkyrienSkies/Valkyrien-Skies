@@ -1,6 +1,7 @@
 package org.valkyrienskies.addon.control.block.multiblocks;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Vector3d;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class TileEntityValkyriumCompressorPart extends
     TileEntityMultiblockPartForce<ValkyriumCompressorMultiblockSchematic, TileEntityValkyriumCompressorPart> implements
-    IValkyriumEngine {
+    IValkyriumEngine, ITickable {
 
     private static final Vector3dc FORCE_NORMAL = new Vector3d(0, 1, 0);
     private double prevKeyframe;
@@ -34,7 +35,6 @@ public class TileEntityValkyriumCompressorPart extends
 
     @Override
     public void update() {
-        super.update();
         prevKeyframe = currentKeyframe;
         currentKeyframe += 1.2;
         currentKeyframe = currentKeyframe % 99;

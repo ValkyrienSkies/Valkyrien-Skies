@@ -18,16 +18,14 @@ import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilitySto
 import org.valkyrienskies.mod.common.capability.framework.VSDefaultCapabilityTransientStorage;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import javax.annotation.Nonnull;
-
 @EventBusSubscriber(modid = ValkyrienSkiesMod.MOD_ID)
 public class VSCapabilityRegistry {
 
     @CapabilityInject(VSWorldDataCapability.class)
-    public static final Capability<VSWorldDataCapability> VS_WORLD_DATA = ValkyrienUtils.getNull();
+    public static final Capability<VSWorldDataCapability> VS_WORLD_DATA = ValkyrienUtils.getFakeNull();
 
     @CapabilityInject(ICapabilityEntityBackup.class)
-    public static final Capability<ICapabilityEntityBackup> VS_ENTITY_BACKUP = ValkyrienUtils.getNull();
+    public static final Capability<ICapabilityEntityBackup> VS_ENTITY_BACKUP = ValkyrienUtils.getFakeNull();
 
     @SubscribeEvent
     public static void attachWorldCapabilities(AttachCapabilitiesEvent<World> event) {

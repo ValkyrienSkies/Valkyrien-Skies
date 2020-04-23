@@ -7,7 +7,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 import java.util.Optional;
@@ -62,19 +61,6 @@ public class MoveBlocks {
                 tileEntNBT.setInteger("y", newPos.getY());
                 tileEntNBT.setInteger("z", newPos.getZ());
                 newInstance = TileEntity.create(world, tileEntNBT);
-            }
-            // Order the IVSNodeProvider to move by the given offset.
-            if (newInstance instanceof IVSNodeProvider) {
-                ((IVSNodeProvider) newInstance).shiftInternalData(newPos.subtract(oldPos));
-                if (physicsObjectOptional.isPresent()) {
-                    ((IVSNodeProvider) newInstance)
-                        .getNode()
-                        .setParentPhysicsObject(physicsObjectOptional.get());
-                } else {
-                    ((IVSNodeProvider) newInstance)
-                        .getNode()
-                        .setParentPhysicsObject(null);
-                }
             }
 
             try {

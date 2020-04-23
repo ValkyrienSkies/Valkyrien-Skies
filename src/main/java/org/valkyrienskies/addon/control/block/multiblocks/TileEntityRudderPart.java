@@ -2,6 +2,7 @@ package org.valkyrienskies.addon.control.block.multiblocks;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
@@ -20,7 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class TileEntityRudderPart extends
-    TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic, TileEntityRudderPart> {
+    TileEntityMultiblockPartForce<RudderAxleMultiblockSchematic, TileEntityRudderPart>
+    implements ITickable {
 
     // Angle must be between -90 and 90
     private double rudderAngle;
@@ -37,7 +39,6 @@ public class TileEntityRudderPart extends
 
     @Override
     public void update() {
-        super.update();
         this.prevRudderAngle = rudderAngle;
         if (this.getWorld().isRemote) {
             // Do this to smooth out lag between the server sending packets.

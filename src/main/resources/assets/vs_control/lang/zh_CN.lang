@@ -29,21 +29,21 @@ tooltip.vs_control.captains_chair_2=如果你在船上，你就会坐在上面�
 tile.passenger_chair.name=乘客座
 tooltip.vs_control.passenger_chair=用这个来稳稳地坐在船上。
 
-tile.ship_helm.name=船舵
+tile.ship_helm.name=舵轮
 tooltip.vs_control.ship_helm=这个方块可以让你控制处在同一网络中的方向舵。
 
-tile.speed_telegraph.name=速度计
+tile.speed_telegraph.name=车钟
 tooltip.vs_control.speed_telegraph=这个方块可以让你控制齿轮箱的输出速度，借此来控制螺旋桨转速。
 
-tile.dummy_telegraph.name=速度计模型
-tooltip.vs_control.dummy_telegraph=没有功能的速度计。
+tile.dummy_telegraph.name=车钟模型
+tooltip.vs_control.dummy_telegraph=没有功能的车钟。
 
-tile.lift_lever.name=控制杆
+tile.lift_lever.name=升降舵
 tooltip.vs_control.lift_lever=这个方块可以让你调整瓦尔基里压缩机的目标高度。
 
 tile.gearbox.name=齿轮箱
 tooltip.vs_control.gearbox_1=用来调整扭矩输出方向及功率大小。
-tooltip.vs_control.gearbox_2=连接到速度计来调整扭矩输出。
+tooltip.vs_control.gearbox_2=连接到车钟来调整扭矩输出。
 
 tile.rotation_axle.name=传动轴
 tooltip.vs_control.rotation_axle=用来把瓦尔基里发动机连接到齿轮箱或螺旋桨上。
@@ -51,7 +51,6 @@ tooltip.vs_control.rotation_axle=用来把瓦尔基里发动机连接到齿轮�
 
 ## Network
 tile.network_display.name=网络显示器
-tooltip.vs_control.network_display=尚未实装。
 tooltip.vs_control.network_display=[未完成]可以列出当前网络中的所有连接的节点。
 
 tile.network_relay.name=网络中继器
@@ -64,7 +63,7 @@ tooltip.vs_control.valkyrium_compressor_part_1=瓦尔基里压缩机（2x2x2的�
 tooltip.vs_control.valkyrium_compressor_part_2=这个多方块结构可以提供大量垂直升力。
 
 tile.rudder_part.name=方向舵构件
-tooltip.vs_control.rudder_part=可以通过船舵来改变螺旋桨的推进方向。
+tooltip.vs_control.rudder_part=可以通过舵轮来改变螺旋桨的推进方向。
 
 tile.giant_propeller_part.name=巨型螺旋桨构件
 tooltip.vs_control.giant_propeller_part=能将扭矩转换为推力的3x3至7x7大小的多方块结构。
@@ -85,13 +84,14 @@ tooltip.vs_control.legacy_engine=老式引擎，仅需红石信号即可工作�
 
 ## Misc.
 tile.compacted_valkyrium.name=压缩瓦尔基里块
-tooltip.vs_control.compacted_valkyrium=升力：%dN。
+tooltip.vs_control.compacted_valkyrium=升力：%dN
 
 tile.gyroscope_stabilizer.name=稳定陀螺仪
 tooltip.vs_control.gyroscope_stabilizer=这个方块会被动地提供一个使船体保持水平的扭矩。
 
 tile.gyroscope_dampener.name=减震陀螺仪
 tooltip.vs_control.gyroscope_dampener=这个方块会被动地提供一个防止船体摇摆的扭矩。
+
 
 
 ## Not Yet Implemented

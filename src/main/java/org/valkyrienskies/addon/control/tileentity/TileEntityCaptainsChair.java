@@ -41,7 +41,7 @@ public class TileEntityCaptainsChair extends TileEntityPilotableImpl {
     }
 
     @Override
-    public final void onStartTileUsage(EntityPlayer player) {
+    public final void onStartTileUsage() {
         getParentPhysicsEntity().getPhysicsObject().getPhysicsProcessor().actAsArchimedes = true;
     }
 

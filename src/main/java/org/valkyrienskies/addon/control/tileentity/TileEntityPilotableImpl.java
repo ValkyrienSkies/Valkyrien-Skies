@@ -1,6 +1,8 @@
 package org.valkyrienskies.addon.control.tileentity;
 
 import java.util.Optional;
+import java.util.UUID;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +23,8 @@ import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
+import javax.annotation.Nullable;
+
 /**
  * A basic implementation of the ITileEntityPilotable interface, other tile entities can extend this
  * for easy controls
@@ -30,7 +34,9 @@ import valkyrienwarfare.api.TransformType;
 public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implements
     ITileEntityPilotable {
 
-    private EntityPlayer pilotPlayerEntity;
+    // Do NOT make this a reference to pilotPlayerEntity.
+    @Nullable
+    private UUID pilotPlayerEntity;
 
     TileEntityPilotableImpl() {
         super();
@@ -39,26 +45,30 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
 
     @Override
     public final void onPilotControlsMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-        if (sender == pilotPlayerEntity) {
+        if (sender.getUniqueID().equals(pilotPlayerEntity)) {
             processControlMessage(message, sender);
-        } else {
-            // Wtf is this packet being sent for?
         }
     }
 
     @Override
     public final EntityPlayer getPilotEntity() {
-        return pilotPlayerEntity;
+        if (pilotPlayerEntity != null) {
+            return getWorld().getPlayerEntityByUUID(pilotPlayerEntity);
+        }
+        return null;
     }
 
     @Override
     public final void setPilotEntity(EntityPlayer toSet) {
         if (!getWorld().isRemote) {
-            sendPilotUpdatePackets((EntityPlayerMP) toSet, (EntityPlayerMP) pilotPlayerEntity);
+            EntityPlayer oldPlayer = getPilotEntity();
+            if (oldPlayer != null) {
+                sendPilotUpdatePackets((EntityPlayerMP) toSet, (EntityPlayerMP) oldPlayer);
+            }
         }
-        pilotPlayerEntity = toSet;
-        if (pilotPlayerEntity != null) {
-            onStartTileUsage(pilotPlayerEntity);
+        if (toSet != null) {
+            pilotPlayerEntity = toSet.getUniqueID();
+            onStartTileUsage( );
         } else {
             onStopTileUsage();
         }

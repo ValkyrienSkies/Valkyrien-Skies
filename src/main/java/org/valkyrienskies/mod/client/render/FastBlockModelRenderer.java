@@ -28,7 +28,8 @@ public class FastBlockModelRenderer {
     // Maps IBlockState to a map that maps brightness to VertexBuffer that are already uploaded to gpu memory.
     public static final Map<IBlockState, Map<Integer, VertexBuffer>> blockstateBrightnessToVertexBuffer = new HashMap<IBlockState, Map<Integer, VertexBuffer>>();
 
-    protected static final BufferBuilder VERTEX_BUILDER = new BufferBuilder(500000);
+    // Be careful to only use this on the main thread. Using it on other threads will break stuff.
+    public static final BufferBuilder VERTEX_BUILDER = new BufferBuilder(500000);
     // Used to make sure that when we simulate rendering models they're not affected by light from other blocks.
     private static final BlockPos offsetPos = new BlockPos(0, 512, 0);
 
@@ -104,7 +105,7 @@ public class FastBlockModelRenderer {
             blockstateBrightnessToVertexBuffer.get(blockstateToRender).get(brightness));
     }
 
-    protected static void renderVertexBuffer(VertexBuffer vertexBuffer) {
+    public static void renderVertexBuffer(VertexBuffer vertexBuffer) {
         // Check if optifine shaders are currently loaded.
         final boolean areOptifineShadersEnabled = GibsModelRegistry.isOptifineShadersEnabled();
 

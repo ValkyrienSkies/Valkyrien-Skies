@@ -102,8 +102,6 @@ public class PhysRenderChunk {
         int maxY();
     }
 
-    // Based off of MovingWorld's 1.12.2 VBO chunk rendering implementation.
-    // https://github.com/TridentMC/MovingWorld/blob/431e9bfa8031ed2513bca8d326fe24ea2872c4f1/src/main/java/com/elytradev/movingworld/client/render/MobileChunkRenderer.java
     private class RenderLayerVBO implements IVSRenderChunk {
 
         Chunk chunkToRender;
@@ -175,79 +173,29 @@ public class PhysRenderChunk {
                     if (needsCutoutUpdate) {
                         updateList(layerToRender);
                     }
-                    renderVBO(cutoutBuffer);
+                    FastBlockModelRenderer.renderVertexBuffer(cutoutBuffer);
                     break;
                 case CUTOUT_MIPPED:
                     if (needsCutoutMippedUpdate) {
                         updateList(layerToRender);
                     }
-                    renderVBO(cutoutMippedBuffer);
+                    FastBlockModelRenderer.renderVertexBuffer(cutoutMippedBuffer);
                     break;
                 case SOLID:
                     if (needsSolidUpdate) {
                         updateList(layerToRender);
                     }
-                    renderVBO(solidBuffer);
+                    FastBlockModelRenderer.renderVertexBuffer(solidBuffer);
                     break;
                 case TRANSLUCENT:
                     if (needsTranslucentUpdate) {
                         updateList(layerToRender);
                     }
-                    renderVBO(translucentBuffer);
+                    FastBlockModelRenderer.renderVertexBuffer(translucentBuffer);
                     break;
                 default:
                     break;
             }
-        }
-
-        private void setupArrayPointers() {
-            GlStateManager.glVertexPointer(3, 5126, 28, 0);
-            GlStateManager.glColorPointer(4, 5121, 28, 12);
-            GlStateManager.glTexCoordPointer(2, 5126, 28, 16);
-            OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
-            GlStateManager.glTexCoordPointer(2, 5122, 28, 24);
-            OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-        }
-
-        // Source github.com/TridentMC/MovingWorld/
-        private void renderVBO(VertexBuffer vbo) {
-            GlStateManager.pushMatrix();
-
-            GlStateManager.glEnableClientState(32884);
-            OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-            GlStateManager.glEnableClientState(32888);
-            OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
-            GlStateManager.glEnableClientState(32888);
-            OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-            GlStateManager.glEnableClientState(32886);
-
-            GlStateManager.pushMatrix();
-            vbo.bindBuffer();
-            setupArrayPointers();
-            vbo.drawArrays(7);
-            GlStateManager.popMatrix();
-            OpenGlHelper.glBindBuffer(OpenGlHelper.GL_ARRAY_BUFFER, 0);
-            GlStateManager.resetColor();
-
-            for (VertexFormatElement vertexformatelement : DefaultVertexFormats.BLOCK.getElements()) {
-                VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement.getUsage();
-                int i = vertexformatelement.getIndex();
-
-                switch (vertexformatelement$enumusage) {
-                    case POSITION:
-                        GlStateManager.glDisableClientState(32884);
-                        break;
-                    case UV:
-                        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + i);
-                        GlStateManager.glDisableClientState(32888);
-                        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
-                        break;
-                    case COLOR:
-                        GlStateManager.glDisableClientState(32886);
-                        GlStateManager.resetColor();
-                }
-            }
-            GlStateManager.popMatrix();
         }
 
         private void updateList(BlockRenderLayer layerToUpdate) {
@@ -258,10 +206,11 @@ public class PhysRenderChunk {
             if (offsetPos == null) {
                 return;
             }
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder worldrenderer = tessellator.getBuffer();
-            worldrenderer.begin(7, DefaultVertexFormats.BLOCK);
-            worldrenderer.setTranslation(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
+            // Tessellator tessellator = Tessellator.getInstance();
+            // BufferBuilder worldrenderer = tessellator.getBuffer();
+            BufferBuilder vsChunkBuilder = FastBlockModelRenderer.VERTEX_BUILDER;
+            vsChunkBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+            vsChunkBuilder.setTranslation(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
 
             // The vertex buffer we're going to render this 16x16x16 chunk into
             VertexBuffer renderBuffer;
@@ -312,8 +261,7 @@ public class PhysRenderChunk {
                             if (iblockstate.getBlock()
                                 .canRenderInLayer(iblockstate, layerToUpdate)) {
                                 Minecraft.getMinecraft().getBlockRendererDispatcher()
-                                    .renderBlock(iblockstate, pos, chunkToRender.world,
-                                        worldrenderer);
+                                    .renderBlock(iblockstate, pos, chunkToRender.world, vsChunkBuilder);
                             }
                         } catch (NullPointerException e) {
                             System.out.println("Something was null!");
@@ -322,14 +270,14 @@ public class PhysRenderChunk {
                 }
             }
 
-            worldrenderer.finishDrawing();
-            renderBuffer.bufferData(worldrenderer.getByteBuffer());
-            worldrenderer.reset();
+            vsChunkBuilder.finishDrawing();
+            renderBuffer.bufferData(vsChunkBuilder.getByteBuffer());
+            vsChunkBuilder.reset();
 
             // Fix the old render layer
             ForgeHooksClient.setRenderLayer(oldLayer);
 
-            worldrenderer.setTranslation(0, 0, 0);
+            vsChunkBuilder.setTranslation(0, 0, 0);
 
             switch (layerToUpdate) {
                 case CUTOUT:
@@ -480,11 +428,8 @@ public class PhysRenderChunk {
             GlStateManager.pushMatrix();
             // worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             IBlockState iblockstate;
-            // if (Minecraft.isAmbientOcclusionEnabled()) {
-            // GlStateManager.shadeModel(GL11.GL_SMOOTH);
-            // } else {
-            // GlStateManager.shadeModel(GL11.GL_FLAT);
-            // }
+
+            BlockRenderLayer oldLayer = MinecraftForgeClient.getRenderLayer();
             ForgeHooksClient.setRenderLayer(layerToUpdate);
             MutableBlockPos pos = new MutableBlockPos();
             for (int x = chunkToRender.x * 16; x < chunkToRender.x * 16 + 16; x++) {
@@ -508,7 +453,7 @@ public class PhysRenderChunk {
             }
             tessellator.draw();
             // worldrenderer.finishDrawing();
-            ForgeHooksClient.setRenderLayer(null);
+            ForgeHooksClient.setRenderLayer(oldLayer);
             GlStateManager.popMatrix();
             GL11.glEndList();
             GL11.glPopMatrix();

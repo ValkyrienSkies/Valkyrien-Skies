@@ -45,7 +45,7 @@ public class PhysObjectRenderManager {
         offsetPos = newPos;
     }
 
-    public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
+    public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass, ICamera iCamera) {
         if (renderChunks == null) {
             renderChunks = new PhysRenderChunk[parent.getOwnedChunks().chunkLengthX()][parent
                 .getOwnedChunks()
@@ -72,7 +72,7 @@ public class PhysObjectRenderManager {
         applyRenderTransform(partialTicks);
         for (PhysRenderChunk[] chunkArray : renderChunks) {
             for (PhysRenderChunk renderChunk : chunkArray) {
-                renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
+                renderChunk.renderBlockLayer(layerToRender, partialTicks, pass, iCamera);
             }
         }
 
@@ -139,12 +139,11 @@ public class PhysObjectRenderManager {
         }
     }
 
-    public boolean shouldRender() {
+    public boolean shouldRender(ICamera camera) {
         if (parent.getWrapperEntity().isDead) {
             return false;
         }
-        ICamera camera = ClientProxy.lastCamera;
-        return true; // camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
+        return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 
     public void applyRenderTransform(double partialTicks) {

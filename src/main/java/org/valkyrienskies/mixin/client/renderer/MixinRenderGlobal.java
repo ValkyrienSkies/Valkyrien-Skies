@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -243,7 +244,7 @@ public abstract class MixinRenderGlobal {
     @Inject(method = "renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V", at = @At("HEAD"))
     private void preRenderEntities(Entity renderViewEntity, ICamera camera, float partialTicks,
         CallbackInfo callbackInfo) {
-        ClientProxy.lastCamera = camera;
+        // ClientProxy.lastCamera = camera;
     }
 
     @Inject(method = "renderBlockLayer(Lnet/minecraft/util/BlockRenderLayer;DILnet/minecraft/entity/Entity;)I", at = @At("HEAD"))
@@ -251,14 +252,22 @@ public abstract class MixinRenderGlobal {
         Entity entityIn, CallbackInfoReturnable callbackInfo) {
         RenderHelper.disableStandardItemLighting();
 
+        // This probably won't work with strange mods, but I'm too lazy to do it better
+        ICamera icamera = new Frustum();
+        Entity entity = this.mc.getRenderViewEntity();
+        double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
+        double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
+        double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
+        icamera.setPosition(d0, d1, d2);
+
         for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
             .getManagerForWorld(this.world)
             .getTickablePhysicsEntities()) {
             GL11.glPushMatrix();
             if (wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject()
-                .getShipRenderer().shouldRender()) {
+                .getShipRenderer().shouldRender(icamera)) {
                 wrapper.getPhysicsObject().getShipRenderer()
-                    .renderBlockLayer(blockLayerIn, partialTicks, pass);
+                    .renderBlockLayer(blockLayerIn, partialTicks, pass, icamera);
             }
             GL11.glPopMatrix();
         }

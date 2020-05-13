@@ -27,7 +27,6 @@ import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 public class ClientProxy extends CommonProxy {
 
-    public static ICamera lastCamera;
     private final VSKeyHandler keyEvents = new VSKeyHandler();
 
     private static void registerBlockItem(Block toRegister) {

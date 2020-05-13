@@ -5,11 +5,13 @@ import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.chunk.Chunk;
@@ -17,7 +19,10 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
+import org.valkyrienskies.mod.common.math.RotationMatrices;
+import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
 import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import valkyrienwarfare.api.TransformType;
 
 public class PhysRenderChunk {
 
@@ -43,11 +48,18 @@ public class PhysRenderChunk {
         }
     }
 
-    public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
+    public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass, ICamera iCamera) {
         for (int i = 0; i < 16; i++) {
             IVSRenderChunk renderChunk = renderChunks[i];
             if (renderChunk != null) {
-                renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
+                AxisAlignedBB renderChunkBB = new AxisAlignedBB(chunk.x << 4, renderChunk.minY(), chunk.z << 4, (chunk.x << 4) + 15, renderChunk.maxY(), (chunk.z << 4) + 15);
+                Polygon polygon = new Polygon(renderChunkBB, toRender.getShipTransformationManager().getRenderTransform(), TransformType.SUBSPACE_TO_GLOBAL);
+                AxisAlignedBB inWorldBB = polygon.getEnclosedAABB();
+
+                // Only render chunks that can be shown by the camera.
+                if (iCamera.isBoundingBoxInFrustum(inWorldBB)) {
+                    renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
+                }
             }
         }
     }
@@ -84,6 +96,10 @@ public class PhysRenderChunk {
         void markDirty();
 
         void deleteRenderChunk();
+
+        int minY();
+
+        int maxY();
     }
 
     // Based off of MovingWorld's 1.12.2 VBO chunk rendering implementation.
@@ -107,6 +123,14 @@ public class PhysRenderChunk {
             cutoutMippedBuffer = null;
             solidBuffer = null;
             translucentBuffer = null;
+        }
+
+        public int minY() {
+            return yMin;
+        }
+
+        public int maxY() {
+            return yMax;
         }
 
         public void markDirty() {
@@ -345,6 +369,14 @@ public class PhysRenderChunk {
             glCallListCutoutMipped = glCallListCutout + 1;
             glCallListSolid = glCallListCutout + 2;
             glCallListTranslucent = glCallListCutout + 3;
+        }
+
+        public int minY() {
+            return yMin;
+        }
+
+        public int maxY() {
+            return yMax;
         }
 
         public void markDirty() {

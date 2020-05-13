@@ -62,13 +62,13 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
     public final void setPilotEntity(EntityPlayer toSet) {
         if (!getWorld().isRemote) {
             EntityPlayer oldPlayer = getPilotEntity();
-            if (oldPlayer != null) {
+            if (toSet != oldPlayer) {
                 sendPilotUpdatePackets((EntityPlayerMP) toSet, (EntityPlayerMP) oldPlayer);
             }
         }
         if (toSet != null) {
             pilotPlayerEntity = toSet.getUniqueID();
-            onStartTileUsage( );
+            onStartTileUsage();
         } else {
             onStopTileUsage();
         }

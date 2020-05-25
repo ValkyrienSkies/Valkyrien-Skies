@@ -258,13 +258,10 @@ public abstract class MixinRenderGlobal {
         double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
         icamera.setPosition(d0, d1, d2);
 
-        for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-            .getManagerForWorld(this.world)
-            .getTickablePhysicsEntities()) {
+        for (PhysicsObject physicsObject : ValkyrienUtils.getPhysObjWorld(world).getAllLoadedPhysObj()) {
             GL11.glPushMatrix();
-            if (wrapper.getPhysicsObject().getShipRenderer() != null && wrapper.getPhysicsObject()
-                .getShipRenderer().shouldRender(icamera)) {
-                wrapper.getPhysicsObject().getShipRenderer()
+            if (physicsObject.getShipRenderer().shouldRender(icamera)) {
+                physicsObject.getShipRenderer()
                     .renderBlockLayer(blockLayerIn, partialTicks, pass, icamera);
             }
             GL11.glPopMatrix();

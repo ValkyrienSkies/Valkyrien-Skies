@@ -19,7 +19,9 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
+import org.valkyrienskies.mod.common.collision.Polygon;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import valkyrienwarfare.api.TransformType;
 
 public class PhysRenderChunk {
 

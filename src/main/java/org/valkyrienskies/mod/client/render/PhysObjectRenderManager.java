@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -50,20 +51,7 @@ public class PhysObjectRenderManager {
         }
     }
 
-    public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
-        if (renderChunks == null) {
-            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().chunkLengthX()][parent
-                .getOwnedChunks()
-                .chunkLengthZ()];
-            for (int xChunk = 0; xChunk < parent.getOwnedChunks().chunkLengthX(); xChunk++) {
-                for (int zChunk = 0; zChunk < parent.getOwnedChunks().chunkLengthZ(); zChunk++) {
-                    renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
-                        .getChunkAt(xChunk + parent.getOwnedChunks().minX(),
-                            zChunk + parent.getOwnedChunks().minZ()));
-                }
-            }
-        }
-
+    public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass, ICamera camera) {
         GL11.glPushMatrix();
         Minecraft.getMinecraft().entityRenderer.enableLightmap();
         // int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
@@ -76,7 +64,7 @@ public class PhysObjectRenderManager {
 
         applyRenderTransform(partialTicks);
         for (PhysRenderChunk renderChunk : renderChunks.values()) {
-            renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
+            renderChunk.renderBlockLayer(layerToRender, partialTicks, pass, camera);
         }
 
         Minecraft.getMinecraft().entityRenderer.disableLightmap();
@@ -122,9 +110,6 @@ public class PhysObjectRenderManager {
     }
 
     public boolean shouldRender(ICamera camera) {
-        if (parent.getWrapperEntity().isDead) {
-            return false;
-        }
         return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 

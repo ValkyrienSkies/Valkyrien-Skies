@@ -8,6 +8,7 @@ import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 
 /**
@@ -23,14 +24,14 @@ public class ValkyrienSkiesWorldGen implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world,
         IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-        if (ValkyrienSkiesWorld.OREGEN_ENABLED) {
+        if (ValkyrienSkiesWorld.OREGEN_ENABLED && VSConfig.valkyriumSpawnRate > 0) {
             if (this.genValkyriumOre == null) {
                 this.genValkyriumOre = new WorldGenMinable(
                     ValkyrienSkiesWorld.INSTANCE.valkyriumOre.getDefaultState(), 8);
             }
             switch (world.provider.getDimension()) {
                 case 0: //Overworld
-                    this.runValkyriumGenerator(this.genValkyriumOre, world, random, chunkX, chunkZ, 2,
+                    this.runValkyriumGenerator(this.genValkyriumOre, world, random, chunkX, chunkZ, VSConfig.valkyriumSpawnRate,
                         0, 25);
                     // runDungeonGenerator(world, random, chunkX, chunkZ, 1);
                     break;

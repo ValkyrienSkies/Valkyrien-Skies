@@ -21,6 +21,10 @@ import org.valkyrienskies.mod.common.math.Vector;
 )
 public class VSConfig extends VSConfigTemplate {
 
+    @Name("Valkyrium Ore Spawn Rate")
+    @Comment("Number of chances to spawn per chunk, 0 to disable")
+    public static int valkyriumSpawnRate = 2;
+
     @Name("Ship Y-Height Maximum")
     public static double shipUpperLimit = 1000D;
 

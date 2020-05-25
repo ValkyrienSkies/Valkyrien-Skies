@@ -51,6 +51,19 @@ public class PhysObjectRenderManager {
     }
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
+        if (renderChunks == null) {
+            renderChunks = new PhysRenderChunk[parent.getOwnedChunks().chunkLengthX()][parent
+                .getOwnedChunks()
+                .chunkLengthZ()];
+            for (int xChunk = 0; xChunk < parent.getOwnedChunks().chunkLengthX(); xChunk++) {
+                for (int zChunk = 0; zChunk < parent.getOwnedChunks().chunkLengthZ(); zChunk++) {
+                    renderChunks[xChunk][zChunk] = new PhysRenderChunk(parent, parent
+                        .getChunkAt(xChunk + parent.getOwnedChunks().minX(),
+                            zChunk + parent.getOwnedChunks().minZ()));
+                }
+            }
+        }
+
         GL11.glPushMatrix();
         Minecraft.getMinecraft().entityRenderer.enableLightmap();
         // int i = parent.wrapper.getBrightnessForRender((float) partialTicks);
@@ -108,9 +121,11 @@ public class PhysObjectRenderManager {
         }
     }
 
-    public boolean shouldRender() {
-        // ICamera camera = ClientProxy.lastCamera;
-        return true; // camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
+    public boolean shouldRender(ICamera camera) {
+        if (parent.getWrapperEntity().isDead) {
+            return false;
+        }
+        return camera == null || camera.isBoundingBoxInFrustum(parent.getShipBoundingBox());
     }
 
     public void applyRenderTransform(double partialTicks) {

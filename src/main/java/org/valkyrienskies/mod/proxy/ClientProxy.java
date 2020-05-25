@@ -30,7 +30,6 @@ public class ClientProxy extends CommonProxy {
             new ModelResourceLocation(item.getRegistryName(), "inventory"));
     }
 
-    public static ICamera lastCamera;
     private final VSKeyHandler keyEvents = new VSKeyHandler();
 
     @Override

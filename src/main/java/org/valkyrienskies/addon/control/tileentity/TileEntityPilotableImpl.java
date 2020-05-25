@@ -1,5 +1,8 @@
 package org.valkyrienskies.addon.control.tileentity;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +22,7 @@ import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
  * A basic implementation of the ITileEntityPilotable interface, other tile entities can extend this
@@ -30,7 +33,9 @@ import java.util.Optional;
 public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implements
     ITileEntityPilotable {
 
-    private EntityPlayer pilotPlayerEntity;
+    // Do NOT make this a reference to pilotPlayerEntity.
+    @Nullable
+    private UUID pilotPlayerEntity;
 
     TileEntityPilotableImpl() {
         super();
@@ -39,27 +44,30 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
 
     @Override
     public final void onPilotControlsMessage(PilotControlsMessage message, EntityPlayerMP sender) {
-        if (sender == pilotPlayerEntity) {
+        if (sender.getUniqueID().equals(pilotPlayerEntity)) {
             processControlMessage(message, sender);
-        } else {
-            // Wtf is this packet being sent for?
         }
     }
 
     @Override
     public final EntityPlayer getPilotEntity() {
-        return pilotPlayerEntity;
+        if (pilotPlayerEntity != null) {
+            return getWorld().getPlayerEntityByUUID(pilotPlayerEntity);
+        }
+        return null;
     }
 
     @Override
     public final void setPilotEntity(EntityPlayer toSet) {
         if (!getWorld().isRemote) {
-            sendPilotUpdatePackets((EntityPlayerMP) toSet, (EntityPlayerMP) pilotPlayerEntity);
+            EntityPlayer oldPlayer = getPilotEntity();
+            sendPilotUpdatePackets((EntityPlayerMP) toSet, (EntityPlayerMP) oldPlayer);
         }
-        pilotPlayerEntity = toSet;
-        if (pilotPlayerEntity != null) {
-            onStartTileUsage(pilotPlayerEntity);
+        if (toSet != null) {
+            pilotPlayerEntity = toSet.getUniqueID();
+            onStartTileUsage();
         } else {
+            pilotPlayerEntity = null;
             onStopTileUsage();
         }
     }
@@ -68,8 +76,6 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
     public final void playerWantsToStopPiloting(EntityPlayer player) {
         if (player == getPilotEntity()) {
             setPilotEntity(null);
-        } else {
-            // Wtf happened here?
         }
     }
 
@@ -84,8 +90,9 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
     }
 
     // Always call this before setting the pilotPlayerEntity to equal newPilot
-    private final void sendPilotUpdatePackets(EntityPlayerMP newPilot, EntityPlayerMP oldPilot) {
-        if (oldPilot != null) {
+    private void sendPilotUpdatePackets(EntityPlayerMP newPilot, EntityPlayerMP oldPilot) {
+        // If old pilot equals new pilot, then don't send the stop piloting message
+        if (oldPilot != null && oldPilot != newPilot) {
             MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
             ValkyrienSkiesControl.controlNetwork.sendTo(stopMessage, oldPilot);
         }

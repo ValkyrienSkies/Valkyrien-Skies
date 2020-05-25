@@ -4,92 +4,131 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 public class PhysRenderChunk {
 
-    public RenderLayer[] layers = new RenderLayer[16];
+    public IVSRenderChunk[] renderChunks = new IVSRenderChunk[16];
     public PhysicsObject toRender;
-    public Chunk renderChunk;
+    public Chunk chunk;
 
-    public PhysRenderChunk(PhysicsObject toRender, Chunk renderChunk) {
+    public PhysRenderChunk(PhysicsObject toRender, Chunk chunk) {
         this.toRender = toRender;
-        this.renderChunk = renderChunk;
+        this.chunk = chunk;
         for (int i = 0; i < 16; i++) {
-            ExtendedBlockStorage storage = renderChunk.storageArrays[i];
+            ExtendedBlockStorage storage = this.chunk.storageArrays[i];
             if (storage != null) {
-                RenderLayer renderLayer = new RenderLayer(renderChunk, i * 16, i * 16 + 15, this);
-                layers[i] = renderLayer;
+                IVSRenderChunk renderChunk;
+                // Support old graphics cards that can't use VBOs.
+                if (OpenGlHelper.useVbo()) {
+                    renderChunk = new RenderLayerVBO(this.chunk, i * 16, i * 16 + 15, this);
+                } else {
+                    renderChunk = new RenderLayerDisplayList(this.chunk, i * 16, i * 16 + 15, this);
+                }
+                renderChunks[i] = renderChunk;
             }
         }
     }
 
-    public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
+    public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass, ICamera iCamera) {
         for (int i = 0; i < 16; i++) {
-            RenderLayer layer = layers[i];
-            if (layer != null) {
-                layer.renderBlockLayer(layerToRender, partialTicks, pass);
+            IVSRenderChunk renderChunk = renderChunks[i];
+            if (renderChunk != null) {
+                AxisAlignedBB renderChunkBB = new AxisAlignedBB(chunk.x << 4, renderChunk.minY(), chunk.z << 4, (chunk.x << 4) + 15, renderChunk.maxY(), (chunk.z << 4) + 15);
+                Polygon polygon = new Polygon(renderChunkBB, toRender.getShipTransformationManager().getRenderTransform(), TransformType.SUBSPACE_TO_GLOBAL);
+                AxisAlignedBB inWorldBB = polygon.getEnclosedAABB();
+
+                // Only render chunks that can be shown by the camera.
+                if (iCamera.isBoundingBoxInFrustum(inWorldBB)) {
+                    renderChunk.renderBlockLayer(layerToRender, partialTicks, pass);
+                }
             }
         }
     }
 
     public void updateLayers(int minLayer, int maxLayer) {
         for (int layerY = minLayer; layerY <= maxLayer; layerY++) {
-            RenderLayer layer = layers[layerY];
-            if (layer != null) {
-                layer.markDirtyRenderLists();
+            IVSRenderChunk renderChunk = renderChunks[layerY];
+            if (renderChunk != null) {
+                renderChunk.markDirty();
             } else {
-                RenderLayer renderLayer = new RenderLayer(renderChunk, layerY * 16,
-                    layerY * 16 + 15, this);
-                layers[layerY] = renderLayer;
+                IVSRenderChunk renderLayer;
+                if (OpenGlHelper.useVbo()) {
+                    renderLayer= new RenderLayerVBO(this.chunk, layerY * 16, layerY * 16 + 15, this);
+                } else {
+                    renderLayer = new RenderLayerDisplayList(this.chunk, layerY * 16, layerY * 16 + 15, this);
+                }
+                renderChunks[layerY] = renderLayer;
             }
         }
     }
 
     void killRenderChunk() {
         for (int i = 0; i < 16; i++) {
-            RenderLayer layer = layers[i];
-            if (layer != null) {
-                layer.deleteRenderLayer();
+            IVSRenderChunk renderChunk = renderChunks[i];
+            if (renderChunk != null) {
+                renderChunk.deleteRenderChunk();
             }
         }
     }
 
-    public static class RenderLayer {
+    private interface IVSRenderChunk {
+        void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass);
+
+        void markDirty();
+
+        void deleteRenderChunk();
+
+        int minY();
+
+        int maxY();
+    }
+
+    private class RenderLayerVBO implements IVSRenderChunk {
 
         Chunk chunkToRender;
         int yMin, yMax;
-        int glCallListCutout, glCallListCutoutMipped, glCallListSolid, glCallListTranslucent;
+        VertexBuffer cutoutBuffer, cutoutMippedBuffer, solidBuffer, translucentBuffer;
         PhysRenderChunk parent;
         boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
-        List<TileEntity> renderTiles = new ArrayList<TileEntity>();
+        List<TileEntity> renderTiles = new ArrayList<>();
 
-        RenderLayer(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
+        RenderLayerVBO(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
             chunkToRender = chunk;
             this.yMin = yMin;
             this.yMax = yMax;
             this.parent = parent;
-            markDirtyRenderLists();
-            glCallListCutout = GLAllocation.generateDisplayLists(4);
-            glCallListCutoutMipped = glCallListCutout + 1;
-            glCallListSolid = glCallListCutout + 2;
-            glCallListTranslucent = glCallListCutout + 3;
+            markDirty();
+            cutoutBuffer = null;
+            cutoutMippedBuffer = null;
+            solidBuffer = null;
+            translucentBuffer = null;
         }
 
-        public void markDirtyRenderLists() {
+        public int minY() {
+            return yMin;
+        }
+
+        public int maxY() {
+            return yMax;
+        }
+
+        public void markDirty() {
             needsCutoutUpdate = true;
             needsCutoutMippedUpdate = true;
             needsSolidUpdate = true;
@@ -104,13 +143,209 @@ public class PhysRenderChunk {
             if (updatedRenderTiles != null) {
                 Minecraft.getMinecraft().renderGlobal
                     .updateTileEntities(renderTiles, updatedRenderTiles);
-                renderTiles = new ArrayList<TileEntity>(updatedRenderTiles);
+                renderTiles = new ArrayList<>(updatedRenderTiles);
             }
         }
 
-        public void deleteRenderLayer() {
+        public void deleteRenderChunk() {
             clearRenderLists();
-            Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, new ArrayList());
+            Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, new ArrayList<>());
+            renderTiles.clear();
+        }
+
+        private void clearRenderLists() {
+            if (cutoutBuffer != null)
+                cutoutBuffer.deleteGlBuffers();
+            if (cutoutMippedBuffer != null)
+                cutoutMippedBuffer.deleteGlBuffers();
+            if (solidBuffer != null)
+                solidBuffer.deleteGlBuffers();
+            if (translucentBuffer != null)
+                translucentBuffer.deleteGlBuffers();
+        }
+
+        public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass) {
+            switch (layerToRender) {
+                case CUTOUT:
+                    if (needsCutoutUpdate) {
+                        updateList(layerToRender);
+                    }
+                    FastBlockModelRenderer.renderVertexBuffer(cutoutBuffer);
+                    break;
+                case CUTOUT_MIPPED:
+                    if (needsCutoutMippedUpdate) {
+                        updateList(layerToRender);
+                    }
+                    FastBlockModelRenderer.renderVertexBuffer(cutoutMippedBuffer);
+                    break;
+                case SOLID:
+                    if (needsSolidUpdate) {
+                        updateList(layerToRender);
+                    }
+                    FastBlockModelRenderer.renderVertexBuffer(solidBuffer);
+                    break;
+                case TRANSLUCENT:
+                    if (needsTranslucentUpdate) {
+                        updateList(layerToRender);
+                    }
+                    FastBlockModelRenderer.renderVertexBuffer(translucentBuffer);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void updateList(BlockRenderLayer layerToUpdate) {
+            if (parent.toRender.getShipRenderer() == null) {
+                return;
+            }
+            BlockPos offsetPos = parent.toRender.getShipRenderer().offsetPos;
+            if (offsetPos == null) {
+                return;
+            }
+            // Tessellator tessellator = Tessellator.getInstance();
+            // BufferBuilder worldrenderer = tessellator.getBuffer();
+            BufferBuilder vsChunkBuilder = FastBlockModelRenderer.VERTEX_BUILDER;
+            vsChunkBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+            vsChunkBuilder.setTranslation(-offsetPos.getX(), -offsetPos.getY(), -offsetPos.getZ());
+
+            // The vertex buffer we're going to render this 16x16x16 chunk into
+            VertexBuffer renderBuffer;
+
+            switch (layerToUpdate) {
+                case CUTOUT:
+                    if (cutoutBuffer != null) {
+                        cutoutBuffer.deleteGlBuffers();
+                    }
+                    cutoutBuffer = new VertexBuffer(DefaultVertexFormats.BLOCK);
+                    renderBuffer = cutoutBuffer;
+                    break;
+                case CUTOUT_MIPPED:
+                    if (cutoutMippedBuffer != null) {
+                        cutoutMippedBuffer.deleteGlBuffers();
+                    }
+                    cutoutMippedBuffer = new VertexBuffer(DefaultVertexFormats.BLOCK);
+                    renderBuffer = cutoutMippedBuffer;
+                    break;
+                case SOLID:
+                    if (solidBuffer != null) {
+                        solidBuffer.deleteGlBuffers();
+                    }
+                    solidBuffer = new VertexBuffer(DefaultVertexFormats.BLOCK);
+                    renderBuffer = solidBuffer;
+                    break;
+                case TRANSLUCENT:
+                    if (translucentBuffer != null) {
+                        translucentBuffer.deleteGlBuffers();
+                    }
+                    translucentBuffer = new VertexBuffer(DefaultVertexFormats.BLOCK);
+                    renderBuffer = translucentBuffer;
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + layerToUpdate);
+            }
+
+            // Be careful with render layers
+            BlockRenderLayer oldLayer = MinecraftForgeClient.getRenderLayer();
+            ForgeHooksClient.setRenderLayer(layerToUpdate);
+            MutableBlockPos pos = new MutableBlockPos();
+            for (int x = chunkToRender.x * 16; x < chunkToRender.x * 16 + 16; x++) {
+                for (int z = chunkToRender.z * 16; z < chunkToRender.z * 16 + 16; z++) {
+                    for (int y = yMin; y <= yMax; y++) {
+                        pos.setPos(x, y, z);
+                        IBlockState iblockstate = chunkToRender.getBlockState(pos);
+                        try {
+                            if (iblockstate.getBlock()
+                                .canRenderInLayer(iblockstate, layerToUpdate)) {
+                                Minecraft.getMinecraft().getBlockRendererDispatcher()
+                                    .renderBlock(iblockstate, pos, chunkToRender.world, vsChunkBuilder);
+                            }
+                        } catch (NullPointerException e) {
+                            System.out.println("Something was null!");
+                        }
+                    }
+                }
+            }
+
+            vsChunkBuilder.finishDrawing();
+            renderBuffer.bufferData(vsChunkBuilder.getByteBuffer());
+            vsChunkBuilder.reset();
+
+            // Fix the old render layer
+            ForgeHooksClient.setRenderLayer(oldLayer);
+
+            vsChunkBuilder.setTranslation(0, 0, 0);
+
+            switch (layerToUpdate) {
+                case CUTOUT:
+                    needsCutoutUpdate = false;
+                    break;
+                case CUTOUT_MIPPED:
+                    needsCutoutMippedUpdate = false;
+                    break;
+                case SOLID:
+                    needsSolidUpdate = false;
+                    break;
+                case TRANSLUCENT:
+                    needsTranslucentUpdate = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public static class RenderLayerDisplayList implements IVSRenderChunk {
+
+        Chunk chunkToRender;
+        int yMin, yMax;
+        int glCallListCutout, glCallListCutoutMipped, glCallListSolid, glCallListTranslucent;
+        PhysRenderChunk parent;
+        boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
+        List<TileEntity> renderTiles = new ArrayList<>();
+
+        RenderLayerDisplayList(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
+            chunkToRender = chunk;
+            this.yMin = yMin;
+            this.yMax = yMax;
+            this.parent = parent;
+            markDirty();
+            glCallListCutout = GLAllocation.generateDisplayLists(4);
+            glCallListCutoutMipped = glCallListCutout + 1;
+            glCallListSolid = glCallListCutout + 2;
+            glCallListTranslucent = glCallListCutout + 3;
+        }
+
+        public int minY() {
+            return yMin;
+        }
+
+        public int maxY() {
+            return yMax;
+        }
+
+        public void markDirty() {
+            needsCutoutUpdate = true;
+            needsCutoutMippedUpdate = true;
+            needsSolidUpdate = true;
+            needsTranslucentUpdate = true;
+            updateRenderTileEntities();
+        }
+
+        // TODO: There's probably a faster way of doing this.
+        public void updateRenderTileEntities() {
+            ITileEntitiesToRenderProvider provider = (ITileEntitiesToRenderProvider) chunkToRender;
+            List<TileEntity> updatedRenderTiles = provider.getTileEntitiesToRender(yMin >> 4);
+            if (updatedRenderTiles != null) {
+                Minecraft.getMinecraft().renderGlobal
+                        .updateTileEntities(renderTiles, updatedRenderTiles);
+                renderTiles = new ArrayList<>(updatedRenderTiles);
+            }
+        }
+
+        public void deleteRenderChunk() {
+            clearRenderLists();
+            Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, new ArrayList<>());
             renderTiles.clear();
         }
 
@@ -122,7 +357,7 @@ public class PhysRenderChunk {
         }
 
         public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks,
-            int pass) {
+                                     int pass) {
             switch (layerToRender) {
                 case CUTOUT:
                     if (needsCutoutUpdate) {
@@ -190,11 +425,8 @@ public class PhysRenderChunk {
             GlStateManager.pushMatrix();
             // worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
             IBlockState iblockstate;
-            // if (Minecraft.isAmbientOcclusionEnabled()) {
-            // GlStateManager.shadeModel(GL11.GL_SMOOTH);
-            // } else {
-            // GlStateManager.shadeModel(GL11.GL_FLAT);
-            // }
+
+            BlockRenderLayer oldLayer = MinecraftForgeClient.getRenderLayer();
             ForgeHooksClient.setRenderLayer(layerToUpdate);
             MutableBlockPos pos = new MutableBlockPos();
             for (int x = chunkToRender.x * 16; x < chunkToRender.x * 16 + 16; x++) {
@@ -204,21 +436,21 @@ public class PhysRenderChunk {
                         iblockstate = chunkToRender.getBlockState(pos);
                         try {
                             if (iblockstate.getBlock()
-                                .canRenderInLayer(iblockstate, layerToUpdate)) {
+                                    .canRenderInLayer(iblockstate, layerToUpdate)) {
                                 Minecraft.getMinecraft().getBlockRendererDispatcher()
-                                    .renderBlock(iblockstate, pos, chunkToRender.world,
-                                        worldrenderer);
+                                        .renderBlock(iblockstate, pos, chunkToRender.world,
+                                                worldrenderer);
                             }
                         } catch (NullPointerException e) {
                             System.out.println(
-                                "Something was null! LValkyrienSkiesBase/render/PhysRenderChunk#updateList");
+                                    "Something was null! LValkyrienSkiesBase/render/PhysRenderChunk#updateList");
                         }
                     }
                 }
             }
             tessellator.draw();
             // worldrenderer.finishDrawing();
-            ForgeHooksClient.setRenderLayer(null);
+            ForgeHooksClient.setRenderLayer(oldLayer);
             GlStateManager.popMatrix();
             GL11.glEndList();
             GL11.glPopMatrix();

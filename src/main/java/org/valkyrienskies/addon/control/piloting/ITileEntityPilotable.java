@@ -16,7 +16,7 @@ public interface ITileEntityPilotable {
 
     PhysicsObject getParentPhysicsEntity();
 
-    default void onStartTileUsage(EntityPlayer player) {
+    default void onStartTileUsage() {
     }
 
     default void onStopTileUsage() {

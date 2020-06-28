@@ -83,10 +83,12 @@ public class EventsClient {
 
                     break;
                 case END:
-                    // Tick the IShipManager on the world client.
-                    IHasShipManager shipManager = (IHasShipManager) world;
-                    shipManager.getManager().tick();
-                    EntityDraggable.tickAddedVelocityForWorld(world);
+                    if (!Minecraft.getMinecraft().isGamePaused()) {
+                        // Tick the IShipManager on the world client.
+                        IHasShipManager shipManager = (IHasShipManager) world;
+                        shipManager.getManager().tick();
+                        EntityDraggable.tickAddedVelocityForWorld(world);
+                    }
                     break;
             }
         }

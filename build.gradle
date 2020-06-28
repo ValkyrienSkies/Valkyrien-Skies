@@ -100,12 +100,19 @@ dependencies {
         exclude module: "gson"
         exclude module: "launchwrapper"
     }
+    
+    // Needs to be present at compile-time because we mix in to spongeforge, however marking it as
+    // compile makes forge load it as a mod in a dev environment, which is very annoying
+    compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
+        transitive = false
+    }
+
     // mixin as annotation processor
     annotationProcessor("org.spongepowered:mixin:$mixinVersion")
 
     // BetterPortals compatibility
-    deobfCompile 'curse.maven:shadowfacts-forgelin:2785465'
-    deobfCompile 'curse.maven:betterportals:2883633'
+    // deobfCompile 'curse.maven:shadowfacts-forgelin:2785465'
+    // deobfCompile 'curse.maven:betterportals:2883633'
 
     compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
 

@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.fixes.ITransformablePacket;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -29,10 +30,14 @@ public class MixinCPacketUpdateSign implements ITransformablePacket {
     }
 
     @Override
-    public PhysicsObject getPacketParent(NetHandlerPlayServer server) {
+    public ShipData getPacketParent(NetHandlerPlayServer server) {
         World world = server.player.getEntityWorld();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
             .getPhysoManagingBlock(world, thisAsPacketSign.getPosition());
-        return physicsObject.orElse(null);
+        if (physicsObject.isPresent()) {
+            return physicsObject.get().getShipData();
+        } else {
+            return null;
+        }
     }
 }

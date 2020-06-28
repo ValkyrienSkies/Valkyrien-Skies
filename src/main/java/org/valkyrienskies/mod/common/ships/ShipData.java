@@ -76,6 +76,9 @@ public class ShipData {
     private ShipTransform shipTransform;
 
     @Setter
+    private ShipTransform prevTickShipTransform;
+
+    @Setter
     private AxisAlignedBB shipBB;
 
     /**
@@ -108,13 +111,14 @@ public class ShipData {
     // endregion
 
     private ShipData(@NonNull ConcurrentUpdatableIndexedCollection<ShipData> owner,
-                    ShipPhysicsData physicsData, @Nonnull ShipInertiaData inertiaData, @NonNull ShipTransform shipTransform, @NonNull AxisAlignedBB shipBB,
+                    ShipPhysicsData physicsData, @Nonnull ShipInertiaData inertiaData, @NonNull ShipTransform shipTransform, @NonNull ShipTransform prevTickShipTransform, @NonNull AxisAlignedBB shipBB,
                     boolean physicsEnabled, @NonNull BlockPos physInfuserPos, @NonNull VSChunkClaim chunkClaim, @NonNull UUID uuid,
                     @NonNull String name) {
         this.owner = owner;
         this.physicsData = physicsData;
         this.inertiaData = inertiaData;
         this.shipTransform = shipTransform;
+        this.prevTickShipTransform = prevTickShipTransform;
         this.shipBB = shipBB;
         this.physicsEnabled = physicsEnabled;
         this.physInfuserPos = physInfuserPos;
@@ -132,7 +136,7 @@ public class ShipData {
         ShipTransform shipTransform,
         AxisAlignedBB aabb, BlockPos physInfuserPos) {
 
-        return new ShipData(owner, new ShipPhysicsData(new Vector3d(), new Vector3d()), new ShipInertiaData(), shipTransform, aabb,
+        return new ShipData(owner, new ShipPhysicsData(new Vector3d(), new Vector3d()), new ShipInertiaData(), shipTransform, shipTransform, aabb,
             true, physInfuserPos, chunkClaim, shipID, name);
     }
 

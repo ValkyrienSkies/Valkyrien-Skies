@@ -2,7 +2,10 @@ package org.valkyrienskies.mod.common.ships.entity_interaction;
 
 import net.minecraft.entity.MoverType;
 import org.joml.Vector3dc;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+
+import java.util.UUID;
 
 /**
  * This interface is really quite bad, and will be removed once subspaces are complete.
@@ -12,9 +15,9 @@ import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 @Deprecated
 public interface IDraggable {
 
-    PhysicsObject getWorldBelowFeet();
+    ShipData getWorldBelowFeet();
 
-    void setWorldBelowFeet(PhysicsObject toSet);
+    void setWorldBelowFeet(ShipData toSet);
 
     Vector3dc getVelocityAddedToPlayer();
 
@@ -23,13 +26,5 @@ public interface IDraggable {
     double getYawDifVelocity();
 
     void setYawDifVelocity(double toSet);
-
-    void setCancelNextMove(boolean toSet);
-
-    void move(MoverType type, double dx, double dy, double dz);
-
-    void setForcedRelativeSubspace(PhysicsObject toSet);
-
-    PhysicsObject getForcedSubspaceBelowFeet();
 
 }

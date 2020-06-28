@@ -68,7 +68,7 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
                         IDraggable entityDraggable = EntityDraggable
                             .getDraggableFromEntity(playerIn);
                         // Only mount the player if they're standing on the ship.
-                        if (entityDraggable.getWorldBelowFeet() == physicsObject.get()) {
+                        if (entityDraggable.getWorldBelowFeet() == physicsObject.get().getShipData()) {
                             Vector3dc localMountPos = getPlayerMountOffset(state, pos);
                             ValkyrienUtils.fixEntityToShip(playerIn, localMountPos,
                                     physicsObject.get());

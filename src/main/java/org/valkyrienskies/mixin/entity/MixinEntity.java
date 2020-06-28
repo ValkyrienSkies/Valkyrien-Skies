@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityShipMountData;
@@ -23,12 +24,12 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
 
     private final IDraggable thisAsDraggable = this;
-    private final Entity thisAsEntity = Entity.class.cast(this);
     @Shadow
     public float rotationYaw;
     @Shadow
@@ -45,22 +46,18 @@ public abstract class MixinEntity implements IDraggable {
     public double posY;
     @Shadow
     public double posZ;
-    private PhysicsObject worldBelowFeet;
-    private PhysicsObject forcedRelativeWorldBelowFeet;
+    private ShipData worldBelowFeet;
     private Vector3dc velocityAddedToPlayer = new Vector3d();
     private double yawDifVelocity;
-    private boolean cancelNextMove = false;
-    private Vector3d positionInShipSpace;
-    private Vector3d velocityInShipSpace;
     private Vector3d searchVector = null;
 
     @Override
-    public PhysicsObject getWorldBelowFeet() {
+    public ShipData getWorldBelowFeet() {
         return worldBelowFeet;
     }
 
     @Override
-    public void setWorldBelowFeet(PhysicsObject toSet) {
+    public void setWorldBelowFeet(ShipData toSet) {
         worldBelowFeet = toSet;
     }
 
@@ -82,21 +79,6 @@ public abstract class MixinEntity implements IDraggable {
     @Override
     public void setYawDifVelocity(double toSet) {
         yawDifVelocity = toSet;
-    }
-
-    @Override
-    public void setCancelNextMove(boolean toSet) {
-        cancelNextMove = toSet;
-    }
-
-    @Override
-    public void setForcedRelativeSubspace(PhysicsObject toSet) {
-        forcedRelativeWorldBelowFeet = toSet;
-    }
-
-    @Override
-    public PhysicsObject getForcedSubspaceBelowFeet() {
-        return forcedRelativeWorldBelowFeet;
     }
 
     /**
@@ -160,9 +142,6 @@ public abstract class MixinEntity implements IDraggable {
 
     @Shadow
     public abstract void move(MoverType type, double x, double y, double z);
-
-    @Shadow
-    protected abstract void copyDataFromOld(Entity entityIn);
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
@@ -228,15 +207,12 @@ public abstract class MixinEntity implements IDraggable {
 
     @Redirect(method = "createRunningParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I", ordinal = 0))
     private int runningParticlesFirstFloor(double d) {
-        PhysicsObject worldBelow = thisAsDraggable.getWorldBelowFeet();
-
-        if (worldBelow == null) {
+        if (worldBelowFeet == null) {
             searchVector = null;
             return MathHelper.floor(d);
         } else {
             searchVector = new Vector3d(this.posX, this.posY - 0.20000000298023224D, this.posZ);
-//            searchVector.transform(worldBelow.wrapping.coordTransform.wToLTransform);
-            worldBelow.getShipTransformationManager().getCurrentTickTransform()
+            worldBelowFeet.getShipTransform()
                 .transformPosition(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
             return MathHelper.floor(searchVector.x);
         }
@@ -264,6 +240,8 @@ public abstract class MixinEntity implements IDraggable {
     public float getEyeHeight() {
         return 0.0f;
     }
+
+    @Shadow public abstract World getEntityWorld();
 
     @Inject(method = "getPositionEyes(F)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
     private void getPositionEyesInject(float partialTicks,

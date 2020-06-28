@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.fixes.ITransformablePacket;
 import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
@@ -39,7 +40,7 @@ public class MixinCPacketPlayer implements ITransformablePacket {
     @Override
     public void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
         if (isPacketOnMainThread(server, callingFromSponge)) {
-            PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
+            ShipData parent = getPacketParent((NetHandlerPlayServer) server);
             if (parent != null) {
                 EntityPlayerMP playerMP = getPacketPlayer(server);
                 Vector3dc positionGlobal = new Vector3d(playerMP.posX, playerMP.posY, playerMP.posZ);
@@ -74,21 +75,12 @@ public class MixinCPacketPlayer implements ITransformablePacket {
             if (cachedPlayerGameType != null) {
                 getPacketPlayer(server).interactionManager.gameType = cachedPlayerGameType;
             }
-            PhysicsObject parent = getPacketParent((NetHandlerPlayServer) server);
-//            if (parent != null) {
-//                parent.getSubspace()
-//                    .forceSubspaceRecord((ISubspacedEntity) getPacketPlayer(server), null);
-//            }
-            IDraggable draggable = (IDraggable) getPacketPlayer(server);
-            draggable.setForcedRelativeSubspace(null);
         }
     }
 
     @Override
-    public PhysicsObject getPacketParent(NetHandlerPlayServer server) {
-        EntityPlayerMP player = server.player;
-        IDraggable draggable = (IDraggable) player;
-        return draggable.getForcedSubspaceBelowFeet();
+    public ShipData getPacketParent(NetHandlerPlayServer server) {
+        return null;
     }
 
     private EntityPlayerMP getPacketPlayer(INetHandlerPlayServer server) {

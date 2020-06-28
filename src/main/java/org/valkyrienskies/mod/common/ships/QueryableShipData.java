@@ -161,6 +161,7 @@ public class QueryableShipData implements Iterable<ShipData> {
         Optional<ShipData> old = getShip(ship.getUuid());
         if (old.isPresent()) {
             old.get().setShipTransform(ship.getShipTransform());
+            old.get().setPrevTickShipTransform(ship.getPrevTickShipTransform());
             // old.get().setName(ship.getName());
             old.get().setPhysInfuserPos(ship.getPhysInfuserPos());
             old.get().setShipBB(ship.getShipBB());

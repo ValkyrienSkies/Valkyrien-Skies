@@ -20,6 +20,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.collision.EntityPolygon;
 import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
@@ -157,7 +158,11 @@ public class EntityCollisionInjector {
         entity.setEntityBoundingBox(axisalignedbb);
         entity.resetPositionToBB();
 
-        draggable.setWorldBelowFeet(worldBelow);
+        if (worldBelow != null) {
+            draggable.setWorldBelowFeet(worldBelow.getShipData());
+        } else {
+            draggable.setWorldBelowFeet(null);
+        }
 
         if (worldBelow == null) {
             return null;
@@ -238,7 +243,7 @@ public class EntityCollisionInjector {
 
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
 
-        PhysicsObject worldBelow = draggable.getWorldBelowFeet();
+        ShipData worldBelow = draggable.getWorldBelowFeet();
 
         entity.collidedHorizontally =
             (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));
@@ -250,7 +255,7 @@ public class EntityCollisionInjector {
         Vector3d entityPosInShip = new Vector3d(entity.posX, entity.posY - 0.20000000298023224D,
             entity.posZ);
 
-        worldBelow.getShipTransformationManager().getCurrentTickTransform()
+        worldBelow.getShipTransform()
             .transformPosition(entityPosInShip, TransformType.GLOBAL_TO_SUBSPACE);
 
         int j4 = MathHelper.floor(entityPosInShip.x);

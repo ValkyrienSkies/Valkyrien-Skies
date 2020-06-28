@@ -145,7 +145,9 @@ public class PhysicsObject implements IPhysicsEntity {
             ShipTransform physicsTransform = getShipTransformationManager()
                 .getCurrentPhysicsTransform();
             getShipTransformationManager().updateAllTransforms(physicsTransform, false, true);
+            // Copy the current and prev transforms into ShipData
             getShipData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
+            getShipData().setPrevTickShipTransform(getShipTransformationManager().getPrevTickTransform());
 
             TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
             boolean shouldDeconstructShip;

@@ -6,6 +6,7 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 import org.valkyrienskies.mod.common.MixinLoadManager;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.entity_backup.ICapabilityEntityBackup;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
@@ -36,18 +37,15 @@ public interface ITransformablePacket {
             // System.out.println("Pre packet process");
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
-            PhysicsObject physicsObject = getPacketParent(serverHandler);
-            if (physicsObject != null
-                    && physicsObject.getShipTransformationManager() != null) {
+            ShipData physicsObject = getPacketParent(serverHandler);
+            if (physicsObject != null) {
                 // First make a backup of the player position
                 ICapabilityEntityBackup entityBackup = player.getCapability(VSCapabilityRegistry.VS_ENTITY_BACKUP, null);
                 entityBackup.backupEntityPosition(player);
                 // Then put the player into ship coordinates.
-                physicsObject.getShipTransformationManager()
-                        .getCurrentTickTransform().transform(player,
-                        TransformType.GLOBAL_TO_SUBSPACE);
+                physicsObject.getShipTransform()
+                        .transform(player, TransformType.GLOBAL_TO_SUBSPACE);
             }
-
         }
     }
 
@@ -66,5 +64,5 @@ public interface ITransformablePacket {
         }
     }
 
-    PhysicsObject getPacketParent(NetHandlerPlayServer server);
+    ShipData getPacketParent(NetHandlerPlayServer server);
 }

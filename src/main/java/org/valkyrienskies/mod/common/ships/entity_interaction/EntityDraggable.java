@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransformationManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -71,8 +72,7 @@ public class EntityDraggable {
         EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entity);
 
         if (draggable.getWorldBelowFeet() != null) {
-            ShipTransformationManager coordTransform = draggable.getWorldBelowFeet()
-                    .getShipTransformationManager();
+            ShipData worldBelow = draggable.getWorldBelowFeet();
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
                 // EventsClient.updatePlayerMouseOver(entity);
@@ -86,7 +86,7 @@ public class EntityDraggable {
             Vector3dc oldPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
 
             Matrix4d betweenTransform = ShipTransform.createTransform(
-                    coordTransform.getPrevTickTransform(), coordTransform.getCurrentTickTransform());
+                    worldBelow.getPrevTickShipTransform(), worldBelow.getShipTransform());
 
             ValkyrienUtils.transformEntity(betweenTransform, entity);
 

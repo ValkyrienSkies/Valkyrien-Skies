@@ -29,7 +29,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;
-    private final PhysicsParticleManager particleManager;
     private final IRotationNodeWorld physicsRotationNodeWorld;
 
     public boolean actAsArchimedes = false;
@@ -53,7 +52,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
     public PhysicsCalculations(PhysicsObject parent) {
         this.parent = parent;
         this.worldCollision = new WorldPhysicsCollider(this);
-        this.particleManager = new PhysicsParticleManager(this);
 
         this.physMOITensor = null;
         this.physInvMOITensor = null;
@@ -241,36 +239,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                         }
 
                         addForceAtPoint(inBodyWO, blockForce, crossVector);
-                        // Add particles here.
-                        if (((IBlockForceProvider) blockAt).doesForceSpawnParticles()) {
-                            Vector3d particlePos;
-                            if (otherPosition != null) {
-                                particlePos = new Vector3d(
-                                        otherPosition);
-                            } else {
-                                particlePos = new Vector3d(
-                                        mutablePos.getX() + .5, mutablePos.getY() + .5, mutablePos.getZ() + .5);
-                            }
-                            parent.getShipTransformationManager().getCurrentPhysicsTransform()
-                                    .transformPosition(particlePos, TransformType.SUBSPACE_TO_GLOBAL);
-                            // System.out.println(particlePos);
-                            float posX = (float) particlePos.x;
-                            float posY = (float) particlePos.y;
-                            float posZ = (float) particlePos.z;
-                            float particleMass = 5f;
-                            float velX = (float) -(blockForce.x / particleMass);
-                            float velY = (float) -(blockForce.y / particleMass);
-                            float velZ = (float) -(blockForce.z / particleMass);
-                            // Half a second
-                            float particleLife = .5f;
-                            // System.out.println(blockForce);
-                            // System.out.println(posX + ":" + posY + ":" + posZ);
-                            // System.out.println(velX + ":" + velY + ":" + velZ);
-
-                            this.particleManager
-                                    .spawnPhysicsParticle(posX, posY, posZ, velX, velY, velZ,
-                                            particleMass, particleLife);
-                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -298,7 +266,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
                 }
             }
         }
-        particleManager.physicsTickAfterAllPreForces((float) getPhysicsTimeDeltaPerPhysTick());
 
         convertTorqueToVelocity();
     }

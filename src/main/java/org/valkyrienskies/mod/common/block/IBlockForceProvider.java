@@ -64,12 +64,4 @@ public interface IBlockForceProvider {
         return null;
     }
 
-    /**
-     * Returns true if this force provider uses 'simulated airflow' particles. Useful to make
-     * certain engines not function when placed indoors.
-     */
-    default boolean doesForceSpawnParticles() {
-        return false;
-    }
-
 }

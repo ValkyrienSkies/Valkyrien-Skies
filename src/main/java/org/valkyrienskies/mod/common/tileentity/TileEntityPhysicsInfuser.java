@@ -77,14 +77,6 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
         if (!getWorld().isRemote) {
             Optional<PhysicsObject> parentShip = ValkyrienUtils
                 .getPhysoManagingBlock(getWorld(), getPos());
-            // Set the physics and align value to false if we're not in a ship
-            if (!parentShip.isPresent()) {
-                if (isPhysicsEnabled || isTryingToAlignShip) {
-                    isPhysicsEnabled = false;
-                    isTryingToAlignShip = false;
-                    sendUpdateToClients = true;
-                }
-            }
 
             // Update the blockstate lighting
             IBlockState infuserState = getWorld().getBlockState(getPos());

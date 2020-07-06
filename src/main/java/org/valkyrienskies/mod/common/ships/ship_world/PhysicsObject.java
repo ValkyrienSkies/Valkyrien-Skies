@@ -86,10 +86,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
     @Getter
     private boolean shipAligningToGrid;
-    /**
-     * Used to quickly make AABBs
-     */
-    private final IPhysicsObjectCenterOfMassProvider centerOfMassProvider;
+
     @Getter
     private final World world;
 
@@ -120,7 +117,6 @@ public class PhysicsObject implements IPhysicsEntity {
         this.physicsControllersImmutable = Collections.unmodifiableSet(this.physicsControllers);
         this.claimedChunkCache = new ClaimedChunkCacheController(this);
         this.cachedSurroundingChunks = new SurroundingChunkCacheController(this);
-        this.centerOfMassProvider = new BasicCenterOfMassProvider();
         this.shipTransformationManager = new ShipTransformationManager(this,
             getShipData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);

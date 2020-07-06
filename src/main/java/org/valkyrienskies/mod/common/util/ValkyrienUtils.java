@@ -6,11 +6,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityFireball;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import org.joml.Matrix4dc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -243,6 +245,14 @@ public class ValkyrienUtils {
         entity.motionZ = entityMotion.z;
 
         entity.setPosition(entityPos.x, entityPos.y, entityPos.z);
+    }
+
+    /**
+     * Used for bad code that tries reading tile entities from a non game thread. But hey it works (mostly).
+     */
+    @Nullable
+    public static TileEntity getTileEntitySafe(World world, BlockPos pos) {
+        return world.getChunk(pos).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
     }
 
 }

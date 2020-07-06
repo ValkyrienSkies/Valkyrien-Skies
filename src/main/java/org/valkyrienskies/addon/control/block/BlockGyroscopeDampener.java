@@ -14,6 +14,7 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeDampener;
 import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -36,7 +37,7 @@ public class BlockGyroscopeDampener extends BaseBlock implements ITileEntityProv
 
     @Override
     public Vector3dc getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos) {
-        TileEntity thisTile = physicsCalculations.getParent().getWorld().getTileEntity(pos);
+        TileEntity thisTile = ValkyrienUtils.getTileEntitySafe(physicsCalculations.getParent().getWorld(), pos);
         if (thisTile instanceof TileEntityGyroscopeDampener) {
             TileEntityGyroscopeDampener tileGyroscope = (TileEntityGyroscopeDampener) thisTile;
             return tileGyroscope.getTorqueInGlobal(physicsCalculations, pos);

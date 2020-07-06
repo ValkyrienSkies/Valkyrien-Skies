@@ -9,6 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.mod.common.network.VSNetwork;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 /**
  * Just a simple implementation of the interfaces.
@@ -45,7 +46,7 @@ public abstract class TileEntityMultiblockPart<E extends IMultiblockSchematic, F
 
     @Override
     public F getMaster() {
-        TileEntity masterTile = this.getWorld().getTileEntity(this.getMultiblockOrigin());
+        TileEntity masterTile = ValkyrienUtils.getTileEntitySafe(getWorld(), getMultiblockOrigin());
         if (masterTile instanceof ITileEntityMultiblockPart) {
             return (F) masterTile;
         } else {

@@ -41,6 +41,11 @@ public class VSConfig extends VSConfigTemplate {
 
     public static boolean doAirshipMovement = true;
 
+    @Name("showAnnoyingDebugOutput")
+    @Comment("Spams your console with annoying debug output. Not recommended unless you've encountered a strange bug" +
+            " and the developers told you to enable this.\nDefault is false. Set to true enable.")
+    public static boolean showAnnoyingDebugOutput = false;
+
     @Name("Disable wrench modes")
     @Comment("Makes wrench toggle a multiblock's constructed state, removes modes.")
     public static boolean wrenchModeless = false;

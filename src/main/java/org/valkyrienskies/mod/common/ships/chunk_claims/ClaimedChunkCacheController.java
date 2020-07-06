@@ -10,6 +10,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 import javax.annotation.Nonnull;
@@ -89,7 +90,9 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      * Loads chunks from the world, and puts them into the cache.
      */
     private void loadChunksIntoCache() {
-        System.out.println("Loading chunks");
+        if (VSConfig.showAnnoyingDebugOutput) {
+            System.out.println("Loading chunks for " + parent.getShipData());
+        }
         VSChunkClaim claim = parent.getShipData().getChunkClaim();
 
         claim.forEach((x, z) -> {
@@ -97,7 +100,9 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
             try {
                 Chunk chunk = world.getChunk(x, z);
                 if (chunk.isEmpty()) { // if (chunk instanceof EmptyChunk) { [Changed because EmptyChunk is a 'client' class]
-                    System.out.println("Why did we put an empty chunk at (" + x + "," + z + ")?");
+                    if (VSConfig.showAnnoyingDebugOutput) {
+                        System.out.println("Why did we put an empty chunk at (" + x + "," + z + ")?");
+                    }
                 }
 
                 // Do this to get it re-integrated into the world

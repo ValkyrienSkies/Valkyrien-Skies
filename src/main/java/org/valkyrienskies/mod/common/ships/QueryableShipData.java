@@ -10,6 +10,7 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -148,7 +149,9 @@ public class QueryableShipData implements Iterable<ShipData> {
     }
 
     public void addShip(ShipData ship) {
-        System.out.println(ship.getName());
+        if (VSConfig.showAnnoyingDebugOutput) {
+            System.out.println(ship.getName());
+        }
         allShips.add(ship);
     }
 

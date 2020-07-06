@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.util.multithreaded.CalledFromWrongThreadException;
@@ -62,6 +63,9 @@ public class WorldClientShipManager implements IPhysObjectWorld {
             ShipData shipData = toLoadOptional.get();
             PhysicsObject physicsObject = new PhysicsObject(world, shipData);
             loadedShips.put(toLoadID, physicsObject);
+            if (VSConfig.showAnnoyingDebugOutput) {
+                System.out.println("Successfully loaded " + shipData);
+            }
         }
 
         // Unload ships queued for unloading
@@ -74,7 +78,9 @@ public class WorldClientShipManager implements IPhysObjectWorld {
             PhysicsObject removedShip = loadedShips.get(toUnloadID);
             removedShip.unload();
             loadedShips.remove(toUnloadID);
-            System.out.println("Successfully unloaded " + removedShip.getShipData());
+            if (VSConfig.showAnnoyingDebugOutput) {
+                System.out.println("Successfully unloaded " + removedShip.getShipData());
+            }
         }
     }
 

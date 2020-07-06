@@ -135,7 +135,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                     DetectorManager.DetectorIDs.ShipSpawnerGeneral, physicsInfuserPos, world,
                     VSConfig.maxShipSize + 1, true);
 
-            System.out.println("Hello! " + Thread.currentThread().getName());
+            if (VSConfig.showAnnoyingDebugOutput) {
+                System.out.println("Attempting to spawn " + toSpawn + " on the thread " + Thread.currentThread().getName());
+            }
             if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
                 System.err.println("Ship too big or bedrock detected!");
 
@@ -309,7 +311,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             // Remove this ship from the background loading set, if it is in it.
             loadingInBackground.remove(toLoadID);
             // Finally, load the ship.
-            System.out.println("Attempting to load ship " + toLoad);
+            if (VSConfig.showAnnoyingDebugOutput) {
+                System.out.println("Attempting to load ship " + toLoad);
+            }
             PhysicsObject physicsObject = new PhysicsObject(world, toLoad);
             PhysicsObject old = loadedShips.put(toLoad.getUuid(), physicsObject);
             if (old != null) {
@@ -340,11 +344,15 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             ShipData toLoad = toLoadOptional.get();
             loadingInBackground.add(toLoadID);
 
-            System.out.println("Attempting to load " + toLoad + " in the background.");
+            if (VSConfig.showAnnoyingDebugOutput) {
+                System.out.println("Attempting to load " + toLoad + " in the background.");
+            }
             ChunkProviderServer chunkProviderServer = world.getChunkProvider();
             for (ChunkPos chunkPos : toLoad.getChunkClaim()) {
                 @Nonnull Runnable returnTask = () -> {
-                    System.out.println("Loaded ship chunk " + chunkPos);
+                    if (VSConfig.showAnnoyingDebugOutput) {
+                        System.out.println("Loaded ship chunk " + chunkPos);
+                    }
                 };
                 chunkProviderServer.loadChunk(chunkPos.x, chunkPos.z, returnTask);
             }
@@ -361,7 +369,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
             PhysicsObject physicsObject = getPhysObjectFromUUID(toUnloadID);
 
-            System.out.println("Attempting to unload " + physicsObject);
+            if (VSConfig.showAnnoyingDebugOutput) {
+                System.out.println("Attempting to unload " + physicsObject);
+            }
             physicsObject.unload();
             boolean success = loadedShips.remove(toUnloadID, physicsObject);
 

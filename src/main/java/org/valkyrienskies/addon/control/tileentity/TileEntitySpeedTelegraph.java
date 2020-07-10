@@ -21,7 +21,7 @@ import org.valkyrienskies.mod.common.tileentity.TileEntityPilotableImpl;
 import java.util.Collection;
 import java.util.Optional;
 
-public class TileEntitySpeedTelegraph extends TileEntityPilotableImpl implements ITickable {
+public class TileEntitySpeedTelegraph extends TileEntityNodePilotableImpl implements ITickable {
 
     private ShipChadburnState telegraphState;
     // The following fields are only used by the client for smooth interpolation

@@ -6,7 +6,6 @@ import net.minecraft.util.math.BlockPos;
 import org.joml.AxisAngle4d;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
-import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockCaptainsChair;
 import org.valkyrienskies.mod.common.piloting.ControllerInputType;

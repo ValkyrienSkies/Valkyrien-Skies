@@ -3,7 +3,6 @@ package org.valkyrienskies.mixin.client.entity;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
-import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.piloting.ControllerInputType;
 import org.valkyrienskies.mod.common.piloting.IShipPilotClient;

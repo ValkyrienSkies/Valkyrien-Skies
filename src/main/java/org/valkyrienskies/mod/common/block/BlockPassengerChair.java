@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.valkyrienskies.addon.control.util.BaseBlock;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
 
 import mcp.MethodsReturnNonnullByDefault;
@@ -27,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.util.BaseBlock;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault

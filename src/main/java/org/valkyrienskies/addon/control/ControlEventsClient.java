@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.valkyrienskies.mod.common.piloting.IShipPilot;
+import org.valkyrienskies.mod.common.piloting.ITileEntityPilotable;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPilotableImpl;
 
 public class ControlEventsClient {
@@ -24,8 +25,8 @@ public class ControlEventsClient {
             if (playerPilot.isPiloting()) {
                 BlockPos tilePilotedPos = playerPilot.getPosBeingControlled();
                 TileEntity pilotedTile = player.getEntityWorld().getTileEntity(tilePilotedPos);
-                if (pilotedTile instanceof TileEntityPilotableImpl) {
-                    TileEntityPilotableImpl pilotedControlEntity = (TileEntityPilotableImpl) pilotedTile;
+                if (pilotedTile instanceof ITileEntityPilotable) {
+                    ITileEntityPilotable pilotedControlEntity = (ITileEntityPilotable) pilotedTile;
                     ScaledResolution scaledresolution = new ScaledResolution(
                         Minecraft.getMinecraft());
                     pilotedControlEntity.renderPilotText(fontRenderer, scaledresolution);

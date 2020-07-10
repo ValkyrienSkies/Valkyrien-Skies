@@ -29,7 +29,7 @@ import valkyrienwarfare.api.TransformType;
 
 import java.util.Optional;
 
-public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITickable {
+public class TileEntityShipHelm extends TileEntityNodePilotableImpl implements ITickable {
 
     public double compassAngle = 0;
     public double lastCompassAngle = 0;

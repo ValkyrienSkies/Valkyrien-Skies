@@ -1,7 +1,6 @@
 package org.valkyrienskies.mod.proxy;
 
 import net.minecraft.block.Block;
-import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.client.EventsClient;
 import org.valkyrienskies.mod.client.VSKeyHandler;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;

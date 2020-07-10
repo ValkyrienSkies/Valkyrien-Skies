@@ -1,22 +1,17 @@
-package org.valkyrienskies.mod.common.tileentity;
-
-import java.util.Optional;
-import java.util.UUID;
+package org.valkyrienskies.addon.control.tileentity;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Vector3d;
-import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
+import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.network.MessageStartPiloting;
 import org.valkyrienskies.mod.common.network.MessageStopPiloting;
-import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
 import org.valkyrienskies.mod.common.piloting.ControllerInputType;
 import org.valkyrienskies.mod.common.piloting.ITileEntityPilotable;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
@@ -25,19 +20,21 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * A basic implementation of the ITileEntityPilotable interface, other tile entities can extend this
- * for easy controls.
+ * for easy controls. This version comes with a built in node as well.
  */
-public abstract class TileEntityPilotableImpl extends TileEntity implements
+public abstract class TileEntityNodePilotableImpl extends BasicNodeTileEntity implements
     ITileEntityPilotable {
 
     // Do NOT make this a reference to pilotPlayerEntity.
     @Nullable
     private UUID pilotPlayerEntity;
 
-    public TileEntityPilotableImpl() {
+    public TileEntityNodePilotableImpl() {
         super();
         this.pilotPlayerEntity = null;
     }
@@ -156,4 +153,5 @@ public abstract class TileEntityPilotableImpl extends TileEntity implements
         double dotProduct = tileRelativePos.dot(normal);
         return dotProduct > 0;
     }
+
 }

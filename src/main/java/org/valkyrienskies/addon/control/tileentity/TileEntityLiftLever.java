@@ -24,7 +24,7 @@ import valkyrienwarfare.api.TransformType;
 
 import java.util.Optional;
 
-public class TileEntityLiftLever extends TileEntityPilotableImpl {
+public class TileEntityLiftLever extends TileEntityNodePilotableImpl {
 
     private static final double LEVER_PULL_RATE = .075D;
     // Between 0 and 1, where .5 is the middle.

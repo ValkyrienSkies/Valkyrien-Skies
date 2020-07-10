@@ -1,12 +1,12 @@
-package org.valkyrienskies.addon.control.block;
+package org.valkyrienskies.mod.common.block;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.valkyrienskies.addon.control.tileentity.TileEntityPassengerChair;
 import org.valkyrienskies.addon.control.util.BaseBlock;
+import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.BlockHorizontal;
@@ -86,7 +86,7 @@ public class BlockPassengerChair extends BaseBlock {
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation, ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + I18n
-            .format("tooltip.vs_control.passenger_chair"));
+            .format("tooltip.valkyrienskies.passenger_chair"));
     }
 
     private Vec3d getPlayerMountOffset(IBlockState state, BlockPos pos) {

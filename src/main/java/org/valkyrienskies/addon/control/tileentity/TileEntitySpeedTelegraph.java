@@ -13,9 +13,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.addon.control.block.BlockSpeedTelegraph;
 import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
-import org.valkyrienskies.addon.control.piloting.ControllerInputType;
-import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
+import org.valkyrienskies.mod.common.piloting.ControllerInputType;
+import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.network.VSNetwork;
+import org.valkyrienskies.mod.common.tileentity.TileEntityPilotableImpl;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class TileEntitySpeedTelegraph extends TileEntityPilotableImpl implements
     }
 
     @Override
-    void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
+    public void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         int deltaOrdinal = 0;
         if (message.airshipLeft_KeyPressed) {
             deltaOrdinal -= 1;
@@ -138,7 +139,7 @@ public class TileEntitySpeedTelegraph extends TileEntityPilotableImpl implements
     }
 
     @Override
-    ControllerInputType getControlInputType() {
+    public ControllerInputType getControlInputType() {
         return ControllerInputType.Telegraph;
     }
 

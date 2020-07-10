@@ -12,6 +12,13 @@ tile.physics_infuser_creative.name=创造物理注入器
 tooltip.valkyrienskies.physics_infuser_creative_1=会将与此连接的任何方块组建成船只，当心别影响到整个世界。
 tooltip.valkyrienskies.physics_infuser_creative_2=警告：此注入器没有连接上限，会影响到与此连接的所有方块！请谨慎使用。
 
+tile.captains_chair.name=驾驶座
+tooltip.valkyrienskies.captains_chair_1=用这个来驾驶船只！
+tooltip.valkyrienskies.captains_chair_2=如果你在船上，你就会坐在上面开船。否则你会“遥控”这艘船。
+
+tile.passenger_chair.name=乘客座
+tooltip.valkyrienskies.passenger_chair=用这个来稳稳地坐在船上。
+
 # Item Tab
 itemGroup.valkyrienskies=瓦尔基里之空
 

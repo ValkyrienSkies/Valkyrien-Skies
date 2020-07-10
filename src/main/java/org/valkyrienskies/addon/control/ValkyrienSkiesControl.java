@@ -42,16 +42,16 @@ import org.valkyrienskies.addon.control.capability.StorageLastRelay;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
 import org.valkyrienskies.addon.control.item.ItemVSWrench;
 import org.valkyrienskies.addon.control.item.ItemVanishingWire;
-import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPiloting;
-import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPilotingHandler;
-import org.valkyrienskies.addon.control.network.MessageStartPiloting;
-import org.valkyrienskies.addon.control.network.MessageStartPilotingHandler;
-import org.valkyrienskies.addon.control.network.MessageStopPiloting;
-import org.valkyrienskies.addon.control.network.MessageStopPilotingHandler;
-import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
-import org.valkyrienskies.addon.control.piloting.PilotControlsMessageHandler;
+import org.valkyrienskies.mod.common.network.MessagePlayerStoppedPiloting;
+import org.valkyrienskies.mod.common.network.MessagePlayerStoppedPilotingHandler;
+import org.valkyrienskies.mod.common.network.MessageStartPiloting;
+import org.valkyrienskies.mod.common.network.MessageStartPilotingHandler;
+import org.valkyrienskies.mod.common.network.MessageStopPiloting;
+import org.valkyrienskies.mod.common.network.MessageStopPilotingHandler;
+import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
+import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
 import org.valkyrienskies.addon.control.proxy.CommonProxyControl;
-import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
+import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeDampener;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeStabilizer;
@@ -59,7 +59,7 @@ import org.valkyrienskies.addon.control.tileentity.TileEntityLiftLever;
 import org.valkyrienskies.addon.control.tileentity.TileEntityLiftValve;
 import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkDisplay;
 import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkRelay;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPassengerChair;
+import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
 import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
 import org.valkyrienskies.addon.control.tileentity.TileEntitySpeedTelegraph;
@@ -95,8 +95,6 @@ public class ValkyrienSkiesControl {
     @CapabilityInject(ICapabilityLastRelay.class)
     public static final Capability<ICapabilityLastRelay> lastRelayCapability = null;
 
-    // MOD CLASS MEMBERS
-    public static SimpleNetworkWrapper controlNetwork;
     public BlocksValkyrienSkiesControl vsControlBlocks;
     public Item relayWire;
     public Item vanishingWire;
@@ -135,23 +133,6 @@ public class ValkyrienSkiesControl {
 	}
 
     public void registerRecipes() {
-		addShapedRecipe(INSTANCE.vsControlBlocks.captainsChair, 1,
-            "SLS",
-            "VWV",
-            " S ",
-            'S', Items.STICK,
-            'L', Items.LEATHER,
-            'W', Item.getItemFromBlock(Blocks.LOG),
-            'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
-		addShapedRecipe(INSTANCE.vsControlBlocks.passengerChair, 1,
-            "SLS",
-            "PWP",
-            " S ",
-            'S', Items.STICK,
-            'L', Items.LEATHER,
-            'W', Item.getItemFromBlock(Blocks.LOG),
-            'P', Item.getItemFromBlock(Blocks.PLANKS));
-
 		addEngineRecipe(INSTANCE.vsControlBlocks.basicEngine, Blocks.PLANKS);
 		addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.STONE);
 		addEngineRecipe(INSTANCE.vsControlBlocks.advancedEngine, Blocks.COBBLESTONE);
@@ -209,7 +190,6 @@ public class ValkyrienSkiesControl {
 		registerRecipes();
 		registerMultiblocks();
         registerTileEntities();
-        registerNetworks();
         registerCapabilities();
         proxy.init(event);
     }
@@ -220,8 +200,6 @@ public class ValkyrienSkiesControl {
     }
 
     private void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityCaptainsChair.class,
-            new ResourceLocation(MOD_ID, "tile_captains_chair"));
         GameRegistry.registerTileEntity(TileEntityNetworkRelay.class,
             new ResourceLocation(MOD_ID, "tile_network_relay"));
         GameRegistry.registerTileEntity(TileEntityShipHelm.class,
@@ -253,24 +231,6 @@ public class ValkyrienSkiesControl {
             new ResourceLocation(MOD_ID, "tile_giant_propeller_part"));
         GameRegistry.registerTileEntity(TileEntityRotationAxle.class,
             new ResourceLocation(MOD_ID, "tile_rotation_axle"));
-
-        GameRegistry.registerTileEntity(TileEntityPassengerChair.class,
-            new ResourceLocation(MOD_ID, "tile_passenger_chair"));
-    }
-
-    private void registerNetworks() {
-        controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("control_network");
-        controlNetwork
-            .registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 2,
-                Side.SERVER);
-        controlNetwork
-            .registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 3,
-                Side.CLIENT);
-        controlNetwork
-            .registerMessage(MessageStopPilotingHandler.class, MessageStopPiloting.class, 4,
-                Side.CLIENT);
-        controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class,
-            MessagePlayerStoppedPiloting.class, 5, Side.SERVER);
     }
 
     private void registerCapabilities() {

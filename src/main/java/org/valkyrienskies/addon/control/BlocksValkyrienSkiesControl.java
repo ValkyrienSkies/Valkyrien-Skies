@@ -1,6 +1,7 @@
 package org.valkyrienskies.addon.control;
 
-import org.valkyrienskies.addon.control.block.BlockCaptainsChair;
+import net.minecraft.item.ItemBlock;
+import org.valkyrienskies.mod.common.block.BlockCaptainsChair;
 import org.valkyrienskies.addon.control.block.BlockCompactedValkyrium;
 import org.valkyrienskies.addon.control.block.BlockDummyTelegraph;
 import org.valkyrienskies.addon.control.block.BlockGearbox;
@@ -10,7 +11,7 @@ import org.valkyrienskies.addon.control.block.BlockLiftLever;
 import org.valkyrienskies.addon.control.block.BlockLiftValve;
 import org.valkyrienskies.addon.control.block.BlockNetworkDisplay;
 import org.valkyrienskies.addon.control.block.BlockNetworkRelay;
-import org.valkyrienskies.addon.control.block.BlockPassengerChair;
+import org.valkyrienskies.mod.common.block.BlockPassengerChair;
 import org.valkyrienskies.addon.control.block.BlockRotationAxle;
 import org.valkyrienskies.addon.control.block.BlockShipHelm;
 import org.valkyrienskies.addon.control.block.BlockShipWheel;
@@ -34,8 +35,6 @@ public class BlocksValkyrienSkiesControl {
     public final BlockNormalEngine ultimateEngine;
     public final BlockRedstoneEngine redstoneEngine;
     public final Block compactedValkyrium;
-    public final Block captainsChair;
-    public final Block passengerChair;
     public final Block shipHelm;
     public final Block shipWheel;
     public final Block speedTelegraph;
@@ -54,38 +53,42 @@ public class BlocksValkyrienSkiesControl {
     public final Block rotationAxle;
 
     public BlocksValkyrienSkiesControl() {
-        basicEngine = new BlockNormalEngine("basic", Material.WOOD,
-            VSConfig.ENGINE_POWER.basicEnginePower, 5.0F);
-        advancedEngine = new BlockNormalEngine("advanced", Material.ROCK,
-            VSConfig.ENGINE_POWER.advancedEnginePower, 6.0F);
-        eliteEngine = new BlockNormalEngine("elite", Material.IRON,
-            VSConfig.ENGINE_POWER.eliteEnginePower, 8.0F);
-        ultimateEngine = new BlockNormalEngine("ultimate", Material.GROUND,
-            VSConfig.ENGINE_POWER.ultimateEnginePower, 10.0F);
-        redstoneEngine = new BlockRedstoneEngine();
+        basicEngine = registerBlock(new BlockNormalEngine("basic", Material.WOOD,
+            VSConfig.ENGINE_POWER.basicEnginePower, 5.0F));
+        advancedEngine = registerBlock(new BlockNormalEngine("advanced", Material.ROCK,
+            VSConfig.ENGINE_POWER.advancedEnginePower, 6.0F));
+        eliteEngine = registerBlock(new BlockNormalEngine("elite", Material.IRON,
+            VSConfig.ENGINE_POWER.eliteEnginePower, 8.0F));
+        ultimateEngine = registerBlock(new BlockNormalEngine("ultimate", Material.GROUND,
+            VSConfig.ENGINE_POWER.ultimateEnginePower, 10.0F));
+        redstoneEngine = registerBlock(new BlockRedstoneEngine());
 
-        compactedValkyrium = new BlockCompactedValkyrium();
-        captainsChair = new BlockCaptainsChair();
-        passengerChair = new BlockPassengerChair();
-        shipHelm = new BlockShipHelm();
-        shipWheel = new BlockShipWheel();
-        speedTelegraph = new BlockSpeedTelegraph();
-        dummyTelegraph = new BlockDummyTelegraph();
+        compactedValkyrium = registerBlock(new BlockCompactedValkyrium());
+        shipHelm = registerBlock(new BlockShipHelm());
+        shipWheel = registerBlock(new BlockShipWheel());
+        speedTelegraph = registerBlock(new BlockSpeedTelegraph());
+        dummyTelegraph = registerBlock(new BlockDummyTelegraph());
 
-        networkRelay = new BlockNetworkRelay();
-        networkDisplay = new BlockNetworkDisplay();
+        networkRelay = registerBlock(new BlockNetworkRelay());
+        networkDisplay = registerBlock(new BlockNetworkDisplay());
 
-        gyroscopeStabilizer = new BlockGyroscopeStabilizer();
-        gyroscopeDampener = new BlockGyroscopeDampener();
+        gyroscopeStabilizer = registerBlock(new BlockGyroscopeStabilizer());
+        gyroscopeDampener = registerBlock(new BlockGyroscopeDampener());
 
-        liftValve = new BlockLiftValve();
-        liftLever = new BlockLiftLever();
+        liftValve = registerBlock(new BlockLiftValve());
+        liftLever = registerBlock(new BlockLiftLever());
 
-        valkyriumCompressorPart = new BlockValkyriumCompressorPart();
-        valkyriumEnginePart = new BlockValkyriumEnginePart();
-        rudderPart = new BlockRudderPart();
-        giantPropellerPart = new BlockGiantPropellerPart();
-        rotationAxle = new BlockRotationAxle();
-        gearbox = new BlockGearbox();
+        valkyriumCompressorPart = registerBlock(new BlockValkyriumCompressorPart());
+        valkyriumEnginePart = registerBlock(new BlockValkyriumEnginePart());
+        rudderPart = registerBlock(new BlockRudderPart());
+        giantPropellerPart = registerBlock(new BlockGiantPropellerPart());
+        rotationAxle = registerBlock(new BlockRotationAxle());
+        gearbox = registerBlock(new BlockGearbox());
+    }
+
+    private <T extends Block> T registerBlock(T block) {
+        ValkyrienSkiesControl.BLOCKS.add(block);
+        ValkyrienSkiesControl.ITEMS.add(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+        return block;
     }
 }

@@ -22,13 +22,6 @@ tooltip.vs_control.wrench.deconstruct=可以用来安全拆解多方块结构。
 
 # Blocks
 ## Ship blocks
-tile.captains_chair.name=驾驶座
-tooltip.vs_control.captains_chair_1=用这个来驾驶船只！
-tooltip.vs_control.captains_chair_2=如果你在船上，你就会坐在上面开船。否则你会“遥控”这艘船。
-
-tile.passenger_chair.name=乘客座
-tooltip.vs_control.passenger_chair=用这个来稳稳地坐在船上。
-
 tile.ship_helm.name=船舵
 tooltip.vs_control.ship_helm=这个方块可以让你控制处在同一网络中的方向舵。
 

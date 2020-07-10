@@ -4,9 +4,10 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.addon.control.piloting.ControllerInputType;
-import org.valkyrienskies.addon.control.piloting.IShipPilotClient;
-import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.piloting.ControllerInputType;
+import org.valkyrienskies.mod.common.piloting.IShipPilotClient;
+import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 /**
@@ -35,7 +36,7 @@ public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
         keyMessage.assignKeyBooleans(shipPiloting, type);
         keyMessage.controlBlockPos = blockBeingControlled;
 
-        ValkyrienSkiesControl.controlNetwork.sendToServer(keyMessage);
+        ValkyrienSkiesMod.controlNetwork.sendToServer(keyMessage);
     }
 
 }

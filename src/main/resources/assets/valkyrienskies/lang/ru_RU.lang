@@ -4,3 +4,6 @@ tile.shipblock.name=Физический Активатор
 tile.shipblockcreative.name=Креативный Физический Активатор
 
 itemGroup.valkyrienskies=Valkyrien Skies
+
+tile.shipcaptainschair.name=Кресло Пилота
+tile.passenger_chair.name=Кресло Пассажира

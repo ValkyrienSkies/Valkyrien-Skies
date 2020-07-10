@@ -1,4 +1,4 @@
-package org.valkyrienskies.addon.control.network;
+package org.valkyrienskies.mod.common.network;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.IThreadListener;
@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.valkyrienskies.addon.control.piloting.IShipPilotClient;
+import org.valkyrienskies.mod.common.piloting.IShipPilotClient;
 
 public class MessageStopPilotingHandler implements IMessageHandler<MessageStopPiloting, IMessage> {
 

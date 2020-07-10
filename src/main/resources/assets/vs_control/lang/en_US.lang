@@ -22,13 +22,6 @@ tooltip.vs_control.wrench.deconstruct=Used to safely deconstruct multi-blocks.
 
 # Blocks
 ## Ship blocks
-tile.captains_chair.name=Captain's Chair
-tooltip.vs_control.captains_chair_1=Use to mount and control Ships!
-tooltip.vs_control.captains_chair_2=If you are standing on the ship, you will mount it upon control. Otherwise you will control the ship remotely without mounting.
-
-tile.passenger_chair.name=Passenger Chair
-tooltip.vs_control.passenger_chair=Use to sit tight on ships.
-
 tile.ship_helm.name=Ship Helm
 tooltip.vs_control.ship_helm=This block will let you turn rudders in the same network as it.
 

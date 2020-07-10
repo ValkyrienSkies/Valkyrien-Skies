@@ -19,10 +19,11 @@ import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.block.BlockShipHelm;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
 import org.valkyrienskies.addon.control.nodenetwork.VSNode_TileEntity;
-import org.valkyrienskies.addon.control.piloting.ControllerInputType;
-import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
+import org.valkyrienskies.mod.common.piloting.ControllerInputType;
+import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.network.VSNetwork;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.tileentity.TileEntityPilotableImpl;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -156,12 +157,12 @@ public class TileEntityShipHelm extends TileEntityPilotableImpl implements ITick
     }
 
     @Override
-    ControllerInputType getControlInputType() {
+    public ControllerInputType getControlInputType() {
         return ControllerInputType.ShipHelm;
     }
 
     @Override
-    void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
+    public void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender) {
         double rotationDelta = 0;
         if (message.airshipLeft_KeyDown) {
             rotationDelta -= 12.5D;

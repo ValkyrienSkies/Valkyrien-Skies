@@ -1,4 +1,4 @@
-package org.valkyrienskies.addon.control.tileentity;
+package org.valkyrienskies.mod.common.tileentity;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -8,8 +8,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.valkyrienskies.addon.control.piloting.IShipPilot;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPilotableImpl;
+import org.valkyrienskies.mod.common.piloting.IShipPilot;
+import org.valkyrienskies.mod.common.tileentity.TileEntityPilotableImpl;
 
 public class ControlEventsClient {
 

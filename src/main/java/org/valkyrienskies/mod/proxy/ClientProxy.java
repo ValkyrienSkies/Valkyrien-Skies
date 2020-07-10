@@ -1,5 +1,7 @@
 package org.valkyrienskies.mod.proxy;
 
+import net.minecraft.block.Block;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.client.EventsClient;
 import org.valkyrienskies.mod.client.VSKeyHandler;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
@@ -60,6 +62,9 @@ public class ClientProxy extends CommonProxy {
         // Register physics infuser tile entity renderer.
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class,
             new TileEntityPhysicsInfuserRenderer());
+
+        registerBlockItem(ValkyrienSkiesMod.INSTANCE.captainsChair);
+        registerBlockItem(ValkyrienSkiesMod.INSTANCE.passengerChair);
     }
 
     @Override
@@ -86,4 +91,16 @@ public class ClientProxy extends CommonProxy {
             new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
                 "models/block/physics_infuser/cores.atom"));
     }
+
+    // Registers the inventory model for the ItemBlock of "toRegister"
+    private static void registerBlockItem(Block toRegister) {
+        Item item = Item.getItemFromBlock(toRegister);
+        Minecraft.getMinecraft()
+                .getRenderItem()
+                .getItemModelMesher()
+                .register(item, 0, new ModelResourceLocation(
+                        ValkyrienSkiesMod.MOD_ID + ":" + item.getTranslationKey()
+                                .substring(5), "inventory"));
+    }
+
 }

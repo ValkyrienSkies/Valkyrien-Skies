@@ -18,9 +18,6 @@ public class BaseBlock extends Block implements BaseModel {
         if (creativeTab) {
             this.setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
         }
-
-        ValkyrienSkiesControl.BLOCKS.add(this);
-        ValkyrienSkiesControl.ITEMS.add(new ItemBlock(this).setRegistryName(this.getRegistryName()));
     }
 
     @Override

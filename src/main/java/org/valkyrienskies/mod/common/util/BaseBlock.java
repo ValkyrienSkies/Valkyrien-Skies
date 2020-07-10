@@ -19,9 +19,6 @@ public class BaseBlock extends Block implements BaseModel {
             // No need to change this for addons
             this.setCreativeTab(ValkyrienSkiesMod.VS_CREATIVE_TAB);
         }
-
-        ValkyrienSkiesMod.BLOCKS.add(this);
-        ValkyrienSkiesMod.ITEMS.add(new ItemBlock(this).setRegistryName(this.getRegistryName()));
     }
 
     // No need to change this for addons

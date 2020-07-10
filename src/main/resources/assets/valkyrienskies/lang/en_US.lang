@@ -13,7 +13,14 @@ tooltip.valkyrienskies.physics_infuser_creative_1=Turns any blocks attached to t
 tooltip.valkyrienskies.physics_infuser_creative_2=Warning, this has no block limits, and it will infuse everything it touches! Use with extreme caution.
 
 tile.physics_infuser_dummy.name=Dummy Telegraph
-tooltip.vs_control.physics_infuser_dummy=The other half of a physics infuser.
+tooltip.valkyrienskies.physics_infuser_dummy=The other half of a physics infuser.
+
+tile.captains_chair.name=Captain's Chair
+tooltip.valkyrienskies.captains_chair_1=Use to mount and control Ships!
+tooltip.valkyrienskies.captains_chair_2=If you are standing on the ship, you will mount it upon control. Otherwise you will control the ship remotely without mounting.
+
+tile.passenger_chair.name=Passenger Chair
+tooltip.valkyrienskies.passenger_chair=Use to sit tight on ships.
 
 # Item Tab
 itemGroup.valkyrienskies=Valkyrien Skies

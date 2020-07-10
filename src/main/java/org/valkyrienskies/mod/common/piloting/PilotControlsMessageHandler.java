@@ -1,4 +1,4 @@
-package org.valkyrienskies.addon.control.piloting;
+package org.valkyrienskies.mod.common.piloting;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;

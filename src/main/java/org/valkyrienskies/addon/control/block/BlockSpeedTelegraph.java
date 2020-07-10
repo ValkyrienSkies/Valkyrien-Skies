@@ -20,6 +20,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.addon.control.tileentity.TileEntitySpeedTelegraph;
+import org.valkyrienskies.mod.common.block.BlockPilotableBasic;
 
 public class BlockSpeedTelegraph extends BlockPilotableBasic {
 

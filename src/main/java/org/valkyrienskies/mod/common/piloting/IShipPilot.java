@@ -1,4 +1,4 @@
-package org.valkyrienskies.addon.control.piloting;
+package org.valkyrienskies.mod.common.piloting;
 
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;

@@ -10,8 +10,6 @@ tooltip.vs_control.wrench_usage=Чтобы его построить, нужен
 
 
 #Blocks
-tile.shipcaptainschair.name=Кресло Пилота
-tile.passenger_chair.name=Кресло Пассажира
 tile.compactedValkyrium.name=Легированный Эфир
 tile.balloonburner.name=Горелка Воздушного Шара
 tile.basichovercraftcontroller.name=Базовый Контроллер Полета

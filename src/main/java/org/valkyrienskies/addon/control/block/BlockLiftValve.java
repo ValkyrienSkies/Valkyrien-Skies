@@ -2,7 +2,7 @@ package org.valkyrienskies.addon.control.block;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
+
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.resources.I18n;

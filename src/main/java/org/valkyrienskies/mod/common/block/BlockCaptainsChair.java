@@ -1,4 +1,4 @@
-package org.valkyrienskies.addon.control.block;
+package org.valkyrienskies.mod.common.block;
 
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.addon.control.tileentity.TileEntityCaptainsChair;
+import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
@@ -96,9 +96,9 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
     public void addInformation(ItemStack stack, @Nullable World player,
         List<String> itemInformation, ITooltipFlag advanced) {
         itemInformation.add(TextFormatting.ITALIC + "" + TextFormatting.BLUE + I18n
-            .format("tooltip.vs_control.captains_chair_1"));
+            .format("tooltip.valkyrienskies.captains_chair_1"));
         itemInformation.add(TextFormatting.RED + "" + TextFormatting.ITALIC + I18n
-            .format("tooltip.vs_control.captains_chair_2"));
+            .format("tooltip.valkyrienskies.captains_chair_2"));
     }
 
     private Vector3dc getPlayerMountOffset(IBlockState state, BlockPos pos) {

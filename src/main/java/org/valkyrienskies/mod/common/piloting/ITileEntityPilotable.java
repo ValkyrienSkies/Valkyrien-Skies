@@ -1,4 +1,4 @@
-package org.valkyrienskies.addon.control.piloting;
+package org.valkyrienskies.mod.common.piloting;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

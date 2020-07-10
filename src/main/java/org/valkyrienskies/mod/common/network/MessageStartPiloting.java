@@ -1,10 +1,10 @@
-package org.valkyrienskies.addon.control.network;
+package org.valkyrienskies.mod.common.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import org.valkyrienskies.addon.control.piloting.ControllerInputType;
+import org.valkyrienskies.mod.common.piloting.ControllerInputType;
 
 public class MessageStartPiloting implements IMessage {
 

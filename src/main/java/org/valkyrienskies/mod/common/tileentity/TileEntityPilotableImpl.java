@@ -1,4 +1,4 @@
-package org.valkyrienskies.addon.control.tileentity;
+package org.valkyrienskies.mod.common.tileentity;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -12,12 +12,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.addon.control.network.MessageStartPiloting;
-import org.valkyrienskies.addon.control.network.MessageStopPiloting;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.network.MessageStartPiloting;
+import org.valkyrienskies.mod.common.network.MessageStopPiloting;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
-import org.valkyrienskies.addon.control.piloting.ControllerInputType;
-import org.valkyrienskies.addon.control.piloting.ITileEntityPilotable;
-import org.valkyrienskies.addon.control.piloting.PilotControlsMessage;
+import org.valkyrienskies.mod.common.piloting.ControllerInputType;
+import org.valkyrienskies.mod.common.piloting.ITileEntityPilotable;
+import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -37,7 +38,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
     @Nullable
     private UUID pilotPlayerEntity;
 
-    TileEntityPilotableImpl() {
+    public TileEntityPilotableImpl() {
         super();
         this.pilotPlayerEntity = null;
     }
@@ -94,13 +95,13 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
         // If old pilot equals new pilot, then don't send the stop piloting message
         if (oldPilot != null && oldPilot != newPilot) {
             MessageStopPiloting stopMessage = new MessageStopPiloting(getPos());
-            ValkyrienSkiesControl.controlNetwork.sendTo(stopMessage, oldPilot);
+            ValkyrienSkiesMod.controlNetwork.sendTo(stopMessage, oldPilot);
         }
         if (newPilot != null) {
             MessageStartPiloting startMessage = new MessageStartPiloting(getPos(),
                 setClientPilotingEntireShip(),
                 getControlInputType());
-            ValkyrienSkiesControl.controlNetwork.sendTo(startMessage, newPilot);
+            ValkyrienSkiesMod.controlNetwork.sendTo(startMessage, newPilot);
         }
     }
 
@@ -109,7 +110,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
      *
      * @return
      */
-    abstract ControllerInputType getControlInputType();
+    public abstract ControllerInputType getControlInputType();
 
     /**
      * Returns true if this control type is piloting the ship.
@@ -117,7 +118,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
      * @return
      */
     @Deprecated
-    boolean setClientPilotingEntireShip() {
+    public boolean setClientPilotingEntireShip() {
         return false;
     }
 
@@ -127,7 +128,7 @@ public abstract class TileEntityPilotableImpl extends BasicNodeTileEntity implem
      *
      * @return
      */
-    abstract void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender);
+    public abstract void processControlMessage(PilotControlsMessage message, EntityPlayerMP sender);
 
     /**
      * @param player

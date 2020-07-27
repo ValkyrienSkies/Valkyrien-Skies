@@ -7,7 +7,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import org.valkyrienskies.addon.control.nodenetwork.IVSNodeProvider;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 import java.util.Optional;

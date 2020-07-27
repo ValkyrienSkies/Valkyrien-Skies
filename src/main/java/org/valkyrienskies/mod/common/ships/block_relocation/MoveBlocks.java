@@ -63,17 +63,12 @@ public class MoveBlocks {
                 tileEntNBT.setInteger("z", newPos.getZ());
                 newInstance = TileEntity.create(world, tileEntNBT);
             }
-            // Order the IVSNodeProvider to move by the given offset.
-            if (newInstance instanceof IVSNodeProvider) {
-                ((IVSNodeProvider) newInstance).shiftInternalData(newPos.subtract(oldPos));
+            // Do post relocation behavior
+            if (newInstance instanceof IPostRelocationAwareTile) {
                 if (physicsObjectOptional.isPresent()) {
-                    ((IVSNodeProvider) newInstance)
-                        .getNode()
-                        .setParentPhysicsObject(physicsObjectOptional.get());
+                    ((IPostRelocationAwareTile) newInstance).postRelocation(newPos, oldPos, physicsObjectOptional.get());
                 } else {
-                    ((IVSNodeProvider) newInstance)
-                        .getNode()
-                        .setParentPhysicsObject(null);
+                    ((IPostRelocationAwareTile) newInstance).postRelocation(newPos, oldPos, null);
                 }
             }
 

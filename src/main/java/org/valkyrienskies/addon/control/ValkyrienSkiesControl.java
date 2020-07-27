@@ -1,7 +1,5 @@
 package org.valkyrienskies.addon.control;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -15,26 +13,18 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.GameData;
-import org.valkyrienskies.addon.control.block.multiblocks.GiantPropellerMultiblockSchematic;
-import org.valkyrienskies.addon.control.block.multiblocks.RudderAxleMultiblockSchematic;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityRudderPart;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
-import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEnginePart;
-import org.valkyrienskies.addon.control.block.multiblocks.ValkyriumCompressorMultiblockSchematic;
-import org.valkyrienskies.addon.control.block.multiblocks.ValkyriumEngineMultiblockSchematic;
+import org.valkyrienskies.addon.control.block.multiblocks.*;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationAxle;
 import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.ImplCapabilityLastRelay;
@@ -42,35 +32,19 @@ import org.valkyrienskies.addon.control.capability.StorageLastRelay;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
 import org.valkyrienskies.addon.control.item.ItemVSWrench;
 import org.valkyrienskies.addon.control.item.ItemVanishingWire;
-import org.valkyrienskies.mod.common.network.MessagePlayerStoppedPiloting;
-import org.valkyrienskies.mod.common.network.MessagePlayerStoppedPilotingHandler;
-import org.valkyrienskies.mod.common.network.MessageStartPiloting;
-import org.valkyrienskies.mod.common.network.MessageStartPilotingHandler;
-import org.valkyrienskies.mod.common.network.MessageStopPiloting;
-import org.valkyrienskies.mod.common.network.MessageStopPilotingHandler;
-import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
 import org.valkyrienskies.addon.control.proxy.CommonProxyControl;
-import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
-import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
-import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeDampener;
-import org.valkyrienskies.addon.control.tileentity.TileEntityGyroscopeStabilizer;
-import org.valkyrienskies.addon.control.tileentity.TileEntityLiftLever;
-import org.valkyrienskies.addon.control.tileentity.TileEntityLiftValve;
-import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkDisplay;
-import org.valkyrienskies.addon.control.tileentity.TileEntityNetworkRelay;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPropellerEngine;
-import org.valkyrienskies.addon.control.tileentity.TileEntityShipHelm;
-import org.valkyrienskies.addon.control.tileentity.TileEntitySpeedTelegraph;
+import org.valkyrienskies.addon.control.tileentity.*;
 import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(
     name = ValkyrienSkiesControl.MOD_NAME,
     modid = ValkyrienSkiesControl.MOD_ID,
     version = ValkyrienSkiesControl.MOD_VERSION,
-    dependencies = "required-after:" + ValkyrienSkiesWorld.MOD_ID
+    dependencies = "required-after:" + ValkyrienSkiesControl.VS_WORLD_MOD_ID
 )
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
 public class ValkyrienSkiesControl {
@@ -82,6 +56,8 @@ public class ValkyrienSkiesControl {
     public static final String MOD_ID = "vs_control";
     public static final String MOD_NAME = "Valkyrien Skies Control";
     public static final String MOD_VERSION = ValkyrienSkiesMod.MOD_VERSION;
+
+    public static final String VS_WORLD_MOD_ID = "vs_world";
 
     // MOD INSTANCE
     @Instance(MOD_ID)
@@ -148,7 +124,15 @@ public class ValkyrienSkiesControl {
             " I ",
             'I', relayWireIngot,
             'S', Items.STICK);
-		addShapedRecipe(INSTANCE.vanishingWire, 8,
+
+        if (Loader.isModLoaded(VS_WORLD_MOD_ID)) {
+            addVsWorldRecipes();
+        }
+    }
+
+    @Optional.Method(modid = VS_WORLD_MOD_ID)
+    public void addVsWorldRecipes() {
+        addShapedRecipe(INSTANCE.vanishingWire, 8,
             "WWW",
             "WVW",
             "WWW",

@@ -107,6 +107,10 @@ dependencies {
         transitive = false
     }
 
+    deobfCompile("org.valkyrienskies:vs-world:ec6520159f") {
+        transitive = false
+    }
+
     // mixin as annotation processor
     annotationProcessor("org.spongepowered:mixin:$mixinVersion")
 

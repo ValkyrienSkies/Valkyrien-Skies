@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
 import java.util.Optional;
@@ -39,6 +40,11 @@ public class MoveBlocks {
             .set(newPos.getX() & 15, newPos.getY() & 15, newPos.getZ() & 15, newState);
         // Only want to send the update to clients and nothing else, so we use flag 2.
         world.notifyBlockUpdate(newPos, oldState, newState, 2);
+
+        // If this block is force block, then add it to the activeForcePositions list of the ship.
+        if (physicsObjectOptional.isPresent() && BlockPhysicsDetails.isBlockProvidingForce(newState)) {
+            physicsObjectOptional.get().getShipData().activeForcePositions.add(newPos);
+        }
 
         // Now that we've copied the block to the position, copy the tile entity
         copyTileEntityToPos(world, oldPos, newPos, physicsObjectOptional);

@@ -17,6 +17,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
@@ -225,6 +226,12 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 }
                 newChunk.storageArrays[newChunkStorageIndex]
                         .set(pasteLocationPos.getX() & 15, pasteLocationPos.getY() & 15, pasteLocationPos.getZ() & 15, srcState);
+
+                // If this block is force block, then add it to the activeForcePositions list of the ship.
+                if (BlockPhysicsDetails.isBlockProvidingForce(srcState)) {
+                    toSpawn.activeForcePositions.add(pasteLocationPos);
+                }
+
                 // Also update the center of mass and inertia provider
                 centerOfMassProvider.onSetBlockState(toSpawn.getInertiaData(), pasteLocationPos, Blocks.AIR.getDefaultState(), srcState);
 

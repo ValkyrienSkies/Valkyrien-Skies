@@ -11,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.SimpleTorqueFunction;
 import org.valkyrienskies.addon.control.block.torque.custom_torque_functions.ValkyriumEngineTorqueFunction;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> implements
     IRotationNode {
@@ -83,7 +84,7 @@ public class ImplRotationNode<T extends TileEntity & IRotationNodeProvider> impl
         try {
             // This is in case of a race condition that results form world.removeTileEntity() and
             // world.getTileEntity() being called at the same time.
-            sideTile = tileEntity.getWorld().getTileEntity(sideTilePos);
+            sideTile = ValkyrienUtils.getTileEntitySafe(tileEntity.getWorld(), sideTilePos);
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();

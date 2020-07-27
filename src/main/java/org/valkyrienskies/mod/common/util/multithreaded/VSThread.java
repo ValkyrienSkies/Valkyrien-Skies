@@ -43,7 +43,7 @@ public class VSThread extends Thread {
 
     private Queue<Runnable> taskQueue;
     private ImmutableList<PhysicsObject> immutableShipsList;
-    private final List<IPhysTimeTask> recurringTasks;
+    private final ConcurrentLinkedQueue<IPhysTimeTask> recurringTasks;
 
     public VSThread(World host) {
         super("VS World Thread " + threadID);
@@ -54,7 +54,7 @@ public class VSThread extends Thread {
         this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<>();
         this.taskQueue = new ConcurrentLinkedQueue<>();
         this.immutableShipsList = ImmutableList.of();
-        this.recurringTasks = new ArrayList<>();
+        this.recurringTasks = new ConcurrentLinkedQueue<>();
         log.trace(this.getName() + " thread created.");
     }
 

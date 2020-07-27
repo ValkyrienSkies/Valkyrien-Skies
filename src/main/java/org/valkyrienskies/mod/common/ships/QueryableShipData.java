@@ -11,6 +11,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.config.VSConfig;
+
+import org.valkyrienskies.mod.common.ships.interpolation.ITransformInterpolator;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -160,14 +162,22 @@ public class QueryableShipData implements Iterable<ShipData> {
      *
      * @return reference to the "real" ShipData object used by {@link IPhysObjectWorld} and {@link PhysicsObject}.
      */
-    public ShipData addOrUpdateShipPreservingPhysObj(ShipData ship) {
+    public ShipData addOrUpdateShipPreservingPhysObj(ShipData ship, World world) {
         Optional<ShipData> old = getShip(ship.getUuid());
         if (old.isPresent()) {
-            old.get().setShipTransform(ship.getShipTransform());
-            old.get().setPrevTickShipTransform(ship.getPrevTickShipTransform());
+            PhysicsObject physicsObject = ValkyrienUtils.getPhysObjWorld(world).getPhysObjectFromUUID(ship.getUuid());
+            if (physicsObject != null) {
+                // Do not update the transform in ShipData, that will be done by PhysicsObject.tick()
+                ITransformInterpolator interpolator = physicsObject.getTransformInterpolator();
+                interpolator.onNewTransformPacket(ship.getShipTransform(), ship.getShipBB());
+            } else {
+                old.get().setShipTransform(ship.getShipTransform());
+                old.get().setPrevTickShipTransform(ship.getPrevTickShipTransform());
+                old.get().setShipBB(ship.getShipBB());
+            }
+
             // old.get().setName(ship.getName());
             old.get().setPhysInfuserPos(ship.getPhysInfuserPos());
-            old.get().setShipBB(ship.getShipBB());
             old.get().setPhysicsEnabled(ship.isPhysicsEnabled());
             // Update inertia data
             old.get().getInertiaData().setGameMoITensor(ship.getInertiaData().getGameMoITensor());

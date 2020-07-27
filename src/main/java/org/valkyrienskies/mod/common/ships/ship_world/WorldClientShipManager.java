@@ -40,8 +40,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
         loadAndUnloadShips();
 
         for (PhysicsObject physicsObject : getAllLoadedPhysObj()) {
-            physicsObject.getShipTransformationManager()
-                .updateAllTransforms(physicsObject.getShipData().getShipTransform(), false, false);
+            physicsObject.onTick();
         }
 
         // Update the thread safe ship list.

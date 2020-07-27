@@ -2,6 +2,7 @@ package org.valkyrienskies.mod.common.collision;
 
 import lombok.Getter;
 import net.minecraft.util.math.AxisAlignedBB;
+import org.joml.Matrix4dc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
@@ -37,6 +38,14 @@ public class Polygon {
 
     public Polygon(@Nonnull AxisAlignedBB bb) {
         this(bb, null, null);
+    }
+
+    public Polygon(@Nonnull AxisAlignedBB aabb, @Nonnull Matrix4dc transform) {
+        Vector3d[] verticesMutable = getCornersForAABB(aabb);
+        Vector3d[] normalsMutable = generateAxisAlignedNorms();
+        transform(verticesMutable, normalsMutable, transform);
+        this.vertices = verticesMutable;
+        this.normals = normalsMutable;
     }
 
     public static Vector3d[] generateAxisAlignedNorms() {
@@ -83,6 +92,15 @@ public class Polygon {
         }
         for (Vector3d normal : normals) {
             transformation.transformDirection(normal, transformType);
+        }
+    }
+
+    private static void transform(Vector3d[] vertices, Vector3d[] normals, Matrix4dc transform) {
+        for (Vector3d vertex : vertices) {
+            transform.transformPosition(vertex);
+        }
+        for (Vector3d normal : normals) {
+            transform.transformDirection(normal);
         }
     }
 

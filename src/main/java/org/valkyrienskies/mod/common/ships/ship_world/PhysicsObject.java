@@ -26,6 +26,8 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.ships.interpolation.ITransformInterpolator;
+import org.valkyrienskies.mod.common.ships.interpolation.SimpleEMATransformInterpolator;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ClaimedChunkCacheController;
@@ -97,6 +99,9 @@ public class PhysicsObject implements IPhysicsEntity {
     @Getter
     private final ShipData shipData;
 
+    @Getter
+    private final ITransformInterpolator transformInterpolator;
+
     // endregion
 
     // region Methods
@@ -125,19 +130,20 @@ public class PhysicsObject implements IPhysicsEntity {
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
+            this.transformInterpolator = new SimpleEMATransformInterpolator(initial.getShipTransform(), initial.getShipBB(), .75);
         } else {
             this.shipRenderer = null;
             this.getShipTransformationManager()
                 .updateAllTransforms(this.getShipData().getShipTransform(), true, true);
+            this.transformInterpolator = null;
         }
     }
 
     void onTick() {
-        cachedSurroundingChunks.updateChunkCache();
-
-        this.setNeedsCollisionCacheUpdate(true);
-
         if (!world.isRemote) {
+            cachedSurroundingChunks.updateChunkCache();
+            this.setNeedsCollisionCacheUpdate(true);
+
             ShipTransform physicsTransform = getShipTransformationManager()
                 .getCurrentPhysicsTransform();
             getShipTransformationManager().updateAllTransforms(physicsTransform, false, true);
@@ -166,6 +172,15 @@ public class PhysicsObject implements IPhysicsEntity {
                 getShipData().setPhysicsEnabled(true);
             }
         } else {
+            transformInterpolator.tickTransformInterpolator();
+            ShipTransform newTransform = transformInterpolator.getCurrentTickTransform();
+            AxisAlignedBB newAABB = transformInterpolator.getCurrentAABB();
+
+            shipData.setPrevTickShipTransform(shipData.getShipTransform());
+            shipData.setShipTransform(newTransform);
+            shipData.setShipBB(newAABB);
+
+            shipTransformationManager.updateAllTransforms(newTransform, false, false);
             /*
             WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
                 .pollForClientTransform();

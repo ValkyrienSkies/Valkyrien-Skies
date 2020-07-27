@@ -29,7 +29,7 @@ public class ShipIndexDataMessageHandler implements IMessageHandler<ShipIndexDat
                 IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(world);
                 QueryableShipData worldData = QueryableShipData.get(world);
                 for (ShipData shipData : message.indexedData) {
-                    worldData.addOrUpdateShipPreservingPhysObj(shipData);
+                    worldData.addOrUpdateShipPreservingPhysObj(shipData, world);
                 }
                 for (UUID loadID : message.shipsToLoad) {
                     physObjectWorld.queueShipLoad(loadID);

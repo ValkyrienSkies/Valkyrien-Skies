@@ -54,6 +54,10 @@ public class ShipTransform {
         this(position.x(), position.y(), position.z(), new Quaterniond(), centerCoord);
     }
 
+    public ShipTransform(Vector3dc position, Quaterniondc rotation, Vector3dc centerCoord) {
+        this(position.x(), position.y(), position.z(), rotation, centerCoord);
+    }
+
     public ShipTransform(double posX, double posY, double posZ, Quaterniondc rotation, Vector3dc centerCoord) {
         this.posX = posX;
         this.posY = posY;

@@ -75,8 +75,8 @@ public class PhysicsCalculations {
                 .updatePreviousPhysicsTransform();
     }
 
-    public void rawPhysTickPreCol(double newPhysSpeed) {
-        updatePhysSpeedAndIters(newPhysSpeed);
+    public void rawPhysTickPreCol(double physTickTimeDelta) {
+        updatePhysSpeedAndIters(physTickTimeDelta);
         updatePhysCenterOfMass();
         calculateFramedMOITensor();
         if (!parent.isShipAligningToGrid()) {
@@ -88,7 +88,7 @@ public class PhysicsCalculations {
             }
         } else {
             // We are trying to deconstruct, try to rotate the ship to grid to align with the grid.
-            calculateForcesDeconstruction();
+            calculateForcesDeconstruction(physTickTimeDelta);
         }
     }
 
@@ -272,7 +272,7 @@ public class PhysicsCalculations {
         applyAirDrag();
     }
 
-    private void calculateForcesDeconstruction() {
+    private void calculateForcesDeconstruction(double physTickTimeDelta) {
         applyAirDrag();
 
         Quaterniondc inverseCurrentRotation = parent.getShipTransformationManager()
@@ -281,23 +281,31 @@ public class PhysicsCalculations {
         AxisAngle4d idealAxisAngle = new AxisAngle4d(inverseCurrentRotation);
 
         if (idealAxisAngle.angle < EPSILON) {
-            // We already have the perfect angular velocity, nothing left to do.
+            // We already have the perfect orientation, nothing left to do.
             return;
         }
 
         // Normalizes the axis, not the angle.
         idealAxisAngle.normalize();
 
+        double angleBetweenIdealAndActual = idealAxisAngle.angle;
+
+        // If rotating in the angleBetweenIdeal direction will require us to rotate more than 180 degrees, then it is
+        // optimal to rotate in the opposite direction instead.
+        if (angleBetweenIdealAndActual > Math.PI) {
+            angleBetweenIdealAndActual = 2 * Math.PI - angleBetweenIdealAndActual;
+        }
+
         // Number of seconds we'd expect this angular velocity to convert us onto the grid orientation.
         double timeStep = 1D;
-        double idealAngularVelocityMultiple = idealAxisAngle.angle / timeStep;
+        double idealAngularVelocityMultiple = angleBetweenIdealAndActual / timeStep;
 
         Vector3d idealAngularVelocity = new Vector3d(idealAxisAngle.x, idealAxisAngle.y, idealAxisAngle.z);
         idealAngularVelocity.mul(idealAngularVelocityMultiple);
 
         Vector3d angularVelocityDif = idealAngularVelocity.sub(getAngularVelocity(), new Vector3d());
         // Larger values converge faster, but sacrifice collision accuracy
-        angularVelocityDif.mul(.01);
+        angularVelocityDif.mul(physTickTimeDelta);
 
         getAngularVelocity().add(angularVelocityDif);
     }

@@ -6,10 +6,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.*;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
-import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
-import org.valkyrienskies.addon.control.nodenetwork.INodeController;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
@@ -20,16 +16,14 @@ import valkyrienwarfare.api.TransformType;
 
 import java.lang.Math;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class PhysicsCalculations implements IRotationNodeWorldProvider {
+public class PhysicsCalculations {
 
     public static final double DRAG_CONSTANT = .99D;
     public static final double EPSILON = .00000001;
 
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;
-    private final IRotationNodeWorld physicsRotationNodeWorld;
 
     public boolean actAsArchimedes = false;
     private Vector3dc physCenterOfMass;
@@ -61,7 +55,6 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
         this.physCenterOfMass = new Vector3d();
         this.torque = new Vector3d();
-        this.physicsRotationNodeWorld = new ImplRotationNodeWorld(this.parent);
 
         generatePhysicsTransform();
     }
@@ -195,15 +188,13 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
 
         if (VSConfig.doPhysicsBlocks) {
             // We want to loop through all the physics nodes in a sorted order. Priority Queue handles that.
-            Queue<INodeController> nodesPriorityQueue = new PriorityQueue<>(
+            Queue<IPhysicsBlockController> nodesPriorityQueue = new PriorityQueue<>(
                     parent.getPhysicsControllersInShip());
 
             while (nodesPriorityQueue.size() > 0) {
-                INodeController controller = nodesPriorityQueue.poll();
+                IPhysicsBlockController controller = nodesPriorityQueue.poll();
                 controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
             }
-
-            this.physicsRotationNodeWorld.processTorquePhysics(getPhysicsTimeDeltaPerPhysTick());
 
             SortedMap<IBlockTorqueProvider, List<BlockPos>> torqueProviders = new TreeMap<>();
 
@@ -445,7 +436,4 @@ public class PhysicsCalculations implements IRotationNodeWorldProvider {
         return rotationAxis.length();
     }
 
-    public IRotationNodeWorld getPhysicsRotationNodeWorld() {
-        return physicsRotationNodeWorld;
-    }
 }

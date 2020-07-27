@@ -10,6 +10,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.Tuple;
+import org.valkyrienskies.addon.control.util.ValkyrienSkiesControlUtil;
 import org.valkyrienskies.mod.common.network.VSNetwork;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -93,11 +94,10 @@ public class TileEntityBasicRotationTile extends TileEntity implements IRotation
                     .getPhysoManagingBlock(getWorld(), getPos());
                 IRotationNodeWorld nodeWorld;
                 if (physicsObjectOptional.isPresent()) {
-                    nodeWorld = physicsObjectOptional.get().getPhysicsCalculations()
-                        .getPhysicsRotationNodeWorld();
+                    nodeWorld = ValkyrienSkiesControlUtil
+                        .getRotationWorldFromShip(physicsObjectOptional.get());
                 } else {
-                    IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
-                    nodeWorld = provider.getPhysicsRotationNodeWorld();
+                    nodeWorld = ValkyrienSkiesControlUtil.getRotationWorldFromWorld(getWorld());
                 }
 
                 rotationNode.markInitialized();

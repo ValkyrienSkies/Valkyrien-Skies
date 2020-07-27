@@ -5,6 +5,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
 import org.valkyrienskies.addon.control.nodenetwork.BasicNodeTileEntity;
+import org.valkyrienskies.addon.control.util.ValkyrienSkiesControlUtil;
 import org.valkyrienskies.mod.common.network.VSNetwork;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -74,11 +75,10 @@ public class TileEntityBasicRotationNodeTile extends BasicNodeTileEntity impleme
                     .getPhysoManagingBlock(getWorld(), getPos());
                 IRotationNodeWorld nodeWorld;
                 if (physicsObjectOptional.isPresent()) {
-                    nodeWorld = physicsObjectOptional.get().getPhysicsCalculations()
-                        .getPhysicsRotationNodeWorld();
+                    nodeWorld = ValkyrienSkiesControlUtil
+                        .getRotationWorldFromShip(physicsObjectOptional.get());
                 } else {
-                    IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
-                    nodeWorld = provider.getPhysicsRotationNodeWorld();
+                    nodeWorld = ValkyrienSkiesControlUtil.getRotationWorldFromWorld(getWorld());
                 }
                 rotationNode.markInitialized();
                 nodeWorld.enqueueTaskOntoWorld(

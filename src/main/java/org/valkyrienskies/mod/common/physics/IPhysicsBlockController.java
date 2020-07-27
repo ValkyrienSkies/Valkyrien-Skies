@@ -1,10 +1,9 @@
-package org.valkyrienskies.addon.control.nodenetwork;
+package org.valkyrienskies.mod.common.physics;
 
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
-public interface INodeController extends Comparable<INodeController> {
+public interface IPhysicsBlockController extends Comparable<IPhysicsBlockController> {
 
     int getPriority();
 
@@ -24,7 +23,7 @@ public interface INodeController extends Comparable<INodeController> {
     // Used maintain order of which processors get called first. If both processors
     // have equal priorities, then we use the BlockPos as a tiebreaker.
     @Override
-    default int compareTo(INodeController other) {
+    default int compareTo(IPhysicsBlockController other) {
         if (getPriority() != other.getPriority()) {
             return getPriority() - other.getPriority();
         } else {

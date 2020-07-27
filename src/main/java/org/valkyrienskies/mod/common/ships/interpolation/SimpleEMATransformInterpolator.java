@@ -17,8 +17,6 @@ public class SimpleEMATransformInterpolator implements ITransformInterpolator {
     // The current tick transform
     @Nonnull
     private ShipTransform curTickTransform;
-    @Nonnull
-    private AxisAlignedBB curAABB;
     // The latest received transform
     @Nonnull
     private ShipTransform latestReceivedTransform;
@@ -32,7 +30,6 @@ public class SimpleEMATransformInterpolator implements ITransformInterpolator {
     public SimpleEMATransformInterpolator(@Nonnull ShipTransform initial, @Nonnull AxisAlignedBB initialAABB, double filterAlpha) {
         this.curTickTransform = initial;
         this.latestReceivedTransform = initial;
-        this.curAABB = initialAABB;
         this.latestRecievedAABB = initialAABB;
         this.filterAlpha = filterAlpha;
     }

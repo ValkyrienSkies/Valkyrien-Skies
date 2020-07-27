@@ -3,7 +3,6 @@ package org.valkyrienskies.mixin.world;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.*;
@@ -12,20 +11,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import org.joml.Vector3d;
-import org.joml.Vector3dc;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.Interface.Remap;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
-import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
 import org.valkyrienskies.mod.common.collision.EntityPolygon;
 import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.collision.ShipPolygon;
-import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.fixes.MixinWorldIntrinsicMethods;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.collision.Polygon;
@@ -46,8 +40,7 @@ import java.util.function.Function;
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
 @Implements(@Interface(iface = MixinWorldIntrinsicMethods.class, prefix = "vs$", remap = Remap.NONE))
-public abstract class MixinWorld implements IWorldVS, IHasShipManager,
-    IRotationNodeWorldProvider {
+public abstract class MixinWorld implements IWorldVS, IHasShipManager {
 
     private static final double MAX_ENTITY_RADIUS_ALT = 2;
     private static final double BOUNDING_BOX_EDGE_LIMIT = 10000;
@@ -58,9 +51,6 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
 
     // The IWorldShipManager
     private IPhysObjectWorld manager = null;
-    // Rotation Node World fields. Note this is only used in multiplayer, but making a MixinWorldServer
-    // just for one field would be wasteful.
-    private ImplRotationNodeWorld rotationNodeWorld = new ImplRotationNodeWorld(null);
 
     @Shadow
     protected List<IWorldEventListener> eventListeners;
@@ -447,12 +437,6 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager,
     public void setManager(Function<World, IPhysObjectWorld> managerSupplier) {
         manager = managerSupplier.apply(World.class.cast(this));
     }
-
-    @Override
-    public IRotationNodeWorld getPhysicsRotationNodeWorld() {
-        return rotationNodeWorld;
-    }
-
 
     /**
      * Fixes World.getBlockDensity() creating huge amounts of lag by telling it not to look for

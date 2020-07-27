@@ -7,7 +7,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.collision.ShipCollisionTask;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
@@ -43,6 +43,7 @@ public class VSThread extends Thread {
 
     private Queue<Runnable> taskQueue;
     private ImmutableList<PhysicsObject> immutableShipsList;
+    private final List<IPhysTimeTask> recurringTasks;
 
     public VSThread(World host) {
         super("VS World Thread " + threadID);
@@ -53,6 +54,7 @@ public class VSThread extends Thread {
         this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<>();
         this.taskQueue = new ConcurrentLinkedQueue<>();
         this.immutableShipsList = ImmutableList.of();
+        this.recurringTasks = new ArrayList<>();
         log.trace(this.getName() + " thread created.");
     }
 
@@ -63,6 +65,10 @@ public class VSThread extends Thread {
 
     public void addScheduledTask(Runnable r) {
         taskQueue.add(r);
+    }
+
+    public void addRecurringTask(IPhysTimeTask physTask) {
+        recurringTasks.add(physTask);
     }
 
     /*
@@ -128,6 +134,7 @@ public class VSThread extends Thread {
         immutableShipsList = ((IHasShipManager) hostWorld).getManager().getAllLoadedThreadSafe();
 
         // Run tasks queued to run on physics thread
+        recurringTasks.forEach(task -> task.runTask(VSConfig.physSpeed));
         taskQueue.forEach(Runnable::run);
         taskQueue.clear();
 
@@ -183,10 +190,6 @@ public class VSThread extends Thread {
                 e.printStackTrace();
             }
         }
-
-        // Process gear physics simulation for the game worlds.
-        IRotationNodeWorldProvider rotationNodeWorldProvider = (IRotationNodeWorldProvider) hostWorld;
-        rotationNodeWorldProvider.getPhysicsRotationNodeWorld().processTorquePhysics(newPhysSpeed);
 
         try {
             // The individual collision tasks will sort through a lot of data to find

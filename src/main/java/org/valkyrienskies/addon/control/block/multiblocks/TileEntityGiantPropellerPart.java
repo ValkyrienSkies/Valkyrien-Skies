@@ -11,6 +11,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.addon.control.MultiblockRegistry;
 import org.valkyrienskies.addon.control.block.torque.*;
+import org.valkyrienskies.addon.control.util.ValkyrienSkiesControlUtil;
 import org.valkyrienskies.mod.common.network.VSNetwork;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.JOML;
@@ -112,11 +113,9 @@ public class TileEntityGiantPropellerPart extends
                     if (!rotationNode.hasBeenPlacedIntoNodeWorld()) {
                         IRotationNodeWorld nodeWorld;
                         if (physicsObjectOptional.isPresent()) {
-                            nodeWorld = physicsObjectOptional.get()
-                                .getPhysicsCalculations().getPhysicsRotationNodeWorld();
+                            nodeWorld = ValkyrienSkiesControlUtil.getRotationWorldFromShip(physicsObjectOptional.get());
                         } else {
-                            IRotationNodeWorldProvider provider = (IRotationNodeWorldProvider) getWorld();
-                            nodeWorld = provider.getPhysicsRotationNodeWorld();
+                            nodeWorld = ValkyrienSkiesControlUtil.getRotationWorldFromWorld(getWorld());
                         }
 
                         nodeWorld.enqueueTaskOntoWorld(

@@ -3,10 +3,8 @@ package org.valkyrienskies.mod.common.ships.ship_world;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -23,7 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.addon.control.nodenetwork.INodeController;
+import org.valkyrienskies.mod.common.physics.IPhysicsBlockController;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.interpolation.ITransformInterpolator;
@@ -33,8 +31,6 @@ import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.ships.chunk_claims.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.ships.block_relocation.MoveBlocks;
-import org.valkyrienskies.mod.common.ships.physics_data.BasicCenterOfMassProvider;
-import org.valkyrienskies.mod.common.ships.physics_data.IPhysicsObjectCenterOfMassProvider;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransformationManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
@@ -55,8 +51,8 @@ public class PhysicsObject implements IPhysicsEntity {
 
     @Getter
     private final List<EntityPlayerMP> watchingPlayers;
-    private final Set<INodeController> physicsControllers;
-    private final Set<INodeController> physicsControllersImmutable;
+    private final Set<IPhysicsBlockController> physicsControllers;
+    private final Set<IPhysicsBlockController> physicsControllersImmutable;
     // Used to iterate over the ship blocks extremely quickly by taking advantage of the cache
     @Getter
     private final PhysObjectRenderManager shipRenderer;
@@ -214,8 +210,8 @@ public class PhysicsObject implements IPhysicsEntity {
 
     // ===== Keep track of all Node Processors in a concurrent Set =====
     public void onSetTileEntity(BlockPos pos, TileEntity tileentity) {
-        if (tileentity instanceof INodeController) {
-            physicsControllers.add((INodeController) tileentity);
+        if (tileentity instanceof IPhysicsBlockController) {
+            physicsControllers.add((IPhysicsBlockController) tileentity);
         }
     }
 
@@ -224,7 +220,7 @@ public class PhysicsObject implements IPhysicsEntity {
     }
 
     // Do not allow anything external to modify the physics controllers Set.
-    public Set<INodeController> getPhysicsControllersInShip() {
+    public Set<IPhysicsBlockController> getPhysicsControllersInShip() {
         return physicsControllersImmutable;
     }
 
@@ -256,7 +252,7 @@ public class PhysicsObject implements IPhysicsEntity {
         Quaterniondc shipQuat = getShipTransformationManager().getCurrentTickTransform()
                 .rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
         // Only allow a ship to be deconstructed if the angle between the grid and its orientation is less than half a degree.
-        return Math.toDegrees(shipQuat.angle()) < .5;
+        return Math.toDegrees(shipQuat.angle()) < 2;
     }
 
     void destroyShip() {

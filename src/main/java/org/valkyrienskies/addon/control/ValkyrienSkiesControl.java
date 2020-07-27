@@ -34,7 +34,7 @@ import org.valkyrienskies.addon.control.item.ItemVSWrench;
 import org.valkyrienskies.addon.control.item.ItemVanishingWire;
 import org.valkyrienskies.addon.control.proxy.CommonProxyControl;
 import org.valkyrienskies.addon.control.tileentity.*;
-import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
+// import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 import java.util.ArrayList;
@@ -43,8 +43,8 @@ import java.util.List;
 @Mod(
     name = ValkyrienSkiesControl.MOD_NAME,
     modid = ValkyrienSkiesControl.MOD_ID,
-    version = ValkyrienSkiesControl.MOD_VERSION,
-    dependencies = "required-after:" + ValkyrienSkiesControl.VS_WORLD_MOD_ID
+    version = ValkyrienSkiesControl.MOD_VERSION
+    // dependencies = "required-after:" + ValkyrienSkiesControl.VS_WORLD_MOD_ID
 )
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
 public class ValkyrienSkiesControl {
@@ -132,6 +132,7 @@ public class ValkyrienSkiesControl {
 
     @Optional.Method(modid = VS_WORLD_MOD_ID)
     public void addVsWorldRecipes() {
+	    /*
         addShapedRecipe(INSTANCE.vanishingWire, 8,
             "WWW",
             "WVW",
@@ -160,6 +161,8 @@ public class ValkyrienSkiesControl {
             'G', Items.GOLD_INGOT,
             'F', Item.getItemFromBlock(Blocks.PISTON),
             'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
+
+	     */
     }
 
     @Mod.EventHandler

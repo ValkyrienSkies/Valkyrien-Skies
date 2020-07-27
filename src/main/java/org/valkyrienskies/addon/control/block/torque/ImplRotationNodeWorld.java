@@ -15,21 +15,46 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
 
 public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
+    // Null IFF parentWorld != null
     @Nullable
     private final PhysicsObject parent;
+    // Null IFF parent != null
+    @Nullable
+    private final World parentWorld;
     @Nonnull
     private final Map<BlockPos, IRotationNode> posToNodeMap;
     @Nonnull
     private final ConcurrentLinkedQueue<Runnable> queuedTasks;
 
-    public ImplRotationNodeWorld(@Nullable PhysicsObject parent) {
+    public ImplRotationNodeWorld(@Nonnull PhysicsObject parent) {
         this.parent = parent;
+        this.parentWorld = null;
         this.posToNodeMap = new HashMap<>();
         this.queuedTasks = new ConcurrentLinkedQueue<>();
+
+        ((WorldServerShipManager) ((IHasShipManager) parent.getWorld()).getManager())
+                .getPhysicsThread().addRecurringTask(this::processTorquePhysics);
+        ((WorldServerShipManager) ((IHasShipManager) parent.getWorld()).getManager())
+                .getPhysicsThread().addRecurringTask(physTimeDelta -> processQueuedTasks());
+    }
+
+    public ImplRotationNodeWorld(@Nonnull World parentWorld) {
+        this.parent = null;
+        this.parentWorld = parentWorld;
+        this.posToNodeMap = new HashMap<>();
+        this.queuedTasks = new ConcurrentLinkedQueue<>();
+
+        ((WorldServerShipManager) ((IHasShipManager) parentWorld).getManager())
+                .getPhysicsThread().addRecurringTask(this::processTorquePhysics);
+        ((WorldServerShipManager) ((IHasShipManager) parentWorld).getManager())
+                .getPhysicsThread().addRecurringTask(physTimeDelta -> processQueuedTasks());
     }
 
     @Override

@@ -3,7 +3,7 @@ package org.valkyrienskies.addon.control.tileentity;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
-public class TileEntityLiftValve extends TileEntityNodeControllerImpl {
+public class TileEntityLiftValve extends TileEntityPhysicsBlockControllerImpl {
 
     public static final int PHYSICS_PROCESSOR_PRIORITY = 10;
 

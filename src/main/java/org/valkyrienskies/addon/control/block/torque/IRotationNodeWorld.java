@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
  * to only be called on the game thread. If these conventions are not respected then the game will
  * likely break, so PLEASE follow each methods instructions!
  */
-public interface IRotationNodeWorld {
+public interface IRotationNodeWorld extends Runnable {
 
     /**
      * This can be run by any thread.
@@ -81,5 +81,10 @@ public interface IRotationNodeWorld {
     void readFromNBTTag(NBTTagCompound compound);
 
     void writeToNBTTag(NBTTagCompound compound);
+
+    @Override
+    default void run() {
+
+    }
 
 }

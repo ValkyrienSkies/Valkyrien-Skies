@@ -18,12 +18,12 @@ buildscript {
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
     id "com.wynprice.cursemaven" version "2.1.1"
+    id "maven-publish"
 }
 
 ext.configFile = file "project.properties"
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "org.spongepowered.mixin"
-apply plugin: "maven-publish"
 apply plugin: "java"
 
 configFile.withReader {
@@ -245,6 +245,7 @@ publishing {
             version = project.version
 
             from components.java
+            artifact shadowJar
             artifact sourceJar {
                 classifier "sources"
             }

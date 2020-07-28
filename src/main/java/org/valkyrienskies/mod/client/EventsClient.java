@@ -194,40 +194,6 @@ public class EventsClient {
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent event) {
         GibsModelRegistry.onModelBakeEvent(event);
-
-        ResourceLocation modelResourceLocation = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "item/infuser_core_main");
-        try {
-            IModel model = ModelLoaderRegistry.getModel(modelResourceLocation);
-            IBakedModel inventoryModel = model
-                .bake(model.getDefaultState(), DefaultVertexFormats.ITEM,
-                    ModelLoader.defaultTextureGetter());
-            IBakedModel handModel = event.getModelRegistry()
-                .getObject(new ModelResourceLocation(
-                    ValkyrienSkiesMod.MOD_ID + ":" + ValkyrienSkiesControl.INSTANCE.physicsCore
-                        .getTranslationKey()
-                        .substring(5), "inventory"));
-
-            event.getModelRegistry()
-                .putObject(
-                    new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"),
-                    new InfuserCoreBakedModel(handModel, inventoryModel));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @SubscribeEvent
-    public void onTextureStitchPre(TextureStitchEvent.Pre event) {
-        ResourceLocation mainCoreInventoryTexture = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "items/main_core");
-        ResourceLocation smallCoreInventoryTexture = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "items/small_core");
-        event.getMap()
-            .registerSprite(mainCoreInventoryTexture);
-        event.getMap()
-            .registerSprite(smallCoreInventoryTexture);
     }
 
     @SubscribeEvent

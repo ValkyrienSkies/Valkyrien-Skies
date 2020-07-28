@@ -81,7 +81,8 @@ public class ClientProxyControl extends CommonProxyControl {
         registerItemModel(ValkyrienSkiesControl.INSTANCE.relayWire);
         registerItemModel(ValkyrienSkiesControl.INSTANCE.vanishingWire);
         registerItemModel(ValkyrienSkiesControl.INSTANCE.vsWrench);
-        registerItemModel(ValkyrienSkiesControl.INSTANCE.physicsCore);
+        // Disabled because we have a custom item render model for physicsCore
+        // registerItemModel(ValkyrienSkiesControl.INSTANCE.physicsCore);
     }
 
     private static void registerTileEntityRenderers() {
@@ -209,6 +210,9 @@ public class ClientProxyControl extends CommonProxyControl {
     @Override
     public void init(FMLStateEvent event) {
         super.init(event);
+        RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+        renderItem.getItemModelMesher().register(ValkyrienSkiesControl.INSTANCE.physicsCore, 0,
+                new ModelResourceLocation(ValkyrienSkiesControl.MOD_ID + ":testmodel", "inventory"));
     }
 
     @Override

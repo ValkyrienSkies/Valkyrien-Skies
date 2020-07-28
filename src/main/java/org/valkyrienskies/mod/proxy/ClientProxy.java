@@ -67,17 +67,6 @@ public class ClientProxy extends CommonProxy {
         registerBlockItem(ValkyrienSkiesMod.INSTANCE.passengerChair);
     }
 
-    @Override
-    public void init(FMLInitializationEvent e) {
-        super.init(e);
-
-        // registerItemModel(ValkyrienSkiesMod.INSTANCE.physicsCore);
-
-        RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-        renderItem.getItemModelMesher().register(ValkyrienSkiesControl.INSTANCE.physicsCore, 0,
-                new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"));
-    }
-
     private void registerAnimations() {
 
     }

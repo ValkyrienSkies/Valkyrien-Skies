@@ -25,8 +25,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import org.valkyrienskies.addon.control.network.VSGuiButtonHandler;
-import org.valkyrienskies.addon.control.network.VSGuiButtonMessage;
 import org.valkyrienskies.mixin.MixinLoaderForge;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.*;

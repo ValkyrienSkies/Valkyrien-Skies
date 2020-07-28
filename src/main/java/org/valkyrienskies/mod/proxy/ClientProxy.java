@@ -4,9 +4,7 @@ import net.minecraft.block.Block;
 import org.valkyrienskies.mod.client.EventsClient;
 import org.valkyrienskies.mod.client.VSKeyHandler;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
-import org.valkyrienskies.addon.control.renderer.TileEntityPhysicsInfuserRenderer;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -15,7 +13,6 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 

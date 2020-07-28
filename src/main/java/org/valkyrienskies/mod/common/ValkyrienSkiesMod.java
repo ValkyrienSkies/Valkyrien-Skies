@@ -31,7 +31,6 @@ import org.valkyrienskies.mod.common.block.*;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.item.ItemPhysicsCore;
 import org.valkyrienskies.mod.common.network.*;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
@@ -84,12 +83,9 @@ public class ValkyrienSkiesMod {
      */
     @Getter
     private static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
-    public Block physicsInfuser;
-    public Block physicsInfuserCreative;
-    public Block physicsInfuserDummy;
+
     public Block captainsChair;
     public Block passengerChair;
-    public Item physicsCore;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static SimpleNetworkWrapper controlNetwork;
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
@@ -179,15 +175,6 @@ public class ValkyrienSkiesMod {
     }
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        registerRecipe(event, "recipe_physics_infuser", new ItemStack(physicsInfuser),
-            "IEI",
-            "ODO",
-            "IEI",
-            'E', Items.ENDER_PEARL,
-            'D', Items.DIAMOND,
-            'O', Item.getItemFromBlock(Blocks.OBSIDIAN),
-            'I', Items.IRON_INGOT);
-
         registerRecipe(event, "recipe_captains_chair", new ItemStack(captainsChair),
                     "SLS",
                     "VWV",
@@ -233,9 +220,6 @@ public class ValkyrienSkiesMod {
     }
 
     private void registerBlocks() {
-        this.physicsInfuser = registerBlock(new BlockPhysicsInfuser("physics_infuser"));
-        this.physicsInfuserCreative = registerBlock(new BlockPhysicsInfuserCreative());
-        this.physicsInfuserDummy = registerBlock(new BlockPhysicsInfuserDummy());
         this.captainsChair = registerBlock(new BlockCaptainsChair());
         this.passengerChair = registerBlock(new BlockPassengerChair());
 
@@ -249,7 +233,6 @@ public class ValkyrienSkiesMod {
     }
 
     private void registerItems() {
-        this.physicsCore = new ItemPhysicsCore();
     }
 
 }

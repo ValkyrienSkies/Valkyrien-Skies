@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.proxy;
 
 import net.minecraft.block.Block;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.client.EventsClient;
 import org.valkyrienskies.mod.client.VSKeyHandler;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
@@ -73,22 +74,12 @@ public class ClientProxy extends CommonProxy {
         // registerItemModel(ValkyrienSkiesMod.INSTANCE.physicsCore);
 
         RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-        renderItem.getItemModelMesher().register(ValkyrienSkiesMod.INSTANCE.physicsCore, 0,
+        renderItem.getItemModelMesher().register(ValkyrienSkiesControl.INSTANCE.physicsCore, 0,
                 new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"));
     }
 
     private void registerAnimations() {
-        GibsAnimationRegistry.registerAnimation("physics_infuser",
-            new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-                "models/block/physics_infuser/physics_infuser.atom"));
 
-        GibsAnimationRegistry.registerAnimation("physics_infuser_empty",
-            new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-                "models/block/physics_infuser/physics_infuser_empty.atom"));
-        // Not an actual animation, just easier to put in than writing out all the core names.
-        GibsAnimationRegistry.registerAnimation("physics_infuser_cores",
-            new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-                "models/block/physics_infuser/cores.atom"));
     }
 
     // Registers the inventory model for the ItemBlock of "toRegister"

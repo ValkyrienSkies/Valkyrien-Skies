@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.block;
+package org.valkyrienskies.addon.control.block;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -11,7 +11,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
+import org.valkyrienskies.addon.control.util.BlockVSDirectional;
 
 public class BlockPhysicsInfuserDummy extends BlockVSDirectional {
 
@@ -58,7 +59,7 @@ public class BlockPhysicsInfuserDummy extends BlockVSDirectional {
         BlockPos parentPos = getParentPos(state, pos);
         super.breakBlock(worldIn, pos, state);
         if (worldIn.getBlockState(parentPos)
-            .getBlock() == ValkyrienSkiesMod.INSTANCE.physicsInfuser) {
+            .getBlock() == ValkyrienSkiesControl.INSTANCE.vsControlBlocks.physicsInfuser) {
             worldIn.setBlockToAir(parentPos);
         }
     }
@@ -67,7 +68,7 @@ public class BlockPhysicsInfuserDummy extends BlockVSDirectional {
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world,
         BlockPos pos, EntityPlayer player) {
         BlockPos parentPos = getParentPos(state, pos);
-        return ValkyrienSkiesMod.INSTANCE.physicsInfuser
+        return ValkyrienSkiesControl.INSTANCE.vsControlBlocks.physicsInfuser
             .getPickBlock(world.getBlockState(parentPos), target, world, parentPos, player);
     }
 

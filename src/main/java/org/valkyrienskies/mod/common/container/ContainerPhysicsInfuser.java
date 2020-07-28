@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
@@ -121,7 +122,7 @@ public class ContainerPhysicsInfuser extends Container {
 
         @Override
         public boolean isItemValid(@Nonnull ItemStack stack) {
-            if (stack.getItem() == ValkyrienSkiesMod.INSTANCE.physicsCore) {
+            if (stack.getItem() == ValkyrienSkiesControl.INSTANCE.physicsCore) {
                 return super.isItemValid(stack);
             } else {
                 return false;

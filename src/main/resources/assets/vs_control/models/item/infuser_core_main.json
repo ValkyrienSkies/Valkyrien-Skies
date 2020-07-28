@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "valkyrienskies:items/main_core"
+    "layer0": "vs_control:items/main_core"
   }
 }

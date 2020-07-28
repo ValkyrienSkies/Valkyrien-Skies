@@ -21,6 +21,7 @@ import org.valkyrienskies.addon.control.renderer.*;
 import org.valkyrienskies.addon.control.tileentity.*;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 @SuppressWarnings("unused")
 public class ClientProxyControl extends CommonProxyControl {
@@ -71,12 +72,16 @@ public class ClientProxyControl extends CommonProxyControl {
 
         registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.giantPropellerPart);
         registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.rotationAxle);
+
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.physicsInfuser);
+        registerBlockItem(ValkyrienSkiesControl.INSTANCE.vsControlBlocks.physicsInfuserCreative);
     }
 
     private static void registerItemModels() {
         registerItemModel(ValkyrienSkiesControl.INSTANCE.relayWire);
         registerItemModel(ValkyrienSkiesControl.INSTANCE.vanishingWire);
         registerItemModel(ValkyrienSkiesControl.INSTANCE.vsWrench);
+        registerItemModel(ValkyrienSkiesControl.INSTANCE.physicsCore);
     }
 
     private static void registerTileEntityRenderers() {
@@ -172,6 +177,18 @@ public class ClientProxyControl extends CommonProxyControl {
         GibsAnimationRegistry.registerAnimation("giant_propeller",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/giant_propeller/giant_propeller.atom"));
+
+        GibsAnimationRegistry.registerAnimation("physics_infuser",
+                new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
+                        "models/block/physics_infuser/physics_infuser.atom"));
+
+        GibsAnimationRegistry.registerAnimation("physics_infuser_empty",
+                new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
+                        "models/block/physics_infuser/physics_infuser_empty.atom"));
+        // Not an actual animation, just easier to put in than writing out all the core names.
+        GibsAnimationRegistry.registerAnimation("physics_infuser_cores",
+                new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
+                        "models/block/physics_infuser/cores.atom"));
     }
 
     private void registerGearboxGibs(String name) {

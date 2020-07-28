@@ -1,21 +1,7 @@
 package org.valkyrienskies.addon.control;
 
 import net.minecraft.item.ItemBlock;
-import org.valkyrienskies.mod.common.block.BlockCaptainsChair;
-import org.valkyrienskies.addon.control.block.BlockCompactedValkyrium;
-import org.valkyrienskies.addon.control.block.BlockDummyTelegraph;
-import org.valkyrienskies.addon.control.block.BlockGearbox;
-import org.valkyrienskies.addon.control.block.BlockGyroscopeDampener;
-import org.valkyrienskies.addon.control.block.BlockGyroscopeStabilizer;
-import org.valkyrienskies.addon.control.block.BlockLiftLever;
-import org.valkyrienskies.addon.control.block.BlockLiftValve;
-import org.valkyrienskies.addon.control.block.BlockNetworkDisplay;
-import org.valkyrienskies.addon.control.block.BlockNetworkRelay;
-import org.valkyrienskies.mod.common.block.BlockPassengerChair;
-import org.valkyrienskies.addon.control.block.BlockRotationAxle;
-import org.valkyrienskies.addon.control.block.BlockShipHelm;
-import org.valkyrienskies.addon.control.block.BlockShipWheel;
-import org.valkyrienskies.addon.control.block.BlockSpeedTelegraph;
+import org.valkyrienskies.addon.control.block.*;
 import org.valkyrienskies.addon.control.block.engine.BlockNormalEngine;
 import org.valkyrienskies.addon.control.block.engine.BlockRedstoneEngine;
 import org.valkyrienskies.addon.control.block.multiblocks.BlockGiantPropellerPart;
@@ -29,6 +15,9 @@ import net.minecraft.block.material.Material;
 
 public class BlocksValkyrienSkiesControl {
 
+    public final BlockPhysicsInfuser physicsInfuser;
+    public final BlockPhysicsInfuserDummy physicsInfuserDummy;
+    public final BlockPhysicsInfuserCreative physicsInfuserCreative;
     public final BlockNormalEngine basicEngine;
     public final BlockNormalEngine advancedEngine;
     public final BlockNormalEngine eliteEngine;
@@ -53,6 +42,10 @@ public class BlocksValkyrienSkiesControl {
     public final Block rotationAxle;
 
     public BlocksValkyrienSkiesControl() {
+        physicsInfuser = registerBlock(new BlockPhysicsInfuser("physics_infuser"));
+        physicsInfuserCreative = registerBlock(new BlockPhysicsInfuserCreative());
+        physicsInfuserDummy = registerBlock(new BlockPhysicsInfuserDummy());
+
         basicEngine = registerBlock(new BlockNormalEngine("basic", Material.WOOD,
             VSConfig.ENGINE_POWER.basicEnginePower, 5.0F));
         advancedEngine = registerBlock(new BlockNormalEngine("advanced", Material.ROCK,

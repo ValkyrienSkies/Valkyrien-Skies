@@ -15,7 +15,7 @@ public class TabValkyrienSkies extends CreativeTabs {
 
     @Override
     public ItemStack createIcon() {
-        return new ItemStack(Item.getItemFromBlock(ValkyrienSkiesMod.INSTANCE.physicsInfuser));
+        return new ItemStack(Item.getItemFromBlock(ValkyrienSkiesMod.INSTANCE.captainsChair));
     }
 
 }

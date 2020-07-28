@@ -22,10 +22,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.common.network.VSNetwork;
 import org.valkyrienskies.mod.client.gui.IVSTileGui;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
+import org.valkyrienskies.addon.control.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.container.EnumInfuserButton;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.ships.block_relocation.IPostRelocationAwareTile;
@@ -82,7 +83,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
             // Update the blockstate lighting
             IBlockState infuserState = getWorld().getBlockState(getPos());
-            if (infuserState.getBlock() == ValkyrienSkiesMod.INSTANCE.physicsInfuser) {
+            if (infuserState.getBlock() == ValkyrienSkiesControl.INSTANCE.vsControlBlocks.physicsInfuser) {
                 if (isPhysicsEnabled() && canMaintainShip()) {
                     if (!infuserState.getValue(BlockPhysicsInfuser.INFUSER_LIGHT_ON)) {
                         IBlockState newState = infuserState

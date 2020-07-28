@@ -30,6 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.fixes.SoundFixWrapper;
 import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
@@ -203,7 +204,7 @@ public class EventsClient {
                     ModelLoader.defaultTextureGetter());
             IBakedModel handModel = event.getModelRegistry()
                 .getObject(new ModelResourceLocation(
-                    ValkyrienSkiesMod.MOD_ID + ":" + ValkyrienSkiesMod.INSTANCE.physicsCore
+                    ValkyrienSkiesMod.MOD_ID + ":" + ValkyrienSkiesControl.INSTANCE.physicsCore
                         .getTranslationKey()
                         .substring(5), "inventory"));
 

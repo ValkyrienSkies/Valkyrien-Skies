@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.block;
+package org.valkyrienskies.addon.control.block;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -25,8 +25,10 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.client.gui.VS_Gui_Enum;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.addon.control.util.BlockVSDirectional;
 import org.valkyrienskies.mod.common.ships.block_relocation.DetectorManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
@@ -77,7 +79,7 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
         if (!worldIn.isRemote) {
             BlockPos dummyPos = getDummyStatePos(state, pos);
             worldIn.setBlockState(dummyPos,
-                ValkyrienSkiesMod.INSTANCE.physicsInfuserDummy.getDefaultState()
+                    ValkyrienSkiesControl.INSTANCE.vsControlBlocks.physicsInfuserDummy.getDefaultState()
                     .withProperty(FACING, getDummyStateFacing(state)));
         }
     }
@@ -104,7 +106,7 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
         BlockPos dummyBlockPos = getDummyStatePos(state, pos);
         super.breakBlock(worldIn, pos, state);
         if (worldIn.getBlockState(dummyBlockPos)
-            .getBlock() == ValkyrienSkiesMod.INSTANCE.physicsInfuserDummy) {
+            .getBlock() == ValkyrienSkiesControl.INSTANCE.vsControlBlocks.physicsInfuserDummy) {
             worldIn.setBlockToAir(dummyBlockPos);
         }
         // Finally, delete the tile entity.

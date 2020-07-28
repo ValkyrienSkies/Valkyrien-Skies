@@ -36,6 +36,7 @@ import org.valkyrienskies.addon.control.proxy.CommonProxyControl;
 import org.valkyrienskies.addon.control.tileentity.*;
 // import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.addon.control.item.ItemPhysicsCore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +76,7 @@ public class ValkyrienSkiesControl {
     public Item relayWire;
     public Item vanishingWire;
     public Item vsWrench;
+    public Item physicsCore;
 
 	@SubscribeEvent
 	public static void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -106,6 +108,7 @@ public class ValkyrienSkiesControl {
 		INSTANCE.relayWire = new ItemRelayWire();
 		INSTANCE.vanishingWire = new ItemVanishingWire();
 		INSTANCE.vsWrench = new ItemVSWrench();
+		INSTANCE.physicsCore = new ItemPhysicsCore();
 	}
 
     public void registerRecipes() {
@@ -117,6 +120,15 @@ public class ValkyrienSkiesControl {
 		addEngineRecipe(INSTANCE.vsControlBlocks.redstoneEngine, Blocks.REDSTONE_BLOCK);
         Item relayWireIngot = Items.IRON_INGOT;
         // TODO: Code to check for copper and set relayWireIngot
+
+        addShapedRecipe(INSTANCE.vsControlBlocks.physicsInfuser, 1,
+                "IEI",
+                "ODO",
+                "IEI",
+                'E', Items.ENDER_PEARL,
+                'D', Items.DIAMOND,
+                'O', Item.getItemFromBlock(Blocks.OBSIDIAN),
+                'I', Items.IRON_INGOT);
 
         addShapedRecipe(INSTANCE.relayWire, 4, // 1 per copper/iron ingot
             " I ",

@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.client.render.tile_entity_renderers;
 
+import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
@@ -10,7 +11,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
+import org.valkyrienskies.addon.control.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 
 public class TileEntityPhysicsInfuserRenderer extends
@@ -36,7 +37,7 @@ public class TileEntityPhysicsInfuserRenderer extends
         GlStateManager.translate(.5, 0, .5);
         double keyframe = 1;
 
-        IBlockState physicsInfuserState = ValkyrienSkiesMod.INSTANCE.physicsInfuser
+        IBlockState physicsInfuserState = ValkyrienSkiesControl.INSTANCE.vsControlBlocks.physicsInfuser
             .getStateFromMeta(tileentity.getBlockMetadata());
         EnumFacing enumfacing = physicsInfuserState.getValue(BlockPhysicsInfuser.FACING);
         int coreBrightness =

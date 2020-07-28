@@ -3,7 +3,7 @@
   "variants": {
     "inventory": [
       {
-        "model": "valkyrienskies:physics_infuser/physics_infuser_inventorymodel_geo.obj",
+        "model": "vs_control:physics_infuser/physics_infuser_inventorymodel_geo.obj",
         "custom": {
           "flip-v": true
         },

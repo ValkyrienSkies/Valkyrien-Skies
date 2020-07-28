@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.block;
+package org.valkyrienskies.addon.control.block;
 
 import java.util.List;
 import javax.annotation.Nullable;

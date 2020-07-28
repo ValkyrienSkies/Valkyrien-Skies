@@ -1,5 +1,6 @@
 package org.valkyrienskies.addon.control.block.torque;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,17 +25,17 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     // Null IFF parentWorld != null
     @Nullable
-    private final PhysicsObject parent;
+    private final WeakReference<PhysicsObject> parent;
     // Null IFF parent != null
     @Nullable
-    private final World parentWorld;
+    private final WeakReference<World> parentWorld;
     @Nonnull
     private final Map<BlockPos, IRotationNode> posToNodeMap;
     @Nonnull
     private final ConcurrentLinkedQueue<Runnable> queuedTasks;
 
     public ImplRotationNodeWorld(@Nonnull PhysicsObject parent) {
-        this.parent = parent;
+        this.parent = new WeakReference<>(parent);
         this.parentWorld = null;
         this.posToNodeMap = new HashMap<>();
         this.queuedTasks = new ConcurrentLinkedQueue<>();
@@ -47,7 +48,7 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
 
     public ImplRotationNodeWorld(@Nonnull World parentWorld) {
         this.parent = null;
-        this.parentWorld = parentWorld;
+        this.parentWorld = new WeakReference<>(parentWorld);
         this.posToNodeMap = new HashMap<>();
         this.queuedTasks = new ConcurrentLinkedQueue<>();
 
@@ -293,8 +294,12 @@ public class ImplRotationNodeWorld implements IRotationNodeWorld {
      */
     private double calculateApparentTorque(IRotationNode start, Set<IRotationNode> visitedNodes) {
         visitedNodes.add(start); // kind of a bad spot to put this
+        PhysicsObject ship = null;
+        if (parent != null) {
+            ship = parent.get();
+        }
         // actual code start
-        double apparentTorque = start.calculateInstantaneousTorque(parent);
+        double apparentTorque = start.calculateInstantaneousTorque(ship);
         for (Tuple<IRotationNode, EnumFacing> connectedNode : start.connectedTorqueTilesList()) {
             IRotationNode endNode = connectedNode.getFirst();
             EnumFacing exploreDirection = connectedNode.getSecond();

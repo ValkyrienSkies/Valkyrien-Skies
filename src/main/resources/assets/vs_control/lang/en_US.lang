@@ -1,6 +1,9 @@
 #PARSE_ESCAPES
 
 # Items
+item.physics_core.name=Physics Core
+tooltip.vs_control.physics_core=The core of a physics infuser.
+
 item.relay_wire.name=Relay Wire
 tooltip.vs_control.relay_wire=Used to connect relays to components and other relays. Will disconnect already connected nodes.
 message.vs_control.error_relay_wire_limit=One of the connections is maxed out. Relay Nodes can make %d connections, all other objects can only make 1 connection.
@@ -22,6 +25,16 @@ tooltip.vs_control.wrench.deconstruct=Used to safely deconstruct multi-blocks.
 
 # Blocks
 ## Ship blocks
+tile.physics_infuser.name=Physics Infuser
+tooltip.vs_control.physics_infuser=Turns any blocks attached to this one into a brand new Ship, won't infuse most pregenerated blocks like stone.
+
+tile.physics_infuser_creative.name=Creative Physics Infuser
+tooltip.vs_control.physics_infuser_creative_1=Turns any blocks attached to this one into a brand new Ship, just be careful not to infuse your entire world.
+tooltip.vs_control.physics_infuser_creative_2=Warning, this has no block limits, and it will infuse everything it touches! Use with extreme caution.
+
+tile.physics_infuser_dummy.name=Dummy Physics Infuser
+tooltip.vs_control.physics_infuser_dummy=The other half of a physics infuser.
+
 tile.ship_helm.name=Ship Helm
 tooltip.vs_control.ship_helm=This block will let you turn rudders in the same network as it.
 
@@ -85,6 +98,15 @@ tooltip.vs_control.gyroscope_stabilizer=This block passively provides a torque t
 tile.gyroscope_dampener.name=Ship Gyroscope Dampener
 tooltip.vs_control.gyroscope_dampener=This block passively provides a torque to prevent the ship from rocking.
 
+
+# Gui
+gui.physics_infuser=Physics Infuser
+gui.assemble_ship=Assemble Ship
+gui.disassemble_ship=Disassemble Ship
+gui.enable_physics=Enable Physics
+gui.disable_physics=Disable Physics
+gui.align_ship=Align Ship
+gui.stop_align_ship=Stop Alignment
 
 
 ## Not Yet Implemented

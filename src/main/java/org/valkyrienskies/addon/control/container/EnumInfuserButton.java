@@ -1,7 +1,7 @@
-package org.valkyrienskies.mod.common.container;
+package org.valkyrienskies.addon.control.container;
 
 import java.util.function.Function;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
 public enum EnumInfuserButton {
 

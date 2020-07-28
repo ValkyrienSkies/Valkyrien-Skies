@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.client.render.infuser_core_rendering;
+package org.valkyrienskies.addon.control.renderer.infuser_core_rendering;
 
 import java.util.List;
 import javax.annotation.Nullable;

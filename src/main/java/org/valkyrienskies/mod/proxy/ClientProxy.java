@@ -1,27 +1,21 @@
 package org.valkyrienskies.mod.proxy;
 
 import net.minecraft.block.Block;
-import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.client.EventsClient;
 import org.valkyrienskies.mod.client.VSKeyHandler;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
-import org.valkyrienskies.mod.client.render.tile_entity_renderers.TileEntityPhysicsInfuserRenderer;
+import org.valkyrienskies.addon.control.renderer.TileEntityPhysicsInfuserRenderer;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -58,10 +52,6 @@ public class ClientProxy extends CommonProxy {
     public void postInit(FMLPostInitializationEvent e) {
         super.postInit(e);
         Minecraft.getMinecraft().getFramebuffer().enableStencil();
-
-        // Register physics infuser tile entity renderer.
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class,
-            new TileEntityPhysicsInfuserRenderer());
 
         registerBlockItem(ValkyrienSkiesMod.INSTANCE.captainsChair);
         registerBlockItem(ValkyrienSkiesMod.INSTANCE.passengerChair);

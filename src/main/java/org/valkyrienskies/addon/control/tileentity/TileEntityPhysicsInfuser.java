@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.tileentity;
+package org.valkyrienskies.addon.control.tileentity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,11 +24,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.common.network.VSNetwork;
-import org.valkyrienskies.mod.client.gui.IVSTileGui;
+import org.valkyrienskies.addon.control.gui.IVSTileGui;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.addon.control.block.BlockPhysicsInfuser;
-import org.valkyrienskies.mod.common.container.EnumInfuserButton;
-import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.addon.control.container.EnumInfuserButton;
+import org.valkyrienskies.addon.control.network.VSGuiButtonMessage;
 import org.valkyrienskies.mod.common.ships.block_relocation.IPostRelocationAwareTile;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
@@ -287,7 +287,7 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
 
         if (getWorld().isRemote) {
             // If client, then send a packet telling the server we pressed this button.
-            ValkyrienSkiesMod.physWrapperNetwork
+            ValkyrienSkiesControl.controlGuiNetwork
                 .sendToServer(new VSGuiButtonMessage(this, button.ordinal()));
         } else {
             Optional<PhysicsObject> optionalPhysicsObject = ValkyrienUtils.getPhysoManagingBlock(getWorld(), getPos());

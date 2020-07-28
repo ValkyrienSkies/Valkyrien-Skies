@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.network;
+package org.valkyrienskies.addon.control.network;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IThreadListener;
@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.valkyrienskies.mod.client.gui.IVSTileGui;
+import org.valkyrienskies.addon.control.gui.IVSTileGui;
 
 public class VSGuiButtonHandler implements IMessageHandler<VSGuiButtonMessage, IMessage> {
 

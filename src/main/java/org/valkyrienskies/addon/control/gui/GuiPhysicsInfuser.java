@@ -1,9 +1,9 @@
-package org.valkyrienskies.mod.client.gui;
+package org.valkyrienskies.addon.control.gui;
 
-import static org.valkyrienskies.mod.common.container.EnumInfuserButton.ALIGN_SHIP;
-import static org.valkyrienskies.mod.common.container.EnumInfuserButton.ASSEMBLE_SHIP;
-import static org.valkyrienskies.mod.common.container.EnumInfuserButton.ENABLE_PHYSICS;
-import static org.valkyrienskies.mod.common.container.EnumInfuserButton.values;
+import static org.valkyrienskies.addon.control.container.EnumInfuserButton.ALIGN_SHIP;
+import static org.valkyrienskies.addon.control.container.EnumInfuserButton.ASSEMBLE_SHIP;
+import static org.valkyrienskies.addon.control.container.EnumInfuserButton.ENABLE_PHYSICS;
+import static org.valkyrienskies.addon.control.container.EnumInfuserButton.values;
 
 import java.io.IOException;
 import net.minecraft.client.Minecraft;
@@ -14,9 +14,9 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.container.ContainerPhysicsInfuser;
-import org.valkyrienskies.mod.common.container.EnumInfuserButton;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.addon.control.container.ContainerPhysicsInfuser;
+import org.valkyrienskies.addon.control.container.EnumInfuserButton;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
 public class GuiPhysicsInfuser extends GuiContainer {
 

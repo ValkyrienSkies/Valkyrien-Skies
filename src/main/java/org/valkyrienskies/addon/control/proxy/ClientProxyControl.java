@@ -108,6 +108,8 @@ public class ClientProxyControl extends CommonProxyControl {
             new GiantPropellerPartTileEntityRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotationAxle.class,
             new RotationAxleTileEntityRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPhysicsInfuser.class,
+                new TileEntityPhysicsInfuserRenderer());
     }
 
     @Override

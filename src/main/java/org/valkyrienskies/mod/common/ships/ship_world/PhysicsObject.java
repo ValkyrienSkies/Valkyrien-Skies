@@ -32,7 +32,6 @@ import org.valkyrienskies.mod.common.ships.chunk_claims.ClaimedChunkCacheControl
 import org.valkyrienskies.mod.common.ships.chunk_claims.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.ships.block_relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransformationManager;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 

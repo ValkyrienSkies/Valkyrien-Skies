@@ -1,20 +1,8 @@
 #PARSE_ESCAPES
 
 # Items
-item.physics_core.name=Physics Core
-tooltip.valkyrienskies.physics_core=The core of a physics infuser.
 
 # Blocks
-tile.physics_infuser.name=Physics Infuser
-tooltip.valkyrienskies.physics_infuser=Turns any blocks attached to this one into a brand new Ship, won't infuse most pregenerated blocks like stone.
-
-tile.physics_infuser_creative.name=Creative Physics Infuser
-tooltip.valkyrienskies.physics_infuser_creative_1=Turns any blocks attached to this one into a brand new Ship, just be careful not to infuse your entire world.
-tooltip.valkyrienskies.physics_infuser_creative_2=Warning, this has no block limits, and it will infuse everything it touches! Use with extreme caution.
-
-tile.physics_infuser_dummy.name=Dummy Telegraph
-tooltip.valkyrienskies.physics_infuser_dummy=The other half of a physics infuser.
-
 tile.captains_chair.name=Captain's Chair
 tooltip.valkyrienskies.captains_chair_1=Use to mount and control Ships!
 tooltip.valkyrienskies.captains_chair_2=If you are standing on the ship, you will mount it upon control. Otherwise you will control the ship remotely without mounting.
@@ -24,15 +12,6 @@ tooltip.valkyrienskies.passenger_chair=Use to sit tight on ships.
 
 # Item Tab
 itemGroup.valkyrienskies=Valkyrien Skies
-
-# Gui
-gui.physics_infuser=Physics Infuser
-gui.assemble_ship=Assemble Ship
-gui.disassemble_ship=Disassemble Ship
-gui.enable_physics=Enable Physics
-gui.disable_physics=Disable Physics
-gui.align_ship=Align Ship
-gui.stop_align_ship=Stop Alignment
 
 ## Commands
 commands.vs.list-ships.noships=This world contains no ships!

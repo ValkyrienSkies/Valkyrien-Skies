@@ -17,12 +17,9 @@ import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.valkyrienskies.mod.client.render.GibsModelRegistry;
-import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.addon.control.renderer.infuser_core_rendering.InfuserCoreBakedModel;
 import org.valkyrienskies.mod.common.piloting.IShipPilot;
 import org.valkyrienskies.mod.common.piloting.ITileEntityPilotable;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPilotableImpl;
 
 public class ControlEventsClient {
 

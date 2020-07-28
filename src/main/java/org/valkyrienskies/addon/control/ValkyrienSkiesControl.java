@@ -22,7 +22,10 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.GameData;
 import org.valkyrienskies.addon.control.block.multiblocks.*;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationAxle;
@@ -32,6 +35,8 @@ import org.valkyrienskies.addon.control.capability.StorageLastRelay;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
 import org.valkyrienskies.addon.control.item.ItemVSWrench;
 import org.valkyrienskies.addon.control.item.ItemVanishingWire;
+import org.valkyrienskies.addon.control.network.VSGuiButtonHandler;
+import org.valkyrienskies.addon.control.network.VSGuiButtonMessage;
 import org.valkyrienskies.addon.control.proxy.CommonProxyControl;
 import org.valkyrienskies.addon.control.tileentity.*;
 // import org.valkyrienskies.addon.world.ValkyrienSkiesWorld;
@@ -59,6 +64,8 @@ public class ValkyrienSkiesControl {
     public static final String MOD_VERSION = ValkyrienSkiesMod.MOD_VERSION;
 
     public static final String VS_WORLD_MOD_ID = "vs_world";
+
+    public static SimpleNetworkWrapper controlGuiNetwork;
 
     // MOD INSTANCE
     @Instance(MOD_ID)
@@ -181,6 +188,7 @@ public class ValkyrienSkiesControl {
     public void preInit(FMLPreInitializationEvent event) {
 		addItems();
 		addBlocks();
+        registerNetworks();
         proxy.preInit(event);
     }
 
@@ -230,6 +238,9 @@ public class ValkyrienSkiesControl {
             new ResourceLocation(MOD_ID, "tile_giant_propeller_part"));
         GameRegistry.registerTileEntity(TileEntityRotationAxle.class,
             new ResourceLocation(MOD_ID, "tile_rotation_axle"));
+
+        GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class,
+                new ResourceLocation(MOD_ID, "tile_physics_infuser"));
     }
 
     private void registerCapabilities() {
@@ -284,4 +295,10 @@ public class ValkyrienSkiesControl {
 		}
 		return recipeLoc;
 	}
+
+	private void registerNetworks() {
+        controlGuiNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("vs-control");
+        controlGuiNetwork.registerMessage(VSGuiButtonHandler.class,
+                VSGuiButtonMessage.class, 1, Side.SERVER);
+    }
 }

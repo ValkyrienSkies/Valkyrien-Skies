@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.container;
+package org.valkyrienskies.addon.control.container;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -12,8 +12,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault

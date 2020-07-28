@@ -25,6 +25,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import org.valkyrienskies.addon.control.network.VSGuiButtonHandler;
+import org.valkyrienskies.addon.control.network.VSGuiButtonMessage;
 import org.valkyrienskies.mixin.MixinLoaderForge;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.*;
@@ -37,7 +39,6 @@ import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
 import org.valkyrienskies.mod.common.ships.deprecated_api.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
 
@@ -157,8 +158,6 @@ public class ValkyrienSkiesMod {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies");
         physWrapperNetwork.registerMessage(ShipIndexDataMessageHandler.class,
             ShipIndexDataMessage.class, 0, Side.CLIENT);
-        physWrapperNetwork.registerMessage(VSGuiButtonHandler.class,
-            VSGuiButtonMessage.class, 1, Side.SERVER);
 
         controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_piloting");
         controlNetwork
@@ -211,8 +210,6 @@ public class ValkyrienSkiesMod {
     }
 
     private void registerTileEntities() {
-        GameRegistry.registerTileEntity(TileEntityPhysicsInfuser.class,
-                new ResourceLocation(MOD_ID, "tile_physics_infuser"));
         GameRegistry.registerTileEntity(TileEntityCaptainsChair.class,
                 new ResourceLocation(MOD_ID, "tile_captains_chair"));
         GameRegistry.registerTileEntity(TileEntityPassengerChair.class,

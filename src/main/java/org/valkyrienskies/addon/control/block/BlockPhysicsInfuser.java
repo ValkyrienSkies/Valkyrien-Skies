@@ -26,11 +26,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.mod.client.gui.VS_Gui_Enum;
+import org.valkyrienskies.addon.control.gui.VS_Gui_Enum;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.addon.control.util.BlockVSDirectional;
 import org.valkyrienskies.mod.common.ships.block_relocation.DetectorManager;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -153,7 +153,7 @@ public class BlockPhysicsInfuser extends BlockVSDirectional implements ITileEnti
         EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             playerIn
-                .openGui(ValkyrienSkiesMod.INSTANCE, VS_Gui_Enum.PHYSICS_INFUSER.ordinal(), worldIn,
+                .openGui(ValkyrienSkiesControl.INSTANCE, VS_Gui_Enum.PHYSICS_INFUSER.ordinal(), worldIn,
                     pos.getX(), pos.getY(), pos.getZ());
         }
         return true;

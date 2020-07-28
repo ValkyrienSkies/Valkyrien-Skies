@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.client.render.tile_entity_renderers;
+package org.valkyrienskies.addon.control.renderer;
 
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
 import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
@@ -10,9 +10,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.addon.control.block.BlockPhysicsInfuser;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
 public class TileEntityPhysicsInfuserRenderer extends
     TileEntitySpecialRenderer<TileEntityPhysicsInfuser> {

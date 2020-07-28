@@ -1,14 +1,14 @@
-package org.valkyrienskies.mod.client.gui;
+package org.valkyrienskies.addon.control.gui;
 
-import static org.valkyrienskies.mod.client.gui.VS_Gui_Enum.PHYSICS_INFUSER;
+import static org.valkyrienskies.addon.control.gui.VS_Gui_Enum.PHYSICS_INFUSER;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
-import org.valkyrienskies.mod.common.container.ContainerPhysicsInfuser;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPhysicsInfuser;
+import org.valkyrienskies.addon.control.container.ContainerPhysicsInfuser;
+import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
 public class VSGuiHandler implements IGuiHandler {
 

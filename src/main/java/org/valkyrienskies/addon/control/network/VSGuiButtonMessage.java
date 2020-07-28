@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.common.network;
+package org.valkyrienskies.addon.control.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;

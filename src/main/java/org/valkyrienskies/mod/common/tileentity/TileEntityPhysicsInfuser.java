@@ -28,17 +28,19 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.block.BlockPhysicsInfuser;
 import org.valkyrienskies.mod.common.container.EnumInfuserButton;
 import org.valkyrienskies.mod.common.network.VSGuiButtonMessage;
+import org.valkyrienskies.mod.common.ships.block_relocation.IPostRelocationAwareTile;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
-    IVSTileGui {
+    IVSTileGui, IPostRelocationAwareTile {
 
     private final ItemStackHandler handler;
     private volatile boolean sendUpdateToClients;
@@ -108,6 +110,16 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
                     // Also tell the watching players to open the new guy
                     // BlockPos newInfuserPos = ship.getPhysicsObject().getPhysicsInfuserPos();
                 }
+            }
+
+            // Once the middle core is removed, automatically deconstruct the ship if possible.
+            if (parentShip.isPresent() && !canMaintainShip()) {
+                PhysicsObject physicsObject = parentShip.get();
+                this.isTryingToAlignShip = true;
+                this.isTryingToDisassembleShip = true;
+                physicsObject.setPhysicsEnabled(true);
+                physicsObject.setShipAligningToGrid(this.isTryingToAlignShip);
+                physicsObject.setAttemptToDeconstructShip(this.isTryingToDisassembleShip);
             }
 
             // Send any updates to clients
@@ -276,6 +288,14 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             // If client, then send a packet telling the server we pressed this button.
             ValkyrienSkiesMod.physWrapperNetwork
                 .sendToServer(new VSGuiButtonMessage(this, button.ordinal()));
+        } else {
+            Optional<PhysicsObject> optionalPhysicsObject = ValkyrienUtils.getPhysoManagingBlock(getWorld(), getPos());
+            if (optionalPhysicsObject.isPresent()) {
+                PhysicsObject physicsObject = optionalPhysicsObject.get();
+                physicsObject.setPhysicsEnabled(this.isPhysicsEnabled);
+                physicsObject.setShipAligningToGrid(this.isTryingToAlignShip);
+                physicsObject.setAttemptToDeconstructShip(this.isTryingToDisassembleShip);
+            }
         }
     }
 
@@ -303,16 +323,24 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
      * @return
      */
     public boolean isCenterOfShip() {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysoManagingBlock(getWorld(), getPos());
-        return !physicsObject.isPresent() ||
-                getPos().equals(physicsObject.get().getShipData().getPhysInfuserPos());
+        return true;
     }
 
     @SideOnly(Side.CLIENT)
     public double getCoreVerticalOffset(EnumInfuserCore enumInfuserCore, float partialTicks) {
         return (1 - partialTicks) * coreOffsetsPrevTick.get(enumInfuserCore)
             + partialTicks * coreOffsets.get(enumInfuserCore);
+    }
+
+    @Override
+    public void postRelocation(@Nonnull BlockPos newPos, @Nonnull BlockPos oldPos, @Nullable PhysicsObject copiedBy) {
+        if (copiedBy == null) {
+            // We've been moved from a ship into the world, reset the fields
+            isTryingToAssembleShip = false;
+            isTryingToDisassembleShip = false;
+            isPhysicsEnabled = false;
+            isTryingToAlignShip = false;
+        }
     }
 
     /**

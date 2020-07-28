@@ -7,6 +7,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -39,7 +40,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     private final VSThread physicsThread;
     private final WorldShipLoadingController loadingController;
     private final Map<UUID, PhysicsObject> loadedShips;
-    private final ConcurrentLinkedQueue<ShipData> spawnQueue;
+    private final ConcurrentLinkedQueue<Tuple<BlockPos, ShipData>> spawnQueue;
     private final ConcurrentLinkedQueue<UUID> loadQueue, unloadQueue, backgroundLoadQueue;
     private final Set<UUID> loadingInBackground;
     private ImmutableList<PhysicsObject> threadSafeLoadedShips;
@@ -125,13 +126,14 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     private void spawnNewShips() {
         while (!spawnQueue.isEmpty()) {
-            ShipData toSpawn = spawnQueue.remove();
+            Tuple<BlockPos, ShipData> spawnData = spawnQueue.remove();
+            BlockPos physicsInfuserPos = spawnData.getFirst();
+            ShipData toSpawn = spawnData.getSecond();
 
             if (loadedShips.containsKey(toSpawn.getUuid())) {
                 throw new IllegalStateException("Tried spawning a ShipData that was already loaded?\n" + toSpawn);
             }
 
-            BlockPos physicsInfuserPos = toSpawn.getPhysInfuserPos();
             SpatialDetector detector =  DetectorManager.getDetectorFor(
                     DetectorManager.DetectorIDs.ShipSpawnerGeneral, physicsInfuserPos, world,
                     VSConfig.maxShipSize + 1, true);
@@ -278,8 +280,6 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 }
             });
 
-            toSpawn.setPhysInfuserPos(toSpawn.getChunkClaim().getRegionCenter());
-
             PhysicsObject physicsObject = new PhysicsObject(world, toSpawn);
 
             // physicsObject.assembleShip(null, detector, physicsInfuserPos);
@@ -404,8 +404,8 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     /**
      * Thread safe way to queue a ship spawn. (Not the same as {@link #queueShipLoad(UUID)}.
      */
-    public void queueShipSpawn(@Nonnull ShipData data) {
-        this.spawnQueue.add(data);
+    public void queueShipSpawn(@Nonnull ShipData data, @Nonnull BlockPos spawnPos) {
+        this.spawnQueue.add(new Tuple<>(spawnPos, data));
     }
 
     @Override

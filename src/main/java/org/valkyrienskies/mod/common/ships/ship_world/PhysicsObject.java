@@ -83,9 +83,6 @@ public class PhysicsObject implements IPhysicsEntity {
     private boolean needsCollisionCacheUpdate;
 
     @Getter
-    private boolean shipAligningToGrid;
-
-    @Getter
     private final World world;
 
     /**
@@ -95,8 +92,27 @@ public class PhysicsObject implements IPhysicsEntity {
     @Getter
     private final ShipData shipData;
 
+    /**
+     * Used by the client to smoothly interpolate the ShipTransform sent by the server, so that clients see smooth ship
+     * movement.
+     */
     @Getter
     private final ITransformInterpolator transformInterpolator;
+
+    /**
+     * If true, this ship will slowly realign itself with the world, ignoring the normal rules of physics
+     */
+    @Setter
+    @Getter
+    private boolean shipAligningToGrid;
+
+    /**
+     * If true, this ship will attempt to destroy itself every tick, and will succeed if its rotation transform angle is
+     * less than 2 degrees.
+     */
+    @Setter
+    @Getter
+    private boolean attemptToDeconstructShip;
 
     // endregion
 
@@ -122,6 +138,7 @@ public class PhysicsObject implements IPhysicsEntity {
             getShipData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
         this.shipAligningToGrid = false;
+        this.attemptToDeconstructShip = false;
         this.needsCollisionCacheUpdate = true;
         // Note how this is last.
         if (world.isRemote) {
@@ -146,27 +163,6 @@ public class PhysicsObject implements IPhysicsEntity {
             // Copy the current and prev transforms into ShipData
             getShipData().setShipTransform(getShipTransformationManager().getCurrentTickTransform());
             getShipData().setPrevTickShipTransform(getShipTransformationManager().getPrevTickTransform());
-
-            TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
-            boolean shouldDeconstructShip;
-
-            // Only want to update the status of whether this ship is queued for unload AFTER we've updated from the
-            // physics transform.
-            if (te instanceof TileEntityPhysicsInfuser) {
-                TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
-                // Mark for deconstruction
-                shouldDeconstructShip =
-                        !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
-                shipAligningToGrid =
-                        !physicsCore.canMaintainShip() || physicsCore.isTryingToAlignShip();
-                getShipData().setPhysicsEnabled(!physicsCore.canMaintainShip() ||
-                        physicsCore.isPhysicsEnabled());
-            } else {
-                // Mark for deconstruction
-                shipAligningToGrid = true;
-                shouldDeconstructShip = true;
-                getShipData().setPhysicsEnabled(true);
-            }
         } else {
             transformInterpolator.tickTransformInterpolator();
             ShipTransform newTransform = transformInterpolator.getCurrentTickTransform();
@@ -177,13 +173,6 @@ public class PhysicsObject implements IPhysicsEntity {
             shipData.setShipBB(newAABB);
 
             shipTransformationManager.updateAllTransforms(newTransform, false, false);
-            /*
-            WrapperPositionMessage toUse = getShipTransformationManager().serverBuffer
-                .pollForClientTransform();
-            if (toUse != null) {
-                toUse.applySmoothLerp(this, .6D);
-            }
-             */
         }
     }
 
@@ -229,22 +218,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * deconstruct back to the world.
      */
     boolean shouldShipBeDestroyed() {
-        TileEntity te = getWorld().getTileEntity(getShipData().getPhysInfuserPos());
-        boolean shouldDeconstructShip;
-        if (te instanceof TileEntityPhysicsInfuser) {
-            TileEntityPhysicsInfuser physicsCore = (TileEntityPhysicsInfuser) te;
-            // Mark for deconstruction
-            shouldDeconstructShip =
-                    !physicsCore.canMaintainShip() || physicsCore.isTryingToDisassembleShip();
-        } else {
-            shouldDeconstructShip = true;
-        }
-
-        if (!shouldDeconstructShip) {
-            return false;
-        }
-
-        return isShipAlignedToWorld();
+        return attemptToDeconstructShip && isShipAlignedToWorld();
     }
 
     public boolean isShipAlignedToWorld() {

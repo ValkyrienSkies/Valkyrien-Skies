@@ -88,12 +88,6 @@ public class ShipData {
     private boolean physicsEnabled;
 
     /**
-     * The position of the physics infuser this ship has.
-     */
-    @Setter // This setter is pretty bad style, should be removed eventually.
-    private BlockPos physInfuserPos;
-
-    /**
      * The chunks claimed by this physo
      */
     private final VSChunkClaim chunkClaim;
@@ -112,8 +106,7 @@ public class ShipData {
 
     private ShipData(@NonNull ConcurrentUpdatableIndexedCollection<ShipData> owner,
                     ShipPhysicsData physicsData, @Nonnull ShipInertiaData inertiaData, @NonNull ShipTransform shipTransform, @NonNull ShipTransform prevTickShipTransform, @NonNull AxisAlignedBB shipBB,
-                    boolean physicsEnabled, @NonNull BlockPos physInfuserPos, @NonNull VSChunkClaim chunkClaim, @NonNull UUID uuid,
-                    @NonNull String name) {
+                    boolean physicsEnabled, @NonNull VSChunkClaim chunkClaim, @NonNull UUID uuid, @NonNull String name) {
         this.owner = owner;
         this.physicsData = physicsData;
         this.inertiaData = inertiaData;
@@ -121,7 +114,6 @@ public class ShipData {
         this.prevTickShipTransform = prevTickShipTransform;
         this.shipBB = shipBB;
         this.physicsEnabled = physicsEnabled;
-        this.physInfuserPos = physInfuserPos;
         this.chunkClaim = chunkClaim;
         this.uuid = uuid;
         this.name = name;
@@ -134,10 +126,10 @@ public class ShipData {
     public static ShipData createData(ConcurrentUpdatableIndexedCollection<ShipData> owner,
         String name, VSChunkClaim chunkClaim, UUID shipID,
         ShipTransform shipTransform,
-        AxisAlignedBB aabb, BlockPos physInfuserPos) {
+        AxisAlignedBB aabb) {
 
         return new ShipData(owner, new ShipPhysicsData(new Vector3d(), new Vector3d()), new ShipInertiaData(), shipTransform, shipTransform, aabb,
-            true, physInfuserPos, chunkClaim, shipID, name);
+            false, chunkClaim, shipID, name);
     }
 
     // region Setters

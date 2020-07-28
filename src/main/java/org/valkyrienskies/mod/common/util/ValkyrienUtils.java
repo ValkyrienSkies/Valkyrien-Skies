@@ -165,7 +165,7 @@ public class ValkyrienUtils {
         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(shipPosInitial.x(), shipPosInitial.y(),
             shipPosInitial.z(), shipPosInitial.x(), shipPosInitial.y(), shipPosInitial.z());
         return ShipData.createData(QueryableShipData.get(world).getAllShips(),
-            name, chunkClaim, shipID, initial, axisAlignedBB, physInfuserPos);
+            name, chunkClaim, shipID, initial, axisAlignedBB);
     }
 
     public static Iterable<PhysicsObject> getPhysosLoadedInWorld(World world) {
@@ -186,7 +186,7 @@ public class ValkyrienUtils {
         ShipData shipData = createNewShip(world, physicsInfuserPos);
 
         // Queue the ship spawn operation
-        ((WorldServerShipManager) ValkyrienUtils.getPhysObjWorld(world)).queueShipSpawn(shipData);
+        ((WorldServerShipManager) ValkyrienUtils.getPhysObjWorld(world)).queueShipSpawn(shipData, physicsInfuserPos);
     }
 
     public static IPhysObjectWorld getPhysObjWorld(World world) {

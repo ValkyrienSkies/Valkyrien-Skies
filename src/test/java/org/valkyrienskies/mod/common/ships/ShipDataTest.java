@@ -11,7 +11,7 @@ public class ShipDataTest {
     public void testNullPointer() {
         assertThrows(NullPointerException.class, () -> {
             ShipData shipData = ShipData.createData(null, null, null,
-                null, null, null, null);
+                null, null, null);
         });
     }
 

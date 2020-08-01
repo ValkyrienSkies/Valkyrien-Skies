@@ -1,10 +1,10 @@
 package org.valkyrienskies.mod.common.ships.block_relocation;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import org.valkyrienskies.mod.common.ships.ShipData;
+
+import javax.annotation.Nullable;
 
 /**
  * Allows a TileEntity to intelligently copy themselves when being moved; for example, during ship
@@ -23,6 +23,6 @@ public interface IRelocationAwareTile {
      * @return The (relocated) version of this tile. <strong>MUST IMPLEMENT {@link
      * IRelocationAwareTile}</strong>
      */
-    @Nonnull
+    @Nullable
     TileEntity createRelocatedTile(BlockPos newPos, @Nullable ShipData copiedBy);
 }

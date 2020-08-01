@@ -7,7 +7,10 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
+import org.valkyrienskies.mod.common.ships.ShipData;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 
 public abstract class BasicNodeTileEntity extends TileEntity implements IVSNodeProvider, ITickable {
@@ -108,6 +111,33 @@ public abstract class BasicNodeTileEntity extends TileEntity implements IVSNodeP
     @SuppressWarnings("unchecked")
     public Iterable<IVSNode> getNetworkedConnections() {
         return () -> (Iterator<IVSNode>) (Object) tileNode.getGraph().getObjects().iterator();
+    }
+
+    @Override
+    @Nullable
+    public TileEntity createRelocatedTile(BlockPos newPos, @Nullable ShipData copiedBy) {
+        NBTTagCompound tileEntNBT = writeToNBT(new NBTTagCompound());
+        // Change the block position to be inside of the Ship
+        tileEntNBT.setInteger("x", newPos.getX());
+        tileEntNBT.setInteger("y", newPos.getY());
+        tileEntNBT.setInteger("z", newPos.getZ());
+        // Then modify the positions of the connections
+        int[] oldData = tileEntNBT.getIntArray(VSNode_TileEntity.NBT_DATA_KEY);
+        int[] newData = new int[oldData.length];
+        for (int i = 0; i < oldData.length; i += 4) {
+            newData[i] = oldData[i] + newPos.getX() - getPos().getX();
+            newData[i + 1] = oldData[i + 1] + newPos.getY() - getPos().getY();
+            newData[i + 2] = oldData[i + 2] + newPos.getZ() - getPos().getZ();
+            newData[i + 3] = oldData[i + 3];
+        }
+        tileEntNBT.setIntArray(VSNode_TileEntity.NBT_DATA_KEY, newData);
+        // Finally call the create tile entity method.
+        try {
+            return TileEntity.create(world, tileEntNBT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static class GraphData implements Mergeable<GraphData> {

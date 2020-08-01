@@ -258,7 +258,7 @@ public class PhysicsObject implements IPhysicsEntity {
             for (BlockPos oldPos : this.getBlockPositions()) {
                 newPos.setPos(oldPos.getX() - centerDifference.getX(),
                         oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
-                MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, Optional.empty());
+                MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, null);
             }
 
             // Just delete the tile entities in ship to prevent any dupe bugs.

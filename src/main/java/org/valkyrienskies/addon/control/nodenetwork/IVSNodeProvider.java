@@ -1,14 +1,9 @@
 package org.valkyrienskies.addon.control.nodenetwork;
 
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.ships.ShipData;
-import org.valkyrienskies.mod.common.ships.block_relocation.IPostRelocationAwareTile;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.block_relocation.IRelocationAwareTile;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public interface IVSNodeProvider extends IPostRelocationAwareTile {
+public interface IVSNodeProvider extends IRelocationAwareTile {
 
     IVSNode getNode();
 
@@ -25,9 +20,4 @@ public interface IVSNodeProvider extends IPostRelocationAwareTile {
      */
     Iterable<IVSNode> getNetworkedConnections();
 
-    @Override
-    default void postRelocation(@Nonnull BlockPos newPos, @Nonnull BlockPos oldPos, @Nullable PhysicsObject copiedBy) {
-        shiftInternalData(newPos.subtract(oldPos));
-        getNode().setParentPhysicsObject(copiedBy);
-    }
 }

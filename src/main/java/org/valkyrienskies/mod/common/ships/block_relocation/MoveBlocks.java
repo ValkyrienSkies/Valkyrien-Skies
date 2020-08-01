@@ -8,18 +8,20 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class MoveBlocks {
 
     /**
-     * @param physicsObjectOptional Used when we're using this to copy from world to physics object;
-     *                              should be empty when other way around.
+     * @param physicsObject Used when we're using this to copy from world to physics object; should be null when other
+     *                      way around.
      */
     public static void copyBlockToPos(World world, BlockPos oldPos, BlockPos newPos,
-        Optional<PhysicsObject> physicsObjectOptional) {
+                                      @Nullable PhysicsObject physicsObject) {
         // To avoid any updates crap, just edit the chunk data array directly.
         // These look switched, but trust me they aren't
         IBlockState oldState = world.getBlockState(newPos);
@@ -42,24 +44,26 @@ public class MoveBlocks {
         world.notifyBlockUpdate(newPos, oldState, newState, 2);
 
         // If this block is force block, then add it to the activeForcePositions list of the ship.
-        if (physicsObjectOptional.isPresent() && BlockPhysicsDetails.isBlockProvidingForce(newState)) {
-            physicsObjectOptional.get().getShipData().activeForcePositions.add(newPos);
+        if (physicsObject != null && BlockPhysicsDetails.isBlockProvidingForce(newState)) {
+            physicsObject.getShipData().activeForcePositions.add(newPos);
         }
 
         // Now that we've copied the block to the position, copy the tile entity
-        copyTileEntityToPos(world, oldPos, newPos, physicsObjectOptional);
+        copyTileEntityToPos(world, oldPos, newPos, physicsObject);
     }
 
-    private static void copyTileEntityToPos(World world, BlockPos oldPos, BlockPos newPos,
-        Optional<PhysicsObject> physicsObjectOptional) {
+    public static void copyTileEntityToPos(World world, BlockPos oldPos, BlockPos newPos, PhysicsObject physicsObject) {
         // Make a copy of the tile entity at oldPos to newPos
         TileEntity worldTile = world.getTileEntity(oldPos);
         if (worldTile != null) {
             NBTTagCompound tileEntNBT = new NBTTagCompound();
             TileEntity newInstance;
             if (worldTile instanceof IRelocationAwareTile) {
-                newInstance = ((IRelocationAwareTile) worldTile).createRelocatedTile(newPos,
-                    physicsObjectOptional.map(PhysicsObject::getShipData).orElse(null));
+                ShipData shipData = null;
+                if (physicsObject != null) {
+                    shipData = physicsObject.getShipData();
+                }
+                newInstance = ((IRelocationAwareTile) worldTile).createRelocatedTile(newPos, shipData);
             } else {
                 tileEntNBT = worldTile.writeToNBT(tileEntNBT);
                 // Change the block position to be inside of the Ship
@@ -68,19 +72,12 @@ public class MoveBlocks {
                 tileEntNBT.setInteger("z", newPos.getZ());
                 newInstance = TileEntity.create(world, tileEntNBT);
             }
-            // Do post relocation behavior
-            if (newInstance instanceof IPostRelocationAwareTile) {
-                if (physicsObjectOptional.isPresent()) {
-                    ((IPostRelocationAwareTile) newInstance).postRelocation(newPos, oldPos, physicsObjectOptional.get());
-                } else {
-                    ((IPostRelocationAwareTile) newInstance).postRelocation(newPos, oldPos, null);
-                }
-            }
 
             try {
                 world.setTileEntity(newPos, newInstance);
-                physicsObjectOptional
-                    .ifPresent(physicsObject -> physicsObject.onSetTileEntity(newPos, newInstance));
+                if (physicsObject != null) {
+                    physicsObject.onSetTileEntity(newPos, newInstance);
+                }
                 newInstance.markDirty();
             } catch (Exception e) {
                 e.printStackTrace();

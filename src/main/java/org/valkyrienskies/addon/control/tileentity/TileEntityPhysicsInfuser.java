@@ -23,15 +23,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.mod.common.network.VSNetwork;
-import org.valkyrienskies.addon.control.gui.IVSTileGui;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.addon.control.block.BlockPhysicsInfuser;
 import org.valkyrienskies.addon.control.container.EnumInfuserButton;
+import org.valkyrienskies.addon.control.gui.IVSTileGui;
 import org.valkyrienskies.addon.control.network.VSGuiButtonMessage;
-import org.valkyrienskies.mod.common.ships.block_relocation.IPostRelocationAwareTile;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.network.VSNetwork;
+import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.ships.block_relocation.IRelocationAwareTile;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import javax.annotation.Nonnull;
@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, ICapabilityProvider,
-    IVSTileGui, IPostRelocationAwareTile {
+    IVSTileGui, IRelocationAwareTile {
 
     private final ItemStackHandler handler;
     private volatile boolean sendUpdateToClients;
@@ -333,15 +333,23 @@ public class TileEntityPhysicsInfuser extends TileEntity implements ITickable, I
             + partialTicks * coreOffsets.get(enumInfuserCore);
     }
 
+    @Nullable
     @Override
-    public void postRelocation(@Nonnull BlockPos newPos, @Nonnull BlockPos oldPos, @Nullable PhysicsObject copiedBy) {
+    public TileEntity createRelocatedTile(BlockPos newPos, @Nullable ShipData copiedBy) {
+        NBTTagCompound tileEntNBT = writeToNBT(new NBTTagCompound());
+        // Change the block position to be inside of the Ship
+        tileEntNBT.setInteger("x", newPos.getX());
+        tileEntNBT.setInteger("y", newPos.getY());
+        tileEntNBT.setInteger("z", newPos.getZ());
+        TileEntityPhysicsInfuser relocatedCopy = (TileEntityPhysicsInfuser) TileEntity.create(world, tileEntNBT);
         if (copiedBy == null) {
             // We've been moved from a ship into the world, reset the fields
-            isTryingToAssembleShip = false;
-            isTryingToDisassembleShip = false;
-            isPhysicsEnabled = false;
-            isTryingToAlignShip = false;
+            relocatedCopy.isTryingToAssembleShip = false;
+            relocatedCopy.isTryingToDisassembleShip = false;
+            relocatedCopy.isPhysicsEnabled = false;
+            relocatedCopy.isTryingToAlignShip = false;
         }
+        return relocatedCopy;
     }
 
     /**

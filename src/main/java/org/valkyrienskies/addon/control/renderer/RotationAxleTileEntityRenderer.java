@@ -9,7 +9,6 @@ import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.addon.control.block.BlockRotationAxle;
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationAxle;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
 public class RotationAxleTileEntityRenderer extends
     TileEntitySpecialRenderer<TileEntityRotationAxle> {
@@ -50,7 +49,7 @@ public class RotationAxleTileEntityRenderer extends
         }
 
         double keyframe = 1;
-        GibsAnimationRegistry.getAnimation("rotation_axle")
+        GibsAtomAnimationRegistry.getAnimation("rotation_axle")
             .renderAnimation(keyframe, brightness);
 
         GlStateManager.popMatrix();

@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.client.atom_animation_parser.impl;
+package org.valkyrienskies.addon.control.renderer.atom_animation_parser.impl;
 
 import java.util.ArrayList;
 import java.util.List;

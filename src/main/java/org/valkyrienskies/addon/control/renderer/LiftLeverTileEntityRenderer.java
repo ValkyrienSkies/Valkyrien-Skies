@@ -10,7 +10,6 @@ import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
 import org.valkyrienskies.addon.control.block.BlockLiftLever;
 import org.valkyrienskies.addon.control.tileentity.TileEntityLiftLever;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
 public class LiftLeverTileEntityRenderer extends
     TileEntitySpecialRenderer<TileEntityLiftLever> {
@@ -64,7 +63,7 @@ public class LiftLeverTileEntityRenderer extends
         // double keyframe = ((Minecraft.getMinecraft().world.getTotalWorldTime() + partialTick) % 44) + 1;
 
         double keyframe = (44 * leverOffset) + 1;
-        GibsAnimationRegistry.getAnimation("lift_lever").renderAnimation(keyframe, brightness);
+        GibsAtomAnimationRegistry.getAnimation("lift_lever").renderAnimation(keyframe, brightness);
 
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();

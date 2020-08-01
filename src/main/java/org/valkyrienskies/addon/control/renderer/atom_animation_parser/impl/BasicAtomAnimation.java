@@ -1,6 +1,6 @@
-package org.valkyrienskies.mod.client.atom_animation_parser.impl;
+package org.valkyrienskies.addon.control.renderer.atom_animation_parser.impl;
 
-import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
+import org.valkyrienskies.addon.control.renderer.atom_animation_parser.IAtomAnimation;
 import java.util.List;
 import net.minecraft.client.renderer.GlStateManager;
 

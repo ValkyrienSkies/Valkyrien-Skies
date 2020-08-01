@@ -1,4 +1,4 @@
-package org.valkyrienskies.mod.client.atom_animation_parser;
+package org.valkyrienskies.addon.control.renderer.atom_animation_parser;
 
 /**
  * Completely immutable, allows the client to render the animation at a given keyframe.

@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.init.Blocks;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEnginePart;
 import org.valkyrienskies.mod.client.render.FastBlockModelRenderer;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
 public class ValkyriumEnginePartTileEntityRenderer extends
     TileEntitySpecialRenderer<TileEntityValkyriumEnginePart> {
@@ -47,7 +46,7 @@ public class ValkyriumEnginePartTileEntityRenderer extends
 
             double keyframe = tileentity.getCurrentKeyframe(partialTick);
 
-            GibsAnimationRegistry.getAnimation("valkyrium_engine")
+            GibsAtomAnimationRegistry.getAnimation("valkyrium_engine")
                 .renderAnimation(keyframe, brightness);
         }
 

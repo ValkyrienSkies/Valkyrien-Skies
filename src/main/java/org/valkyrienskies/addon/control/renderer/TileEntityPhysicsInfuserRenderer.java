@@ -1,7 +1,7 @@
 package org.valkyrienskies.addon.control.renderer;
 
 import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
+import org.valkyrienskies.addon.control.renderer.atom_animation_parser.IAtomAnimation;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.addon.control.block.BlockPhysicsInfuser;
 import org.valkyrienskies.addon.control.tileentity.TileEntityPhysicsInfuser;
 
@@ -50,10 +49,10 @@ public class TileEntityPhysicsInfuserRenderer extends
         // First translate the model one block to the right
         GlStateManager.translate(-1, 0, 0);
         GlStateManager.scale(2, 2, 2);
-        GibsAnimationRegistry.getAnimation("physics_infuser_empty")
+        GibsAtomAnimationRegistry.getAnimation("physics_infuser_empty")
             .renderAnimation(keyframe, brightness);
 
-        IAtomAnimation cores_animation = GibsAnimationRegistry
+        IAtomAnimation cores_animation = GibsAtomAnimationRegistry
             .getAnimation("physics_infuser_cores");
         // Render only the cores that exist within the physics infuser's inventory.
         IItemHandler handler = tileentity

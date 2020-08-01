@@ -11,7 +11,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3i;
 import org.valkyrienskies.addon.control.block.BlockGearbox;
 import org.valkyrienskies.addon.control.tileentity.TileEntityGearbox;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 
 public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEntityGearbox> {
@@ -101,7 +100,7 @@ public class GearboxTileEntityRenderer extends TileEntitySpecialRenderer<TileEnt
             rotationFrom0To360 += 360;
         }
         double keyframe = (rotationFrom0To360 * 99D / 360D) + 1;
-        GibsAnimationRegistry.getAnimation("gearbox").renderAnimation(keyframe, brightness);
+        GibsAtomAnimationRegistry.getAnimation("gearbox").renderAnimation(keyframe, brightness);
 
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();

@@ -19,9 +19,8 @@ import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumEng
 import org.valkyrienskies.addon.control.block.torque.TileEntityRotationAxle;
 import org.valkyrienskies.addon.control.renderer.*;
 import org.valkyrienskies.addon.control.tileentity.*;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
+import org.valkyrienskies.addon.control.renderer.GibsAtomAnimationRegistry;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 @SuppressWarnings("unused")
 public class ClientProxyControl extends CommonProxyControl {
@@ -141,55 +140,55 @@ public class ClientProxyControl extends CommonProxyControl {
         registerGearboxGibs("gearbox_right_geo");
         registerGearboxGibs("gearbox_top_geo");
 
-        GibsAnimationRegistry.registerAnimation("valkyrium_compressor",
+        GibsAtomAnimationRegistry.registerAnimation("valkyrium_compressor",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/valkyrium_compressor/compressor_animations.atom"));
 
-        GibsAnimationRegistry.registerAnimation("valkyrium_engine",
+        GibsAtomAnimationRegistry.registerAnimation("valkyrium_engine",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/valkyrium_engine/valkyrium_engine.atom"));
 
-        GibsAnimationRegistry.registerAnimation("lift_lever",
+        GibsAtomAnimationRegistry.registerAnimation("lift_lever",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/controls/lift_lever_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("gearbox",
+        GibsAtomAnimationRegistry.registerAnimation("gearbox",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/gearbox/gearbox.atom"));
 
-        GibsAnimationRegistry.registerAnimation("pocketwatch_body",
+        GibsAtomAnimationRegistry.registerAnimation("pocketwatch_body",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/pocketwatch/pocketwatch_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("pocketwatch_lid",
+        GibsAtomAnimationRegistry.registerAnimation("pocketwatch_lid",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/pocketwatch/pocketwatch_lid_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("telescope",
+        GibsAtomAnimationRegistry.registerAnimation("telescope",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/telescope/telescope_keyframes.atom"));
 
-        GibsAnimationRegistry.registerAnimation("rudder",
+        GibsAtomAnimationRegistry.registerAnimation("rudder",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/rudder/rudder_animation.atom"));
 
-        GibsAnimationRegistry.registerAnimation("rotation_axle",
+        GibsAtomAnimationRegistry.registerAnimation("rotation_axle",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/rotation_axle/rotation_axle.atom"));
 
-        GibsAnimationRegistry.registerAnimation("giant_propeller",
+        GibsAtomAnimationRegistry.registerAnimation("giant_propeller",
             new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                 "models/block/giant_propeller/giant_propeller.atom"));
 
-        GibsAnimationRegistry.registerAnimation("physics_infuser",
+        GibsAtomAnimationRegistry.registerAnimation("physics_infuser",
                 new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                         "models/block/physics_infuser/physics_infuser.atom"));
 
-        GibsAnimationRegistry.registerAnimation("physics_infuser_empty",
+        GibsAtomAnimationRegistry.registerAnimation("physics_infuser_empty",
                 new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                         "models/block/physics_infuser/physics_infuser_empty.atom"));
         // Not an actual animation, just easier to put in than writing out all the core names.
-        GibsAnimationRegistry.registerAnimation("physics_infuser_cores",
+        GibsAtomAnimationRegistry.registerAnimation("physics_infuser_cores",
                 new ResourceLocation(ValkyrienSkiesControl.MOD_ID,
                         "models/block/physics_infuser/cores.atom"));
     }

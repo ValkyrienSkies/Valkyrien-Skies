@@ -1,9 +1,9 @@
-package org.valkyrienskies.mod.client.render;
+package org.valkyrienskies.addon.control.renderer;
 
-import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimation;
-import org.valkyrienskies.mod.client.atom_animation_parser.IAtomAnimationBuilder;
-import org.valkyrienskies.mod.client.atom_animation_parser.impl.BasicAtomAnimationBuilder;
-import org.valkyrienskies.mod.client.atom_animation_parser.parsers.AtomParser;
+import org.valkyrienskies.addon.control.renderer.atom_animation_parser.IAtomAnimation;
+import org.valkyrienskies.addon.control.renderer.atom_animation_parser.IAtomAnimationBuilder;
+import org.valkyrienskies.addon.control.renderer.atom_animation_parser.impl.BasicAtomAnimationBuilder;
+import org.valkyrienskies.addon.control.renderer.atom_animation_parser.parsers.AtomParser;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +12,9 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
+import org.valkyrienskies.mod.client.render.GibsModelRegistry;
 
-public class GibsAnimationRegistry {
+public class GibsAtomAnimationRegistry {
 
     private static final Map<String, IAtomAnimation> ANIMATION_MAP = new HashMap<String, IAtomAnimation>();
 

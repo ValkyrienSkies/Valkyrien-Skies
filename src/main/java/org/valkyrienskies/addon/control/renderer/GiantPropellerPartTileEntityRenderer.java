@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityGiantPropellerPart;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
 public class GiantPropellerPartTileEntityRenderer extends
     TileEntitySpecialRenderer<TileEntityGiantPropellerPart> {
@@ -29,7 +28,7 @@ public class GiantPropellerPartTileEntityRenderer extends
         if (!tileentity.isPartOfAssembledMultiblock()) {
             GlStateManager.pushMatrix();
             // GibsModelRegistry.renderGibsModel("aipropeller_geo", brightness);
-            GibsAnimationRegistry.getAnimation("giant_propeller").renderAnimation(1, brightness);
+            GibsAtomAnimationRegistry.getAnimation("giant_propeller").renderAnimation(1, brightness);
             GlStateManager.popMatrix();
         } else if (tileentity.isMaster()) {
             GlStateManager.pushMatrix();
@@ -64,7 +63,7 @@ public class GiantPropellerPartTileEntityRenderer extends
             GlStateManager.translate(-.5, -.5, -.5);
 
             // GibsModelRegistry.renderGibsModel("propeller_geo", brightness);
-            GibsAnimationRegistry.getAnimation("giant_propeller").renderAnimation(1, brightness);
+            GibsAtomAnimationRegistry.getAnimation("giant_propeller").renderAnimation(1, brightness);
             GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();

@@ -10,7 +10,6 @@ import org.joml.AxisAngle4d;
 import org.joml.Vector3d;
 import org.valkyrienskies.addon.control.block.multiblocks.TileEntityValkyriumCompressorPart;
 import org.valkyrienskies.mod.client.render.FastBlockModelRenderer;
-import org.valkyrienskies.mod.client.render.GibsAnimationRegistry;
 
 public class ValkyriumCompressorPartTileEntityRenderer extends
     TileEntitySpecialRenderer<TileEntityValkyriumCompressorPart> {
@@ -53,7 +52,7 @@ public class ValkyriumCompressorPartTileEntityRenderer extends
                 GlStateManager.rotate(-rotationYaw, 0, 1, 0);
                 GlStateManager.translate(-.5, 0, -.5);
 
-                GibsAnimationRegistry.getAnimation("valkyrium_compressor")
+                GibsAtomAnimationRegistry.getAnimation("valkyrium_compressor")
                     .renderAnimation(keyframe, brightness);
                 GlStateManager.popMatrix();
             }

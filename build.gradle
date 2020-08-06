@@ -28,7 +28,7 @@ apply plugin: "java"
 ext {
     //general things
     javaVersion = "1.8"
-    vsVersion = "1.0"
+    vsVersion = "1.0.0." + ('git rev-list --count HEAD'.execute().text.trim())
 
     //minecraft things
     mcpmappingsVersion = "stable_39"
@@ -47,7 +47,7 @@ ext {
     vsApiVersion = "1.0-1.12.2-SNAPSHOT"
 }
 
-version = "$vsVersion-$minecraftVersion"
+version = "$vsVersion"
 group = "org.valkyrienskies"
 archivesBaseName = "valkyrien-skies"
 
@@ -252,7 +252,7 @@ publishing {
         maven(MavenPublication) {
             groupId = "org.valkyrienskies"
             artifactId = "valkyrien-skies"
-            version = project.version + "-SNAPSHOT"
+            version = project.version
 
             artifact jar {
                 classifier null

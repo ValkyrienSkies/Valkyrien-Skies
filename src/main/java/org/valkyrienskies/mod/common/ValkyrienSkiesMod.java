@@ -49,8 +49,7 @@ import java.util.concurrent.Executors;
 
 @Mod(
     modid = ValkyrienSkiesMod.MOD_ID,
-    name = ValkyrienSkiesMod.MOD_NAME,
-    version = ValkyrienSkiesMod.MOD_VERSION,
+    useMetadata = true,
     updateJSON = "https://raw.githubusercontent.com/ValkyrienSkies/Valkyrien-Skies/master/update.json",
     certificateFingerprint = ValkyrienSkiesMod.MOD_FINGERPRINT
 )
@@ -62,7 +61,9 @@ public class ValkyrienSkiesMod {
 
     // MOD INFO CONSTANTS
     public static final String MOD_ID = "valkyrienskies";
+    @Deprecated
     public static final String MOD_NAME = "Valkyrien Skies";
+    @Deprecated
     public static final String MOD_VERSION = "1.0";
     static final String MOD_FINGERPRINT = "b308676914a5e7d99459c1d2fb298744387899a7";
 

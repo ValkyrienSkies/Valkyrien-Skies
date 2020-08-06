@@ -2,12 +2,12 @@ buildscript {
     repositories {
         jcenter()
         maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            name = "MinecraftForge"
+            url = "https://files.minecraftforge.net/maven/"
         }
         maven {
             name = "SpongePowered"
-            url = "http://repo.spongepowered.org/maven"
+            url = "http://repo.spongepowered.org/maven/"
         }
     }
     dependencies {
@@ -15,46 +15,77 @@ buildscript {
         classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
 }
+
 plugins {
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
-    id "com.wynprice.cursemaven" version "2.1.1"
+    id "com.github.johnrengelman.shadow" version "4.0.4"
     id "maven-publish"
 }
 
-ext.configFile = file "project.properties"
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "org.spongepowered.mixin"
 apply plugin: "java"
 
-configFile.withReader {
-    // read config.  it shall from now on be referenced as simply config or as project.config
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
+ext {
+    //general things
+    javaVersion = "1.8"
+    vsVersion = "1.0"
+
+    //minecraft things
+    mcpmappingsVersion = "stable_39"
+    minecraftforgeVersion = "14.23.5.2847"
+    minecraftVersion = "1.12.2"
+
+    //dependency things
+    cqengineVersion = "3.4.0"
+    graphlibVersion = "1.4.0"
+    jacksonVersion = "2.10.0"
+    javaxInjectVersion = "1"
+    lombokVersion = "1.18.10"
+    mixinVersion = "0.7.11-SNAPSHOT"
+    opencomputersVersion = "MC1.12.1-1.7.1.+"
+    spongeVersion = "1.12.2-2825-7.1.6"
+    vsApiVersion = "1.0-1.12.2-SNAPSHOT"
 }
 
-version = "${config.minecraft_version}-${config.mod_version}"
-
-group = "${config.group_id}" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "${config.mod_id_cap}"
+version = "$vsVersion-$minecraftVersion"
+group = "org.valkyrienskies"
+archivesBaseName = "valkyrien-skies"
 
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
+    sourceCompatibility = targetCompatibility = "$javaVersion"
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
 }
 
 minecraft {
-    version = project.forgeVersion
+    version = "$minecraftVersion-$minecraftforgeVersion"
     runDir = "run"
-    mappings = project.mcpVersion
+    mappings = "$mcpmappingsVersion"
+    makeObfSourceJar = false
+
     coreMod = "org.valkyrienskies.mixin.MixinLoaderForge"
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+
+    def args = [
+            "-Dmixin.checks.interfaces=true",
+            "-Dmixin.debug.export=true",
+            "-Dmixin.debug.verbose=true",
+            "-Dmixin.hotSwap=true",
+            "-Xmx2G",
+            "-XX:+UseG1GC",
+            "-ea",
+            "-da:io.netty..."
+    ]
+    clientJvmArgs += args
+    serverJvmArgs += args
 }
 
 configurations {
     shade
     compile.extendsFrom shade
 
-    all {
+    all { //hacky workaround
         resolutionStrategy {
             force("com.google.guava:guava:21.0")
         }
@@ -62,9 +93,8 @@ configurations {
 }
 
 repositories {
-    mavenLocal()
     maven {
-        name = "spongepowered-repo"
+        name = "SpongePowered"
         url = "http://repo.spongepowered.org/maven/"
     }
     maven {
@@ -72,24 +102,14 @@ repositories {
         url = "http://maven.cil.li/"
     }
     maven {
-        name = "Dogforce Games"
-        url = "http://dogforce-games.com/maven"
+        name = "DaPorkchop_"
+        url = "https://maven.daporkchop.net/"
     }
     maven {
-        url 'https://jitpack.io'
+        name = "Dogforce Games"
+        url = "http://dogforce-games.com/maven/"
     }
     jcenter()
-}
-
-ext {
-    cqengineVersion = "3.4.0"
-    graphlibVersion = "1.4.0"
-    jacksonVersion = "2.10.0"
-    lombokVersion = "1.18.10"
-    mixinVersion = "0.7.11-SNAPSHOT"
-    opencomputersVersion = "MC1.12.1-1.7.1.+"
-    spongeVersion = "1.12.2-2825-7.1.6"
-    vsApiVersion = "master-SNAPSHOT"
 }
 
 dependencies {
@@ -100,35 +120,27 @@ dependencies {
         exclude module: "gson"
         exclude module: "launchwrapper"
     }
+    // mixin as annotation processor
+    annotationProcessor("org.spongepowered:mixin:$mixinVersion")
     
     // Needs to be present at compile-time because we mix in to spongeforge, however marking it as
     // compile makes forge load it as a mod in a dev environment, which is very annoying
     compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
         transitive = false
     }
-
-    deobfCompile("org.valkyrienskies:vs-world:ec6520159f") {
-        transitive = false
-    }
-
-    // mixin as annotation processor
-    annotationProcessor("org.spongepowered:mixin:$mixinVersion")
-
-    // BetterPortals compatibility
-    // deobfCompile 'curse.maven:shadowfacts-forgelin:2785465'
-    // deobfCompile 'curse.maven:betterportals:2883633'
+    
+    shade "org.valkyrienskies:api:$vsApiVersion"
 
     compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
 
     shade "gigaherz.graph:GraphLib:$graphlibVersion"
-    shade "com.github.ValkyrienSkies:Valkyrien-Skies-API:$vsApiVersion"
 
     // ODE4j physics engine (https://mvnrepository.com/artifact/org.ode4j/core)
     // shade group: 'org.ode4j', name: 'core', version: '0.4.0' // 800KB
     // shade group: 'org.ode4j', name: 'demo', version: '0.4.0'
 
     // javax inject annotation
-    shade group: 'javax.inject', name: 'javax.inject', version: '1' // 2KB
+    shade "javax.inject:javax.inject:$javaxInjectVersion" // 2KB
 
     // CQEngine for in-memory nonpersistent database
     // Provides Kryo
@@ -188,25 +200,6 @@ mixin {
     add sourceSets.main, "mixins.valkyrienskies.refmap.json"
 }
 
-shadowJar {
-    classifier = null // No -all classifier
-    configurations = [project.configurations.shade]
-    relocate 'com.fasterxml', 'org.valkyrienskies.deps.com.fasterxml'
-    mergeServiceFiles() // https://github.com/johnrengelman/shadow/issues/304
-}
-
-reobf {
-    shadowJar{}
-}
-
-// https://forums.spongepowered.org/t/mcp-reobfuscation-doesnt-work/21779
-tasks.build.dependsOn reobfShadowJar
-
-reobf.jar {
-    mappingType = "SEARGE"
-    classpath = sourceSets.main.compileClasspath
-}
-
 jar {
     classifier = 'unshaded' // this is probably not the one you want
     manifest.attributes(
@@ -220,32 +213,55 @@ jar {
     )
 }
 
-task signJar(type: SignJar, dependsOn: jar) {
-    onlyIf { // Skip the task if our secret data isn"t available
-        project.hasProperty("keyStore")
-    }
+shadowJar {
+    classifier = null // No -all classifier
+    configurations = [project.configurations.shade]
+    relocate 'com.fasterxml', 'org.valkyrienskies.deps.com.fasterxml'
+    mergeServiceFiles() // https://github.com/johnrengelman/shadow/issues/304
+}
 
-    if (project.hasProperty("keyStore")) {
-        keyStore = project.keyStore // This needs to be a path to the keystore file
-        alias = project.keyStoreAlias
-        storePass = project.keyStorePass
-        keyPass = project.keyStoreKeyPass
-        inputFile = jar.archivePath
-        outputFile = jar.archivePath
+reobf {
+    jar {
+        mappingType = "SEARGE"
+        classpath = sourceSets.main.compileClasspath
+    }
+    shadowJar{
+        mappingType = "SEARGE"
+        classpath = sourceSets.main.compileClasspath
     }
 }
 
-build.dependsOn signJar
+build.dependsOn(reobfJar)
+build.dependsOn(reobfShadowJar)
 
 publishing {
+    repositories {
+        if (project.hasProperty("daporkchopMavenUsername") && project.hasProperty("daporkchopMavenPassword")) {
+            maven {
+                credentials {
+                    username = "$daporkchopMavenUsername"
+                    password = "$daporkchopMavenPassword"
+                }
+
+                name = "DaPorkchop_"
+                url = "https://maven.daporkchop.net/snapshot/"
+            }
+        }
+    }
     publications {
         maven(MavenPublication) {
-            groupId = "valkyrienskies"
-            artifactId = "valkyrienskies"
-            version = project.version
+            groupId = "org.valkyrienskies"
+            artifactId = "valkyrien-skies"
+            version = project.version + "-SNAPSHOT"
 
-            from components.java
-            artifact shadowJar
+            artifact jar {
+                classifier null
+            }
+            
+            artifact shadowJar {
+                classifier "all"
+            }
+            
             artifact sourceJar {
                 classifier "sources"
             }
@@ -254,28 +270,17 @@ publishing {
 }
 
 //sets additional JVM args for genIntellijRuns
-
-import java.util.concurrent.atomic.AtomicReference
-
-AtomicReference<String> mixinPath = new AtomicReference<>(null)
-configurations.shade.each {
-    if (it.absolutePath.contains("mixin")) {
-        mixinPath.set(it.absolutePath)
+task preIntellijRuns {
+    doFirst {
+        StreamSupport.stream(configurations.compile.spliterator(), false).filter({
+            it.name.contains("mixin")
+        }).findAny().ifPresent({
+            minecraft.clientJvmArgs += "-javaagent:" + it.absolutePath
+            minecraft.serverJvmArgs += "-javaagent:" + it.absolutePath
+        })
     }
 }
-if (mixinPath != null) {
-    minecraft.clientJvmArgs = minecraft.serverJvmArgs = Arrays.asList(
-            "-Dmixin.checks.interfaces=true",
-            "-Dmixin.debug.export=true",
-            "-Dmixin.debug.verbose=true",
-            "-Dmixin.hotSwap=true",
-            "-javaagent:" + mixinPath,
-            "-ea",
-            "-da:io.netty..."
-    )
-} else {
-    throw new IllegalStateException("Unable to find mixin path!")
-}
+genIntellijRuns.dependsOn(preIntellijRuns)
 
 // Junit testing
 test {

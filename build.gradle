@@ -44,7 +44,7 @@ ext {
     mixinVersion = "0.7.11-SNAPSHOT"
     opencomputersVersion = "MC1.12.1-1.7.1.+"
     spongeVersion = "1.12.2-2825-7.1.6"
-    vsApiVersion = "1.0-1.12.2-SNAPSHOT"
+    vsApiVersion = "1.0.0.9"
 }
 
 version = "$vsVersion"
@@ -244,7 +244,7 @@ publishing {
                 }
 
                 name = "DaPorkchop_"
-                url = "https://maven.daporkchop.net/snapshot/"
+                url = "https://maven.daporkchop.net/release/"
             }
         }
     }

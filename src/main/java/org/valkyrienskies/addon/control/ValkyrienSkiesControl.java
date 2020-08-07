@@ -32,6 +32,7 @@ import org.valkyrienskies.addon.control.block.torque.TileEntityRotationAxle;
 import org.valkyrienskies.addon.control.capability.ICapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.ImplCapabilityLastRelay;
 import org.valkyrienskies.addon.control.capability.StorageLastRelay;
+import org.valkyrienskies.addon.control.item.ItemPhysicsCore;
 import org.valkyrienskies.addon.control.item.ItemRelayWire;
 import org.valkyrienskies.addon.control.item.ItemVSWrench;
 import org.valkyrienskies.addon.control.item.ItemVanishingWire;
@@ -40,7 +41,6 @@ import org.valkyrienskies.addon.control.network.VSGuiButtonMessage;
 import org.valkyrienskies.addon.control.proxy.CommonProxyControl;
 import org.valkyrienskies.addon.control.tileentity.*;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.addon.control.item.ItemPhysicsCore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +48,8 @@ import java.util.List;
 @Mod(
     name = ValkyrienSkiesControl.MOD_NAME,
     modid = ValkyrienSkiesControl.MOD_ID,
-    version = ValkyrienSkiesControl.MOD_VERSION,
-    dependencies = "after:" + ValkyrienSkiesControl.VS_WORLD_MOD_ID
+    version = ValkyrienSkiesControl.MOD_VERSION
+    // dependencies = "required-after:" + ValkyrienSkiesControl.VS_WORLD_MOD_ID
 )
 @Mod.EventBusSubscriber(modid = ValkyrienSkiesControl.MOD_ID)
 public class ValkyrienSkiesControl {
@@ -150,20 +150,19 @@ public class ValkyrienSkiesControl {
 
     @Optional.Method(modid = VS_WORLD_MOD_ID)
     public void addVsWorldRecipes() {
-        org.valkyrienskies.addon.world.ValkyrienSkiesWorld VS_WORLD_INSTANCE =
-            org.valkyrienskies.addon.world.ValkyrienSkiesWorld.INSTANCE;
+	    /*
         addShapedRecipe(INSTANCE.vanishingWire, 8,
             "WWW",
             "WVW",
             "WWW",
             'W', INSTANCE.relayWire,
-            'V', VS_WORLD_INSTANCE.valkyriumCrystal);
+            'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
         addShapedRecipe(INSTANCE.vsControlBlocks.compactedValkyrium, 1,
             "VVV",
             "VVV",
             "VVV",
-            'V', VS_WORLD_INSTANCE.valkyriumCrystal);
+            'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
         addShapedRecipe(INSTANCE.vsControlBlocks.valkyriumEnginePart, 1,
             "IVI",
@@ -171,7 +170,7 @@ public class ValkyrienSkiesControl {
             "IVI",
             'I', Items.IRON_INGOT,
             'F', Item.getItemFromBlock(Blocks.FURNACE),
-            'V', VS_WORLD_INSTANCE.valkyriumCrystal);
+            'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
 
         addShapedRecipe(INSTANCE.vsControlBlocks.valkyriumCompressorPart, 1,
             "GVG",
@@ -179,7 +178,9 @@ public class ValkyrienSkiesControl {
             "GVG",
             'G', Items.GOLD_INGOT,
             'F', Item.getItemFromBlock(Blocks.PISTON),
-            'V', VS_WORLD_INSTANCE.valkyriumCrystal);
+            'V', ValkyrienSkiesWorld.INSTANCE.valkyriumCrystal);
+
+	     */
     }
 
     @Mod.EventHandler

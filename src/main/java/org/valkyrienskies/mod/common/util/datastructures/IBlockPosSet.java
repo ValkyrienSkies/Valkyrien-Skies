@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.util.datastructures;
 
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.NotImplementedException;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
 
 import javax.annotation.Nonnull;
@@ -33,6 +34,15 @@ public interface IBlockPosSet extends Set<BlockPos> {
      */
     default void forEach(@Nonnull VSIterationUtils.IntTernaryConsumer action) {
         forEach(blockPos -> action.accept(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+    }
+
+    /**
+     * Allows other threads (for example physics threads) to iterate over the elements in this list unsafely.
+     * Though the iteration is almost always correct, it is possible to iterate over an element more than once, or not
+     * all. But the chances of these events occurring is very small.
+     */
+    default void forEachUnsafe(@Nonnull VSIterationUtils.IntTernaryConsumer action) {
+        throw new NotImplementedException("Not implemented");
     }
 
     default boolean add(@Nonnull BlockPos pos) throws IllegalArgumentException {

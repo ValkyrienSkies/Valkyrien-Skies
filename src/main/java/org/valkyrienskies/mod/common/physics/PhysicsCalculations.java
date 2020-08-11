@@ -201,7 +201,7 @@ public class PhysicsCalculations {
             BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
             // Note that iterating over "activeForcePositions" is not thread safe, so this could lead to problems.
             // However we're going to completely replace this code soon anyways, so its not a big deal.
-            parent.getShipData().activeForcePositions.forEach((x, y, z) -> {
+            parent.getShipData().activeForcePositions.forEachUnsafe((x, y, z) -> {
                 mutablePos.setPos(x, y, z);
                 IBlockState state = getParent().getChunkAt(mutablePos.getX() >> 4, mutablePos.getZ() >> 4).getBlockState(mutablePos);
                 Block blockAt = state.getBlock();

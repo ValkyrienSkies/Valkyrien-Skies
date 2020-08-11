@@ -19,6 +19,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import lombok.Getter;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.NotImplementedException;
 import org.valkyrienskies.mod.common.util.datastructures.SmallBlockPosSet.SmallBlockPosSetDeserializer;
 import org.valkyrienskies.mod.common.util.datastructures.SmallBlockPosSet.SmallBlockPosSetSerializer;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
@@ -153,12 +154,38 @@ public class SmallBlockPosSet implements IBlockPosSet {
         return new BlockPos(x + centerX, y, z + centerZ);
     }
 
+    private void decompressMutable(int compressed, BlockPos.MutableBlockPos mutableBlockPos) {
+        int z = compressed >> 20;
+        int y = (compressed >> 12) & BOT_8_BITS;
+        // this basically left-pads the int when casting so that the sign is preserved
+        // not sure if there is a better way
+        int x = (compressed & BOT_12_BITS) << 20 >> 20;
+        mutableBlockPos.setPos(x + centerX, y, z + centerZ);
+    }
+
     private int compress(int x, int y, int z) {
         // Allocate 12 bits for x, 12 bits for z, and 8 bits for y.
         int xBits = (x - centerX) & BOT_12_BITS;
         int yBits = y & BOT_8_BITS;
         int zBits = (z - centerZ) & BOT_12_BITS;
         return xBits | (yBits << 12) | (zBits << 20);
+    }
+
+    @Override
+    public void forEachUnsafe(@Nonnull VSIterationUtils.IntTernaryConsumer action) {
+        int curIndex = 0;
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        while (listValueToIndex.size() >= curIndex) {
+            try {
+                int currentValue = listValueToIndex.get(curIndex);
+                curIndex++;
+                decompressMutable(currentValue, mutableBlockPos);
+                action.accept(mutableBlockPos.getX(), mutableBlockPos.getY(), mutableBlockPos.getZ());
+            } catch (Exception e) {
+                // Catch concurrent read/write race condition
+                return;
+            }
+        }
     }
 
     private class SmallBlockPosIterator implements Iterator<BlockPos> {

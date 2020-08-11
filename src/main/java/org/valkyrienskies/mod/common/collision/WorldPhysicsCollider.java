@@ -13,6 +13,8 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
@@ -75,7 +77,7 @@ public class WorldPhysicsCollider {
         this.calculator = calculations;
         this.parent = calculations.getParent();
         this.worldObj = parent.getWorld();
-        this.cachedPotentialHits = TCollections.synchronizedList(new TIntArrayList());
+        this.cachedPotentialHits = new TIntArrayList();
         this.cachedHitsToRemove = new TIntArrayList();
         this.rand = new Random();
         this.mutablePos = new MutableBlockPos();
@@ -361,26 +363,28 @@ public class WorldPhysicsCollider {
 
         // More multithreading!
         if (parent.getBlockPositions().size() > 100) {
-            List<Tuple<Integer, Integer>> tasks = new ArrayList<Tuple<Integer, Integer>>();
+            List<Triple<Integer, Integer, TIntList>> tasks = new ArrayList<>();
 
             for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
                 for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
-                    tasks.add(new Tuple<>(chunkX, chunkZ));
+                    tasks.add(new ImmutableTriple<>(chunkX, chunkZ, new TIntArrayList()));
                 }
             }
 
-            Consumer<Tuple<Integer, Integer>> consumer = i -> { // i is a Tuple<Integer, Integer>
+            Consumer<Triple<Integer, Integer, TIntList>> consumer = i -> { // i is a Tuple<Integer, Integer>
                 // updateCollisionCacheParrallel(cache, cachedPotentialHits, i.getFirst(),
                 // i.getSecond(), minX, minY, minZ, maxX, maxY, maxZ);
-                updateCollisionCacheSequential(cache, i.getFirst(), i.getSecond(), minX, minY, minZ,
+                updateCollisionCacheSequential(cache, i.getLeft(), i.getMiddle(), minX, minY, minZ,
                     maxX, maxY, maxZ,
-                    shipBB);
+                    shipBB, i.getRight());
             };
             try {
                 tasks.parallelStream().forEach(consumer);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            tasks.forEach(task -> cachedPotentialHits.addAll(task.getRight()));
         } else {
             // Cast to double to avoid overflow errors
             double size = ((double) (chunkMaxX - chunkMinX)) * ((double) (chunkMaxZ - chunkMinZ));
@@ -392,7 +396,7 @@ public class WorldPhysicsCollider {
             for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
                 for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
                     updateCollisionCacheSequential(cache, chunkX, chunkZ, minX, minY, minZ, maxX,
-                        maxY, maxZ, shipBB);
+                        maxY, maxZ, shipBB, cachedPotentialHits);
                 }
             }
         }
@@ -400,7 +404,7 @@ public class WorldPhysicsCollider {
 
     private void updateCollisionCacheSequential(ChunkCache cache, int chunkX, int chunkZ, int minX,
         int minY, int minZ,
-        int maxX, int maxY, int maxZ, AxisAlignedBB shipBB) {
+        int maxX, int maxY, int maxZ, AxisAlignedBB shipBB, TIntList output) {
         int arrayChunkX = chunkX - cache.chunkX;
         int arrayChunkZ = chunkZ - cache.chunkZ;
 
@@ -459,28 +463,28 @@ public class WorldPhysicsCollider {
                                                     && z <= maxZ) {
                                                     checkForCollision(x, y, z, extendedblockstorage,
                                                         octree, temp1,
-                                                        temp2, temp3, shipBB);
+                                                        temp2, temp3, shipBB, output);
                                                     checkForCollision(x, y, z + 1,
                                                         extendedblockstorage, octree, temp1,
-                                                        temp2, temp3, shipBB);
+                                                        temp2, temp3, shipBB, output);
                                                     checkForCollision(x, y + 1, z,
                                                         extendedblockstorage, octree, temp1,
-                                                        temp2, temp3, shipBB);
+                                                        temp2, temp3, shipBB, output);
                                                     checkForCollision(x, y + 1, z + 1,
                                                         extendedblockstorage, octree,
-                                                        temp1, temp2, temp3, shipBB);
+                                                        temp1, temp2, temp3, shipBB, output);
                                                     checkForCollision(x + 1, y, z,
                                                         extendedblockstorage, octree, temp1,
-                                                        temp2, temp3, shipBB);
+                                                        temp2, temp3, shipBB, output);
                                                     checkForCollision(x + 1, y, z + 1,
                                                         extendedblockstorage, octree,
-                                                        temp1, temp2, temp3, shipBB);
+                                                        temp1, temp2, temp3, shipBB, output);
                                                     checkForCollision(x + 1, y + 1, z,
                                                         extendedblockstorage, octree,
-                                                        temp1, temp2, temp3, shipBB);
+                                                        temp1, temp2, temp3, shipBB, output);
                                                     checkForCollision(x + 1, y + 1, z + 1,
                                                         extendedblockstorage, octree,
-                                                        temp1, temp2, temp3, shipBB);
+                                                        temp1, temp2, temp3, shipBB, output);
                                                 }
                                             }
                                         }
@@ -494,7 +498,7 @@ public class WorldPhysicsCollider {
                                 for (int z = minStorageZ; z < maxStorageZ; z++) {
                                     checkForCollision(x, y, z, extendedblockstorage, octree, temp1,
                                         temp2, temp3,
-                                        shipBB);
+                                        shipBB, output);
                                 }
                             }
                         }
@@ -507,7 +511,7 @@ public class WorldPhysicsCollider {
     private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage,
         IBitOctree octree, Vector3d inLocal,
         Vector3d inBody,
-        Vector3d speedInBody, AxisAlignedBB shipBB) {
+        Vector3d speedInBody, AxisAlignedBB shipBB, TIntList output) {
         if (octree.get(x & 15, y & 15, z & 15)) {
             inLocal.x = x + .5D;
             inLocal.y = y + .5D;
@@ -594,7 +598,7 @@ public class WorldPhysicsCollider {
                         }
                         for (int localY = minY; localY < maxY; localY++) {
                             boolean result = checkForCollisionFast(theChunk, localX, localY,
-                                localZ, x, y, z);
+                                localZ, x, y, z, output);
                             if (result) {
                                 break breakThisLoop;
                             }
@@ -613,7 +617,7 @@ public class WorldPhysicsCollider {
 
     private boolean checkForCollisionFast(final Chunk chunk, final int localX, final int localY,
         final int localZ,
-        final int x, final int y, final int z) {
+        final int x, final int y, final int z, final TIntList output) {
         if (chunk.storageArrays[localY >> 4] != null) {
             IBitOctreeProvider provider = (IBitOctreeProvider) chunk.storageArrays[localY >> 4]
                 .getData();
@@ -623,7 +627,7 @@ public class WorldPhysicsCollider {
                 // Sometimes we end up adding to the hits array in multiple threads at once,
                 // crashing the physics.
                 try {
-                    cachedPotentialHits.add(hash);
+                    output.add(hash);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

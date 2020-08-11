@@ -11,6 +11,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import lombok.Getter;
@@ -38,12 +42,15 @@ public class SmallBlockPosSet implements IBlockPosSet {
     private static final int BOT_8_BITS = 0x000000FF;
 
     @Nonnull
-    private final TIntSet compressedBlockPosSet;
+    private final TIntList compressedBlockPosList;
+    @Nonnull
+    private final TIntIntMap listValueToIndex;
     @Getter
     private final int centerX, centerZ;
 
     public SmallBlockPosSet(int centerX, int centerZ) {
-        this.compressedBlockPosSet = new TIntHashSet();
+        this.compressedBlockPosList = new TIntArrayList();
+        this.listValueToIndex = new TIntIntHashMap();
         this.centerX = centerX;
         this.centerZ = centerZ;
     }
@@ -53,7 +60,13 @@ public class SmallBlockPosSet implements IBlockPosSet {
         if (!canStore(x, y, z)) {
             throw new IllegalArgumentException("Cannot store block position at <" + x + "," + y + "," + z + ">");
         }
-        return compressedBlockPosSet.add(compress(x, y, z));
+        int compressedPos = compress(x, y, z);
+        if (listValueToIndex.containsKey(compressedPos)) {
+            return false;
+        }
+        compressedBlockPosList.add(compressedPos);
+        listValueToIndex.put(compressedPos, compressedBlockPosList.size() - 1);
+        return true;
     }
 
     @Override
@@ -61,7 +74,25 @@ public class SmallBlockPosSet implements IBlockPosSet {
         if (!canStore(x, y, z)) {
             throw new IllegalArgumentException("Cannot remove block position at <" + x + "," + y + "," + z + ">");
         }
-        return compressedBlockPosSet.remove(compress(x, y, z));
+        int compressedPos = compress(x, y, z);
+        if (!listValueToIndex.containsKey(compressedPos)) {
+            return false;
+        }
+
+        int elementIndex = listValueToIndex.get(compressedPos);
+
+        if (elementIndex == compressedBlockPosList.size() - 1) {
+            // If the element we're removing is at the end then its EZ
+            compressedBlockPosList.removeAt(elementIndex);
+        } else {
+            // Otherwise, swap the last element with the one we're removing, and then remove the end
+            int lastElementValue = compressedBlockPosList.removeAt(compressedBlockPosList.size() - 1);
+            compressedBlockPosList.set(elementIndex, lastElementValue);
+            listValueToIndex.put(lastElementValue, elementIndex);
+        }
+        listValueToIndex.remove(compressedPos);
+
+        return true;
     }
 
     @Override
@@ -70,7 +101,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
             // This pos cannot exist in this set
             return false;
         }
-        return compressedBlockPosSet.contains(compress(x, y, z));
+        return listValueToIndex.containsKey(compress(x, y, z));
     }
 
     @Override
@@ -82,18 +113,18 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
     @Override
     public int size() {
-        return compressedBlockPosSet.size();
+        return compressedBlockPosList.size();
     }
 
     @Nonnull
     @Override
     public Iterator<BlockPos> iterator() {
-        return new SmallBlockPosIterator(compressedBlockPosSet.iterator());
+        return new SmallBlockPosIterator(compressedBlockPosList.iterator());
     }
 
     @Override
     public void forEach(@Nonnull VSIterationUtils.IntTernaryConsumer action) {
-        TIntIterator iterator = compressedBlockPosSet.iterator();
+        TIntIterator iterator = compressedBlockPosList.iterator();
         while (iterator.hasNext()) {
             int compressed = iterator.next();
             // Repeated code from decompress() because java has no output parameters.
@@ -108,7 +139,8 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
     @Override
     public void clear() {
-        compressedBlockPosSet.clear();
+        compressedBlockPosList.clear();
+        listValueToIndex.clear();
     }
 
     @Nonnull
@@ -162,8 +194,8 @@ public class SmallBlockPosSet implements IBlockPosSet {
             gen.writeStartObject();
 
             gen.writeFieldName("positions");
-            gen.writeStartArray(value.compressedBlockPosSet.size());
-            TIntIterator iter = value.compressedBlockPosSet.iterator();
+            gen.writeStartArray(value.compressedBlockPosList.size());
+            TIntIterator iter = value.compressedBlockPosList.iterator();
 
             while (iter.hasNext()) {
                 gen.writeNumber(iter.next());
@@ -186,7 +218,7 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
         @Override
         public SmallBlockPosSet deserialize(JsonParser p, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+            throws IOException {
             JsonNode node = p.getCodec().readTree(p);
 
             int centerX = node.get("centerX").asInt();
@@ -194,9 +226,11 @@ public class SmallBlockPosSet implements IBlockPosSet {
 
             SmallBlockPosSet set = new SmallBlockPosSet(centerX, centerZ);
 
-            node.get("positions").forEach(elem -> {
-                set.compressedBlockPosSet.add(elem.asInt());
-            });
+            for (JsonNode elem : node.get("positions")) {
+                int positionInt = elem.asInt();
+                set.compressedBlockPosList.add(positionInt);
+                set.listValueToIndex.put(positionInt, set.compressedBlockPosList.size() - 1);
+            }
 
             return set;
         }

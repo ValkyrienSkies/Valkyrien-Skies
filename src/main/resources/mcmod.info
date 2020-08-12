@@ -17,53 +17,5 @@
     "logoFile": "banner.png",
     "screenshots": [],
     "dependencies": []
-  },
-  {
-    "modid": "vs_control",
-    "name": "Valkyrien Skies Control",
-    "description": "Adds a set of Items and Blocks allowing for more advanced Airship construction",
-    "version": "${version}",
-    "logoFile": "",
-    "parent": "valkyrienskies",
-    "screenshots": [],
-    "dependencies": [
-      "valkyrienskies"
-    ]
-  },
-  {
-    "modid": "vs_combat",
-    "name": "Valkyrien Skies Combat",
-    "description": "Airship Weapons",
-    "version": "${version}",
-    "logoFile": "",
-    "parent": "valkyrienskies",
-    "screenshots": [],
-    "dependencies": [
-      "valkyrienskies"
-    ]
-  },
-  {
-    "modid": "vs_world",
-    "name": "Valkyrien Skies World",
-    "description": "World Generation for Valkyrien Skies",
-    "version": "${version}",
-    "logoFile": "",
-    "parent": "valkyrienskies",
-    "screenshots": [],
-    "dependencies": [
-      "valkyrienskies"
-    ]
-  },
-  {
-    "modid": "vs_oc",
-    "name": "Valkyrien Skies OpenComputers",
-    "description": "OpenComputers support for Valkyrien Skies",
-    "version": "${version}",
-    "logoFile": "",
-    "parent": "valkyrienskies",
-    "screenshots": [],
-    "dependencies": [
-      "valkyrienskies"
-    ]
   }
 ]

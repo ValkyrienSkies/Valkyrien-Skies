@@ -175,9 +175,9 @@ public class SmallBlockPosSet implements IBlockPosSet {
     public void forEachUnsafe(@Nonnull VSIterationUtils.IntTernaryConsumer action) {
         int curIndex = 0;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        while (listValueToIndex.size() >= curIndex) {
+        while (compressedBlockPosList.size() >= curIndex) {
             try {
-                int currentValue = listValueToIndex.get(curIndex);
+                int currentValue = compressedBlockPosList.get(curIndex);
                 curIndex++;
                 decompressMutable(currentValue, mutableBlockPos);
                 action.accept(mutableBlockPos.getX(), mutableBlockPos.getY(), mutableBlockPos.getZ());

@@ -28,7 +28,7 @@ apply plugin: "java"
 ext {
     //general things
     javaVersion = "1.8"
-    vsVersion = "1.0.0." + ('git rev-parse HEAD'.execute().text.substring(0, 10))
+    vsVersion = "1.0.0+" + ('git rev-parse HEAD'.execute().text.substring(0, 10))
 
     //minecraft things
     mcpmappingsVersion = "stable_39"

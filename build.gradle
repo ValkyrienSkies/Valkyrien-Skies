@@ -270,17 +270,17 @@ publishing {
 }
 
 //sets additional JVM args for genIntellijRuns
-task preIntellijRuns {
-    doFirst {
-        StreamSupport.stream(configurations.compile.spliterator(), false).filter({
-            it.name.contains("mixin")
-        }).findAny().ifPresent({
-            minecraft.clientJvmArgs += "-javaagent:" + it.absolutePath
-            minecraft.serverJvmArgs += "-javaagent:" + it.absolutePath
-        })
-    }
-}
-genIntellijRuns.dependsOn(preIntellijRuns)
+//task preIntellijRuns {
+//    doFirst {
+//        StreamSupport.stream(configurations.compile.spliterator(), false).filter({
+//            it.name.contains("mixin")
+//        }).findAny().ifPresent({
+//            minecraft.clientJvmArgs += "-javaagent:" + it.absolutePath
+//            minecraft.serverJvmArgs += "-javaagent:" + it.absolutePath
+//        })
+//    }
+//}
+//genIntellijRuns.dependsOn(preIntellijRuns)
 
 // Junit testing
 test {

@@ -1,31 +1,9 @@
 #PARSE_ESCAPES
 
-# Items
-item.physics_core.name=Физическое Ядро
-tooltip.valkyrienskies.physics_core=Ядро Физического Активатора
+tile.shipblock.name=Физический Активатор
+tile.shipblockcreative.name=Креативный Физический Активатор
 
-# Blocks
-tile.physics_infuser.name=Физический Активатор
-tooltip.valkyrienskies.physics_infuser=Превращает соединенные с ним блоки в корабль. Не работает на большинство натуральных блоков таких как камень, земля, бедрок.
-
-tile.creative_physics_infuser.name=Креативный Физический Активатор
-tooltip.valkyrienskies.creative_physics_infuser_1=Превращает любые соединенные с ним блоки в корабль. Использовать с осторожностью, может превратить в корабль весь мир.
-tooltip.valkyrienskies.creative_physics_infuser_2=Внимание! У блока нет лимитов, он превратит в корабль все с чем соприкоснется! Использовать с предельной осторожностью.
-
-# Item Tab
 itemGroup.valkyrienskies=Valkyrien Skies
 
-# Gui
-gui.physics_infuser=Физический Активатор
-gui.assemble_ship=Создать корабль
-gui.disassemble_ship=Разобрать корабль
-gui.enable_physics=Включить физику
-gui.disable_physics=Отключить физику
-gui.align_ship=Выровнять корабль
-gui.stop_align_ship=Прекратить выравнивание
-
-## Commands
-commands.vs.list-ships.noships=Этот мир не содержит кораблей!
-commands.vs.list-ships.ships=Этот мир содержит корабли: %s%n
-
-commands.vs.gc.success=Мусор успешно очищен!
+tile.shipcaptainschair.name=Кресло Пилота
+tile.passenger_chair.name=Кресло Пассажира

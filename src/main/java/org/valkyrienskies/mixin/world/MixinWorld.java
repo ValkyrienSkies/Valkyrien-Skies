@@ -4,34 +4,29 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.*;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.Interface.Remap;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorld;
-import org.valkyrienskies.addon.control.block.torque.IRotationNodeWorldProvider;
-import org.valkyrienskies.addon.control.block.torque.ImplRotationNodeWorld;
-import org.valkyrienskies.fixes.MixinWorldIntrinsicMethods;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.coordinates.ISubspace;
-import org.valkyrienskies.mod.common.coordinates.ISubspaceProvider;
-import org.valkyrienskies.mod.common.coordinates.ImplSubspace;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
-import org.valkyrienskies.mod.common.physmanagement.interaction.IWorldVS;
-import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
-import org.valkyrienskies.mod.common.ship_handling.IWorldShipManager;
+import org.valkyrienskies.mod.common.collision.EntityPolygon;
+import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
+import org.valkyrienskies.mod.common.collision.ShipPolygon;
+import org.valkyrienskies.mod.fixes.MixinWorldIntrinsicMethods;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.collision.Polygon;
+import org.valkyrienskies.mod.common.ships.ship_world.IWorldVS;
+import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
+import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -45,32 +40,20 @@ import java.util.function.Function;
 // TODO: This class is horrible
 @Mixin(value = World.class, priority = 2018)
 @Implements(@Interface(iface = MixinWorldIntrinsicMethods.class, prefix = "vs$", remap = Remap.NONE))
-public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShipManager,
-    IRotationNodeWorldProvider {
+public abstract class MixinWorld implements IWorldVS, IHasShipManager {
 
     private static final double MAX_ENTITY_RADIUS_ALT = 2;
-    // The maximum edge length of a bounding box we'll take seriously
     private static final double BOUNDING_BOX_EDGE_LIMIT = 10000;
-    // The maximum volume of a bounding box we'll take seriously
-    private static final double BOUNDING_BOX_SIZE_LIMIT = 10000000;
+    private static final double BOUNDING_BOX_SIZE_LIMIT = 10000;
     private boolean dontIntercept = false;
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
-    private PhysicsWrapperEntity dontInterceptShip = null;
-    private final ISubspace worldSubspace = new ImplSubspace(null);
+    private PhysicsObject dontInterceptShip = null;
 
     // The IWorldShipManager
-    private IWorldShipManager manager = null;
-    // Rotation Node World fields. Note this is only used in multiplayer, but making a MixinWorldServer
-    // just for one field would be wasteful.
-    private ImplRotationNodeWorld rotationNodeWorld = new ImplRotationNodeWorld(null);
+    private IPhysObjectWorld manager = null;
 
     @Shadow
     protected List<IWorldEventListener> eventListeners;
-
-    @Override
-    public ISubspace getSubspace() {
-        return worldSubspace;
-    }
 
     @Shadow
     public abstract Biome getBiomeForCoordsBody(BlockPos pos);
@@ -81,7 +64,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     @Intrinsic(displace = true)
     public Biome vs$getBiomeForCoordsBody(BlockPos pos) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(World.class.cast(this), pos);
+            .getPhysoManagingBlock(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             pos = physicsObject.get()
@@ -120,20 +103,20 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
         double ySpeed, double zSpeed, int... parameters) {
         BlockPos pos = new BlockPos(x, y, z);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(World.class.cast(this), pos);
+            .getPhysoManagingBlock(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
-            Vector newPosVec = new Vector(x, y, z);
+            Vector3d newPosVec = new Vector3d(x, y, z);
             // RotationMatrices.applyTransform(wrapper.wrapping.coordTransform.lToWTransform,
             // newPosVec);
             physicsObject.get()
                 .getShipTransformationManager()
                 .getCurrentTickTransform()
-                .transform(newPosVec,
+                .transformPosition(newPosVec,
                     TransformType.SUBSPACE_TO_GLOBAL);
-            x = newPosVec.X;
-            y = newPosVec.Y;
-            z = newPosVec.Z;
+            x = newPosVec.x;
+            y = newPosVec.y;
+            z = newPosVec.z;
         }
         for (int i = 0; i < this.eventListeners.size(); ++i) {
             this.eventListeners.get(i)
@@ -153,6 +136,13 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     @Shadow
     public abstract Chunk getChunk(int chunkX, int chunkZ);
 
+    @Shadow
+    public abstract List<AxisAlignedBB> getCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb);
+
+    /**
+     * Used for two purposes. The first, is to prevent the game from freezing by limiting the size of aabb. The second
+     * is to fix player sneaking on ships.
+     */
     @Inject(method = "getCollisionBoxes(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;ZLjava/util/List;)Z", at = @At("HEAD"), cancellable = true)
     private void preGetCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb,
         boolean p_191504_3_,
@@ -165,6 +155,51 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
             new Exception().printStackTrace();
             callbackInfo.setReturnValue(Boolean.FALSE);
             callbackInfo.cancel();
+        }
+
+        // Fix player sneaking. I know its strange that the fix would be here of all places, but check
+        // Entity.moveEntity() to see for yourself. Minecraft checks if there's any colliding bounding boxes in a given
+        // direction, and uses that to determine if can you sneak.
+        if (entityIn instanceof EntityPlayer && entityIn.isSneaking()) {
+            // Add at most once ship block AABB that is colliding with the player. This is ONLY to properly allow
+            // players to sneak while on ships.
+            List<PhysicsObject> ships = getManager().getNearbyPhysObjects(aabb);
+            for (PhysicsObject wrapper : ships) {
+                Polygon playerInLocal = new Polygon(aabb,
+                        wrapper.getShipTransformationManager()
+                                .getCurrentTickTransform(),
+                        TransformType.GLOBAL_TO_SUBSPACE);
+                AxisAlignedBB bb = playerInLocal.getEnclosedAABB();
+
+                if ((bb.maxX - bb.minX) * (bb.maxZ - bb.minZ) > 9898989) {
+                    // This is too big, something went wrong here
+                    System.err.println("Why did transforming a players bounding box result in a giant bounding box?");
+                    System.err.println(bb + "\n" + wrapper.getShipData() + "\n" + entityIn.toString());
+                    new Exception().printStackTrace();
+                    return;
+                }
+
+                List<AxisAlignedBB> collidingBBs = getCollisionBoxes(null, bb);
+                EntityPolygon entityPoly = new EntityPolygon(aabb.grow(-.2, 0, -.2), entityIn);
+                for (AxisAlignedBB inLocal : collidingBBs) {
+                    ShipPolygon poly = new ShipPolygon(inLocal,
+                            wrapper.getShipTransformationManager()
+                                    .getCurrentTickTransform(),
+                            TransformType.SUBSPACE_TO_GLOBAL,
+                            wrapper.getShipTransformationManager().normals,
+                            wrapper);
+
+                    EntityPolygonCollider collider = new EntityPolygonCollider(entityPoly, poly, poly.normals, new Vector3d());
+                    collider.processData();
+
+                    if (!collider.arePolygonsSeparated()) {
+                        outList.add(inLocal);
+                        // We only want to add at most ONE aabb to the return value. Once we have at least one, the
+                        // vanilla sneak code will work correctly.
+                        return;
+                    }
+                }
+            }
         }
     }
 
@@ -217,22 +252,16 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     /**
-     * @param clazz
-     * @param aabb
-     * @param filter
-     * @param <T>
-     * @return
      * @author thebest108
      */
     @Overwrite
     public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz,
-        AxisAlignedBB aabb,
-        @Nullable Predicate<? super T> filter) {
+        AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {
         List<T> toReturn = this.getEntitiesWithinAABBOriginal(clazz, aabb, filter);
         BlockPos pos = new BlockPos((aabb.minX + aabb.maxX) / 2D, (aabb.minY + aabb.maxY) / 2D,
             (aabb.minZ + aabb.maxZ) / 2D);
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(World.class.cast(this), pos);
+            .getPhysoManagingBlock(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(aabb, physicsObject.get()
@@ -241,9 +270,6 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
                 TransformType.SUBSPACE_TO_GLOBAL);
             aabb = poly.getEnclosedAABB();// .contract(.3D);
             toReturn.addAll(this.getEntitiesWithinAABBOriginal(clazz, aabb, filter));
-
-            toReturn.remove(physicsObject.get()
-                .getWrapperEntity());
         }
         return toReturn;
     }
@@ -255,9 +281,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
      */
     @Overwrite
     public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn,
-        AxisAlignedBB boundingBox,
-        @Nullable Predicate<? super Entity> predicate) {
-
+        AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
         if (isBoundingBoxTooLarge(boundingBox)) {
             new Exception("Tried getting entities from giant bounding box of " + boundingBox)
                 .printStackTrace();
@@ -271,7 +295,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
             (boundingBox.minY + boundingBox.maxY) / 2D, (boundingBox.minZ + boundingBox.maxZ) / 2D);
 
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(World.class.cast(this), pos);
+            .getPhysoManagingBlock(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             Polygon poly = new Polygon(boundingBox, physicsObject.get()
@@ -288,9 +312,6 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
             toReturn
                 .addAll(this.getEntitiesInAABBexcludingOriginal(entityIn, boundingBox, predicate));
-
-            toReturn.remove(physicsObject.get()
-                .getWrapperEntity());
         }
         return toReturn;
     }
@@ -312,7 +333,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     @Override
-    public void excludeShipFromRayTracer(PhysicsWrapperEntity entity) {
+    public void excludeShipFromRayTracer(PhysicsObject entity) {
         if (this.dontInterceptShip != null) {
             throw new IllegalStateException("excluded ship is already set!");
         }
@@ -320,7 +341,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     @Override
-    public void unexcludeShipFromRayTracer(PhysicsWrapperEntity entity) {
+    public void unexcludeShipFromRayTracer(PhysicsObject entity) {
         if (this.dontInterceptShip != entity) {
             throw new IllegalStateException("must exclude the same ship!");
         }
@@ -340,15 +361,17 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
 
     @Override
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
-        boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
-        PhysicsWrapperEntity toIgnore) {
+                                                   boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
+                                                   PhysicsObject toIgnore) {
         this.dontIntercept = true;
         RayTraceResult vanillaTrace = World.class.cast(this)
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
-        WorldPhysObjectManager physManager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-            .getManagerForWorld(World.class.cast(this));
-        if (physManager == null) {
+
+
+        IPhysObjectWorld physObjectWorld = ((IHasShipManager) (this)).getManager();
+
+        if (physObjectWorld == null) {
             return vanillaTrace;
         }
 
@@ -357,7 +380,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
         AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y,
             vec32.z);
 
-        List<PhysicsWrapperEntity> nearbyShips = physManager.getNearbyPhysObjects(playerRangeBB);
+        List<PhysicsObject> nearbyShips = physObjectWorld.getNearbyPhysObjects(playerRangeBB);
         // Get rid of the Ship that we're not supposed to be RayTracing for
         nearbyShips.remove(toIgnore);
 
@@ -367,11 +390,11 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
             worldResultDistFromPlayer = vanillaTrace.hitVec.distanceTo(vec31);
         }
 
-        for (PhysicsWrapperEntity wrapper : nearbyShips) {
+        for (PhysicsObject wrapper : nearbyShips) {
             Vec3d playerEyesPos = vec31;
             playerReachVector = vec32.subtract(vec31);
 
-            ShipTransform shipTransform = wrapper.getPhysicsObject().getShipTransformationManager()
+            ShipTransform shipTransform = wrapper.getShipTransformationManager()
                 .getRenderTransform();
 
             playerEyesPos = shipTransform.transform(playerEyesPos,
@@ -402,7 +425,7 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     @Override
-    public IWorldShipManager getManager() {
+    public IPhysObjectWorld getManager() {
         if (manager == null) {
             throw new IllegalStateException(
                 "We can't be accessing this manager since WorldEvent.load() was never called!");
@@ -411,15 +434,9 @@ public abstract class MixinWorld implements IWorldVS, ISubspaceProvider, IHasShi
     }
 
     @Override
-    public void setManager(Function<World, IWorldShipManager> managerSupplier) {
+    public void setManager(Function<World, IPhysObjectWorld> managerSupplier) {
         manager = managerSupplier.apply(World.class.cast(this));
     }
-
-    @Override
-    public IRotationNodeWorld getPhysicsRotationNodeWorld() {
-        return rotationNodeWorld;
-    }
-
 
     /**
      * Fixes World.getBlockDensity() creating huge amounts of lag by telling it not to look for

@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.fixes.ITransformablePacket;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.fixes.ITransformablePacket;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Mixin(CPacketPlayerDigging.class)
@@ -20,23 +20,22 @@ public class MixinCPacketPlayerDigging implements ITransformablePacket {
     private final CPacketPlayerDigging thisPacketTryUse = CPacketPlayerDigging.class.cast(this);
 
     @Inject(method = "processPacket", at = @At(value = "HEAD"))
-    public void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+    private void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
         this.doPreProcessing(server, false);
     }
 
     @Inject(method = "processPacket", at = @At(value = "RETURN"))
-    public void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
+    private void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
         this.doPostProcessing(server, false);
     }
 
     @Override
-    public PhysicsWrapperEntity getPacketParent(NetHandlerPlayServer server) {
+    public ShipData getPacketParent(NetHandlerPlayServer server) {
         World world = server.player.getEntityWorld();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(world, thisPacketTryUse.getPosition());
+            .getPhysoManagingBlock(world, thisPacketTryUse.getPosition());
         if (physicsObject.isPresent()) {
-            return physicsObject.get()
-                .getWrapperEntity();
+            return physicsObject.get().getShipData();
         } else {
             return null;
         }

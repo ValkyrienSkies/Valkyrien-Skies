@@ -19,9 +19,8 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
-import org.valkyrienskies.mod.common.math.RotationMatrices;
-import org.valkyrienskies.mod.common.physics.collision.polygons.Polygon;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.collision.Polygon;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 public class PhysRenderChunk {
@@ -52,7 +51,7 @@ public class PhysRenderChunk {
         for (int i = 0; i < 16; i++) {
             IVSRenderChunk renderChunk = renderChunks[i];
             if (renderChunk != null) {
-                AxisAlignedBB renderChunkBB = new AxisAlignedBB(chunk.x << 4, renderChunk.minY(), chunk.z << 4, (chunk.x << 4) + 15, renderChunk.maxY(), (chunk.z << 4) + 15);
+                AxisAlignedBB renderChunkBB = new AxisAlignedBB(chunk.x << 4, renderChunk.minY(), chunk.z << 4, (chunk.x << 4) + 16, renderChunk.minY() + 16, (chunk.z << 4) + 16);
                 Polygon polygon = new Polygon(renderChunkBB, toRender.getShipTransformationManager().getRenderTransform(), TransformType.SUBSPACE_TO_GLOBAL);
                 AxisAlignedBB inWorldBB = polygon.getEnclosedAABB();
 

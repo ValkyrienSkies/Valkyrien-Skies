@@ -1,41 +1,33 @@
 package org.valkyrienskies.mod.common.config;
 
 import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.Config.Comment;
-import net.minecraftforge.common.config.Config.Name;
-import net.minecraftforge.common.config.Config.RangeInt;
-import net.minecraftforge.common.config.Config.RequiresMcRestart;
-import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.common.config.Config.*;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.command.config.ShortName;
-import org.valkyrienskies.mod.common.math.Vector;
 
 @SuppressWarnings("WeakerAccess") // NOTE: Any forge config option MUST be "public"
 @Config(
     modid = ValkyrienSkiesMod.MOD_ID,
-    name = ValkyrienSkiesMod.MOD_NAME
+    category = "general"
 )
 public class VSConfig extends VSConfigTemplate {
 
-    @Name("Valkyrium Ore Spawn Rate")
-    @Comment("Number of chances to spawn per chunk, 0 to disable")
-    public static int valkyriumSpawnRate = 2;
-
-    @Name("Ship Y-Height Maximum")
     public static double shipUpperLimit = 1000D;
 
-    @Name("Ship Y-Height Minimum")
     public static double shipLowerLimit = -30D;
 
-    @Name("Enable airship permissions (does nothing atm)")
     public static boolean runAirshipPermissions = false;
 
-    @Name("Enable gravity")
     public static boolean doGravity = true;
+
+    @Name("Compacted Valkyrium lift")
+    public static double compactedValkyriumLift = 200000;
 
     public static boolean doPhysicsBlocks = true;
 
@@ -45,20 +37,29 @@ public class VSConfig extends VSConfigTemplate {
 
     public static boolean doAirshipMovement = true;
 
-    @Name("Disable wrench modes")
+    @Name("showAnnoyingDebugOutput")
+    @Comment("Spams your console with annoying debug output. Not recommended unless you've encountered a strange bug" +
+            " and the developers told you to enable this.\nDefault is false. Set to true enable.")
+    public static boolean showAnnoyingDebugOutput = false;
+
     @Comment("Makes wrench toggle a multiblock's constructed state, removes modes.")
     public static boolean wrenchModeless = false;
 
     public static double physSpeed = 0.01D;
 
-    @Comment("The number of threads to use for physics, " +
-        "recommended to use your cpu's thread count minus 2. " +
-        "Cannot be set at runtime.")
+    @Comment({
+        "The number of threads to use for physics",
+        "recommended to use your cpu's thread count minus 2.",
+        "Cannot be set at runtime."
+    })
+    @RequiresMcRestart
     @RangeInt(min = 2)
     public static int threadCount = Math.max(2, Runtime.getRuntime().availableProcessors() - 2);
 
-    @Name("Max airships per player")
-    @Comment("Players can't own more than this many airships at once. Set to -1 to disable")
+    @Comment({
+        "Players can't own more than this many airships at once.",
+        "Set to -1 to disable"
+    })
     public static int maxAirships = -1;
 
     public static int maxShipSize = 15000;
@@ -69,24 +70,36 @@ public class VSConfig extends VSConfigTemplate {
 
     public static double gravityVecZ = 0D;
 
-    @Name("Valkyrium Crystal Anti-Gravity force")
-    @Comment("Default is 1. Set to 0 to disable.")
+    @Comment({
+        "Valkyrium Crystal Anti-Gravity force.",
+        "Default is 1. Set to 0 to disable."
+    })
     public static double valkyriumCrystalForce = 1D;
 
-    @Name("Valkyrium Ore Anti-Gravity force")
-    @Comment("1 is the same as a crystal, default is 4. Set to 0 to disable.")
+    @Comment({
+        "Valkyrium Ore Anti-Gravity force.",
+        "1 is the same as a crystal, default is 4.",
+        "Set to 0 to disable."
+    })
     public static double valkyriumOreForce = 4D;
 
-    @Name("Network Relay connections limit")
-    @Comment("How many components or relays can be connected, default is 8.")
+    @Comment({
+        "Network Relay connections limit.",
+        "How many components or relays can be connected.",
+        "Default is 8."
+    })
     public static int networkRelayLimit = 8;
 
-    @Name("Relay Wire Length")
-    @Comment("How long, in metres, a single relay wire can extend. Default is 8m.")
+    @Comment({
+        "Relay Wire Length",
+        "How long, in metres, a single relay wire can extend.",
+        "Default is 8m."
+    })
     public static double relayWireLength = 8D;
 
-    @Name("Engine Power")
+    @Name("engine")
     @ShortName("enginePower")
+    @Comment("Legacy engine power. Engines must be replaced after changes are made.")
     public static final EnginePower ENGINE_POWER = new EnginePower();
 
     public static class EnginePower {
@@ -95,35 +108,33 @@ public class VSConfig extends VSConfigTemplate {
         public double basicEnginePower = 2000;
 
         @RequiresMcRestart
-        public double advancedEnginePower = 2500;
+        public double advancedEnginePower = 5000;
 
         @RequiresMcRestart
-        public double eliteEnginePower = 5000;
+        public double eliteEnginePower = 10000;
 
         @RequiresMcRestart
-        public double ultimateEnginePower = 10000;
+        public double ultimateEnginePower = 20000;
 
         @RequiresMcRestart
-        public double redstoneEnginePower = 500;
+        public double redstoneEnginePower = 50000;
 
     }
 
     @Comment("Blocks to not be included when assembling a ship")
-    public static String[] shipSpawnDetectorBlacklist = {"minecraft:air", "minecraft:dirt",
-        "minecraft:grass",
-        "minecraft:stone", "minecraft:tallgrass", "minecraft:water", "minecraft:flowing_water",
-        "minecraft:sand", "minecraft:sandstone", "minecraft:gravel", "minecraft:ice",
-        "minecraft:snow",
+    public static String[] shipSpawnDetectorBlacklist = {
+        "minecraft:air", "minecraft:dirt", "minecraft:grass", "minecraft:stone",
+        "minecraft:tallgrass", "minecraft:water", "minecraft:flowing_water", "minecraft:sand",
+        "minecraft:sandstone", "minecraft:gravel", "minecraft:ice", "minecraft:snow",
         "minecraft:snow_layer", "minecraft:lava", "minecraft:flowing_lava", "minecraft:grass_path",
         "minecraft:bedrock", "minecraft:end_portal_frame", "minecraft:end_portal",
-        "minecraft:end_gateway",
-        "minecraft:portal",
+        "minecraft:end_gateway", "minecraft:portal",
     };
 
     public static String[] blockMass = {"minecraft:grass=1500"};
 
-    public static Vector gravity() {
-        return new Vector(gravityVecX, gravityVecY, gravityVecZ);
+    public static Vector3dc gravity() {
+        return new Vector3d(gravityVecX, gravityVecY, gravityVecZ);
     }
 
     /**

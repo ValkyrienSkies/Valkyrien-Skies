@@ -1,43 +1,42 @@
 package org.valkyrienskies.mod.client;
 
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
-import org.valkyrienskies.fixes.SoundFixWrapper;
+import org.valkyrienskies.mod.fixes.SoundFixWrapper;
+import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
-import org.valkyrienskies.mod.client.render.infuser_core_rendering.InfuserCoreBakedModel;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
-import org.valkyrienskies.mod.common.physics.management.WorldPhysObjectManager;
-import org.valkyrienskies.mod.common.physmanagement.interaction.EntityDraggable;
-import org.valkyrienskies.mod.common.ship_handling.IHasShipManager;
+import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.ships.QueryableShipData;
+import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
+import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.util.VSRenderUtils;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
 
 public class EventsClient {
 
@@ -54,31 +53,35 @@ public class EventsClient {
 
     @SubscribeEvent
     public void onClientTick(ClientTickEvent event) {
-        World world = Minecraft.getMinecraft().world;
-        if (world == null) {
-            // There's no world, so there's nothing to run.
-            return;
-        }
-        // Pretend this is the world tick, because diesieben07 doesn't want WorldClient to make world tick events.
-        switch (event.phase) {
-            case START:
-                // Nothing for now
-                for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                    .getManagerForWorld(world)
-                    .getTickablePhysicsEntities()) {
-                    // This is necessary because Minecraft will run a raytrace right after this
-                    // event to determine what the player is looking at for interaction purposes.
-                    // That raytrace will use the render transform, so we must have the render
-                    // transform set to a partialTick of 1.0.
-                    wrapper.getPhysicsObject().getShipTransformationManager()
-                        .updateRenderTransform(1.0);
-                }
-                break;
-            case END:
-                // Tick the IShipManager on the world client.
-                IHasShipManager shipManager = (IHasShipManager) world;
-                shipManager.getManager().tick();
-                break;
+        for (World world : ClientWorldTracker.getWorlds()) {
+            if (world == null) {
+                // There's no world, so there's nothing to run.
+                return;
+            }
+            // Pretend this is the world tick, because diesieben07 doesn't want WorldClient to make world tick events.
+            switch (event.phase) {
+                case START:
+                    // Nothing for now
+
+                    for (PhysicsObject wrapper : ((IHasShipManager) world).getManager().getAllLoadedPhysObj()) {
+                        // This is necessary because Minecraft will run a raytrace right after this
+                        // event to determine what the player is looking at for interaction purposes.
+                        // That raytrace will use the render transform, so we must have the render
+                        // transform set to a partialTick of 1.0.
+                        wrapper.getShipTransformationManager()
+                                .updateRenderTransform(1.0);
+                    }
+
+                    break;
+                case END:
+                    if (!Minecraft.getMinecraft().isGamePaused()) {
+                        // Tick the IShipManager on the world client.
+                        IHasShipManager shipManager = (IHasShipManager) world;
+                        shipManager.getManager().tick();
+                        EntityDraggable.tickAddedVelocityForWorld(world);
+                    }
+                    break;
+            }
         }
     }
 
@@ -89,14 +92,14 @@ public class EventsClient {
             BlockPos pos = new BlockPos(sound.getXPosF(), sound.getYPosF(), sound.getZPosF());
 
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+                .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
             if (physicsObject.isPresent()) {
-                Vector newSoundLocation = new Vector(sound.getXPosF(), sound.getYPosF(),
+                Vector3d newSoundLocation = new Vector3d(sound.getXPosF(), sound.getYPosF(),
                     sound.getZPosF());
                 physicsObject.get()
                     .getShipTransformationManager()
                     .getCurrentTickTransform()
-                    .transform(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
+                    .transformPosition(newSoundLocation, TransformType.SUBSPACE_TO_GLOBAL);
 
                 SoundFixWrapper soundFix = new SoundFixWrapper(sound, newSoundLocation);
 
@@ -110,6 +113,7 @@ public class EventsClient {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.world != null) {
             if (!mc.isGamePaused()) {
+                /*
                 WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
                     .getManagerForWorld(mc.world);
                 if (event.phase == Phase.END) {
@@ -118,6 +122,8 @@ public class EventsClient {
                     }
                     EntityDraggable.tickAddedVelocityForWorld(mc.world);
                 }
+
+                 */
             }
         }
 
@@ -128,7 +134,7 @@ public class EventsClient {
         GL11.glPushMatrix();
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
         if (physicsObject.isPresent()) {
             RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
             if (objectOver != null && objectOver.hitVec != null) {
@@ -152,7 +158,7 @@ public class EventsClient {
     public void onDrawBlockHighlightEventLast(DrawBlockHighlightEvent event) {
         BlockPos pos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysicsObject(Minecraft.getMinecraft().world, pos);
+            .getPhysoManagingBlock(Minecraft.getMinecraft().world, pos);
         if (physicsObject.isPresent()) {
             RayTraceResult objectOver = Minecraft.getMinecraft().objectMouseOver;
             if (objectOver != null && objectOver.hitVec != null) {
@@ -178,40 +184,6 @@ public class EventsClient {
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent event) {
         GibsModelRegistry.onModelBakeEvent(event);
-
-        ResourceLocation modelResourceLocation = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "item/infuser_core_main");
-        try {
-            IModel model = ModelLoaderRegistry.getModel(modelResourceLocation);
-            IBakedModel inventoryModel = model
-                .bake(model.getDefaultState(), DefaultVertexFormats.ITEM,
-                    ModelLoader.defaultTextureGetter());
-            IBakedModel handModel = event.getModelRegistry()
-                .getObject(new ModelResourceLocation(
-                    ValkyrienSkiesMod.MOD_ID + ":" + ValkyrienSkiesMod.INSTANCE.physicsCore
-                        .getTranslationKey()
-                        .substring(5), "inventory"));
-
-            event.getModelRegistry()
-                .putObject(
-                    new ModelResourceLocation(ValkyrienSkiesMod.MOD_ID + ":testmodel", "inventory"),
-                    new InfuserCoreBakedModel(handModel, inventoryModel));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @SubscribeEvent
-    public void onTextureStitchPre(TextureStitchEvent.Pre event) {
-        ResourceLocation mainCoreInventoryTexture = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "items/main_core");
-        ResourceLocation smallCoreInventoryTexture = new ResourceLocation(ValkyrienSkiesMod.MOD_ID,
-            "items/small_core");
-        event.getMap()
-            .registerSprite(mainCoreInventoryTexture);
-        event.getMap()
-            .registerSprite(smallCoreInventoryTexture);
     }
 
     @SubscribeEvent
@@ -226,11 +198,45 @@ public class EventsClient {
         }
 
         if (event.phase == Phase.START) {
-            for (PhysicsWrapperEntity wrapper : ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                .getManagerForWorld(world)
-                .getTickablePhysicsEntities()) {
-                wrapper.getPhysicsObject().getShipTransformationManager()
-                    .updateRenderTransform(partialTicks);
+            for (PhysicsObject wrapper : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
+                wrapper.getShipTransformationManager().updateRenderTransform(partialTicks);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderWorldLastEvent(RenderWorldLastEvent event) {
+        Minecraft mc = Minecraft.getMinecraft();
+        World world = Minecraft.getMinecraft().world;
+        if (mc.getRenderManager().isDebugBoundingBox() && !mc.isReducedDebug() && world != null) {
+            float partialTicks = event.getPartialTicks();
+            Vector3dc offset =
+                VSRenderUtils.getEntityPartialPosition(mc.getRenderViewEntity(), partialTicks).negate();
+
+            for (PhysicsObject physo : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
+                physo.getShipRenderer().renderDebugInfo(offset);
+            }
+        }
+    }
+
+    /**
+     * Used to handle when a chunk in a ship gets updated. This allows us to create ships on the client without
+     * requiring all the chunks are present at the time of ship creation.
+     */
+    @SubscribeEvent
+    public void onChunkLoadEvent(ChunkEvent.Load event) {
+        if (!event.getWorld().isRemote) {
+            return;
+        }
+        Chunk chunk = event.getChunk();
+        QueryableShipData queryableShipData = QueryableShipData.get(event.getWorld());
+        Optional<ShipData> shipClaimingOptional = queryableShipData.getShipFromChunk(chunk.x, chunk.z);
+        if (shipClaimingOptional.isPresent()) {
+            ShipData shipData = shipClaimingOptional.get();
+            IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(event.getWorld());
+            PhysicsObject physicsObject = physObjectWorld.getPhysObjectFromUUID(shipData.getUuid());
+            if (physicsObject != null) {
+                physicsObject.updateChunk(chunk);
             }
         }
     }

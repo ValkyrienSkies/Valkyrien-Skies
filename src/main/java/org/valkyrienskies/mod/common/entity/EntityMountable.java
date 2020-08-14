@@ -13,8 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import org.valkyrienskies.mod.common.coordinates.CoordinateSpaceType;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -196,7 +196,7 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
 
     public Optional<PhysicsObject> getMountedShip() {
         if (referencePos != null) {
-            return ValkyrienUtils.getPhysicsObject(world, referencePos, false);
+            return ValkyrienUtils.getPhysoManagingBlock(world, referencePos);
         } else {
             return Optional.empty();
         }

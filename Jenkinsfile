@@ -22,15 +22,21 @@ pipeline {
         git "Default"
         jdk "jdk8"
     }
-
+    options {
+        buildDiscarder(logRotator(artifactNumToKeepStr: '5'))
+    }
     stages {
+        stage("Prepare Workspace") {
+            steps {
+                sh "./gradlew setupCiWorkspace"
+            }
+        }
         stage("Build") {
             steps {
-                sh "./gradlew build --no-daemon"
+                sh "./gradlew build"
             }
             post {
                 success {
-                    sh "bash ./add_jar_suffix.sh " + sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).substring(0, 8) + "-" + env.BRANCH_NAME.replaceAll("[^a-zA-Z0-9.]", "_")
                     archiveArtifacts artifacts: "build/libs/*.jar", fingerprint: true
                     junit "build/test-results/**/*.xml"
                 }
@@ -41,13 +47,14 @@ pipeline {
                 branch "master"
             }
             steps {
-                sh "./gradlew publishToMavenLocal --no-daemon"
+                sh "./gradlew publish"
             }
         }
     }
 
     post {
         always {
+            sh "./gradlew --stop"
             deleteDir()
 
             withCredentials([string(credentialsId: "valkyrien_skies_discord_webhook", variable: "discordWebhook")]) {

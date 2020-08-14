@@ -1,13 +1,12 @@
 package org.valkyrienskies.mod.common.command.converters;
 
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import picocli.CommandLine.ITypeConverter;
 import picocli.CommandLine.TypeConversionException;
-
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class WorldConverter implements ITypeConverter<World> {
 
@@ -25,7 +24,7 @@ public class WorldConverter implements ITypeConverter<World> {
                 .collect(Collectors.joining(", "));
 
             return new TypeConversionException(
-                String.format("Invalid world name! Available options: %s", validWorlds));
+                String.format("Available options: %s", validWorlds));
         });
     }
 

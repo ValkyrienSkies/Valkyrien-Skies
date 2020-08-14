@@ -1,8 +1,5 @@
 package org.valkyrienskies.mod.common.physics;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -10,13 +7,16 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
-import org.valkyrienskies.mod.common.block.IBlockMassProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class BlockPhysicsDetails {
 
@@ -29,7 +29,7 @@ public class BlockPhysicsDetails {
      */
     private static final HashMap<Block, Double> blockToMass = new HashMap<>();
     /**
-     * Materials mapped to their mass.
+     * Material.mapped to their mass.
      */
     private static final HashMap<Material, Double> materialMass = new HashMap<>();
     /**
@@ -50,8 +50,8 @@ public class BlockPhysicsDetails {
         Arrays.stream(VSConfig.blockMass)
             .map(str -> str.split("="))
             .filter(arr -> arr.length == 2)
-            .map(arr -> Pair.of(Block.getBlockFromName(arr[0]), Double.parseDouble(arr[1])))
-            .forEach(pair -> blockToMass.put(pair.getLeft(), pair.getRight()));
+            .forEach(arr ->
+                blockToMass.put(Block.getBlockFromName(arr[0]), Double.parseDouble(arr[1])));
     }
 
     private static void generateMaterialMasses() {
@@ -114,13 +114,8 @@ public class BlockPhysicsDetails {
     /**
      * Get block mass, in kg.
      */
-    static double getMassFromState(IBlockState state, BlockPos pos, World world) {
-        Block block = state.getBlock();
-        if (block instanceof IBlockMassProvider) {
-            return ((IBlockMassProvider) block).getBlockMass(world, pos, state);
-        } else {
-            return getMassOfBlock(block);
-        }
+    public static double getMassFromState(IBlockState state) {
+        return getMassOfBlock(state.getBlock());
     }
 
     private static double getMassOfMaterial(Material material) {
@@ -142,18 +137,17 @@ public class BlockPhysicsDetails {
      */
     static void getForceFromState(IBlockState state, BlockPos pos, World world,
         double secondsToApply,
-        PhysicsObject obj, Vector toSet) {
+        PhysicsObject obj, Vector3d toSet) {
         Block block = state.getBlock();
         if (block instanceof IBlockForceProvider) {
-            Vector forceVector = ((IBlockForceProvider) block)
-                .getBlockForceInWorldSpace(world, pos, state,
+            Vector3dc forceVector = ((IBlockForceProvider) block).getBlockForceInWorldSpace(world, pos, state,
                     obj, secondsToApply);
             if (forceVector == null) {
                 toSet.zero();
             } else {
-                toSet.X = forceVector.X;
-                toSet.Y = forceVector.Y;
-                toSet.Z = forceVector.Z;
+                toSet.x = forceVector.x();
+                toSet.y = forceVector.y();
+                toSet.z = forceVector.z();
             }
         }
     }
@@ -161,7 +155,7 @@ public class BlockPhysicsDetails {
     /**
      * Returns true if the given IBlockState can create force; otherwise it returns false.
      */
-    public static boolean isBlockProvidingForce(IBlockState state, BlockPos pos, World world) {
+    public static boolean isBlockProvidingForce(IBlockState state) {
         Block block = state.getBlock();
         return block instanceof IBlockForceProvider || block instanceof IBlockTorqueProvider;
     }

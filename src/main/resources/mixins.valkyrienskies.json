@@ -21,7 +21,8 @@
     "world.MixinWorld",
     "world.border.MixinWorldBorder",
     "world.chunk.MixinBlockStateContainer",
-    "world.chunk.MixinChunk"
+    "world.chunk.MixinChunk",
+    "world.gen.MixinChunkProviderServer"
   ],
   "client": [
     "client.entity.MixinEntityPlayerSP",

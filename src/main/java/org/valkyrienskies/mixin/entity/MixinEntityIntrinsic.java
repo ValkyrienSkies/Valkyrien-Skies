@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.fixes.EntityMoveInjectionMethods;
-import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector;
-import org.valkyrienskies.mod.common.physics.collision.EntityCollisionInjector.IntermediateMovementVariableStorage;
+import org.valkyrienskies.mod.common.ships.entity_interaction.EntityMoveInjectionMethods;
+import org.valkyrienskies.mod.common.ships.entity_interaction.EntityCollisionInjector;
+import org.valkyrienskies.mod.common.ships.entity_interaction.EntityCollisionInjector.IntermediateMovementVariableStorage;
 
 /**
  * Todo: Remove this mess, eventually.
@@ -35,15 +35,15 @@ public abstract class MixinEntityIntrinsic {
     public abstract void move(MoverType type, double x, double y, double z);
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
-    public void changeMoveArgs(MoverType type, double dx, double dy, double dz,
+    private void changeMoveArgs(MoverType type, double dx, double dy, double dz,
         CallbackInfo callbackInfo) {
         if (!hasChanged) {
             alteredMovement = EntityMoveInjectionMethods
                 .handleMove(type, dx, dy, dz, thisClassAsAnEntity);
             if (alteredMovement != null) {
                 hasChanged = true;
-                this.move(type, alteredMovement.dxyz.X, alteredMovement.dxyz.Y,
-                    alteredMovement.dxyz.Z);
+                this.move(type, alteredMovement.dxyz.x(), alteredMovement.dxyz.y(),
+                    alteredMovement.dxyz.z());
                 hasChanged = false;
                 callbackInfo.cancel();
             }
@@ -51,7 +51,7 @@ public abstract class MixinEntityIntrinsic {
     }
 
     @Inject(method = "move", at = @At("RETURN"))
-    public void postMove(CallbackInfo callbackInfo) {
+    private void postMove(CallbackInfo callbackInfo) {
         if (hasChanged) {
             EntityCollisionInjector.alterEntityMovementPost(thisClassAsAnEntity, alteredMovement);
         }

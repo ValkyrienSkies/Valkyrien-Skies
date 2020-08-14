@@ -1,14 +1,15 @@
 package org.valkyrienskies.mod.common.block;
 
-import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
-import org.valkyrienskies.mod.common.math.Vector;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
+
+import javax.annotation.Nullable;
 
 public interface IBlockTorqueProvider extends Comparable<IBlockTorqueProvider> {
 
     @Nullable
-    Vector getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos);
+    Vector3dc getTorqueInGlobal(PhysicsCalculations physicsCalculations, BlockPos pos);
 
     default int compareTo(IBlockTorqueProvider other) {
         return getBlockSortingIndex() - other.getBlockSortingIndex();

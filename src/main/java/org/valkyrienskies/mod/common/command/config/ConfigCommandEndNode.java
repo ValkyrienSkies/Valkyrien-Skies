@@ -16,10 +16,10 @@ class ConfigCommandEndNode extends ConfigCommandNode {
     @Getter
     private Supplier<?> optionGetter;
 
-    ConfigCommandEndNode(String name, Consumer<String> optionSetter, Supplier<?> optionGetter) {
+    ConfigCommandEndNode(String name, Consumer<String> optionSetter, Supplier<?> getOption) {
         super(name);
         this.optionSetter = optionSetter;
-        this.optionGetter = optionGetter;
+        this.optionGetter = getOption;
     }
 
 }

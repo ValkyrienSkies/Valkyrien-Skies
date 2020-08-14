@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.valkyrienskies.mod.common.physics.collision.optimization.IBitOctree;
-import org.valkyrienskies.mod.common.physics.collision.optimization.IBitOctreeProvider;
-import org.valkyrienskies.mod.common.physics.collision.optimization.SimpleBitOctree;
+import org.valkyrienskies.mod.common.util.datastructures.IBitOctree;
+import org.valkyrienskies.mod.common.util.datastructures.IBitOctreeProvider;
+import org.valkyrienskies.mod.common.util.datastructures.SimpleBitOctree;
 
 @Mixin(BlockStateContainer.class)
 public class MixinBlockStateContainer implements IBitOctreeProvider {
@@ -34,6 +34,7 @@ public class MixinBlockStateContainer implements IBitOctreeProvider {
         }
         int i = this.palette.idFor(state);
         this.storage.setAt(index, i);
+
         // VS code starts here:
         int x = index & 0xF;
         int z = (index & 0xF0) >> 4;

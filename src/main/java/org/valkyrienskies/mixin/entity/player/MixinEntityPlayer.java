@@ -5,18 +5,19 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.addon.control.piloting.ControllerInputType;
-import org.valkyrienskies.addon.control.piloting.IShipPilot;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipData;
-import org.valkyrienskies.mod.common.physmanagement.shipdata.ShipPositionData;
+import org.valkyrienskies.mod.common.piloting.ControllerInputType;
+import org.valkyrienskies.mod.common.piloting.IShipPilot;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import valkyrienwarfare.api.TransformType;
 
 /**
  * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.
@@ -25,9 +26,10 @@ import valkyrienwarfare.api.TransformType;
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements IShipPilot {
 
-    public PhysicsWrapperEntity pilotedShip;
-    public BlockPos blockBeingControlled;
-    public ControllerInputType controlInputType;
+    @Shadow public BlockPos bedLocation;
+    private PhysicsObject pilotedShip;
+    private BlockPos blockBeingControlled;
+    private ControllerInputType controlInputType;
 
     // Constructor doesn't do anything, just here because java wont compile if it
     // wasn't.
@@ -39,22 +41,19 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     private static void preGetBedSpawnLocation(World worldIn, BlockPos bedLocation,
         boolean forceSpawn,
         CallbackInfoReturnable<BlockPos> callbackInfo){
-        int chunkX = bedLocation.getX() >> 4;
-        int chunkZ = bedLocation.getZ() >> 4;
 
-        Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn).getShipFromChunk(chunkX, chunkZ);
+        Optional<ShipData> shipData = ValkyrienUtils.getQueryableData(worldIn)
+            .getShipFromBlock(bedLocation);
 
         if (shipData.isPresent()) {
-            ShipPositionData positionData = shipData.get().getPositionData();
+            ShipTransform positionData = shipData.get().getShipTransform();
 
             if (positionData != null) {
-                Vector bedPositionInWorld = new Vector(bedLocation.getX() + .5D,
-                        bedLocation.getY() + .5D, bedLocation.getZ() + .5D);
-                positionData.getTransform()
-                        .transform(bedPositionInWorld, TransformType.SUBSPACE_TO_GLOBAL);
-                bedPositionInWorld.Y += 1D;
-                bedLocation = new BlockPos(bedPositionInWorld.X, bedPositionInWorld.Y,
-                        bedPositionInWorld.Z);
+                Vector3d bedLocationD = JOML.castDouble(JOML.convert(bedLocation))
+                    .add(0.5, 0.5, 0.5);
+                positionData.getSubspaceToGlobal().transformPosition(bedLocationD);
+                bedLocationD.y += 1D;
+                bedLocation = JOML.toMinecraft(JOML.castInt(bedLocationD));
 
                 callbackInfo.setReturnValue(bedLocation);
             } else {
@@ -65,12 +64,12 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     }
 
     @Override
-    public PhysicsWrapperEntity getPilotedShip() {
+    public PhysicsObject getPilotedShip() {
         return pilotedShip;
     }
 
     @Override
-    public void setPilotedShip(PhysicsWrapperEntity wrapper) {
+    public void setPilotedShip(PhysicsObject wrapper) {
         pilotedShip = wrapper;
     }
 

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Mixin(TileEntityRendererDispatcher.class)
@@ -40,7 +40,7 @@ public abstract class MixinTileEntityRendererDispatcher {
         if (!hasChanged) {
             BlockPos pos = tileentityIn.getPos();
             Optional<PhysicsObject> physicsObject = ValkyrienUtils
-                .getPhysicsObject(tileentityIn.getWorld(), tileentityIn.getPos());
+                .getPhysoManagingBlock(tileentityIn.getWorld(), tileentityIn.getPos());
 
             if (physicsObject.isPresent()) {
                 try {

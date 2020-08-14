@@ -1,31 +1,76 @@
 #PARSE_ESCAPES
 
 # Items
-item.physics_core.name=Physics Core
-tooltip.valkyrienskies.physics_core=The core of a physics infuser
 
 # Blocks
-tile.physics_infuser.name=Physics Infuser
-tooltip.valkyrienskies.physics_infuser=Turns any blocks attached to this one into a brand new Ship, won't infuse most pregenerated blocks like stone.
+tile.captains_chair.name=Captain's Chair
+tooltip.valkyrienskies.captains_chair_1=Use to mount and control Ships!
+tooltip.valkyrienskies.captains_chair_2=If you are standing on the ship, you will mount it upon control. Otherwise you will control the ship remotely without mounting.
 
-tile.creative_physics_infuser.name=Creative Physics Infuser
-tooltip.valkyrienskies.creative_physics_infuser_1=Turns any blocks attached to this one into a brand new Ship, just be careful not to infuse your entire world.
-tooltip.valkyrienskies.creative_physics_infuser_2=Warning, this has no block limits, and it will infuse everything it touches! Use with extreme caution.
+tile.passenger_chair.name=Passenger Chair
+tooltip.valkyrienskies.passenger_chair=Use to sit tight on ships.
 
 # Item Tab
 itemGroup.valkyrienskies=Valkyrien Skies
 
-# Gui
-gui.physics_infuser=Physics Infuser
-gui.assemble_ship=Assemble Ship
-gui.disassemble_ship=Disassemble Ship
-gui.enable_physics=Enable Physics
-gui.disable_physics=Disable Physics
-gui.align_ship=Align Ship
-gui.stop_align_ship=Stop Alignment
-
 ## Commands
 commands.vs.list-ships.noships=This world contains no ships!
-commands.vs.list-ships.ships=This world contains the following ships: %s%n
+commands.vs.list-ships.ships=This world contains the following ships:\n%s
 
 commands.vs.gc.success=Successfully garbage collected!
+
+## Config
+valkyrienskies.general.shipupperlimit=Ship Y-Height Maximum
+valkyrienskies.general.shipupperlimit.tooltip=
+valkyrienskies.general.shiplowerlimit=Ship Y-Height Minimum
+valkyrienskies.general.shiplowerlimit.tooltip=
+valkyrienskies.general.runairshippermissions=Enable airship permissions
+valkyrienskies.general.runairshippermissions.tooltip=Does nothing at this moment.
+valkyrienskies.general.dogravity=Enable gravity
+valkyrienskies.general.dogravity.tooltip=
+valkyrienskies.general.dophysicsblocks=Enable physics blocks
+valkyrienskies.general.dophysicsblocks.tooltip=
+valkyrienskies.general.dovalkyriumlifting=Enable valkyrium lifting
+valkyrienskies.general.dovalkyriumlifting.tooltip=
+valkyrienskies.general.doairshiprotation=Enable airship rotation
+valkyrienskies.general.doairshiprotation.tooltip=
+valkyrienskies.general.doairshipmovement=Enable airship movement
+valkyrienskies.general.doairshipmovement.tooltip=
+valkyrienskies.general.wrenchmodeless=Disable wrench modes
+valkyrienskies.general.wrenchmodeless.tooltip=Makes wrench toggle a multiblock’s constructed state, removes modes.
+valkyrienskies.general.physspeed=Physics speed
+valkyrienskies.general.physspeed.tooltip=
+valkyrienskies.general.threadcount=Number of threads
+valkyrienskies.general.threadcount.tooltip=The number of threads to use for physics, recommended to use your cpu's thread count minus 2. Cannot be set at runtime.
+valkyrienskies.general.maxairships=Max airships per player
+valkyrienskies.general.maxairships.tooltip=Players can’t own more than this many airships at once. Set to -1 to disable.
+valkyrienskies.general.maxshipsize=Max ship size
+valkyrienskies.general.maxshipsize.tooltip=
+valkyrienskies.general.gravityvecx=Gravity vector X
+valkyrienskies.general.gravityvecx.tooltip=
+valkyrienskies.general.gravityvecy=Gravity vector Y
+valkyrienskies.general.gravityvecy.tooltip=
+valkyrienskies.general.gravityvecz=Gravity vector Z
+valkyrienskies.general.gravityvecz.tooltip=
+valkyrienskies.general.valkyriumcrystalforce=Valkyrium Crystal Anti-Gravity force
+valkyrienskies.general.valkyriumcrystalforce.tooltip=Default is 1. Set to 0 to disable.
+valkyrienskies.general.valkyriumoreforce=Valkyrium Ore Anti-Gravity force
+valkyrienskies.general.valkyriumoreforce.tooltip=Value 1 is the same as a crystal, default is 4. Set to 0 to disable.
+valkyrienskies.general.networkrelaylimit=Network Relay connections limit
+valkyrienskies.general.networkrelaylimit.tooltip=How many components or relays can be connected, default is 8.
+valkyrienskies.general.relaywirelength=Relay Wire Length
+valkyrienskies.general.relaywirelength.tooltip=How long, in metres, a single relay wire can extend. Default is 8m.
+valkyrienskies.general.shipspawndetectorblacklist=Ship spawn detector blacklist
+valkyrienskies.general.shipspawndetectorblacklist.tooltip=Blocks to not be included when assembling a ship
+valkyrienskies.general.blockmass=Block mass
+valkyrienskies.general.blockmass.tooltip=
+valkyrienskies.general.engine=Engine
+valkyrienskies.general.engine.tooltip=
+valkyrienskies.general.engine.basicenginepower=Basic engine power
+valkyrienskies.general.engine.basicenginepower.tooltip=
+valkyrienskies.general.engine.advancedenginepower=Advanced engine power
+valkyrienskies.general.engine.advancedenginepower.tooltip=
+valkyrienskies.general.engine.eliteenginepower=Elite engine power
+valkyrienskies.general.engine.eliteenginepower.tooltip=
+valkyrienskies.general.engine.redstoneenginepower=Redstone engine power
+valkyrienskies.general.engine.redstoneenginepower.tooltip=

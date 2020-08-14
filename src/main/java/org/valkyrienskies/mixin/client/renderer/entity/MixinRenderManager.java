@@ -1,20 +1,16 @@
 package org.valkyrienskies.mixin.client.renderer.entity;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.util.math.Vec3d;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.mod.common.entity.PhysicsWrapperEntity;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.util.EntityShipMountData;
+import org.valkyrienskies.mod.common.ships.entity_interaction.EntityShipMountData;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 @Mixin(RenderManager.class)
@@ -43,82 +39,33 @@ public abstract class MixinRenderManager {
                 double oldLastPosY = entityIn.lastTickPosY;
                 double oldLastPosZ = entityIn.lastTickPosZ;
 
-                Vector localPosition = new Vector(mountData.getMountPos());
+                Vec3d mountPos = mountData.getMountPos();
 
                 mountData.getMountedShip()
                     .getShipRenderer()
                     .applyRenderTransform(partialTicks);
 
-                if (localPosition != null) {
-                    localPosition = new Vector(localPosition);
+                if (mountPos != null) {
+                    Vector3d localPosition = JOML.convert(mountPos);
 
-                    localPosition.X -= mountData.getMountedShip()
+                    localPosition.x -= mountData.getMountedShip()
                         .getShipRenderer().offsetPos.getX();
-                    localPosition.Y -= mountData.getMountedShip()
+                    localPosition.y -= mountData.getMountedShip()
                         .getShipRenderer().offsetPos.getY();
-                    localPosition.Z -= mountData.getMountedShip()
+                    localPosition.z -= mountData.getMountedShip()
                         .getShipRenderer().offsetPos.getZ();
 
-                    x = entityIn.posX = entityIn.lastTickPosX = localPosition.X;
-                    y = entityIn.posY = entityIn.lastTickPosY = localPosition.Y;
-                    z = entityIn.posZ = entityIn.lastTickPosZ = localPosition.Z;
-
-                }
-
-                boolean makePlayerMount = false;
-                PhysicsWrapperEntity shipRidden = null;
-
-                if (entityIn instanceof EntityPlayer) {
-                    EntityPlayer player = (EntityPlayer) entityIn;
-                    if (player.isPlayerSleeping()) {
-                        if (player.ridingEntity instanceof PhysicsWrapperEntity) {
-                            shipRidden = (PhysicsWrapperEntity) player.ridingEntity;
-                        }
-//                    shipRidden = ValkyrienSkiesMod.physicsManager.getShipFixedOnto(entityIn);
-
-                        if (shipRidden != null) {
-                            player.ridingEntity = null;
-                            makePlayerMount = true;
-
-                            //Now fix the rotation of sleeping players
-                            Vector playerPosInLocal = new Vector(mountData.getMountPos());
-
-                            playerPosInLocal.subtract(.5D, .6875, .5);
-                            playerPosInLocal.roundToWhole();
-
-                            BlockPos bedPos = new BlockPos(playerPosInLocal.X, playerPosInLocal.Y,
-                                playerPosInLocal.Z);
-                            IBlockState state = entityIn.world.getBlockState(bedPos);
-
-                            Block block = state.getBlock();
-
-                            float angleYaw = 0;
-
-//                        player.setRenderOffsetForSleep(EnumFacing.SOUTH);
-
-                            if (block != null && block
-                                .isBed(state, entityIn.world, bedPos, entityIn)) {
-                                angleYaw = (float) (
-                                    block.getBedDirection(state, entityIn.world, bedPos)
-                                        .getHorizontalIndex() * 90);
-//                            angleYaw += 180;
-                            }
-                            GL11.glRotatef(angleYaw, 0, 1F, 0);
-                        }
-                    }
+                    x = entityIn.posX = entityIn.lastTickPosX = localPosition.x;
+                    y = entityIn.posY = entityIn.lastTickPosY = localPosition.y;
+                    z = entityIn.posZ = entityIn.lastTickPosZ = localPosition.z;
                 }
 
                 hasChanged = true;
                 this.renderEntity(entityIn, x, y, z, yaw, partialTicks, p_188391_10_);
                 hasChanged = false;
 
-                if (makePlayerMount) {
-                    EntityPlayer player = (EntityPlayer) entityIn;
 
-                    player.ridingEntity = shipRidden;
-                }
-
-                if (localPosition != null) {
+                if (mountPos != null) {
                     mountData.getMountedShip()
                         .getShipRenderer()
                         .inverseTransform(partialTicks);

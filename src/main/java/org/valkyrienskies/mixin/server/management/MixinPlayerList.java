@@ -6,7 +6,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.server.management.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.valkyrienskies.fixes.VSNetwork;
+import org.valkyrienskies.mod.common.network.VSNetwork;
 
 /**
  * As much as I don't like it, this mixin is absolutely necessary.

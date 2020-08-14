@@ -7,8 +7,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.addon.control.piloting.ControllerInputType;
-import org.valkyrienskies.addon.control.piloting.IShipPilot;
+import org.valkyrienskies.mod.common.piloting.ControllerInputType;
+import org.valkyrienskies.mod.common.piloting.IShipPilot;
 
 /**
  * Lazy programming, this can probably be replaced with forge hooks.

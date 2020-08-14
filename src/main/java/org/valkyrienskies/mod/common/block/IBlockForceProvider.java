@@ -1,13 +1,15 @@
 package org.valkyrienskies.mod.common.block;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.coordinates.ShipTransform;
-import org.valkyrienskies.mod.common.math.Vector;
-import org.valkyrienskies.mod.common.physics.management.PhysicsObject;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
+
+import javax.annotation.Nullable;
 
 public interface IBlockForceProvider {
 
@@ -16,10 +18,10 @@ public interface IBlockForceProvider {
      * vector, do not override unless you have a good reason to.
      */
     @Nullable
-    default Vector getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state,
-        PhysicsObject physicsObject,
-        double secondsToApply) {
-        Vector toReturn = getBlockForceInShipSpace(world, pos, state, physicsObject,
+    default Vector3dc getBlockForceInWorldSpace(World world, BlockPos pos, IBlockState state,
+                                                PhysicsObject physicsObject,
+                                                double secondsToApply) {
+        Vector3dc toReturn = getBlockForceInShipSpace(world, pos, state, physicsObject,
             secondsToApply);
         if (toReturn == null) {
             return null;
@@ -27,7 +29,9 @@ public interface IBlockForceProvider {
         if (shouldLocalForceBeRotated(world, pos, state, secondsToApply)) {
             ShipTransform shipTransform = physicsObject.getShipTransformationManager()
                 .getCurrentTickTransform();
-            shipTransform.rotate(toReturn, TransformType.SUBSPACE_TO_GLOBAL);
+            Vector3d rotated = new Vector3d(toReturn);
+            shipTransform.transformDirection(rotated, TransformType.SUBSPACE_TO_GLOBAL);
+            return rotated;
         }
         return toReturn;
     }
@@ -39,7 +43,7 @@ public interface IBlockForceProvider {
      * The force Vector this block gives within its local space (Not within World space).
      */
     @Nullable
-    Vector getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
+    Vector3dc getBlockForceInShipSpace(World world, BlockPos pos, IBlockState state,
         PhysicsObject physicsObject,
         double secondsToApply);
 
@@ -54,18 +58,10 @@ public interface IBlockForceProvider {
      * Burner need to apply their force in a different position.
      */
     @Nullable
-    default Vector getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state,
+    default Vector3dc getCustomBlockForcePosition(World world, BlockPos pos, IBlockState state,
         PhysicsObject physicsObject,
         double secondsToApply) {
         return null;
-    }
-
-    /**
-     * Returns true if this force provider uses 'simulated airflow' particles. Useful to make
-     * certain engines not function when placed indoors.
-     */
-    default boolean doesForceSpawnParticles() {
-        return false;
     }
 
 }

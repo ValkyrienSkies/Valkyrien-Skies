@@ -9,9 +9,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
-import org.valkyrienskies.addon.control.ValkyrienSkiesControl;
-import org.valkyrienskies.addon.control.network.MessagePlayerStoppedPiloting;
-import org.valkyrienskies.addon.control.piloting.IShipPilotClient;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.network.MessagePlayerStoppedPiloting;
+import org.valkyrienskies.mod.common.piloting.IShipPilotClient;
 
 public class VSKeyHandler {
 
@@ -85,7 +85,7 @@ public class VSKeyHandler {
                 BlockPos pilotedPos = clientPilot.getPosBeingControlled();
                 MessagePlayerStoppedPiloting stopPilotingMessage = new MessagePlayerStoppedPiloting(
                     pilotedPos);
-                ValkyrienSkiesControl.controlNetwork.sendToServer(stopPilotingMessage);
+                ValkyrienSkiesMod.controlNetwork.sendToServer(stopPilotingMessage);
                 clientPilot.stopPilotingEverything();
             }
         }

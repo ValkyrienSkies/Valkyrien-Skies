@@ -287,6 +287,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 chunkToSet.storageArrays[storageIndex]
                         .set(srcLocationPos.getX() & 15, srcLocationPos.getY() & 15, srcLocationPos.getZ() & 15, Blocks.AIR.getDefaultState());
 
+                // Delete the TileEntity at this pos (if there is one)
+                world.removeTileEntity(srcLocationPos);
+
                 chunkToSet.markDirty();
             }
 

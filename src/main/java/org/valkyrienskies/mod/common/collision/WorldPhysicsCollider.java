@@ -26,6 +26,7 @@ import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 /**
@@ -61,7 +62,8 @@ public class WorldPhysicsCollider {
     // Greater coefficients result in more friction
     public static final double KINETIC_FRICTION_COEFFICIENT = .15D;
     private final MutableBlockPos mutablePos;
-    private final Random rand;
+    // Use ThreadLocalRandom because its much faster than Random.
+    private final ThreadLocalRandom rand;
     private final Collection<ShipCollisionTask> tasks;
     private final PhysicsCalculations calculator;
     private final World worldObj;
@@ -79,7 +81,7 @@ public class WorldPhysicsCollider {
         this.worldObj = parent.getWorld();
         this.cachedPotentialHits = new TIntArrayList();
         this.cachedHitsToRemove = new TIntArrayList();
-        this.rand = new Random();
+        this.rand = ThreadLocalRandom.current();
         this.mutablePos = new MutableBlockPos();
         this.tasks = new ArrayList<>();
         this.ticksSinceCacheUpdate = 25D;
@@ -99,9 +101,6 @@ public class WorldPhysicsCollider {
             updatePotentialCollisionCache();
             updateCollisionTasksCache = true;
         }
-        if (Math.random() < COLLISION_TASK_SHUFFLE_FREQUENCY) {
-            cachedPotentialHits.shuffle(rand);
-        }
     }
 
     public void splitIntoCollisionTasks(List<ShipCollisionTask> toAdd) {
@@ -116,6 +115,7 @@ public class WorldPhysicsCollider {
             }
             updateCollisionTasksCache = false;
         }
+        cachedPotentialHits.shuffle(rand);
         toAdd.addAll(tasks);
     }
 

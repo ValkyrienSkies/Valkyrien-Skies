@@ -1,9 +1,8 @@
 package org.valkyrienskies.mod.common.ships.entity_interaction;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Value;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockSlime;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -11,21 +10,25 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.ForgeModContainer;
+import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.valkyrienskies.mod.common.collision.*;
 import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.VSMath;
-import org.valkyrienskies.mod.common.collision.EntityPolygon;
-import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
-import org.valkyrienskies.mod.common.collision.Polygon;
-import org.valkyrienskies.mod.common.collision.ShipPolygon;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
@@ -33,6 +36,7 @@ import valkyrienwarfare.api.TransformType;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class EntityCollisionInjector {
 
@@ -43,12 +47,12 @@ public class EntityCollisionInjector {
     public static IntermediateMovementVariableStorage alterEntityMovement(Entity entity,
         MoverType type, double dx, double dy, double dz) {
         Vector3d velVec = new Vector3d(dx, dy, dz);
-        double origDx = dx;
-        double origDy = dy;
-        double origDz = dz;
-        double origPosX = entity.posX;
-        double origPosY = entity.posY;
-        double origPosZ = entity.posZ;
+        final double origDx = dx;
+        final double origDy = dy;
+        final double origDz = dz;
+        final double origPosX = entity.posX;
+        final double origPosY = entity.posY;
+        final double origPosZ = entity.posZ;
         boolean isLiving = entity instanceof EntityLivingBase;
         Vec3d velocity = new Vec3d(dx, dy, dz);
         EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
@@ -158,6 +162,67 @@ public class EntityCollisionInjector {
         entity.setEntityBoundingBox(axisalignedbb);
         entity.resetPositionToBB();
 
+
+        // region Ladder movement
+        if (entity instanceof EntityLivingBase) {
+            final EntityLivingBase base = (EntityLivingBase) entity;
+            final List<PhysicsObject> collidingShips = ((IHasShipManager) entity.getEntityWorld()).getManager()
+                    .getNearbyPhysObjects(base.getEntityBoundingBox());
+            // Delete this ladder crap; need a custom solution!
+            final Iterable<Triple<PhysicsObject, BlockPos, IBlockState>> ladderCollisions = getLadderCollisions(base, collidingShips);
+            // For now, just ignore the y component. I may or may not use it later.
+            final Vector3dc originalVelocityDirection = new Vector3d(origDx, 0, origDz).normalize();
+            final World world = entity.world;
+            final Polygon playerPolygon = new Polygon(base.getEntityBoundingBox());
+
+            for (final Triple<PhysicsObject, BlockPos, IBlockState> ladderCollision : ladderCollisions) {
+                final IBlockState ladderState = ladderCollision.getRight();
+
+                EnumFacing ladderFacing = null;
+                // For now, we only support a few blocks
+                if (ladderState.getPropertyKeys().contains(BlockHorizontal.FACING)) {
+                    ladderFacing = ladderState.getValue(BlockHorizontal.FACING);
+                }
+
+                // We need the EnumFacing of the ladder for the code to work. If we couldn't find it then just give up :/
+                if (ladderFacing != null) {
+                    final Vector3d ladderNormal = JOML.convertDouble(ladderFacing.getDirectionVec());
+                    final ShipTransform shipTransform = ladderCollision.getLeft().getShipTransform();
+                    // Grow the ladder BB by a small margin (makes the ladder experience better imo)
+                    final AxisAlignedBB ladderBB = ladderCollision.getRight().getBoundingBox(world, ladderCollision.getMiddle()).offset(ladderCollision.getMiddle()).grow(.1);
+                    final Polygon ladderPoly = new Polygon(ladderBB, shipTransform.getSubspaceToGlobal());
+                    // Determine if the player is actually colliding with the ladder
+                    final PhysPolygonCollider collider = new PhysPolygonCollider(playerPolygon, ladderPoly, ladderCollision.getLeft().getShipTransformationManager().normals);
+                    collider.processData();
+
+                    shipTransform.transformDirection(ladderNormal, TransformType.SUBSPACE_TO_GLOBAL);
+
+                    // Whether or not the player is actually colliding with a ladder, since it is close to one we give the player ladder movement.
+                    dx = MathHelper.clamp(dx, -0.15, 0.15);
+                    dz = MathHelper.clamp(dz, -0.15, 0.15);
+                    base.fallDistance = 0;
+                    if (dy < -0.15) {
+                        dy = -0.15;
+                    }
+
+                    final boolean isPlayerGoingTowardsLadder = originalVelocityDirection.dot(ladderNormal) < -.1;
+                    final boolean isPlayerSneakingOnLadder = base.isSneaking() && base instanceof EntityPlayer;
+
+                    if (isPlayerSneakingOnLadder && dy < 0.0D) {
+                        dy = 0.0D;
+                    }
+                    if (!collider.seperated && isPlayerGoingTowardsLadder) {
+                        dy = .2;
+                    }
+
+                    worldBelow = ladderCollision.getLeft();
+                    break;
+                }
+            }
+        }
+        // endregion
+
+
         if (worldBelow != null) {
             draggable.setWorldBelowFeet(worldBelow.getShipData());
         } else {
@@ -185,36 +250,7 @@ public class EntityCollisionInjector {
         double motionYBefore = entity.motionY;
         float oldFallDistance = entity.fallDistance;
 
-        Vector3d dxyz;
-
-        if (entity instanceof EntityLivingBase) {
-            EntityLivingBase base = (EntityLivingBase) entity;
-            // base.motionY = dy;
-            // Delete this ladder crap; need a custom solution!
-
-            // if (base.isOnLadder()) {
-
-            // base.motionX = MathHelper.clamp(base.motionX, -0.15000000596046448D,
-            // 0.15000000596046448D);
-            // base.motionZ = MathHelper.clamp(base.motionZ, -0.15000000596046448D,
-            // 0.15000000596046448D);
-            // base.fallDistance = 0.0F;
-
-            // if (base.motionY < -0.15D) {
-            // base.motionY = -0.15D;
-            // }
-
-            // boolean flag = base.isSneaking() && base instanceof EntityPlayer;
-
-            // if (flag && base.motionY < 0.0D) {
-            // base.motionY = 0.0D;
-            // }
-            // }
-            dxyz = new Vector3d(dx, dy, dz);
-        } else {
-            dxyz = new Vector3d(dx, dy, dz);
-        }
-
+        Vector3d dxyz = new Vector3d(dx, dy, dz);;
         Vector3d origDxyz = new Vector3d(origDx, origDy, origDz);
         Vector3d origPosXyz = new Vector3d(origPosX, origPosY, origPosZ);
 
@@ -489,6 +525,40 @@ public class EntityCollisionInjector {
         public final double motionYBefore;
         public final float oldFallDistance;
 
+    }
+
+    /**
+     * Returns all the possible ladders that the entity could potentially climb with
+     */
+    public static Iterable<Triple<PhysicsObject, BlockPos, IBlockState>> getLadderCollisions(final EntityLivingBase entity, final List<PhysicsObject> collidingShips) {
+        final boolean isSpectator = entity instanceof EntityPlayer && ((EntityPlayer)entity).isSpectator();
+        final World world = entity.getEntityWorld();
+        final List<Triple<PhysicsObject, BlockPos, IBlockState>> ladderCollisions = new ArrayList<>();
+        if (!isSpectator) {
+            final AxisAlignedBB bb = entity.getEntityBoundingBox();
+            for (PhysicsObject physicsObject : collidingShips) {
+                final Polygon playerPolyInShip = new Polygon(bb, physicsObject.getShipTransform(), TransformType.GLOBAL_TO_SUBSPACE);
+
+                final AxisAlignedBB playerPolyInShipBB = playerPolyInShip.getEnclosedAABB();
+
+                int mX = MathHelper.floor(playerPolyInShipBB.minX);
+                int mY = MathHelper.floor(playerPolyInShipBB.minY);
+                int mZ = MathHelper.floor(playerPolyInShipBB.minZ);
+
+                for (int y2 = mY; (double) y2 < playerPolyInShipBB.maxY; ++y2) {
+                    for (int x2 = mX; (double) x2 < playerPolyInShipBB.maxX; ++x2) {
+                        for (int z2 = mZ; (double) z2 < playerPolyInShipBB.maxZ; ++z2) {
+                            BlockPos tmp = new BlockPos(x2, y2, z2);
+                            IBlockState state = world.getBlockState(tmp);
+                            if (state.getBlock().isLadder(state, world, tmp, entity)) {
+                                ladderCollisions.add(Triple.of(physicsObject, tmp, state));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ladderCollisions;
     }
 
 }

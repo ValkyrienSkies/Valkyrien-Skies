@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.util;
 
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -20,6 +21,7 @@ import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.VSWorldDataCapability;
 import org.valkyrienskies.mod.common.collision.Polygon;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
+import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
@@ -252,6 +254,12 @@ public class ValkyrienUtils {
     public ShipData getLastShipTouchedByEntity(final Entity entity) {
         final IDraggable asDraggable = IDraggable.class.cast(entity);
         return asDraggable.getEntityShipMovementData().getLastTouchedShip();
+    }
+
+    @NonNull
+    public EntityShipMovementData getEntityShipMovementDataFor(final Entity entity) {
+        final IDraggable asDraggable = IDraggable.class.cast(entity);
+        return asDraggable.getEntityShipMovementData();
     }
 
 }

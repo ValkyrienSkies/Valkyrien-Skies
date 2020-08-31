@@ -23,6 +23,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
+import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.fixes.SoundFixWrapper;
 import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
 import org.valkyrienskies.mod.client.render.GibsModelRegistry;
@@ -37,6 +39,7 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.Optional;
+import java.util.WeakHashMap;
 
 public class EventsClient {
 
@@ -101,27 +104,6 @@ public class EventsClient {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onClientTickEvent(ClientTickEvent event) {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.world != null) {
-            if (!mc.isGamePaused()) {
-                /*
-                WorldPhysObjectManager manager = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                    .getManagerForWorld(mc.world);
-                if (event.phase == Phase.END) {
-                    for (PhysicsWrapperEntity wrapper : manager.physicsEntities) {
-                        wrapper.getPhysicsObject().onPostTickClient();
-                    }
-                    EntityDraggable.tickAddedVelocityForWorld(mc.world);
-                }
-
-                 */
-            }
-        }
-
-    }
-
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onDrawBlockHighlightEventFirst(DrawBlockHighlightEvent event) {
         GL11.glPushMatrix();
@@ -179,9 +161,13 @@ public class EventsClient {
         GibsModelRegistry.onModelBakeEvent(event);
     }
 
+    // Used to store the lastTickPos variables of entities, that way we can restore them to their original values after
+    // the rendering code has finished.
+    private static final WeakHashMap<Entity, Vector3dc> lastPositionsMap = new WeakHashMap<>();
+
     @SubscribeEvent
     public void onRenderTickEvent(RenderTickEvent event) {
-        World world = Minecraft.getMinecraft().world;
+        final World world = Minecraft.getMinecraft().world;
         if (world == null) {
             return; // No ships to worry about.
         }
@@ -191,8 +177,68 @@ public class EventsClient {
         }
 
         if (event.phase == Phase.START) {
+            lastPositionsMap.clear();
             for (PhysicsObject wrapper : ValkyrienUtils.getPhysosLoadedInWorld(world)) {
                 wrapper.getShipTransformationManager().updateRenderTransform(partialTicks);
+            }
+
+            // region Fix rendering movement of entities on ships
+
+            // All of Minecraft's code assumes that entities follow a straight line path from their previous position to
+            // their current position.
+            //
+            // This assumption is violated by rotating ships, since the path of a point on a rotating body is a curve,
+            // not a straight line. At small distances from the center of a ship this doesn't matter, but for large ships
+            // the incorrect interpolation results in a bad player experience (jittery rendering resulting from the incorrect interpolation).
+            //
+            // So, to fix this we calculate the correct interpolated position of the entity, and then we modify the lastTickPos
+            // variables so that Minecraft's interpolation code computes the correct value.
+            for (final Entity entity : world.getLoadedEntityList()) {
+                final EntityShipMovementData entityShipMovementData = ValkyrienUtils.getEntityShipMovementDataFor(entity);
+                if (entityShipMovementData.getLastTouchedShip() != null && entityShipMovementData.getTicksSinceTouchedShip() == 0) {
+                    final PhysicsObject shipPhysicsObject = ValkyrienUtils.getPhysObjWorld(world).getPhysObjectFromUUID(
+                            entityShipMovementData.getLastTouchedShip().getUuid()
+                    );
+                    if (shipPhysicsObject == null) {
+                        System.err.println("shipPhysicsObject was null?");
+                        continue;
+                    }
+                    final ShipTransform prevTickTransform = shipPhysicsObject.getPrevTickShipTransform();
+                    final ShipTransform shipRenderTransform = shipPhysicsObject.getShipTransformationManager().getRenderTransform();
+                    final Vector3dc entityAddedVelocity = entityShipMovementData.getAddedLinearVelocity();
+
+                    // The velocity the entity was moving without the added velocity from the ship
+                    final double entityMovementX = entity.posX - entityAddedVelocity.x() - entity.lastTickPosX;
+                    final double entityMovementY = entity.posY - entityAddedVelocity.y() - entity.lastTickPosY;
+                    final double entityMovementZ = entity.posZ - entityAddedVelocity.z() - entity.lastTickPosZ;
+
+                    final Vector3dc entityPrevPos = new Vector3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
+
+                    // Compute the position the entity should be rendered at this frame
+                    final Vector3d entityShouldBeHere = new Vector3d(entityPrevPos);
+                    prevTickTransform.transformPosition(entityShouldBeHere, TransformType.GLOBAL_TO_SUBSPACE);
+                    shipRenderTransform.transformPosition(entityShouldBeHere, TransformType.SUBSPACE_TO_GLOBAL);
+                    entityShouldBeHere.add(entityMovementX * partialTicks, entityMovementY * partialTicks, entityMovementZ * partialTicks);
+
+                    // Save the entity lastTickPos in the map
+                    lastPositionsMap.put(entity, new Vector3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ));
+
+                    // Then update lastTickPos such that Minecraft's interpolation code will render entity at entityShouldBeHere.
+                    entity.lastTickPosX = (entityShouldBeHere.x() - (entity.posX * partialTicks)) / (1 - partialTicks);
+                    entity.lastTickPosY = (entityShouldBeHere.y() - (entity.posY * partialTicks)) / (1 - partialTicks);
+                    entity.lastTickPosZ = (entityShouldBeHere.z() - (entity.posZ * partialTicks)) / (1 - partialTicks);
+                }
+            }
+            // endregion
+        } else {
+            // Once the rendering code has finished we restore the lastTickPos variables to their old values.
+            for (final Entity entity : world.getLoadedEntityList()) {
+                if (lastPositionsMap.containsKey(entity)) {
+                    final Vector3dc entityLastPosition = lastPositionsMap.get(entity);
+                    entity.lastTickPosX = entityLastPosition.x();
+                    entity.lastTickPosY = entityLastPosition.y();
+                    entity.lastTickPosZ = entityLastPosition.z();
+                }
             }
         }
     }

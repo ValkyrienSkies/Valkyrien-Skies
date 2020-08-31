@@ -33,29 +33,7 @@ public class EntityDraggable {
             for (int i = 0; i < world.loadedEntityList.size(); i++) {
                 Entity e = world.loadedEntityList.get(i);
                 if (!e.isDead) {
-                    IDraggable draggable = getDraggableFromEntity(e);
-
-                    if (draggable.getWorldBelowFeet() == null) {
-                        if (e.onGround) {
-                            draggable.setVelocityAddedToPlayer(new Vector3d());
-                            draggable.setYawDifVelocity(0);
-                        } else {
-                            if (e instanceof EntityPlayer) {
-                                EntityPlayer player = (EntityPlayer) e;
-                                if (player.isCreative() && player.capabilities.isFlying) {
-                                    draggable.setVelocityAddedToPlayer(draggable.getVelocityAddedToPlayer().mul(.95, new Vector3d()));
-                                    draggable.setYawDifVelocity(
-                                            draggable.getYawDifVelocity() * .95D * .95D);
-                                }
-                            }
-                        }
-                    }
-                    // Only run the added velocity code if there's a significant amount to add; or if we're standing on top of a ship.
-                    if (draggable.getVelocityAddedToPlayer()
-                            .lengthSquared() > .01 || draggable.getWorldBelowFeet() != null) {
-                        addEntityVelocityFromShipBelow(e);
-                    }
-
+                    addEntityVelocityFromShipBelow(e);
                 }
             }
         } catch (Exception e) {
@@ -71,7 +49,22 @@ public class EntityDraggable {
 
         EntityShipMountData mountData = ValkyrienUtils.getMountedShipAndPos(entity);
 
-        if (draggable.getWorldBelowFeet() != null) {
+        if (draggable.getWorldBelowFeet() == null) {
+            if (entity.onGround) {
+                draggable.setVelocityAddedToPlayer(new Vector3d());
+                draggable.setYawDifVelocity(0);
+                draggable.setTicksSinceTouchedShip(-1);
+            } else {
+                if (entity instanceof EntityPlayer) {
+                    EntityPlayer player = (EntityPlayer) entity;
+                    if (player.isCreative() && player.capabilities.isFlying) {
+                        draggable.setVelocityAddedToPlayer(draggable.getVelocityAddedToPlayer().mul(.95, new Vector3d()));
+                        draggable.setYawDifVelocity(
+                                draggable.getYawDifVelocity() * .95 * .95);
+                    }
+                }
+            }
+        } else {
             ShipData worldBelow = draggable.getWorldBelowFeet();
 
             if (entity.world.isRemote && entity instanceof EntityPlayer) {
@@ -147,44 +140,42 @@ public class EntityDraggable {
             }
         }
 
-        if (true) {
-            boolean originallySneaking = entity.isSneaking();
-            entity.setSneaking(false);
-            if (draggable.getWorldBelowFeet() == null && entity.onGround) {
-                draggable.setVelocityAddedToPlayer(new Vector3d());
-            }
-
-            Vector3dc velocityProper = draggable.getVelocityAddedToPlayer();
-            AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
-            if (velocityProper.lengthSquared() < 1000000) {
-                draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
-            } else {
-                System.err.println(entity.getName() + " tried moving way too fast!");
-            }
-
-            entity.setEntityBoundingBox(originalBoundingBox);
-
-            entity.setEntityBoundingBox(
-                    entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().x(),
-                            draggable.getVelocityAddedToPlayer().y(),
-                            draggable.getVelocityAddedToPlayer().z()));
-            entity.resetPositionToBB();
-
-            if (!mountData.isMounted()) {
-                // if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
-                // [Changed because EntityPlayerSP is a 'client' class]
-                if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer)) {
-                    entity.setRotationYawHead((float) (entity.getRotationYawHead() + draggable.getYawDifVelocity()));
-                } else {
-                    entity.rotationYaw += draggable.getYawDifVelocity();
-                }
-            }
-
-            // Do not add this movement as if the entity were walking it
-            // entity.distanceWalkedModified = originalWalked;
-            // entity.distanceWalkedOnStepModified = originalWalkedOnStep;
-            entity.setSneaking(originallySneaking);
+        boolean originallySneaking = entity.isSneaking();
+        entity.setSneaking(false);
+        if (draggable.getWorldBelowFeet() == null && entity.onGround) {
+            draggable.setVelocityAddedToPlayer(new Vector3d());
         }
+
+        Vector3dc velocityProper = draggable.getVelocityAddedToPlayer();
+        AxisAlignedBB originalBoundingBox = entity.getEntityBoundingBox();
+        if (velocityProper.lengthSquared() < 1000000) {
+            draggable.setVelocityAddedToPlayer(getVelocityProper(velocityProper, entity));
+        } else {
+            System.err.println(entity.getName() + " tried moving way too fast!");
+        }
+
+        entity.setEntityBoundingBox(originalBoundingBox);
+
+        entity.setEntityBoundingBox(
+                entity.getEntityBoundingBox().offset(draggable.getVelocityAddedToPlayer().x(),
+                        draggable.getVelocityAddedToPlayer().y(),
+                        draggable.getVelocityAddedToPlayer().z()));
+        entity.resetPositionToBB();
+
+        if (!mountData.isMounted()) {
+            // if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
+            // [Changed because EntityPlayerSP is a 'client' class]
+            if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer)) {
+                entity.setRotationYawHead((float) (entity.getRotationYawHead() + draggable.getYawDifVelocity()));
+            } else {
+                entity.rotationYaw += draggable.getYawDifVelocity();
+            }
+        }
+
+        // Do not add this movement as if the entity were walking it
+        // entity.distanceWalkedModified = originalWalked;
+        // entity.distanceWalkedOnStepModified = originalWalkedOnStep;
+        entity.setSneaking(originallySneaking);
 
         draggable.setVelocityAddedToPlayer(draggable.getVelocityAddedToPlayer().mul(.99, new Vector3d()));
         draggable.setYawDifVelocity(draggable.getYawDifVelocity() * .95D);

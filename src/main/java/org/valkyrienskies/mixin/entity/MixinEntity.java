@@ -50,6 +50,7 @@ public abstract class MixinEntity implements IDraggable {
     private Vector3dc velocityAddedToPlayer = new Vector3d();
     private double yawDifVelocity;
     private Vector3d searchVector = null;
+    private int ticksSinceTouchedShip = 0;
 
     @Override
     public ShipData getWorldBelowFeet() {
@@ -269,5 +270,15 @@ public abstract class MixinEntity implements IDraggable {
             callbackInfo.setReturnValue(JOML.toMinecraft(playerPosition));
             callbackInfo.cancel(); // return the value, as opposed to the default one
         }
+    }
+
+    @Override
+    public int getTicksSinceTouchedShip() {
+        return ticksSinceTouchedShip;
+    }
+
+    @Override
+    public void setTicksSinceTouchedShip(int ticksSinceTouchedShip) {
+        this.ticksSinceTouchedShip = ticksSinceTouchedShip;
     }
 }

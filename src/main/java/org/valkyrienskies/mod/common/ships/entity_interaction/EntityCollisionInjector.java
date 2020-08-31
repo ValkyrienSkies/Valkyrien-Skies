@@ -256,6 +256,7 @@ public class EntityCollisionInjector {
 
         if (worldBelow != null) {
             draggable.setWorldBelowFeet(worldBelow.getShipData());
+            draggable.setTicksSinceTouchedShip(0);
         } else {
             draggable.setWorldBelowFeet(null);
         }

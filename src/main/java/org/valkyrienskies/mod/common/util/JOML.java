@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.util;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -104,6 +105,20 @@ public class JOML {
 
     public static Vector3i castInt(Vector3dc v) {
         return new Vector3i((int) v.x(), (int) v.y(), (int) v.z());
+    }
+
+    // endregion
+
+    // region Serialization
+
+    public static Vector3d readFromByteBuf(ByteBuf buf) {
+        return new Vector3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+    }
+
+    public static void writeToByteBuf(Vector3dc vector3dc, ByteBuf buf) {
+        buf.writeDouble(vector3dc.x());
+        buf.writeDouble(vector3dc.y());
+        buf.writeDouble(vector3dc.z());
     }
 
     // endregion

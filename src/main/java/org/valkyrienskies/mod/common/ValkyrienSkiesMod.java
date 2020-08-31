@@ -157,6 +157,8 @@ public class ValkyrienSkiesMod {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies");
         physWrapperNetwork.registerMessage(ShipIndexDataMessageHandler.class,
             ShipIndexDataMessage.class, 0, Side.CLIENT);
+        physWrapperNetwork.registerMessage(MessageHandlerPlayerOnShipPos.class,
+                MessagePlayerOnShipPos.class, 1, Side.SERVER);
 
         controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_piloting");
         controlNetwork

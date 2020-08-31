@@ -1,6 +1,5 @@
 package org.valkyrienskies.mod.common.ships.entity_interaction;
 
-import com.google.common.collect.ImmutableList;
 import lombok.Value;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -12,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -20,7 +18,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.ForgeModContainer;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -31,12 +28,12 @@ import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class EntityCollisionInjector {
 
@@ -255,10 +252,9 @@ public class EntityCollisionInjector {
 
 
         if (worldBelow != null) {
-            draggable.setWorldBelowFeet(worldBelow.getShipData());
-            draggable.setTicksSinceTouchedShip(0);
+            draggable.setEntityShipMovementData(draggable.getEntityShipMovementData().withLastTouchedShip(worldBelow.getShipData()).withTicksSinceTouchedShip(0));
         } else {
-            draggable.setWorldBelowFeet(null);
+            draggable.setEntityShipMovementData(draggable.getEntityShipMovementData().withLastTouchedShip(null));
         }
 
         if (worldBelow == null) {
@@ -309,9 +305,7 @@ public class EntityCollisionInjector {
         double motionYBefore = storage.motionYBefore;
         float oldFallDistance = storage.oldFallDistance;
 
-        IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
-
-        ShipData worldBelow = draggable.getWorldBelowFeet();
+        ShipData worldBelow = ValkyrienUtils.getLastShipTouchedByEntity(entity);
 
         entity.collidedHorizontally =
             (motionInterfering(dx, origDx)) || (motionInterfering(dz, origDz));

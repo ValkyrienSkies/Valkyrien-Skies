@@ -1,24 +1,13 @@
 package org.valkyrienskies.mod.common.ships.entity_interaction;
 
-import org.joml.Vector3dc;
-import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 
-@Deprecated
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public interface IDraggable {
+    @Nonnull
+    EntityShipMovementData getEntityShipMovementData();
 
-    ShipData getWorldBelowFeet();
-
-    void setWorldBelowFeet(ShipData toSet);
-
-    Vector3dc getVelocityAddedToPlayer();
-
-    void setVelocityAddedToPlayer(Vector3dc toSet);
-
-    double getYawDifVelocity();
-
-    void setYawDifVelocity(double toSet);
-
-    int getTicksSinceTouchedShip();
-
-    void setTicksSinceTouchedShip(int ticksSinceTouchedShip);
+    void setEntityShipMovementData(@Nullable EntityShipMovementData entityShipMovementData);
 }

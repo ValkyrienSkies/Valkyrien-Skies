@@ -25,6 +25,7 @@ import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.ships.chunk_claims.VSChunkClaim;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityShipMountData;
+import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
@@ -245,6 +246,12 @@ public class ValkyrienUtils {
     @Nullable
     public TileEntity getTileEntitySafe(World world, BlockPos pos) {
         return world.getChunk(pos).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+    }
+
+    @Nullable
+    public ShipData getLastShipTouchedByEntity(final Entity entity) {
+        final IDraggable asDraggable = IDraggable.class.cast(entity);
+        return asDraggable.getEntityShipMovementData().getLastTouchedShip();
     }
 
 }

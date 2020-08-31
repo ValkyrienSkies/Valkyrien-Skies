@@ -20,6 +20,7 @@ import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.util.JOML;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.Vector;
@@ -28,7 +29,6 @@ import java.util.Vector;
 public abstract class MixinEntityPlayerSP {
 
     private final EntityPlayerSP player = EntityPlayerSP.class.cast(this);
-    private final IDraggable playerDraggable = IDraggable.class.cast(this);
     @Final
     @Shadow
     public NetHandlerPlayClient connection;
@@ -99,7 +99,7 @@ public abstract class MixinEntityPlayerSP {
             boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || this.positionUpdateTicks >= 20;
             boolean flag3 = d3 != 0.0D || d4 != 0.0D;
 
-            final ShipData worldBelowFeet = playerDraggable.getWorldBelowFeet();
+            final ShipData worldBelowFeet = ValkyrienUtils.getLastShipTouchedByEntity(player);
             if (worldBelowFeet != null) {
                 final ShipTransform shipTransform = worldBelowFeet.getShipTransform();
                 final Vector3d playerPosInLocal = new Vector3d(player.posX, player.posY, player.posZ);

@@ -57,7 +57,7 @@ public class MessageHandlerPlayerOnShipPos implements IMessageHandler<MessagePla
                         player.setRotationYawHead(cPacketPlayer.yaw);
 
                         final IDraggable playerAsDraggable = IDraggable.class.cast(player);
-                        playerAsDraggable.setWorldBelowFeet(shipData);
+                        playerAsDraggable.setEntityShipMovementData(playerAsDraggable.getEntityShipMovementData().withLastTouchedShip(shipData));
                     }
                 }
         );

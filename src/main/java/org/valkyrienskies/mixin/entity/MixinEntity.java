@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
@@ -23,13 +24,14 @@ import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity implements IDraggable {
 
-    private final IDraggable thisAsDraggable = this;
+    private final Entity thisAsEntity = Entity.class.cast(this);
     @Shadow
     public float rotationYaw;
     @Shadow
@@ -46,41 +48,10 @@ public abstract class MixinEntity implements IDraggable {
     public double posY;
     @Shadow
     public double posZ;
-    private ShipData worldBelowFeet;
-    private Vector3dc velocityAddedToPlayer = new Vector3d();
-    private double yawDifVelocity;
+
     private Vector3d searchVector = null;
-    private int ticksSinceTouchedShip = 0;
-
-    @Override
-    public ShipData getWorldBelowFeet() {
-        return worldBelowFeet;
-    }
-
-    @Override
-    public void setWorldBelowFeet(ShipData toSet) {
-        worldBelowFeet = toSet;
-    }
-
-    @Override
-    public Vector3dc getVelocityAddedToPlayer() {
-        return velocityAddedToPlayer;
-    }
-
-    @Override
-    public void setVelocityAddedToPlayer(Vector3dc toSet) {
-        velocityAddedToPlayer = toSet;
-    }
-
-    @Override
-    public double getYawDifVelocity() {
-        return yawDifVelocity;
-    }
-
-    @Override
-    public void setYawDifVelocity(double toSet) {
-        yawDifVelocity = toSet;
-    }
+    
+    private EntityShipMovementData entityShipMovementData = new EntityShipMovementData(null, 0, new Vector3d(), 0);
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
@@ -208,12 +179,13 @@ public abstract class MixinEntity implements IDraggable {
 
     @Redirect(method = "createRunningParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;floor(D)I", ordinal = 0))
     private int runningParticlesFirstFloor(double d) {
-        if (worldBelowFeet == null) {
+        final ShipData lastTouchedShip = ValkyrienUtils.getLastShipTouchedByEntity(thisAsEntity);
+        if (lastTouchedShip == null) {
             searchVector = null;
             return MathHelper.floor(d);
         } else {
             searchVector = new Vector3d(this.posX, this.posY - 0.20000000298023224D, this.posZ);
-            worldBelowFeet.getShipTransform()
+            lastTouchedShip.getShipTransform()
                 .transformPosition(searchVector, TransformType.GLOBAL_TO_SUBSPACE);
             return MathHelper.floor(searchVector.x);
         }
@@ -272,13 +244,14 @@ public abstract class MixinEntity implements IDraggable {
         }
     }
 
+    @Nonnull
     @Override
-    public int getTicksSinceTouchedShip() {
-        return ticksSinceTouchedShip;
+    public EntityShipMovementData getEntityShipMovementData() {
+        return entityShipMovementData;
     }
 
     @Override
-    public void setTicksSinceTouchedShip(int ticksSinceTouchedShip) {
-        this.ticksSinceTouchedShip = ticksSinceTouchedShip;
+    public void setEntityShipMovementData(EntityShipMovementData entityShipMovementData) {
+        this.entityShipMovementData = entityShipMovementData;
     }
 }

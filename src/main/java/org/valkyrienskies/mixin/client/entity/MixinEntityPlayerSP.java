@@ -6,6 +6,8 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -157,4 +159,29 @@ public abstract class MixinEntityPlayerSP {
             }
         }
     }
+
+    /**
+     * @author Tri0de
+     * @reason Fixes player ray tracing when they're on a ship thats rotating.
+     */
+    @Overwrite
+    public Vec3d getLook(float partialTicks) {
+        if (partialTicks == 1.0F) {
+            return getVectorForRotationInMc_1_12(player.rotationPitch, player.rotationYawHead);
+        } else {
+            float f = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partialTicks;
+            float f1 = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * partialTicks;
+            return this.getVectorForRotationInMc_1_12(f, f1);
+        }
+    }
+
+    // This is only valid for MC 1.12, may or may not be correct in future versions.
+    private Vec3d getVectorForRotationInMc_1_12(float pitch, float yaw) {
+        float f = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
+        float f1 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);
+        float f2 = -MathHelper.cos(-pitch * 0.017453292F);
+        float f3 = MathHelper.sin(-pitch * 0.017453292F);
+        return new Vec3d(f1 * f2, f3, f * f2);
+    }
+
 }

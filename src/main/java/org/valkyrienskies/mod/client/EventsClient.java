@@ -44,13 +44,6 @@ public class EventsClient {
     private static double oldYOff;
     private static double oldZOff;
 
-    public static void updatePlayerMouseOver(Entity entity) {
-        if (entity == Minecraft.getMinecraft().player) {
-            Minecraft.getMinecraft().entityRenderer
-                .getMouseOver(Minecraft.getMinecraft().getRenderPartialTicks());
-        }
-    }
-
     @SubscribeEvent
     public void onClientTick(ClientTickEvent event) {
         for (World world : ClientWorldTracker.getWorlds()) {

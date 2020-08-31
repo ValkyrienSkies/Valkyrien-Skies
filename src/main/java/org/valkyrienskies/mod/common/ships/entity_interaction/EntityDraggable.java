@@ -19,11 +19,8 @@ import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import java.util.List;
 
 /**
- * Bad class, delete soon!
- *
- * @author thebest108
+ * This class handles the logic of moving entities with the ships they're standing on.
  */
-@Deprecated
 public class EntityDraggable {
 
     /**
@@ -164,23 +161,14 @@ public class EntityDraggable {
         final double addedYawVelocity = newEntityShipMovementData.getAddedYawVelocity();
 
         if (!mountData.isMounted()) {
-            // if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
-            // [Changed because EntityPlayerSP is a 'client' class]
-            if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer)) {
-                entity.setRotationYawHead((float) (entity.getRotationYawHead() + addedYawVelocity));
-            } else {
-                entity.rotationYaw += addedYawVelocity;
-            }
+            entity.setRotationYawHead((float) (entity.getRotationYawHead() + addedYawVelocity));
+            entity.rotationYaw += addedYawVelocity;
         }
 
         // Do not add this movement as if the entity were walking it
         // entity.distanceWalkedModified = originalWalked;
         // entity.distanceWalkedOnStepModified = originalWalkedOnStep;
         entity.setSneaking(originallySneaking);
-
-        if (entity.world.isRemote && entity instanceof EntityPlayer) {
-            EventsClient.updatePlayerMouseOver(entity);
-        }
     }
 
     public static IDraggable getDraggableFromEntity(Entity entity) {

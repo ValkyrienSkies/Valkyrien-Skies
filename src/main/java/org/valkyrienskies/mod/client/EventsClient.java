@@ -212,10 +212,8 @@ public class EventsClient {
                     final double entityMovementY = entity.posY - entityAddedVelocity.y() - entity.lastTickPosY;
                     final double entityMovementZ = entity.posZ - entityAddedVelocity.z() - entity.lastTickPosZ;
 
-                    final Vector3dc entityPrevPos = new Vector3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
-
                     // Compute the position the entity should be rendered at this frame
-                    final Vector3d entityShouldBeHere = new Vector3d(entityPrevPos);
+                    final Vector3d entityShouldBeHere = new Vector3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
                     prevTickTransform.transformPosition(entityShouldBeHere, TransformType.GLOBAL_TO_SUBSPACE);
                     shipRenderTransform.transformPosition(entityShouldBeHere, TransformType.SUBSPACE_TO_GLOBAL);
                     entityShouldBeHere.add(entityMovementX * partialTicks, entityMovementY * partialTicks, entityMovementZ * partialTicks);

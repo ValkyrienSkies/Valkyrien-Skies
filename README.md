@@ -1,5 +1,5 @@
 
-# Valkyrien Skies
+# <img src="vs_logo.png" width="32" height="32">alkyrien Skies
 [![CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies.svg?style=svg)](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies)
 [![Jenkins](https://jenkins.daporkchop.net/job/ValkyrienSkies/job/Valkyrien-Skies/job/master/badge/icon)](https://jenkins.daporkchop.net/job/ValkyrienSkies/job/Valkyrien-Skies/)
 [![Discord](https://img.shields.io/discord/244934352092397568.svg)](https://discord.gg/rG3QNDV)

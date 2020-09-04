@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Consumer;
 
 /**
  * Handles all the physics processing for a world separate from the game tick.
@@ -134,7 +133,7 @@ public class VSThread extends Thread {
         immutableShipsList = ((IHasShipManager) hostWorld).getManager().getAllLoadedThreadSafe();
 
         // Run tasks queued to run on physics thread
-        recurringTasks.forEach(task -> task.runTask(VSConfig.physSpeed));
+        recurringTasks.forEach(task -> task.runTask(VSConfig.timeSimulatedPerPhysicsTick));
         taskQueue.forEach(Runnable::run);
         taskQueue.clear();
 
@@ -173,7 +172,7 @@ public class VSThread extends Thread {
      * Ticks physics and collision for the List of PhysicsWrapperEntity passed in.
      */
     private void tickThePhysicsAndCollision(List<PhysicsObject> shipsWithPhysics) {
-        double newPhysSpeed = VSConfig.physSpeed;
+        double newPhysSpeed = VSConfig.timeSimulatedPerPhysicsTick;
         List<ShipCollisionTask> collisionTasks = new ArrayList<>(
             shipsWithPhysics.size() * 2);
         for (PhysicsObject wrapper : shipsWithPhysics) {

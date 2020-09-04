@@ -12,26 +12,16 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.command.config.ShortName;
 
 @SuppressWarnings("WeakerAccess") // NOTE: Any forge config option MUST be "public"
-@Config(
-    modid = ValkyrienSkiesMod.MOD_ID,
-    category = "general"
-)
+@Config(modid = ValkyrienSkiesMod.MOD_ID)
 public class VSConfig extends VSConfigTemplate {
 
     public static double shipUpperLimit = 1000D;
 
     public static double shipLowerLimit = -30D;
 
-    public static boolean runAirshipPermissions = false;
-
     public static boolean doGravity = true;
 
-    @Name("Compacted Valkyrium lift")
-    public static double compactedValkyriumLift = 200000;
-
     public static boolean doPhysicsBlocks = true;
-
-    public static boolean doValkyriumLifting = true;
 
     public static boolean doAirshipRotation = true;
 
@@ -42,10 +32,9 @@ public class VSConfig extends VSConfigTemplate {
             " and the developers told you to enable this.\nDefault is false. Set to true enable.")
     public static boolean showAnnoyingDebugOutput = false;
 
-    @Comment("Makes wrench toggle a multiblock's constructed state, removes modes.")
-    public static boolean wrenchModeless = false;
-
-    public static double physSpeed = 0.01D;
+    @Comment("The amount of seconds simulated every physics tick. By default there are 100 physics ticks per second, " +
+            "so its default value is 1/100 of a second.")
+    public static double timeSimulatedPerPhysicsTick = 0.01;
 
     @Comment({
         "The number of threads to use for physics",
@@ -56,70 +45,13 @@ public class VSConfig extends VSConfigTemplate {
     @RangeInt(min = 2)
     public static int threadCount = Math.max(2, Runtime.getRuntime().availableProcessors() - 2);
 
-    @Comment({
-        "Players can't own more than this many airships at once.",
-        "Set to -1 to disable"
-    })
-    public static int maxAirships = -1;
-
     public static int maxShipSize = 15000;
 
-    public static double gravityVecX = 0D;
+    public static double gravityVecX = 0;
 
-    public static double gravityVecY = -9.8D;
+    public static double gravityVecY = -9.8;
 
-    public static double gravityVecZ = 0D;
-
-    @Comment({
-        "Valkyrium Crystal Anti-Gravity force.",
-        "Default is 1. Set to 0 to disable."
-    })
-    public static double valkyriumCrystalForce = 1D;
-
-    @Comment({
-        "Valkyrium Ore Anti-Gravity force.",
-        "1 is the same as a crystal, default is 4.",
-        "Set to 0 to disable."
-    })
-    public static double valkyriumOreForce = 4D;
-
-    @Comment({
-        "Network Relay connections limit.",
-        "How many components or relays can be connected.",
-        "Default is 8."
-    })
-    public static int networkRelayLimit = 8;
-
-    @Comment({
-        "Relay Wire Length",
-        "How long, in metres, a single relay wire can extend.",
-        "Default is 8m."
-    })
-    public static double relayWireLength = 8D;
-
-    @Name("engine")
-    @ShortName("enginePower")
-    @Comment("Legacy engine power. Engines must be replaced after changes are made.")
-    public static final EnginePower ENGINE_POWER = new EnginePower();
-
-    public static class EnginePower {
-
-        @RequiresMcRestart
-        public double basicEnginePower = 2000;
-
-        @RequiresMcRestart
-        public double advancedEnginePower = 5000;
-
-        @RequiresMcRestart
-        public double eliteEnginePower = 10000;
-
-        @RequiresMcRestart
-        public double ultimateEnginePower = 20000;
-
-        @RequiresMcRestart
-        public double redstoneEnginePower = 50000;
-
-    }
+    public static double gravityVecZ = 0;
 
     @Comment("Blocks to not be included when assembling a ship")
     public static String[] shipSpawnDetectorBlacklist = {

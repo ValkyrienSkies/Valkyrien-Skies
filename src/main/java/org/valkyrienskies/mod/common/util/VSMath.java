@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.util;
 
 import lombok.experimental.UtilityClass;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -28,36 +29,26 @@ public class VSMath {
         return new Vector3d(vec.x, vec.y, vec.z);
     }
 
-    /**
-     * Converts a double-array matrix to a JOML {@link Matrix4d}
-     *
-     * @param matrix A 4x4 row-major double-array matrix
-     * @return A {@link Matrix4d} representation
-     */
-    public static Matrix4d convertArrayMatrix4d(double[] matrix) {
-        return new Matrix4d().set(matrix).transpose();
-    }
-
-    /**
-     * Converts a double-array matrix into a JOML {@link Matrix3d}
-     *
-     * @param matrix A 3x3 row-major double-array matrix
-     * @return A {@link Matrix3d} representation
-     */
-    public static Matrix3d convertArrayMatrix3d(double[] matrix) {
-        return new Matrix3d().set(matrix).transpose();
-    }
-
-    public static double getPitchFromVector(Vector3dc vec) {
-        return -Math.asin(vec.y()) * 180 / Math.PI;
-    }
-
-    public static double getYawFromVector(Vector3dc vec, double rotPitch) {
-        double f2 = -Math.cos(-rotPitch * (Math.PI / 180));
-        double yawFromRotVec = Math.atan2(vec.x() / f2, vec.z() / f2);
-        yawFromRotVec += Math.PI;
-        yawFromRotVec /= -0.017453292F;
-        return yawFromRotVec;
+    public Tuple<Double, Double> getPitchYawFromVector(final Vector3dc vector3dc) {
+        // First get the pitch from the vector
+        final double pitch = Math.toDegrees(-Math.asin(vector3dc.y()));
+        if (Double.isNaN(pitch)) {
+            // The player is either pointing straight up or straight down
+            if (vector3dc.y() > 0) {
+                return new Tuple<>(-90., 0.);
+            } else {
+                return new Tuple<>(90., 0.);
+            }
+        } else {
+            // Then get the yaw from the vector
+            final double normalizeHorizontalComponents = -Math.cos(Math.toRadians(pitch));
+            // Prevent divide by 0 errors, and atan2(0, 0) errors
+            if (Math.abs(normalizeHorizontalComponents) < .0001 || (Math.abs(vector3dc.x()) < .0001 && Math.abs(vector3dc.z()) < .0001)) {
+                return new Tuple<>(pitch, 0.);
+            }
+            final double yawFromRotVec = -Math.toDegrees(Math.atan2(vector3dc.x() / normalizeHorizontalComponents, vector3dc.z() / normalizeHorizontalComponents) + Math.PI);
+            return new Tuple<>(pitch, yawFromRotVec);
+        }
     }
 
     /**

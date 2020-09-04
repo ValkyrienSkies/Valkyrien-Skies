@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.GameType;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -46,10 +47,12 @@ public class MixinCPacketPlayer implements ITransformablePacket {
                 Vector3dc positionGlobal = new Vector3d(playerMP.posX, playerMP.posY, playerMP.posZ);
                 Vector3dc lookVectorGlobal = JOML.convert(playerMP.getLook(1.0f));
 
-                float pitch = (float) VSMath.getPitchFromVector(lookVectorGlobal);
-                float yaw = (float) VSMath.getYawFromVector(lookVectorGlobal, pitch);
+                // ==== Get the player pitch/yaw from the look vector =====
+                final Tuple<Double, Double> pitchYawTuple = VSMath.getPitchYawFromVector(lookVectorGlobal);
+                float pitch = pitchYawTuple.getFirst().floatValue();
+                float yaw = pitchYawTuple.getSecond().floatValue();
 
-                // ===== Set the proper position values for the player packet ====
+                // ===== Set the proper position values for the player packet =====
                 thisPacket.moving = true;
                 thisPacket.onGround = true;
                 thisPacket.x = positionGlobal.x();

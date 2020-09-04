@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -220,13 +221,10 @@ public class ValkyrienUtils {
             living.prevRotationYawHead = entity.rotationYaw;
         }
 
-        // ===== Fix change the entity rotation to be proper relative to ship space =====
-        Vector3dc entityLookImmutable = new Vector3d(entityLook.x, entityLook.y, entityLook.z);
-        double pitch = VSMath.getPitchFromVector(entityLookImmutable);
-        double yaw = VSMath.getYawFromVector(entityLookImmutable, pitch);
-
-        entity.rotationYaw = (float) yaw;
-        entity.rotationPitch = (float) pitch;
+        // Get the player pitch/yaw from the look vector
+        final Tuple<Double, Double> pitchYawTuple = VSMath.getPitchYawFromVector(new Vector3d(entityLook.x, entityLook.y, entityLook.z));
+        entity.rotationPitch = pitchYawTuple.getFirst().floatValue();
+        entity.rotationYaw = pitchYawTuple.getSecond().floatValue();
 
         if (entity instanceof EntityFireball) {
             EntityFireball ball = (EntityFireball) entity;

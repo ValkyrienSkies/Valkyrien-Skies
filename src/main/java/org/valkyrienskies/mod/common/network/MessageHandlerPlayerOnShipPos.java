@@ -3,6 +3,7 @@ package org.valkyrienskies.mod.common.network;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -37,8 +38,10 @@ public class MessageHandlerPlayerOnShipPos implements IMessageHandler<MessagePla
                         final Vector3d playerLookInGlobal = new Vector3d(message.getPlayerLookInShip());
                         shipTransform.transformDirection(playerLookInGlobal, TransformType.SUBSPACE_TO_GLOBAL);
 
-                        final double playerPitchInGlobal = VSMath.getPitchFromVector(playerLookInGlobal);
-                        final double playerYawInGlobal = VSMath.getYawFromVector(playerLookInGlobal, playerPitchInGlobal);
+                        // Get the player pitch/yaw from the look vector
+                        final Tuple<Double, Double> pitchYawTuple = VSMath.getPitchYawFromVector(playerLookInGlobal);
+                        final double playerPitchInGlobal = pitchYawTuple.getFirst();
+                        final double playerYawInGlobal = pitchYawTuple.getSecond();
 
                         final CPacketPlayer.PositionRotation cPacketPlayer = new CPacketPlayer.PositionRotation();
                         cPacketPlayer.x = playerPosInGlobal.x();

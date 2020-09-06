@@ -27,7 +27,11 @@ public class VSConfig extends VSConfigTemplate {
 
     public static boolean doAirshipMovement = true;
 
-    @Name("showAnnoyingDebugOutput")
+    @Name("Render ship chunk claims when in debug mode")
+    @Comment("When true all ship chunks will be rendered with a green outline (in debug rendering mode (f3 + b)).")
+    public static boolean renderShipChunkClaimsInDebug = false;
+
+    @Name("Show annoying debug output in console")
     @Comment("Spams your console with annoying debug output. Not recommended unless you've encountered a strange bug" +
             " and the developers told you to enable this.\nDefault is false. Set to true enable.")
     public static boolean showAnnoyingDebugOutput = false;

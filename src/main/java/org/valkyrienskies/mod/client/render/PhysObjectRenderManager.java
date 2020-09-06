@@ -16,6 +16,7 @@ import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.JOML;
@@ -232,24 +233,26 @@ public class PhysObjectRenderManager {
         RenderGlobal.drawSelectionBoundingBox(shipBB, 1.0F, 1.0F, 1.0F, 1.0F);
 
 
-        // Render claimed chunks
-        GlStateManager.pushMatrix();
+        // region Render claimed chunks
+        if (VSConfig.renderShipChunkClaimsInDebug) {
+            GlStateManager.pushMatrix();
 
-        GlStateManager.translate((float) renderTransform.getPosX() + offsetX, (float) renderTransform.getPosY() + offsetY, (float) renderTransform.getPosZ() + offsetZ);
+            GlStateManager.translate((float) renderTransform.getPosX() + offsetX, (float) renderTransform.getPosY() + offsetY, (float) renderTransform.getPosZ() + offsetZ);
 
-        Vector3dc angles = renderTransform.getSubspaceToGlobal().getEulerAnglesZYX(new Vector3d());
+            Vector3dc angles = renderTransform.getSubspaceToGlobal().getEulerAnglesZYX(new Vector3d());
 
-        GlStateManager.rotate((float) Math.toDegrees(angles.z()), 0, 0, 1);
-        GlStateManager.rotate((float) Math.toDegrees(angles.y()), 0, 1, 0);
-        GlStateManager.rotate((float) Math.toDegrees(angles.x()), 1, 0, 0);
+            GlStateManager.rotate((float) Math.toDegrees(angles.z()), 0, 0, 1);
+            GlStateManager.rotate((float) Math.toDegrees(angles.y()), 0, 1, 0);
+            GlStateManager.rotate((float) Math.toDegrees(angles.x()), 1, 0, 0);
 
-        for (ChunkPos claimedChunk : parent.getChunkClaim()) {
-            AxisAlignedBB claimBB = new AxisAlignedBB(claimedChunk.getXStart() + .1, renderTransform.getCenterCoord().y() -8 + 0.1, claimedChunk.getZStart() + .1, claimedChunk.getXEnd() + .9, renderTransform.getCenterCoord().y() + 8 - .1, claimedChunk.getZEnd() + .9);
-            claimBB = claimBB.offset(-renderTransform.getCenterCoord().x(), -renderTransform.getCenterCoord().y(), -renderTransform.getCenterCoord().z());
-            RenderGlobal.drawSelectionBoundingBox(claimBB, 0, 1.0F, 0, 1.0F);
+            for (ChunkPos claimedChunk : parent.getChunkClaim()) {
+                AxisAlignedBB claimBB = new AxisAlignedBB(claimedChunk.getXStart() + .1, renderTransform.getCenterCoord().y() - 8 + 0.1, claimedChunk.getZStart() + .1, claimedChunk.getXEnd() + .9, renderTransform.getCenterCoord().y() + 8 - .1, claimedChunk.getZEnd() + .9);
+                claimBB = claimBB.offset(-renderTransform.getCenterCoord().x(), -renderTransform.getCenterCoord().y(), -renderTransform.getCenterCoord().z());
+                RenderGlobal.drawSelectionBoundingBox(claimBB, 0, 1.0F, 0, 1.0F);
+            }
+            GlStateManager.popMatrix();
         }
-        GlStateManager.popMatrix();
-        // Render claimed chunks end
+        // endregion
 
         // Draw the center of mass bounding box.
         GlStateManager.disableDepth();

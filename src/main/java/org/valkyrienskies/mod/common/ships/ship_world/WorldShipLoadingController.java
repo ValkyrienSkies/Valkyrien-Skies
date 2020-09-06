@@ -7,6 +7,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
@@ -21,20 +22,6 @@ import java.util.*;
  */
 class WorldShipLoadingController {
 
-    /**
-     * These constants must satisfy the following constraints:
-     *
-     * WATCH_DISTANCE < UNWATCH_DISTANCE
-     * LOAD_DISTANCE < LOAD_BACKGROUND_DISTANCE < UNLOAD_DISTANCE
-     * UNWATCH_DISTANCE <= UNLOAD_DISTANCE
-     * WATCH_DISTANCE <= LOAD_DISTANCE
-     */
-    public static final double UNWATCH_DISTANCE = 50;
-    public static final double WATCH_DISTANCE = 32;
-
-    public static final double LOAD_DISTANCE = 32; // 128;
-    public static final double LOAD_BACKGROUND_DISTANCE = 50; // 256;
-    public static final double UNLOAD_DISTANCE = 80; // 512;
     private final WorldServerShipManager shipManager;
     private Map<ShipData, Set<EntityPlayerMP>> shipToWatchingPlayers;
 
@@ -51,15 +38,15 @@ class WorldShipLoadingController {
             ShipTransform transform = data.getShipTransform();
             Vec3d shipPos = transform.getShipPositionVec3d();
             if (shipManager.getPhysObjectFromUUID(data.getUuid()) == null) {
-                if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, LOAD_DISTANCE)) {
+                if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, VSConfig.SHIP_LOADING_SETTINGS.loadDistance)) {
                     shipManager.queueShipLoad(data.getUuid());
                 } else {
-                    if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, LOAD_BACKGROUND_DISTANCE)) {
+                    if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, VSConfig.SHIP_LOADING_SETTINGS.loadBackgroundDistance)) {
                         shipManager.queueShipLoadBackground(data.getUuid());
                     }
                 }
             } else {
-                if (!existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, UNLOAD_DISTANCE)) {
+                if (!existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, VSConfig.SHIP_LOADING_SETTINGS.unloadDistance)) {
                     shipManager.queueShipUnload(data.getUuid());
                 }
             }
@@ -110,11 +97,11 @@ class WorldShipLoadingController {
         for (PhysicsObject ship : shipManager.getAllLoadedPhysObj()) {
             Vec3d shipPos = ship.getShipTransform().getShipPositionVec3d();
             // Remove players further than the unwatch distance
-            newWatching.get(ship.getShipData()).removeIf(watcher -> !isPlayerWithinDistanceXZ(watcher, shipPos, UNWATCH_DISTANCE));
+            newWatching.get(ship.getShipData()).removeIf(watcher -> !isPlayerWithinDistanceXZ(watcher, shipPos, VSConfig.SHIP_LOADING_SETTINGS.unwatchDistance));
 
             // Add players closer than the watch distance
             for (EntityPlayer player : shipManager.getWorld().playerEntities) {
-                if (isPlayerWithinDistanceXZ(player, shipPos, WATCH_DISTANCE)) {
+                if (isPlayerWithinDistanceXZ(player, shipPos, VSConfig.SHIP_LOADING_SETTINGS.watchDistance)) {
                     newWatching.get(ship.getShipData()).add((EntityPlayerMP) player);
                 }
             }

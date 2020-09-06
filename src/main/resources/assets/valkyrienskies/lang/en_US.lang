@@ -57,6 +57,24 @@ valkyrienskies.general.gravityvecy.tooltip=
 valkyrienskies.general.gravityvecz=Gravity Vector Z
 valkyrienskies.general.gravityvecz.tooltip=
 
+valkyrienskies.general.ship_loading_settings=Ship Loading Settings
+valkyrienskies.general.ship_loading_settings.tooltip=Sets the distance at which ships get loaded/unloaded and watched/unwatched by nearby players. These settings must obey the following constraint:\nPlayer Watch Distance < Ship Load Distance < Ship Load Background Distance <= Player Unwatch Distance < Ship Unload Distance
+
+valkyrienskies.general.ship_loading_settings.watchDistance=Player Watch Ship Distance
+valkyrienskies.general.ship_loading_settings.watchDistance.tooltip=If a player's XZ distance to a ship is less than this, then if aren't already watching it, they will start watching that ship.
+
+valkyrienskies.general.ship_loading_settings.loadDistance=Ship Load Distance
+valkyrienskies.general.ship_loading_settings.loadDistance.tooltip=If a player's XZ distance to a ship is less than this, then if that ship isn't already loaded in the world, it will be loaded in the world immediately.
+
+valkyrienskies.general.ship_loading_settings.loadBackgroundDistance=Ship Load Background Distance
+valkyrienskies.general.ship_loading_settings.loadBackgroundDistance.tooltip=If a player's XZ distance to a ship is less than this, then if that ship isn't already loaded in the world, it will preload itself using background threads.
+
+valkyrienskies.general.ship_loading_settings.unwatchDistance=Player Unwatch Ship Distance
+valkyrienskies.general.ship_loading_settings.unwatchDistance.tooltip=If a player's XZ distance to a ship is greater than this, then if they're current watching it, they will stop watching that ship.
+
+valkyrienskies.general.ship_loading_settings.unloadDistance=Ship Unload Distance
+valkyrienskies.general.ship_loading_settings.unloadDistance.tooltip=If there are no players within this XZ distance of a ship, then if that ship is currently loaded, it will unload itself.
+
 valkyrienskies.general.shipspawndetectorblacklist=Ship Spawn Detector Blacklist
 valkyrienskies.general.shipspawndetectorblacklist.tooltip=Blocks to not be included when assembling a ship.
 

@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.valkyrienskies.addon.control.config.VSControlConfig;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.command.config.ShortName;
 
@@ -72,6 +73,40 @@ public class VSConfig extends VSConfigTemplate {
 
     @Name("Gravity Vector Z")
     public static double gravityVecZ = 0;
+
+    @Name("Ship Loading Settings")
+    @ShortName("shipLoadingSettings")
+    @Comment({
+            "Sets the distance at which ships get loaded/unloaded and watched/unwatched by nearby players.",
+            "These settings must obey the following constraint:",
+            "Player Watch Distance < Ship Load Distance < Ship Load Background Distance <= Player Unwatch Distance < Ship Unload Distance"
+    })
+    @LangKey("valkyrienskies.general.ship_loading_settings")
+    public static final VSConfig.ShipLoadingSettings SHIP_LOADING_SETTINGS = new VSConfig.ShipLoadingSettings();
+
+    public static class ShipLoadingSettings {
+
+        @Name("Player Watch Ship Distance")
+        @Comment("If a player's XZ distance to a ship is less than this, then if aren't already watching it, they will start watching that ship.")
+        public double watchDistance = 128;
+
+        @Name("Ship Load Distance")
+        @Comment("If a player's XZ distance to a ship is less than this, then if that ship isn't already loaded in the world, it will be loaded in the world immediately.")
+        public double loadDistance = 144;
+
+        @Name("Ship Load Background Distance")
+        @Comment("If a player's XZ distance to a ship is less than this, then if that ship isn't already loaded in the world, it will preload itself using background threads.")
+        public double loadBackgroundDistance = 160;
+
+        @Name("Player Unwatch Ship Distance")
+        @Comment("If a player's XZ distance to a ship is greater than this, then if they're current watching it, they will stop watching that ship.")
+        public double unwatchDistance = 160;
+
+        @Name("Ship Unload Distance")
+        @Comment("If there are no players within this XZ distance of a ship, then if that ship is currently loaded, it will unload itself.")
+        public double unloadDistance = 192;
+
+    }
 
     @Name("Ship Spawn Detector Blacklist")
     @Comment("Blocks to not be included when assembling a ship.")

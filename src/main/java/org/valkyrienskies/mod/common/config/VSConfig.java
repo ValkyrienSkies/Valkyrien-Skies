@@ -11,35 +11,42 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.command.config.ShortName;
 
+// NOTE: When updating names/comments remember to update them in the lang files.
 @SuppressWarnings("WeakerAccess") // NOTE: Any forge config option MUST be "public"
 @Config(modid = ValkyrienSkiesMod.MOD_ID)
 public class VSConfig extends VSConfigTemplate {
 
-    public static double shipUpperLimit = 1000D;
+    @Name("Ship Y Position Minimum")
+    public static double shipLowerLimit = -30;
 
-    public static double shipLowerLimit = -30D;
+    @Name("Ship Y Position Maximum")
+    public static double shipUpperLimit = 1000;
 
+    @Name("Enable Gravity")
     public static boolean doGravity = true;
 
+    @Name("Enable Physics Blocks")
     public static boolean doPhysicsBlocks = true;
 
-    public static boolean doAirshipRotation = true;
-
-    public static boolean doAirshipMovement = true;
-
-    @Name("Render ship chunk claims when in debug mode")
+    @Name("Render Ship Chunk Debug Outline")
     @Comment("When true all ship chunks will be rendered with a green outline (in debug rendering mode (f3 + b)).")
     public static boolean renderShipChunkClaimsInDebug = false;
 
-    @Name("Show annoying debug output in console")
-    @Comment("Spams your console with annoying debug output. Not recommended unless you've encountered a strange bug" +
-            " and the developers told you to enable this.\nDefault is false. Set to true enable.")
+    @Name("Debug Console Output")
+    @Comment({
+            "Not recommended unless you've encountered a strange bug, or the developers told you to enable this.",
+            "Default is false."
+    })
     public static boolean showAnnoyingDebugOutput = false;
 
-    @Comment("The amount of seconds simulated every physics tick. By default there are 100 physics ticks per second, " +
-            "so its default value is 1/100 of a second.")
+    @Name("Time Simulated Each Physics Tick")
+    @Comment({
+            "The amount of seconds simulated every physics tick.",
+            "There are 100 physics ticks per second by default, so the default value is 1/100th of a second."
+    })
     public static double timeSimulatedPerPhysicsTick = 0.01;
 
+    @Name("Number of Physics Threads")
     @Comment({
         "The number of threads to use for physics",
         "recommended to use your cpu's thread count minus 2.",
@@ -49,15 +56,25 @@ public class VSConfig extends VSConfigTemplate {
     @RangeInt(min = 2)
     public static int threadCount = Math.max(2, Runtime.getRuntime().availableProcessors() - 2);
 
-    public static int maxShipSize = 15000;
+    @Name("Max Detected Ship Size")
+    @Comment({
+            "The largest size ship a physics infuser will attempt to make.",
+            "If a ship is larger than this the infuser will assume it was placed on the ground and give up.",
+            "Default is 15000 blocks."
+    })
+    public static int maxDetectedShipSize = 15000;
 
+    @Name("Gravity Vector X")
     public static double gravityVecX = 0;
 
+    @Name("Gravity Vector Y")
     public static double gravityVecY = -9.8;
 
+    @Name("Gravity Vector Z")
     public static double gravityVecZ = 0;
 
-    @Comment("Blocks to not be included when assembling a ship")
+    @Name("Ship Spawn Detector Blacklist")
+    @Comment("Blocks to not be included when assembling a ship.")
     public static String[] shipSpawnDetectorBlacklist = {
         "minecraft:air", "minecraft:dirt", "minecraft:grass", "minecraft:stone",
         "minecraft:tallgrass", "minecraft:water", "minecraft:flowing_water", "minecraft:sand",
@@ -67,6 +84,11 @@ public class VSConfig extends VSConfigTemplate {
         "minecraft:end_gateway", "minecraft:portal",
     };
 
+    @Name("Block Mass")
+    @Comment({
+            "Override the auto generated mass value of blocks.",
+            "The units of mass are kg."
+    })
     public static String[] blockMass = {"minecraft:grass=1500"};
 
     public static Vector3dc gravity() {
@@ -78,7 +100,6 @@ public class VSConfig extends VSConfigTemplate {
      */
     public static void sync() {
         ConfigManager.sync(ValkyrienSkiesMod.MOD_ID, Type.INSTANCE);
-
         VSConfig.onSync();
     }
 

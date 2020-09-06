@@ -96,12 +96,8 @@ public class PhysicsCalculations {
         if (!isPhysicsBroken()) {
             // This wasn't implemented very well at all! Maybe in the future I'll try again.
             // enforceStaticFriction();
-            if (VSConfig.doAirshipRotation) {
-                integrateAngularVelocity();
-            }
-            if (VSConfig.doAirshipMovement) {
-                integrateLinearVelocity();
-            }
+            integrateAngularVelocity();
+            integrateLinearVelocity();
         } else {
             getParent().getShipData().setPhysicsEnabled(false);
             getLinearVelocity().zero();

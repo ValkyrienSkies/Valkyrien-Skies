@@ -31,7 +31,6 @@ import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WorldServerShipManager implements IPhysObjectWorld {
 
@@ -137,12 +136,12 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
             SpatialDetector detector =  DetectorManager.getDetectorFor(
                     DetectorManager.DetectorIDs.ShipSpawnerGeneral, physicsInfuserPos, world,
-                    VSConfig.maxShipSize + 1, true);
+                    VSConfig.maxDetectedShipSize + 1, true);
 
             if (VSConfig.showAnnoyingDebugOutput) {
                 System.out.println("Attempting to spawn " + toSpawn + " on the thread " + Thread.currentThread().getName());
             }
-            if (detector.foundSet.size() > VSConfig.maxShipSize || detector.cleanHouse) {
+            if (detector.foundSet.size() > VSConfig.maxDetectedShipSize || detector.cleanHouse) {
                 System.err.println("Ship too big or bedrock detected!");
 
                 /*

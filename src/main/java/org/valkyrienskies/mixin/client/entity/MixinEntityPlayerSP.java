@@ -3,6 +3,7 @@ package org.valkyrienskies.mixin.client.entity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -19,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.network.MessagePlayerOnShipPos;
 import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.ships.entity_interaction.EntityShipMountData;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.util.JOML;
@@ -165,13 +167,26 @@ public abstract class MixinEntityPlayerSP {
      * @reason Fixes player ray tracing when they're on a ship thats rotating.
      */
     @Overwrite
-    public Vec3d getLook(float partialTicks) {
+    public Vec3d getLook(final float partialTicks) {
+        final Vec3d playerLook;
         if (partialTicks == 1.0F) {
-            return getVectorForRotationInMc_1_12(player.rotationPitch, player.rotationYawHead);
+            playerLook = getVectorForRotationInMc_1_12(player.rotationPitch, player.rotationYawHead);
         } else {
-            float f = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partialTicks;
-            float f1 = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * partialTicks;
-            return this.getVectorForRotationInMc_1_12(f, f1);
+            final float playerPitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partialTicks;
+            final float playerYaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * partialTicks;
+            playerLook = this.getVectorForRotationInMc_1_12(playerPitch, playerYaw);
+        }
+
+        // If the player is mounted to a ship then we must rotate the player look vector.
+        final EntityShipMountData mountData = ValkyrienUtils
+                .getMountedShipAndPos(player);
+        if (mountData.isMounted()) {
+            return mountData.getMountedShip()
+                    .getShipTransformationManager()
+                    .getRenderTransform()
+                    .rotate(playerLook, TransformType.SUBSPACE_TO_GLOBAL);
+        } else {
+            return playerLook;
         }
     }
 

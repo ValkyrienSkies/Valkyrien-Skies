@@ -37,12 +37,10 @@ ext {
 
     //dependency things
     cqengineVersion = "3.4.0"
-    graphlibVersion = "1.4.0"
     jacksonVersion = "2.10.0"
     javaxInjectVersion = "1"
     lombokVersion = "1.18.10"
     mixinVersion = "0.7.11-SNAPSHOT"
-    opencomputersVersion = "MC1.12.1-1.7.1.+"
     spongeVersion = "1.12.2-2825-7.1.6"
     vsApiVersion = "1.0.0.9"
 }
@@ -98,17 +96,10 @@ repositories {
         url = "http://repo.spongepowered.org/maven/"
     }
     maven {
-        name = "OpenComputers"
-        url = "http://maven.cil.li/"
-    }
-    maven {
         name = "DaPorkchop_"
         url = "https://maven.daporkchop.net/"
     }
-    maven {
-        name = "Dogforce Games"
-        url = "http://dogforce-games.com/maven/"
-    }
+    maven { url 'https://jitpack.io' }
     jcenter()
 }
 
@@ -128,12 +119,17 @@ dependencies {
     compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
         transitive = false
     }
-    
+
+    // The VS API, just shade it into core no need to make it a standalone mod
     shade "org.valkyrienskies:api:$vsApiVersion"
 
-    compile "li.cil.oc:OpenComputers:$opencomputersVersion:api"
-
-    shade "gigaherz.graph:GraphLib:$graphlibVersion"
+    // VS World and Control, for local testing only, not shaded in
+    deobfCompile("org.valkyrienskies:Valkyrien-Skies-World:9a02374b8c3ebe0f6ac6797e49ea04a04864a125:all") {
+        transitive = false
+    }
+    deobfCompile("org.valkyrienskies:Valkyrien-Skies-Control:3d052546844d9b4bd844acdaa7992c3a588f9b6c:all") {
+        transitive = false
+    }
 
     // ODE4j physics engine (https://mvnrepository.com/artifact/org.ode4j/core)
     // shade group: 'org.ode4j', name: 'core', version: '0.4.0' // 800KB

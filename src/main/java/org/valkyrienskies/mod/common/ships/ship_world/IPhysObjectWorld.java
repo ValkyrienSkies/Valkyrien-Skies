@@ -50,12 +50,12 @@ public interface IPhysObjectWorld {
     ImmutableList<PhysicsObject> getAllLoadedThreadSafe();
 
     /**
-     * Thread safe way to queue a ship load.
+     * Queues a ship load, must be called on the game thread.
      */
     void queueShipLoad(@Nonnull UUID shipID);
 
     /**
-     * Thread safe way to queue a ship unload.
+     * Queue a ship unload, must be called on the game thread.
      */
     void queueShipUnload(@Nonnull UUID shipID);
 

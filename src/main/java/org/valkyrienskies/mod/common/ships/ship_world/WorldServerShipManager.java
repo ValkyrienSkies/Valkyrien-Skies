@@ -41,8 +41,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     private final VSThread physicsThread;
     private final WorldShipLoadingController loadingController;
     private final Map<UUID, PhysicsObject> loadedShips;
-    private final ConcurrentLinkedQueue<Tuple<BlockPos, ShipData>> spawnQueue;
-    private final ConcurrentLinkedQueue<UUID> loadQueue, unloadQueue, backgroundLoadQueue;
+    // Use LinkedHashSet as a queue because it preserves order and doesn't allow duplicates
+    private final LinkedHashSet<Tuple<BlockPos, ShipData>> spawnQueue;
+    private final LinkedHashSet<UUID> loadQueue, unloadQueue, backgroundLoadQueue;
     private final Set<UUID> loadingInBackground;
     private ImmutableList<PhysicsObject> threadSafeLoadedShips;
 
@@ -51,10 +52,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         this.physicsThread = new VSThread(world);
         this.loadingController = new WorldShipLoadingController(this);
         this.loadedShips = new HashMap<>();
-        this.spawnQueue = new ConcurrentLinkedQueue<>();
-        this.loadQueue = new ConcurrentLinkedQueue<>();
-        this.unloadQueue = new ConcurrentLinkedQueue<>();
-        this.backgroundLoadQueue = new ConcurrentLinkedQueue<>();
+        this.spawnQueue = new LinkedHashSet<>();
+        this.loadQueue = new LinkedHashSet<>();
+        this.unloadQueue = new LinkedHashSet<>();
+        this.backgroundLoadQueue = new LinkedHashSet<>();
         this.loadingInBackground = new HashSet<>();
         this.threadSafeLoadedShips = ImmutableList.of();
         this.physicsThread.start();
@@ -126,8 +127,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     private void spawnNewShips() {
-        while (!spawnQueue.isEmpty()) {
-            Tuple<BlockPos, ShipData> spawnData = spawnQueue.remove();
+        for (final Tuple<BlockPos, ShipData> spawnData : spawnQueue) {
             BlockPos physicsInfuserPos = spawnData.getFirst();
             ShipData toSpawn = spawnData.getSecond();
 
@@ -310,6 +310,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             PhysicsObject physicsObject = new PhysicsObject(world, toSpawn);
             loadedShips.put(toSpawn.getUuid(), physicsObject);
         }
+        spawnQueue.clear();
     }
 
     private void injectChunkIntoWorldServer(@Nonnull Chunk chunk, int x, int z) {
@@ -325,9 +326,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     private void loadAndUnloadShips() {
         QueryableShipData queryableShipData = QueryableShipData.get(world);
         // Load the ships that are required immediately.
-        while (!loadQueue.isEmpty()) {
-            UUID toLoadID = loadQueue.remove();
-
+        for (final UUID toLoadID : loadQueue) {
             Optional<ShipData> toLoadOptional = queryableShipData.getShip(toLoadID);
             if (!toLoadOptional.isPresent()) {
                 throw new IllegalStateException("No ship found for ID:\n" + toLoadID);
@@ -349,10 +348,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 throw new IllegalStateException("How did we already have a ship loaded for " + toLoad);
             }
         }
+        loadQueue.clear();
 
         // Load ships that aren't required immediately in the background.
-        while (!backgroundLoadQueue.isEmpty()) {
-            UUID toLoadID = backgroundLoadQueue.remove();
+        for (final UUID toLoadID : backgroundLoadQueue) {
             // Skip if this ship is already being loaded in the background,.
             if (loadingInBackground.contains(toLoadID)) {
                 continue; // Already loading this ship in the background
@@ -386,10 +385,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 chunkProviderServer.loadChunk(chunkPos.x, chunkPos.z, returnTask);
             }
         }
+        backgroundLoadQueue.clear();
 
         // Unload far away ships immediately.
-        while (!unloadQueue.isEmpty()) {
-            UUID toUnloadID = unloadQueue.remove();
+        for (final UUID toUnloadID : unloadQueue) {
             // Make sure we have a ship with this ID that can be unloaded
             if (!loadedShips.containsKey(toUnloadID)) {
                 throw new IllegalStateException("Tried unloading a ShipData that isn't loaded? Ship ID is\n"
@@ -408,6 +407,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 throw new IllegalStateException("How did we fail to unload " + physicsObject.getShipData());
             }
         }
+        unloadQueue.clear();
     }
 
     @Nonnull
@@ -427,16 +427,19 @@ public class WorldServerShipManager implements IPhysObjectWorld {
      * Thread safe way to queue a ship spawn. (Not the same as {@link #queueShipLoad(UUID)}.
      */
     public void queueShipSpawn(@Nonnull ShipData data, @Nonnull BlockPos spawnPos) {
+        enforceGameThread();
         this.spawnQueue.add(new Tuple<>(spawnPos, data));
     }
 
     @Override
     public void queueShipLoad(@Nonnull UUID shipID) {
+        enforceGameThread();
         this.loadQueue.add(shipID);
     }
 
     @Override
     public void queueShipUnload(@Nonnull UUID shipID) {
+        enforceGameThread();
         this.unloadQueue.add(shipID);
     }
 
@@ -444,6 +447,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
      * Thread safe way to queue a ship to be loaded in the background.
      */
     public void queueShipLoadBackground(@Nonnull UUID shipID) {
+        enforceGameThread();
         backgroundLoadQueue.add(shipID);
     }
 

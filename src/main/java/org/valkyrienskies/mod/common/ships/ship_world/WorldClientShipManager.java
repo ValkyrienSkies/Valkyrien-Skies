@@ -18,14 +18,15 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     private final World world;
     private final Map<UUID, PhysicsObject> loadedShips;
-    private final ConcurrentLinkedQueue<UUID> loadQueue, unloadQueue;
+    // Use LinkedHashSet as a queue because it preserves order and doesn't allow duplicates
+    private final LinkedHashSet<UUID> loadQueue, unloadQueue;
     private ImmutableList<PhysicsObject> threadSafeLoadedShips;
 
     public WorldClientShipManager(World world) {
         this.world = world;
         this.loadedShips = new HashMap<>();
-        this.loadQueue = new ConcurrentLinkedQueue<>();
-        this.unloadQueue = new ConcurrentLinkedQueue<>();
+        this.loadQueue = new LinkedHashSet<>();
+        this.unloadQueue = new LinkedHashSet<>();
         this.threadSafeLoadedShips = ImmutableList.of();
     }
 
@@ -50,8 +51,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
     private void loadAndUnloadShips() {
         QueryableShipData queryableShipData = QueryableShipData.get(world);
         // Load ships queued for loading
-        while (!loadQueue.isEmpty()) {
-            UUID toLoadID = loadQueue.remove();
+        for (final UUID toLoadID : loadQueue) {
             if (loadedShips.containsKey(toLoadID)) {
                 throw new IllegalStateException("Tried loading a for ship that was already loaded? UUID is\n" + toLoadID);
             }
@@ -66,11 +66,10 @@ public class WorldClientShipManager implements IPhysObjectWorld {
                 System.out.println("Successfully loaded " + shipData);
             }
         }
+        loadQueue.clear();
 
         // Unload ships queued for unloading
-        while (!unloadQueue.isEmpty()) {
-            UUID toUnloadID = unloadQueue.remove();
-
+        for (final UUID toUnloadID : unloadQueue) {
             if (!loadedShips.containsKey(toUnloadID)) {
                 throw new IllegalStateException("Tried unloading that isn't loaded? ID is\n" + toUnloadID);
             }
@@ -81,6 +80,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
                 System.out.println("Successfully unloaded " + removedShip.getShipData());
             }
         }
+        unloadQueue.clear();
     }
 
     @Override
@@ -123,11 +123,13 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Override
     public void queueShipLoad(@Nonnull UUID shipID) {
+        enforceGameThread();
         loadQueue.add(shipID);
     }
 
     @Override
     public void queueShipUnload(@Nonnull UUID shipID) {
+        enforceGameThread();
         unloadQueue.add(shipID);
     }
 

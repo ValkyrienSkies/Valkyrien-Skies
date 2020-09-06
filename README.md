@@ -4,7 +4,7 @@
 [![Jenkins](https://jenkins.daporkchop.net/job/ValkyrienSkies/job/Valkyrien-Skies/job/master/badge/icon)](https://jenkins.daporkchop.net/job/ValkyrienSkies/job/Valkyrien-Skies/)
 [![Discord](https://img.shields.io/discord/244934352092397568.svg)](https://discord.gg/rG3QNDV)
 
-See: [LICENSE file](https://github.com/ValkyrienSkies/Valkyrien-Skies/blob/8778e9d45f16c1f60e8149ab6cbdbabbdebc1278/LICENSE), [Project Roadmap](https://github.com/ValkyrienSkies/Valkyrien-Skies/wiki/Roadmap)
+See: [LICENSE file](https://github.com/ValkyrienSkies/Valkyrien-Skies/blob/master/LICENSE), [Project Roadmap](https://github.com/ValkyrienSkies/Valkyrien-Skies/wiki/Roadmap)
 
 The Airships Mod to end all other Airships Mods. Better compatibility, performance, collisions, interactions and physics than anything prior!
 

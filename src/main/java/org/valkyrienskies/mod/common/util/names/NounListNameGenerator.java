@@ -1,5 +1,8 @@
 package org.valkyrienskies.mod.common.util.names;
 
+import lombok.Getter;
+import lombok.SneakyThrows;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -7,8 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.SneakyThrows;
 
 /**
  * Generates names from a noun list
@@ -17,10 +18,10 @@ public class NounListNameGenerator implements NameGenerator {
 
     private static final int NOUN_LIST_LENGTH = 6801;
     private static final int DEFAULT_NOUNS_PER_NAME = 3;
-    private List<String> nouns = new ArrayList<>(NOUN_LIST_LENGTH);
+    private final List<String> nouns = new ArrayList<>(NOUN_LIST_LENGTH);
 
     @Getter
-    private static NounListNameGenerator instance = new NounListNameGenerator();
+    private static final NounListNameGenerator instance = new NounListNameGenerator();
 
     @SneakyThrows
     private NounListNameGenerator() {

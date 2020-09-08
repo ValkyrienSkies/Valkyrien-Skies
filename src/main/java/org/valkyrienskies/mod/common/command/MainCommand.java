@@ -1,8 +1,5 @@
 package org.valkyrienskies.mod.common.command;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.inject.Inject;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
@@ -11,20 +8,19 @@ import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.command.MainCommand.TeleportTo;
 import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocompleter;
 import org.valkyrienskies.mod.common.command.autocompleters.WorldAutocompleter;
-import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
-import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
-import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
+import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.HelpCommand;
-import picocli.CommandLine.Model;
+import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
+import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
-import picocli.CommandLine.Spec;
+
+import javax.inject.Inject;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Command(name = "valkyrienskies", aliases = "vs",
     synopsisSubcommandLabel = "COMMAND", mixinStandardHelpOptions = true,
@@ -142,50 +138,38 @@ public class MainCommand implements Runnable {
         public void run() {
             World world = sender.getEntityWorld();
             QueryableShipData data = QueryableShipData.get(world);
-            Optional<ShipData> oTargetShipData = data.getShipFromName(shipName);
+            Optional<ShipData> oShipData = data.getShipFromName(shipName);
 
-            if (!oTargetShipData.isPresent()) {
-                sender.sendMessage(new TextComponentString(
-                    "That ship, " + shipName + " could not be found"));
-                return;
-            }
+            ShipData shipData;
+            if ((shipData = oShipData.orElse(null)) != null) {
+                boolean enabledWasSpecified = spec.commandLine().getParseResult().hasMatchedPositional(1);
+                boolean isPhysicsEnabled = shipData.isPhysicsEnabled();
+                String physicsState = isPhysicsEnabled ? "enabled" : "disabled";
 
-            ShipData targetShipData = oTargetShipData.get();
+                if (enabledWasSpecified) {
+                    shipData.setPhysicsEnabled(enabled);
 
-            /*
-            Optional<Entity> oEntity = world.getLoadedEntityList().stream()
-                .filter(e -> e.getPersistentID().equals(targetShipData.getUuid()))
-                .findFirst();
+                    if (isPhysicsEnabled == enabled) {
+                        sender.sendMessage(new TextComponentString(
+                            "That ship's physics were not changed from " + physicsState));
+                    } else {
+                        String newPhysicsState = enabled ? "enabled" : "disabled";
 
-            if (!oEntity.isPresent()) {
-                throw new RuntimeException("QueryableShipData is incorrect?");
-            }
-
-            try {
-                PhysicsWrapperEntity wrapperEntity = (PhysicsWrapperEntity) oEntity.get();
-                BlockPos infuserPos = wrapperEntity.getPhysicsObject().getPhysicsInfuserPos();
-                TileEntityPhysicsInfuser infuser = Objects.requireNonNull(
-                    (TileEntityPhysicsInfuser) world.getTileEntity(infuserPos));
-
-                if (spec.commandLine().getParseResult().hasMatchedPositional(1)) {
-                    infuser.setPhysicsEnabled(enabled);
-                    sender.sendMessage(new TextComponentString(
-                        "Successfully set the physics of ship " + shipName + " to " +
-                            (infuser.isPhysicsEnabled() ? "enabled" : "disabled")
-                    ));
+                        sender.sendMessage(new TextComponentString(
+                            "That ship's physics were changed from " + physicsState + " to " + newPhysicsState
+                        ));
+                    }
                 } else {
                     sender.sendMessage(new TextComponentString(
-                        "The physics of the ship " + shipName + " is " +
-                            (infuser.isPhysicsEnabled() ? "enabled" : "disabled")
+                        "That ship's physics are: " + physicsState
                     ));
                 }
 
-            } catch (ClassCastException e) {
-                throw new RuntimeException("Ship entity is not PhysicsWrapperEntity or "
-                    + "Physics infuser is not a physics infuser?", e);
+            } else {
+                sender.sendMessage(new TextComponentString(
+                    "That ship, " + shipName + " could not be found"));
             }
 
-             */
         }
     }
 

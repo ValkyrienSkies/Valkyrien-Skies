@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.addon.control.config.VSControlConfig;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.command.config.ShortName;
 

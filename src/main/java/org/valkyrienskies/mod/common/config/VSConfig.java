@@ -73,6 +73,14 @@ public class VSConfig extends VSConfigTemplate {
     @Name("Gravity Vector Z")
     public static double gravityVecZ = 0;
 
+    @Name("Number of Ticks Players Stick to Ships")
+    @Comment({
+            "If a player touches a ship, then unless they touch another ship (or the ground) they will move along with the ship for this many ticks.",
+            "After this number of ticks passes, the player will no longer move with the ship."
+    })
+    @RangeInt(min = 1)
+    public static int ticksToStickToShip = 20;
+
     @Name("Ship Loading Settings")
     @ShortName("shipLoadingSettings")
     @Comment({

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.collision.*;
+import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.util.JOML;
@@ -31,6 +32,7 @@ import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +58,7 @@ public class EntityCollisionInjector {
 
         PhysicsObject worldBelow = null;
         IDraggable draggable = EntityDraggable.getDraggableFromEntity(entity);
+        final EntityShipMovementData lastTickEntityShipMovementData = draggable.getEntityShipMovementData();
 
         Vector3d total = new Vector3d();
 
@@ -250,13 +253,6 @@ public class EntityCollisionInjector {
         entity.setEntityBoundingBox(axisalignedbb);
         entity.resetPositionToBB();
 
-
-        if (worldBelow != null) {
-            draggable.setEntityShipMovementData(draggable.getEntityShipMovementData().withLastTouchedShip(worldBelow.getShipData()).withTicksSinceTouchedShip(0));
-        } else {
-            draggable.setEntityShipMovementData(draggable.getEntityShipMovementData().withLastTouchedShip(null));
-        }
-
         if (worldBelow == null) {
             return null;
         }
@@ -282,9 +278,8 @@ public class EntityCollisionInjector {
         Vector3d origDxyz = new Vector3d(origDx, origDy, origDz);
         Vector3d origPosXyz = new Vector3d(origPosX, origPosY, origPosZ);
 
-        return new IntermediateMovementVariableStorage(dxyz, origDxyz, origPosXyz, alreadyOnGround,
-            motionYBefore,
-            oldFallDistance);
+        return new IntermediateMovementVariableStorage(dxyz, origDxyz, origPosXyz, alreadyOnGround, motionYBefore,
+            oldFallDistance, worldBelow.getShipData());
     }
 
     public static void alterEntityMovementPost(Entity entity,
@@ -544,12 +539,17 @@ public class EntityCollisionInjector {
     @Value
     public static class IntermediateMovementVariableStorage {
 
-        public final Vector3dc dxyz;
-        public final Vector3dc origDxyz;
-        public final Vector3dc origPosXyz;
-        public final boolean alreadyOnGround;
-        public final double motionYBefore;
-        public final float oldFallDistance;
+        @Nonnull
+        public Vector3dc dxyz;
+        @Nonnull
+        public Vector3dc origDxyz;
+        @Nonnull
+        public Vector3dc origPosXyz;
+        public boolean alreadyOnGround;
+        public double motionYBefore;
+        public float oldFallDistance;
+        @Nonnull
+        public ShipData shipTouched;
 
     }
 

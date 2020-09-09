@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.fixes.SoundFixWrapper;
@@ -195,7 +196,7 @@ public class EventsClient {
             // variables so that Minecraft's interpolation code computes the correct value.
             for (final Entity entity : world.getLoadedEntityList()) {
                 final EntityShipMovementData entityShipMovementData = ValkyrienUtils.getEntityShipMovementDataFor(entity);
-                if (entityShipMovementData.getLastTouchedShip() != null && entityShipMovementData.getTicksSinceTouchedShip() == 0) {
+                if (entityShipMovementData.getLastTouchedShip() != null && entityShipMovementData.getTicksSinceTouchedShip() < VSConfig.ticksToStickToShip) {
                     final PhysicsObject shipPhysicsObject = ValkyrienUtils.getPhysObjWorld(world).getPhysObjectFromUUID(
                             entityShipMovementData.getLastTouchedShip().getUuid()
                     );
@@ -214,9 +215,9 @@ public class EventsClient {
 
                     // Compute the position the entity should be rendered at this frame
                     final Vector3d entityShouldBeHere = new Vector3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ);
+                    entityShouldBeHere.add(entityMovementX * partialTicks, entityMovementY * partialTicks, entityMovementZ * partialTicks);
                     prevTickTransform.transformPosition(entityShouldBeHere, TransformType.GLOBAL_TO_SUBSPACE);
                     shipRenderTransform.transformPosition(entityShouldBeHere, TransformType.SUBSPACE_TO_GLOBAL);
-                    entityShouldBeHere.add(entityMovementX * partialTicks, entityMovementY * partialTicks, entityMovementZ * partialTicks);
 
                     // Save the entity lastTickPos in the map
                     lastPositionsMap.put(entity, new Vector3d(entity.lastTickPosX, entity.lastTickPosY, entity.lastTickPosZ));

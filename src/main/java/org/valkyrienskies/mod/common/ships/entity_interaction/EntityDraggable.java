@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.mod.client.EventsClient;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
@@ -52,7 +52,7 @@ public class EntityDraggable {
         final Vector3dc oldVelocityAdded = oldEntityShipMovementData.getAddedLinearVelocity();
         final double oldYawVelocityAdded = oldEntityShipMovementData.getAddedYawVelocity();
 
-        if (lastShipTouchedPlayer == null) {
+        if (lastShipTouchedPlayer == null || oldTicksSinceTouchedShip >= VSConfig.ticksToStickToShip) {
             if (entity.onGround) {
                 // Player is on ground and not on a ship, therefore set their added velocity to 0.
                 final EntityShipMovementData newMountData = new EntityShipMovementData(null, 0, new Vector3d(), 0);
@@ -64,13 +64,13 @@ public class EntityDraggable {
                         // If the player is flying, then slow down their added velocity significantly every tick
                         final Vector3dc newVelocityAdded = oldVelocityAdded.mul(.95, new Vector3d());
                         final double newYawVelocityAdded = oldYawVelocityAdded * .95 * .95;
-                        final EntityShipMovementData newMovementData = new EntityShipMovementData(null, 0, newVelocityAdded, newYawVelocityAdded);
+                        final EntityShipMovementData newMovementData = oldEntityShipMovementData.withAddedLinearVelocity(newVelocityAdded).withAddedYawVelocity(newYawVelocityAdded);
                         draggable.setEntityShipMovementData(newMovementData);
                     } else {
                         // Otherwise only slow down their added velocity slightly every tick
                         final Vector3dc newVelocityAdded = oldVelocityAdded.mul(.99, new Vector3d());
                         final double newYawVelocityAdded = oldYawVelocityAdded * .95;
-                        final EntityShipMovementData newMovementData = new EntityShipMovementData(null, 0, newVelocityAdded, newYawVelocityAdded);
+                        final EntityShipMovementData newMovementData = oldEntityShipMovementData.withAddedLinearVelocity(newVelocityAdded).withAddedYawVelocity(newYawVelocityAdded);
                         draggable.setEntityShipMovementData(newMovementData);
                     }
                 }
@@ -144,8 +144,7 @@ public class EntityDraggable {
                     yawDif = 0D;
                 }
             }
-            final EntityShipMovementData newMovementData = new EntityShipMovementData(lastShipTouchedPlayer, 0, addedVel.mul(1, new Vector3d()), yawDif);
-            draggable.setEntityShipMovementData(newMovementData);
+            draggable.setEntityShipMovementData(oldEntityShipMovementData.withAddedLinearVelocity(addedVel.mul(1, new Vector3d())).withAddedYawVelocity(yawDif));
         }
 
         // Now that we've determined the added velocity, move the entity forward by that amount
@@ -156,7 +155,7 @@ public class EntityDraggable {
         // The added velocity vector of the player, except we have made sure that it won't push the player inside of a
         // solid block.
         final Vector3dc addedVelocityNoNoClip = applyAddedVelocity(newEntityShipMovementData.getAddedLinearVelocity(), entity);
-        draggable.setEntityShipMovementData(draggable.getEntityShipMovementData().withAddedLinearVelocity(addedVelocityNoNoClip));
+        draggable.setEntityShipMovementData(oldEntityShipMovementData.withAddedLinearVelocity(addedVelocityNoNoClip));
 
         final double addedYawVelocity = newEntityShipMovementData.getAddedYawVelocity();
 

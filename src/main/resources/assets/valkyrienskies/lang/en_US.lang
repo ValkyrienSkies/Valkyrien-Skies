@@ -57,6 +57,9 @@ valkyrienskies.general.gravityvecy.tooltip=
 valkyrienskies.general.gravityvecz=Gravity Vector Z
 valkyrienskies.general.gravityvecz.tooltip=
 
+valkyrienskies.general.tickstosticktoship=Number of Ticks Players Stick to Ships
+valkyrienskies.general.tickstosticktoship.tooltip=If a player touches a ship, then unless they touch another ship (or the ground) they will move along with the ship for this many ticks. After this number of ticks passes, the player will no longer move with the ship.
+
 valkyrienskies.general.ship_loading_settings=Ship Loading Settings
 valkyrienskies.general.ship_loading_settings.tooltip=Sets the distance at which ships get loaded/unloaded and watched/unwatched by nearby players. These settings must obey the following constraint:\nPlayer Watch Distance < Ship Load Distance < Ship Load Background Distance <= Player Unwatch Distance < Ship Unload Distance
 

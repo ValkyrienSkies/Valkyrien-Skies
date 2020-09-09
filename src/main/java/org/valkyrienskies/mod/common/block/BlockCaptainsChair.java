@@ -21,10 +21,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
-import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
-import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
+import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -66,7 +65,9 @@ public class BlockCaptainsChair extends BlockPilotableBasic {
                         playerIn.posZ = playerPos.z;
 
                         // Only mount the player if they're standing on the ship.
-                        if (ValkyrienUtils.getLastShipTouchedByEntity(playerIn) == physicsObject.get().getShipData()) {
+                        final EntityShipMovementData entityShipMovementData = ValkyrienUtils.getEntityShipMovementDataFor(playerIn);
+                        if (entityShipMovementData.getTicksSinceTouchedShip() == 0 &&
+                                (entityShipMovementData.getLastTouchedShip() == physicsObject.get().getShipData())) {
                             Vector3dc localMountPos = getPlayerMountOffset(state, pos);
                             ValkyrienUtils.fixEntityToShip(playerIn, localMountPos,
                                     physicsObject.get());

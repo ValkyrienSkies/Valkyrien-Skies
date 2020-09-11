@@ -43,8 +43,8 @@ import java.util.function.Function;
 public abstract class MixinWorld implements IWorldVS, IHasShipManager {
 
     private static final double MAX_ENTITY_RADIUS_ALT = 2;
-    private static final double BOUNDING_BOX_EDGE_LIMIT = 10000;
-    private static final double BOUNDING_BOX_SIZE_LIMIT = 10000;
+    private static final double BOUNDING_BOX_EDGE_LIMIT = 120000000;
+    private static final double BOUNDING_BOX_SIZE_LIMIT = 120000000;
     private boolean dontIntercept = false;
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
     private PhysicsObject dontInterceptShip = null;

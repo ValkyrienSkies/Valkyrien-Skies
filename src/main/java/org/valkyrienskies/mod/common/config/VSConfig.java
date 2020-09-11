@@ -81,6 +81,12 @@ public class VSConfig extends VSConfigTemplate {
     @RangeInt(min = 1)
     public static int ticksToStickToShip = 20;
 
+    @Name("Minecarts on ships")
+    @Comment({
+        "Enabled minecarts on ships. WARNING: This will derail normal minecarts within a ship's AABB",
+    })
+    public static boolean minecartsOnShips = true;
+
     @Name("Ship Loading Settings")
     @ShortName("shipLoadingSettings")
     @Comment({

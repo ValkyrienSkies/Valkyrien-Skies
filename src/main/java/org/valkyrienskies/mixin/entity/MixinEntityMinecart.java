@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.JOML;
@@ -26,6 +27,7 @@ public class MixinEntityMinecart {
         at = @At("HEAD")
     )
     public void preOnUpdate(CallbackInfo ci) {
+        if (!VSConfig.minecartsOnShips) return;
         if (self.world.isRemote) return;
         moveToSubspace();
     }
@@ -38,6 +40,7 @@ public class MixinEntityMinecart {
         )
     )
     public void preBlockCollisions(CallbackInfo ci) {
+        if (!VSConfig.minecartsOnShips) return;
         if (self.world.isRemote) return;
         moveToGlobal();
     }
@@ -50,12 +53,12 @@ public class MixinEntityMinecart {
         )
     )
     public void preMoveDerailed(CallbackInfo ci) {
+        if (!VSConfig.minecartsOnShips) return;
         if (self.world.isRemote) return;
         moveToGlobal();
     }
 
-
-    public void moveToSubspace() {
+    private void moveToSubspace() {
         Vec3d position = self.getPositionVector();
         for (PhysicsObject ship : ValkyrienUtils.getPhysosLoadedInWorld(self.world)) {
             if (ship.getShipBB().contains(position)) {
@@ -68,8 +71,8 @@ public class MixinEntityMinecart {
             }
         }
     }
-
-    public void moveToGlobal() {
+    
+    private void moveToGlobal() {
         if (!isInGlobal) {
             transformThis(transform.getSubspaceToGlobal());
             isInGlobal = true;
@@ -85,4 +88,5 @@ public class MixinEntityMinecart {
         self.lastTickPosY = lastPos.y;
         self.lastTickPosZ = lastPos.z;
     }
+
 }

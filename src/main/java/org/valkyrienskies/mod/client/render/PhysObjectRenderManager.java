@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
-import org.joml.Quaterniondc;
+import org.joml.AxisAngle4d;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.lwjgl.opengl.GL11;
@@ -27,6 +27,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Object owned by each physObject responsible for handling all rendering operations
@@ -115,51 +116,17 @@ public class PhysObjectRenderManager {
     }
 
     public void applyRenderTransform(double partialTicks) {
-        Vector3dc centerOfRotation = parent.getCenterCoord();
-
-        Entity player = Minecraft.getMinecraft().getRenderViewEntity();
-
-        double p0 = player.lastTickPosX
-            + (player.posX -player.lastTickPosX)
-            * partialTicks;
-        double p1 = player.lastTickPosY
-            + (player.posY -player.lastTickPosY)
-            * partialTicks;
-        double p2 = player.lastTickPosZ
-            + (player.posZ - player.lastTickPosZ)
-            * partialTicks;
-
-        ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
-
-        Vector3d renderPos = new Vector3d(centerOfRotation);
-        renderTransform.transformPosition(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
-
-        double moddedX = renderPos.x;
-        double moddedY = renderPos.y;
-        double moddedZ = renderPos.z;
-
-        Quaterniondc quaterniondc = renderTransform.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Vector3dc angles = quaterniondc.getEulerAnglesXYZ(new Vector3d());
-
-        double moddedPitch = Math.toDegrees(angles.x());
-        double moddedYaw = Math.toDegrees(angles.y());
-        double moddedRoll = Math.toDegrees(angles.z());
-        // Offset pos is used to prevent floating point errors when rendering stuff thats very far away.
-        double offsetX = offsetPos.getX() - centerOfRotation.x();
-        double offsetY = offsetPos.getY() - centerOfRotation.y();
-        double offsetZ = offsetPos.getZ() - centerOfRotation.z();
-
-        GlStateManager.translate(-p0 + moddedX, -p1 + moddedY, -p2 + moddedZ);
-        GL11.glRotated(moddedPitch, 1D, 0, 0);
-        GL11.glRotated(moddedYaw, 0, 1D, 0);
-        GL11.glRotated(moddedRoll, 0, 0, 1D);
-        GL11.glTranslated(offsetX, offsetY, offsetZ);
+        applyRenderTransform(partialTicks, false);
     }
 
-    public void inverseTransform(double partialTicks) {
+    public void applyInverseTransform(double partialTicks) {
+        applyRenderTransform(partialTicks, true);
+    }
+
+    private void applyRenderTransform(double partialTicks, boolean inverse) {
         Vector3dc centerOfRotation = parent.getCenterCoord();
 
-        Entity player = Minecraft.getMinecraft().getRenderViewEntity();
+        Entity player = Objects.requireNonNull(Minecraft.getMinecraft().getRenderViewEntity());
 
         double p0 = player.lastTickPosX
             + (player.posX - player.lastTickPosX)
@@ -173,29 +140,27 @@ public class PhysObjectRenderManager {
 
         ShipTransform renderTransform = parent.getShipTransformationManager().getRenderTransform();
 
-        Vector3d renderPos = new Vector3d(centerOfRotation);
-        renderTransform.transformPosition(renderPos, TransformType.SUBSPACE_TO_GLOBAL);
-
-        double moddedX = renderPos.x;
-        double moddedY = renderPos.y;
-        double moddedZ = renderPos.z;
-
-        Quaterniondc quaterniondc = renderTransform.rotationQuaternion(TransformType.SUBSPACE_TO_GLOBAL);
-        Vector3dc angles = quaterniondc.getEulerAnglesXYZ(new Vector3d());
-
-        double moddedPitch = Math.toDegrees(angles.x());
-        double moddedYaw = Math.toDegrees(angles.y());
-        double moddedRoll = Math.toDegrees(angles.z());
-
+        Vector3d renderPos = renderTransform.getSubspaceToGlobal()
+            .transformPosition(centerOfRotation, new Vector3d());
+        
+        // Offset pos is used to prevent floating point errors when rendering stuff thats very far away.
         double offsetX = offsetPos.getX() - centerOfRotation.x();
         double offsetY = offsetPos.getY() - centerOfRotation.y();
         double offsetZ = offsetPos.getZ() - centerOfRotation.z();
 
-        GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
-        GL11.glRotated(-moddedRoll, 0, 0, 1D);
-        GL11.glRotated(-moddedYaw, 0, 1D, 0);
-        GL11.glRotated(-moddedPitch, 1D, 0, 0);
-        GlStateManager.translate(p0 - moddedX, p1 - moddedY, p2 - moddedZ);
+        if (inverse) {
+            AxisAngle4d rotation = new AxisAngle4d().set(renderTransform.getGlobalToSubspace());
+
+            GL11.glTranslated(-offsetX, -offsetY, -offsetZ);
+            GL11.glRotated(Math.toDegrees(rotation.angle), rotation.x, rotation.y, rotation.z);
+            GL11.glTranslated(p0 - renderPos.x, p1 - renderPos.y, p2 - renderPos.z);
+        } else {
+            AxisAngle4d rotation = new AxisAngle4d().set(renderTransform.getSubspaceToGlobal());
+
+            GL11.glTranslated(-p0 + renderPos.x, -p1 + renderPos.y, -p2 + renderPos.z);
+            GL11.glRotated(Math.toDegrees(rotation.angle), rotation.x, rotation.y, rotation.z);
+            GL11.glTranslated(offsetX, offsetY, offsetZ);
+        }
     }
 
     /**

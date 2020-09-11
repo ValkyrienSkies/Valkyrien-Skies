@@ -68,7 +68,7 @@ public abstract class MixinRenderManager {
                 if (mountPos != null) {
                     mountData.getMountedShip()
                         .getShipRenderer()
-                        .inverseTransform(partialTicks);
+                        .applyInverseTransform(partialTicks);
                 }
 
                 entityIn.posX = oldPosX;

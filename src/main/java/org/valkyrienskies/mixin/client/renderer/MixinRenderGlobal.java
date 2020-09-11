@@ -6,13 +6,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.DestroyBlockProgress;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -35,12 +28,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
-import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
-import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import org.valkyrienskies.mod.proxy.ClientProxy;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -149,7 +138,7 @@ public abstract class MixinRenderGlobal {
                             worldRendererIn.begin(7, DefaultVertexFormats.BLOCK);
                             physicsObject.get()
                                     .getShipRenderer()
-                                    .inverseTransform(partialTicks);
+                                    .applyInverseTransform(partialTicks);
                         }
                     }
                 }
@@ -201,7 +190,7 @@ public abstract class MixinRenderGlobal {
 
             physicsObject.get()
                     .getShipRenderer()
-                    .inverseTransform(partialTicks);
+                    .applyInverseTransform(partialTicks);
         } else {
             this.drawSelectionBoxOriginal(player, movingObjectPositionIn, execute, partialTicks);
         }

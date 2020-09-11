@@ -1,6 +1,5 @@
 package org.valkyrienskies.mixin.client.renderer.tileentity;
 
-import java.util.Optional;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
@@ -13,6 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
 
 @Mixin(TileEntityRendererDispatcher.class)
 public abstract class MixinTileEntityRendererDispatcher {
@@ -81,7 +82,7 @@ public abstract class MixinTileEntityRendererDispatcher {
 
                     physicsObject.get()
                         .getShipRenderer()
-                        .inverseTransform(partialTicks);
+                        .applyInverseTransform(partialTicks);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

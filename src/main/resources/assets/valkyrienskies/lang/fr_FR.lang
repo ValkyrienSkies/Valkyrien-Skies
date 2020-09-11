@@ -1,8 +1,0 @@
-#PARSE_ESCAPES
-
-tile.shipblock.name=Activateur de physique
-tile.shipblockcreative.name=Activateur de physique créatif
-
-itemGroup.valkyrienskies=Valkyrien Skies
-tile.captainschair.name=Siège de pilote
-tile.passenger_chair.name=Siège de passager

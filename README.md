@@ -30,16 +30,18 @@ Everything there is for the latest version, for old 0.9 builds see below.
 *You may also be interested in the wiki page on development, which contains detailed instructions, FAQs, and more. https://wiki.valkyrienskies.org/wiki/Dev:Main_Page*
 
 ### Eclipse
-1. Clone the repo: `git clone https://github.com/ValkyrienSkies/Valkyrien-Skies`
+1. Clone the repo: `git clone --recurse-submodules https://github.com/ValkyrienSkies/Valkyrien-Skies`
 2. Copy in the `eclipse/` folder from a fresh installation of the [Forge MDK](http://files.minecraftforge.net)
 3. Run `./gradlew setupDecompWorkspace eclipse`
 4. Open the project in Eclipse
+5. (Optional) recommend `git config submodule.recurse true`
 
 ### IntelliJ
-1.  Clone the repo: `git clone https://github.com/ValkyrienSkies/Valkyrien-Skies`
+1.  Clone the repo: `git clone --recurse-submodules https://github.com/ValkyrienSkies/Valkyrien-Skies`
 2. Run `./gradlew setupDecompWorkspace idea genIntellijRuns`
 3. Open the project in IntelliJ
 4. Import the gradle project, sync gradle
 5. Open settings (Control + Alt + S), and search for `Annotation Processors`
 6. Check the `Enable annotation processing box`, and add `lombok.launch.AnnotationProcessorHider$AnnotationProcessor` to the list of Processor FQ Names
+5. (Optional) recommend `git config submodule.recurse true`
 

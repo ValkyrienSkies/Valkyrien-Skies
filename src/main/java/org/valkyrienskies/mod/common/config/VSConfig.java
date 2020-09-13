@@ -87,7 +87,11 @@ public class VSConfig extends VSConfigTemplate {
     })
     public static boolean minecartsOnShips = false;
 
-    
+    @Name("Chair Recipes")
+    @Comment({
+        "Enable recipes for captain's chair/passenger's chair"
+    })
+    public static boolean chairRecipes = true;
 
     @Name("Ship Loading Settings")
     @ShortName("shipLoadingSettings")

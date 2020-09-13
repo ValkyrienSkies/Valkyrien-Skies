@@ -148,7 +148,7 @@ dependencies {
     }
 
     // JOML
-    shade 'org.joml:joml:1.9.19' // 663 KB
+    shade 'org.joml:joml:1.9.25' // 663 KB
 
     // Jackson
     shade "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"

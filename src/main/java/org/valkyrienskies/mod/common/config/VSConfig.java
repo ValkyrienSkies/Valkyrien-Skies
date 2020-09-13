@@ -103,6 +103,10 @@ public class VSConfig extends VSConfigTemplate {
     @LangKey("valkyrienskies.general.ship_loading_settings")
     public static final VSConfig.ShipLoadingSettings SHIP_LOADING_SETTINGS = new VSConfig.ShipLoadingSettings();
 
+    @Name("Accurate Rain")
+    @Comment("Prevents rain from going inside ships. Warning: laggy")
+    public static boolean accurateRain = false;
+
     public static class ShipLoadingSettings {
 
         @Name("Player Watch Ship Distance")

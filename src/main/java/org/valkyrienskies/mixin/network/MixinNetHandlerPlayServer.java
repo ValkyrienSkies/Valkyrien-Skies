@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -57,7 +58,21 @@ public abstract class MixinNetHandlerPlayServer {
                     // + x + ":" + y + ":" + z + "> to" + tpPos));
                     thisAsNetHandler
                         .setPlayerLocation(tpPos.x, tpPos.y, tpPos.z, yaw, pitch, relativeSet);
+
+                    if (VSConfig.showAnnoyingDebugOutput) {
+                        System.out.printf(
+                            "Player was teleported to %.1f, %.1f, %.1f, redirected to %.1f, %.1f, %.1f\n",
+                            x, y, z, tpPos.x, tpPos.y, tpPos.z
+                        );
+                    }
+
                 } else {
+                    if (VSConfig.showAnnoyingDebugOutput) {
+                        System.out.printf(
+                            "Player was teleported to %.1f, %.1f, %.1f, cancelling because no ship found\n",
+                            x, y, z
+                        );
+                    }
                     player.sendMessage(new TextComponentString(
                         "Tried teleporting you to shipyard but there was no ship; teleportation canceled."));
                 }

@@ -85,7 +85,9 @@ public class VSConfig extends VSConfigTemplate {
     @Comment({
         "Enabled minecarts on ships. WARNING: This will derail normal minecarts within a ship's AABB",
     })
-    public static boolean minecartsOnShips = true;
+    public static boolean minecartsOnShips = false;
+
+    
 
     @Name("Ship Loading Settings")
     @ShortName("shipLoadingSettings")

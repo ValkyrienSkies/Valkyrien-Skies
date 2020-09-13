@@ -125,6 +125,10 @@ public class VSConfig extends VSConfigTemplate {
         @Comment("If there are no players within this XZ distance of a ship, then if that ship is currently loaded, it will unload itself.")
         public double unloadDistance = 192;
 
+        @Name("Permanently loaded")
+        @Comment("If ships should be permanently. Warning: may have unforseen consequences")
+        public boolean permanentlyLoaded = false;
+
     }
 
     @Name("Ship Spawn Detector Blacklist")

@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -46,12 +46,11 @@ public abstract class MixinNetHandlerPlayServer {
                 callbackInfo.cancel();
                 redirectingSetPlayerLocation = true;
                 World world = player.getEntityWorld();
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(world, pos);
-                if (physicsObject.isPresent()) {
+                Optional<ShipData> ship = ValkyrienUtils.getShipManagingBlock(world, pos);
+                if (ship.isPresent()) {
                     Vector3d tpPos = new Vector3d(x, y, z);
-                    physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform()
+                    ship.get()
+                        .getShipTransform()
                         .transformPosition(tpPos, TransformType.SUBSPACE_TO_GLOBAL);
                     // Now call this again with the transformed position.
                     // player.sendMessage(new TextComponentString("Transformed the player tp from <"
@@ -60,7 +59,7 @@ public abstract class MixinNetHandlerPlayServer {
                         .setPlayerLocation(tpPos.x, tpPos.y, tpPos.z, yaw, pitch, relativeSet);
                 } else {
                     player.sendMessage(new TextComponentString(
-                        "Tried teleporting you to an unloaded ship; teleportation canceled."));
+                        "Tried teleporting you to shipyard but there was no ship; teleportation canceled."));
                 }
                 redirectingSetPlayerLocation = false;
             }

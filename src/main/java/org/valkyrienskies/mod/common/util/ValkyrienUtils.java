@@ -59,7 +59,13 @@ public class ValkyrienUtils {
      * @param pos   A BlockPos within the physics object space.
      * @return The PhysicsObject that owns the chunk at pos within the given world.
      */
+    @SuppressWarnings("ConstantConditions")
     public Optional<PhysicsObject> getPhysoManagingBlock(@Nullable World world, @Nullable BlockPos pos) {
+        return getShipManagingBlock(world, pos)
+            .map(shipData -> getPhysObjWorld(world).getPhysObjectFromUUID(shipData.getUuid()));
+    }
+
+    public Optional<ShipData> getShipManagingBlock(@Nullable World world, @Nullable BlockPos pos) {
         if (world == null ||
             pos == null ||
             !ShipChunkAllocator.isChunkInShipyard(pos.getX() >> 4, pos.getZ() >> 4)) {
@@ -67,8 +73,7 @@ public class ValkyrienUtils {
         }
 
         return QueryableShipData.get(world)
-            .getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4)
-            .map(shipData -> getPhysObjWorld(world).getPhysObjectFromUUID(shipData.getUuid()));
+            .getShipFromChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     /**

@@ -12,6 +12,8 @@ jobs:
       - image: circleci/openjdk:8-jdk-stretch
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
       - restore_cache:
           keys:
             - dependencies-{{ checksum "build.gradle" }}

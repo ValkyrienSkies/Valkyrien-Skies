@@ -1,14 +1,5 @@
 package org.valkyrienskies.mod.common.command.framework;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.SneakyThrows;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
@@ -18,25 +9,37 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import org.apache.commons.io.output.NullOutputStream;
+import org.valkyrienskies.mod.common.command.converters.ShipDataConverter;
 import org.valkyrienskies.mod.common.command.converters.WorldConverter;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import picocli.AutoComplete;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ITypeConverter;
 import picocli.CommandLine.Model.CommandSpec;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.PrintWriter;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class VSCommandBase<K> extends CommandBase {
 
-    private Class<K> cmdClass;
-    private List<String> aliases;
-    private String name;
+    private final Class<K> cmdClass;
+    private final List<String> aliases;
+    private final String name;
+
+    private String usage = null;
     /**
      * These are ITypeConverters that do not need to be instantiated multiple times and are
      * singletons or effectively static.
      */
-    private static Map<Class, ITypeConverter> pureConverters = new HashMap<>();
+
+    @SuppressWarnings("rawtypes")
+    private static final Map<Class, ITypeConverter> pureConverters = new HashMap<>();
 
     static {
         pureConverters.put(World.class, new WorldConverter());
@@ -85,10 +88,14 @@ public class VSCommandBase<K> extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        VSCommandFactory factory = new VSCommandFactory(sender);
-        CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
+        if (usage == null) {
+            VSCommandFactory factory = new VSCommandFactory(sender);
+            CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
 
-        return commandLine.getUsageMessage();
+            usage = commandLine.getUsageMessage().replaceAll("^(Usage: )|\r", "");
+        }
+
+        return usage;
     }
 
     @Override
@@ -96,7 +103,7 @@ public class VSCommandBase<K> extends CommandBase {
         VSCommandFactory factory = new VSCommandFactory(sender);
 
         CommandLine commandLine = new CommandLine(factory.create(cmdClass), factory);
-        pureConverters.forEach(commandLine::registerConverter);
+        registerConverters(commandLine, sender);
 
         ChatWriter chatOut = new ChatWriter(sender);
         commandLine.setOut(chatOut);
@@ -104,6 +111,11 @@ public class VSCommandBase<K> extends CommandBase {
 
         args = VSCommandUtil.toProperArgs(args);
         commandLine.execute(args);
+    }
+
+    private void registerConverters(CommandLine commandLine, ICommandSender sender) {
+        pureConverters.forEach(commandLine::registerConverter);
+        commandLine.registerConverter(ShipData.class, new ShipDataConverter(sender));
     }
 
     static class ChatWriter extends PrintWriter {

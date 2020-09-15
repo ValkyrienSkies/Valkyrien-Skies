@@ -8,11 +8,12 @@ import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.ships.physics_data.BasicCenterOfMassProvider;
 import org.valkyrienskies.mod.common.ships.physics_data.IPhysicsObjectCenterOfMassProvider;
 
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * A utility class that modifies ShipData.
  */
+@ParametersAreNonnullByDefault
 @UtilityClass
 public class ShipDataMethods {
 
@@ -22,11 +23,7 @@ public class ShipDataMethods {
     /**
      * Updates the physics data/force positions of shipData.
      */
-    public void onSetBlockState(@Nonnull ShipData shipData, @Nonnull BlockPos pos,  @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
-        if (shipData == null || newState == null || oldState == null || pos == null) {
-            throw new IllegalArgumentException("One of the arguments of this function was null!\nArgs are " + shipData + ", " + newState + ", " + oldState + ", " + pos);
-        }
-
+    public void onSetBlockState(ShipData shipData, BlockPos pos, IBlockState oldState, IBlockState newState) {
         // Make sure that pos is even part of this ship
         if (!shipData.getChunkClaim().containsBlock(pos)) {
             throw new IllegalArgumentException("Get onSetBlockState() called for pos " + pos

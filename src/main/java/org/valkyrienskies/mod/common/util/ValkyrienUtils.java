@@ -152,6 +152,10 @@ public class ValkyrienUtils {
         return getWorldDataCapability(world).get().getShipChunkAllocator();
     }
 
+    public WorldServerShipManager getServerShipManager(World world) {
+        return (WorldServerShipManager) ((IHasShipManager) world).getManager();
+    }
+
     /**
      * Creates a new ShipIndexedData based on the inputs provided by the physics infuser block.
      */

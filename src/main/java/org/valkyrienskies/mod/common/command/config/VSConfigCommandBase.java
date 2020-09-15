@@ -1,14 +1,5 @@
 package org.valkyrienskies.mod.common.command.config;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import lombok.SneakyThrows;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
@@ -16,7 +7,18 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import org.valkyrienskies.mod.common.command.framework.VSCommandUtil;
+
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class is used to generate a command for a VS/Forge config. It's used by
@@ -26,12 +28,14 @@ import org.valkyrienskies.mod.common.command.framework.VSCommandUtil;
 @MethodsReturnNonnullByDefault
 public class VSConfigCommandBase extends CommandBase {
 
-    private String name;
+    private final String name;
 
-    private ConfigCommandParentNode root;
-    private Method sync;
+    private final ConfigCommandParentNode root;
+    private final Method sync;
 
-    private List<String> aliases;
+    private final List<String> aliases;
+
+    private final String usage;
 
     /**
      * @param name        This is the name of the command that's going to be generated
@@ -58,6 +62,8 @@ public class VSConfigCommandBase extends CommandBase {
         root = new ConfigCommandParentNode(name, Collections.emptyMap());
 
         processFields(configClass, root);
+
+        this.usage = String.format("/%s <option>\nOptions: %s", name, String.join(", ", root.childrenNames()));
     }
 
     @Override
@@ -126,7 +132,7 @@ public class VSConfigCommandBase extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return String.format("/%s <option>", name);
+        return usage;
     }
 
     @Override
@@ -134,6 +140,10 @@ public class VSConfigCommandBase extends CommandBase {
         args = VSCommandUtil.toProperArgs(args);
 
         ConfigCommandNode currentNode = root;
+
+        if (args.length == 0) {
+            sender.sendMessage(new TextComponentString(TextFormatting.RED + usage));
+        }
 
         for (int i = 0; i < args.length; i++) {
             if (currentNode instanceof ConfigCommandParentNode) {

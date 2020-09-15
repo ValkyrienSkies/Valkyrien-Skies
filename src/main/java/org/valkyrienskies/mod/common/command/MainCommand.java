@@ -5,13 +5,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import org.valkyrienskies.mod.common.command.MainCommand.TeleportTo;
+import org.valkyrienskies.mod.common.command.MainCommand.*;
 import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocompleter;
 import org.valkyrienskies.mod.common.command.autocompleters.WorldAutocompleter;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
@@ -19,7 +20,6 @@ import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
 
 import javax.inject.Inject;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Command(name = "valkyrienskies", aliases = "vs",
@@ -27,11 +27,12 @@ import java.util.stream.Collectors;
     usageHelpWidth = 55,
     subcommands = {
         HelpCommand.class,
-        MainCommand.ListShips.class,
-        MainCommand.DisableShip.class,
-        MainCommand.GC.class,
-        MainCommand.TPS.class,
-        TeleportTo.class})
+        ListShips.class,
+        DisableShip.class,
+        GC.class,
+        TPS.class,
+        TeleportTo.class,
+        DeconstructShip.class})
 public class MainCommand implements Runnable {
 
     @Spec
@@ -47,6 +48,30 @@ public class MainCommand implements Runnable {
         sender.sendMessage(new TextComponentString(usageMessage));
     }
 
+    @Command(name = "deconstruct-ship", aliases = "deconstruct")
+    static class DeconstructShip implements Runnable {
+
+        @Inject
+        ICommandSender sender;
+
+        @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
+        ShipData shipData;
+
+        @Override
+        public void run() {
+            WorldServerShipManager world = ValkyrienUtils.getServerShipManager(sender.getEntityWorld());
+            PhysicsObject obj = world.getPhysObjectFromUUID(shipData.getUuid());
+            if (obj != null) {
+                obj.setAttemptToDeconstructShip(true);
+                obj.setShipAligningToGrid(true);
+
+                sender.sendMessage(new TextComponentString("That ship is being deconstructed"));
+            } else {
+                sender.sendMessage(new TextComponentString("That ship is not loaded"));
+            }
+        }
+    }
+
     @Command(name = "teleport-to", aliases = "tpto")
     static class TeleportTo implements Runnable {
 
@@ -54,7 +79,7 @@ public class MainCommand implements Runnable {
         ICommandSender sender;
 
         @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
-        String shipName;
+        ShipData shipData;
 
         public void run() {
             if (!(sender instanceof EntityPlayer)) {
@@ -62,17 +87,7 @@ public class MainCommand implements Runnable {
                     + "a player!"));
             }
 
-            World world = sender.getEntityWorld();
-            QueryableShipData data = QueryableShipData.get(world);
-            Optional<ShipData> oTargetShipData = data.getShipFromName(shipName);
-
-            if (!oTargetShipData.isPresent()) {
-                sender.sendMessage(new TextComponentString(
-                    "That ship, " + shipName + " could not be found"));
-                return;
-            }
-
-            ShipTransform pos = oTargetShipData.get().getShipTransform();
+            ShipTransform pos = shipData.getShipTransform();
             ((EntityPlayer) sender).setPositionAndUpdate(pos.getPosX(), pos.getPosY(), pos.getPosZ());
         }
 
@@ -129,47 +144,35 @@ public class MainCommand implements Runnable {
         CommandSpec spec;
 
         @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
-        String shipName;
+        ShipData shipData;
 
         @Parameters(index = "1", arity = "0..1")
         boolean enabled;
 
         @Override
         public void run() {
-            World world = sender.getEntityWorld();
-            QueryableShipData data = QueryableShipData.get(world);
-            Optional<ShipData> oShipData = data.getShipFromName(shipName);
+            boolean enabledWasSpecified = spec.commandLine().getParseResult().hasMatchedPositional(1);
+            boolean isPhysicsEnabled = shipData.isPhysicsEnabled();
+            String physicsState = isPhysicsEnabled ? "enabled" : "disabled";
 
-            ShipData shipData;
-            if ((shipData = oShipData.orElse(null)) != null) {
-                boolean enabledWasSpecified = spec.commandLine().getParseResult().hasMatchedPositional(1);
-                boolean isPhysicsEnabled = shipData.isPhysicsEnabled();
-                String physicsState = isPhysicsEnabled ? "enabled" : "disabled";
+            if (enabledWasSpecified) {
+                shipData.setPhysicsEnabled(enabled);
 
-                if (enabledWasSpecified) {
-                    shipData.setPhysicsEnabled(enabled);
-
-                    if (isPhysicsEnabled == enabled) {
-                        sender.sendMessage(new TextComponentString(
-                            "That ship's physics were not changed from " + physicsState));
-                    } else {
-                        String newPhysicsState = enabled ? "enabled" : "disabled";
-
-                        sender.sendMessage(new TextComponentString(
-                            "That ship's physics were changed from " + physicsState + " to " + newPhysicsState
-                        ));
-                    }
-                } else {
+                if (isPhysicsEnabled == enabled) {
                     sender.sendMessage(new TextComponentString(
-                        "That ship's physics are: " + physicsState
+                        "That ship's physics were not changed from " + physicsState));
+                } else {
+                    String newPhysicsState = enabled ? "enabled" : "disabled";
+
+                    sender.sendMessage(new TextComponentString(
+                        "That ship's physics were changed from " + physicsState + " to " + newPhysicsState
                     ));
                 }
-
             } else {
                 sender.sendMessage(new TextComponentString(
-                    "That ship, " + shipName + " could not be found"));
+                    "That ship's physics are: " + physicsState
+                ));
             }
-
         }
     }
 
@@ -205,9 +208,9 @@ public class MainCommand implements Runnable {
                         } else {
                             // Known Location
                             return String.format("%s [%.1f, %.1f, %.1f]", shipData.getName(),
-                                    shipData.getShipTransform().getPosX(),
-                                    shipData.getShipTransform().getPosY(),
-                                    shipData.getShipTransform().getPosZ());
+                                shipData.getShipTransform().getPosX(),
+                                shipData.getShipTransform().getPosY(),
+                                shipData.getShipTransform().getPosZ());
                         }
                     })
                     .collect(Collectors.joining(",\n"));

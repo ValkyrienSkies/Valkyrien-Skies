@@ -19,15 +19,15 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.common.collision.EntityPolygon;
 import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
-import org.valkyrienskies.mod.common.collision.ShipPolygon;
-import org.valkyrienskies.mod.fixes.MixinWorldIntrinsicMethods;
-import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.collision.Polygon;
-import org.valkyrienskies.mod.common.ships.ship_world.IWorldVS;
+import org.valkyrienskies.mod.common.collision.ShipPolygon;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
+import org.valkyrienskies.mod.common.ships.ship_world.IWorldVS;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+import org.valkyrienskies.mod.fixes.MixinWorldIntrinsicMethods;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
     private static final double MAX_ENTITY_RADIUS_ALT = 2;
     private static final double BOUNDING_BOX_EDGE_LIMIT = 120000000;
     private static final double BOUNDING_BOX_SIZE_LIMIT = 120000000;
-    private boolean dontIntercept = false;
+    private boolean shouldInterceptRayTrace = true;
     // Pork added on to this already bad code because it was already like this so he doesn't feel bad about it
     private PhysicsObject dontInterceptShip = null;
 
@@ -352,7 +352,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
     private void preRayTraceBlocks(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
         boolean ignoreBlockWithoutBoundingBox,
         boolean returnLastUncollidableBlock, CallbackInfoReturnable<RayTraceResult> callbackInfo) {
-        if (!this.dontIntercept) {
+        if (this.shouldInterceptRayTrace) {
             callbackInfo.setReturnValue(rayTraceBlocksIgnoreShip(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock,
                 this.dontInterceptShip));
@@ -363,7 +363,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
     public RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
                                                    boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
                                                    PhysicsObject toIgnore) {
-        this.dontIntercept = true;
+        this.shouldInterceptRayTrace = false;
         RayTraceResult vanillaTrace = World.class.cast(this)
             .rayTraceBlocks(vec31, vec32, stopOnLiquid,
                 ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
@@ -420,9 +420,11 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
             }
         }
 
-        this.dontIntercept = false;
+        this.shouldInterceptRayTrace = true;
         return vanillaTrace;
     }
+
+
 
     @Override
     public IPhysObjectWorld getManager() {
@@ -445,10 +447,10 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
     @Redirect(method = "getBlockDensity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
     private RayTraceResult rayTraceBlocksForGetBlockDensity(World world, Vec3d start, Vec3d end) {
         // Don't look for ships when ray tracing.
-        this.dontIntercept = true;
+        this.shouldInterceptRayTrace = false;
         RayTraceResult result = rayTraceBlocks(start, end);
         // Ok, now we can look for ships again.
-        this.dontIntercept = false;
+        this.shouldInterceptRayTrace = true;
         return result;
     }
 

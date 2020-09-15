@@ -76,20 +76,29 @@ public abstract class MixinEntityIntrinsic {
             // If alteredMovement isn't null then we're touching a ship.
             final EntityShipMovementData newEntityShipMovementData = oldEntityShipMovementData
                     .withLastTouchedShip(alteredMovement.shipTouched)
-                    .withTicksSinceTouchedShip(0);
+                    .withTicksSinceTouchedShip(0)
+                    .withTicksPartOfGround(0);
             thisClassAsDraggable.setEntityShipMovementData(newEntityShipMovementData);
             EntityCollisionInjector.alterEntityMovementPost(thisClassAsAnEntity, alteredMovement);
         } else {
             if (this.collided) {
                 // If we collided and alteredMovement is null, then we're touching the ground.
+                final int newTicksPartOfGround = oldEntityShipMovementData.getTicksPartOfGround() + 1;
                 final EntityShipMovementData newEntityShipMovementData = new EntityShipMovementData(
-                        null, 0, new Vector3d(), 0
+                        null, 0, newTicksPartOfGround, new Vector3d(), 0
                 );
                 thisClassAsDraggable.setEntityShipMovementData(newEntityShipMovementData);
             } else {
                 // If we're not collided and alteredMovement is null, then we're in the air.
+                final int newTicksPartOfGround;
+                if (oldEntityShipMovementData.getLastTouchedShip() != null) {
+                    newTicksPartOfGround = 0;
+                } else {
+                    newTicksPartOfGround = oldEntityShipMovementData.getTicksPartOfGround() + 1;
+                }
                 final EntityShipMovementData newEntityShipMovementData = oldEntityShipMovementData
-                        .withTicksSinceTouchedShip(oldEntityShipMovementData.getTicksSinceTouchedShip() + 1);
+                        .withTicksSinceTouchedShip(oldEntityShipMovementData.getTicksSinceTouchedShip() + 1)
+                        .withTicksPartOfGround(newTicksPartOfGround);
                 thisClassAsDraggable.setEntityShipMovementData(newEntityShipMovementData);
             }
         }

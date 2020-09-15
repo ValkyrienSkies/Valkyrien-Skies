@@ -51,7 +51,7 @@ public abstract class MixinEntity implements IDraggable {
 
     private Vector3d searchVector = null;
     
-    private EntityShipMovementData entityShipMovementData = new EntityShipMovementData(null, 0, new Vector3d(), 0);
+    private EntityShipMovementData entityShipMovementData = new EntityShipMovementData(null, 0, 0, new Vector3d(), 0);
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P

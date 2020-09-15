@@ -19,6 +19,8 @@ public class EntityShipMovementData {
     @Nullable
     ShipData lastTouchedShip;
     int ticksSinceTouchedShip;
+    // The number of consecutive ticks that lastTouchedShip has equaled null.
+    int ticksPartOfGround;
     @NonNull
     @Nonnull
     Vector3dc addedLinearVelocity;

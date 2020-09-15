@@ -55,8 +55,10 @@ public class EntityDraggable {
         if (lastShipTouchedPlayer == null || oldTicksSinceTouchedShip >= VSConfig.ticksToStickToShip) {
             if (entity.onGround) {
                 // Player is on ground and not on a ship, therefore set their added velocity to 0.
-                final EntityShipMovementData newMountData = new EntityShipMovementData(null, 0, new Vector3d(), 0);
-                draggable.setEntityShipMovementData(newMountData);
+                draggable.setEntityShipMovementData(
+                        oldEntityShipMovementData
+                                .withAddedLinearVelocity(new Vector3d())
+                                .withAddedYawVelocity(0));
             } else {
                 if (entity instanceof EntityPlayer) {
                     EntityPlayer player = (EntityPlayer) entity;

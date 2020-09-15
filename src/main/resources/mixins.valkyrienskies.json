@@ -35,6 +35,10 @@
     "client.renderer.entity.MixinRenderManager",
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
     "util.MixinMovementInputFromOptions",
-    "world.MixinClientWorld"
+    "world.MixinClientWorld",
+    "network.play.client.MixinCPacketPlayerClient",
+    "network.play.client.MixinCPacketPlayerPosition",
+    "network.play.client.MixinCPacketPlayerPositionRotation",
+    "network.play.client.MixinCPacketPlayerRotation"
   ]
 }

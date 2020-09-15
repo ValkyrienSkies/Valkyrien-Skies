@@ -1,93 +1,103 @@
 package org.valkyrienskies.mixin.network.play.client;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.GameType;
+import net.minecraft.world.World;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.mod.common.network.IHasPlayerMovementData;
+import org.valkyrienskies.mod.common.network.PlayerMovementData;
+import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
-import org.valkyrienskies.mod.fixes.ITransformablePacket;
-import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
-import org.valkyrienskies.mod.common.util.JOML;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.util.VSMath;
+import valkyrienwarfare.api.TransformType;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Mixin(CPacketPlayer.class)
-public class MixinCPacketPlayer implements ITransformablePacket {
+public class MixinCPacketPlayer implements IHasPlayerMovementData {
 
-    @Shadow
-    public float pitch;
-    private final CPacketPlayer thisPacket = CPacketPlayer.class.cast(this);
-    private GameType cachedPlayerGameType = null;
+    // Piggyback this with every CPacketPlayer.
+    private PlayerMovementData addedPlayerMovementData;
 
-    @Inject(method = "processPacket", at = @At(value = "HEAD"))
-    private void preDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
-        this.doPreProcessing(server, false);
-    }
+    @Inject(method = "processPacket", at = @At(value = "HEAD"), cancellable = true)
+    private void preProcessPacket(final INetHandlerPlayServer handler, final CallbackInfo info) {
+        final EntityPlayer player = ((NetHandlerPlayServer) handler).player;
+        final World world = player.world;
 
-    @Inject(method = "processPacket", at = @At(value = "RETURN"))
-    private void postDiggingProcessPacket(INetHandlerPlayServer server, CallbackInfo info) {
-        this.doPostProcessing(server, false);
-    }
+        final UUID lastTouchedShipId = addedPlayerMovementData.getLastTouchedShipId();
+        final int ticksSinceTouchedLastShip = addedPlayerMovementData.getTicksSinceTouchedLastShip();
+        final int ticksPartOfGround = addedPlayerMovementData.getTicksPartOfGround();
+        final Vector3d playerPosInShip = new Vector3d(addedPlayerMovementData.getPlayerPosInShip());
+        final Vector3d playerLookInShip = new Vector3d(addedPlayerMovementData.getPlayerLookInShip());
 
-    @Override
-    public void doPreProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
-        if (isPacketOnMainThread(server, callingFromSponge)) {
-            ShipData parent = getPacketParent((NetHandlerPlayServer) server);
-            if (parent != null) {
-                EntityPlayerMP playerMP = getPacketPlayer(server);
-                Vector3dc positionGlobal = new Vector3d(playerMP.posX, playerMP.posY, playerMP.posZ);
-                Vector3dc lookVectorGlobal = JOML.convert(playerMP.getLook(1.0f));
-
-                // ==== Get the player pitch/yaw from the look vector =====
-                final Tuple<Double, Double> pitchYawTuple = VSMath.getPitchYawFromVector(lookVectorGlobal);
-                float pitch = pitchYawTuple.getFirst().floatValue();
-                float yaw = pitchYawTuple.getSecond().floatValue();
-
-                // ===== Set the proper position values for the player packet =====
-                thisPacket.moving = true;
-                thisPacket.onGround = true;
-                thisPacket.x = positionGlobal.x();
-                thisPacket.y = positionGlobal.y();
-                thisPacket.z = positionGlobal.z();
-
-                // ===== Set the proper rotation values for the player packet =====
-                thisPacket.rotating = true;
-                thisPacket.yaw = yaw;
-                thisPacket.pitch = pitch;
-
-                // ===== Dangerous code here =====
-                cachedPlayerGameType = getPacketPlayer(server).interactionManager.gameType;
-                getPacketPlayer(server).interactionManager.gameType = GameType.CREATIVE;
+        ShipData lastTouchedShip = null;
+        if (lastTouchedShipId != null) {
+            final QueryableShipData queryableShipData = QueryableShipData.get(world);
+            final Optional<ShipData> shipDataOptional = queryableShipData.getShip(lastTouchedShipId);
+            if (shipDataOptional.isPresent()) {
+                lastTouchedShip = shipDataOptional.get();
+                final ShipTransform shipTransform = lastTouchedShip.getShipTransform();
+                shipTransform.transformPosition(playerPosInShip, TransformType.SUBSPACE_TO_GLOBAL);
+                shipTransform.transformDirection(playerLookInShip, TransformType.SUBSPACE_TO_GLOBAL);
+            } else {
+                // Rare case, just ignore this
+                return;
             }
         }
+
+        // Get the player pitch/yaw from the look vector
+        final Tuple<Double, Double> pitchYawTuple = VSMath.getPitchYawFromVector(playerLookInShip);
+        final double playerPitchInGlobal = pitchYawTuple.getFirst();
+        final double playerYawInGlobal = pitchYawTuple.getSecond();
+
+        // Maybe just set the position directly?
+        player.setPositionAndRotation(playerPosInShip.x(), playerPosInShip.y(), playerPosInShip.z(),
+                (float) playerYawInGlobal, (float) playerPitchInGlobal);
+        player.setRotationYawHead((float) playerYawInGlobal);
+        player.onGround = addedPlayerMovementData.isOnGround();
+
+        final IDraggable playerAsDraggable = IDraggable.class.cast(player);
+        playerAsDraggable.setEntityShipMovementData(
+                playerAsDraggable.getEntityShipMovementData()
+                        .withLastTouchedShip(lastTouchedShip)
+                        .withAddedLinearVelocity(new Vector3d())
+                        .withAddedYawVelocity(0)
+                        .withTicksPartOfGround(ticksPartOfGround)
+                        .withTicksSinceTouchedShip(ticksSinceTouchedLastShip)
+        );
+
+        info.cancel();
+    }
+
+    @Inject(method = "readPacketData", at = @At(value = "HEAD"))
+    private void preReadPacketData(final PacketBuffer packetBuffer, final CallbackInfo info) {
+        addedPlayerMovementData = PlayerMovementData.readData(packetBuffer);
+    }
+
+    @Inject(method = "writePacketData", at = @At(value = "HEAD"))
+    private void preWritePacketData(final PacketBuffer packetBuffer, final CallbackInfo info) {
+        addedPlayerMovementData.writeData(packetBuffer);
     }
 
     @Override
-    public void doPostProcessing(INetHandlerPlayServer server, boolean callingFromSponge) {
-        if (isPacketOnMainThread(server, callingFromSponge)) {
-            // ===== Dangerous code here =====
-            if (cachedPlayerGameType != null) {
-                getPacketPlayer(server).interactionManager.gameType = cachedPlayerGameType;
-            }
-        }
+    public void setPlayerMovementData(final PlayerMovementData playerMovementData) {
+        addedPlayerMovementData = playerMovementData;
     }
 
     @Override
-    public ShipData getPacketParent(NetHandlerPlayServer server) {
-        return null;
+    public PlayerMovementData getPlayerMovementData() {
+        return addedPlayerMovementData;
     }
-
-    private EntityPlayerMP getPacketPlayer(INetHandlerPlayServer server) {
-        return ((NetHandlerPlayServer) server).player;
-    }
-
 }

@@ -156,20 +156,15 @@ public class ValkyrienSkiesMod {
     private void registerNetworks(FMLStateEvent event) {
         physWrapperNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies");
         physWrapperNetwork.registerMessage(ShipIndexDataMessageHandler.class,
-            ShipIndexDataMessage.class, 0, Side.CLIENT);
-        physWrapperNetwork.registerMessage(MessageHandlerPlayerOnShipPos.class,
-                MessagePlayerOnShipPos.class, 1, Side.SERVER);
+                ShipIndexDataMessage.class, 0, Side.CLIENT);
 
         controlNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_piloting");
-        controlNetwork
-                .registerMessage(PilotControlsMessageHandler.class, PilotControlsMessage.class, 0,
-                        Side.SERVER);
-        controlNetwork
-                .registerMessage(MessageStartPilotingHandler.class, MessageStartPiloting.class, 1,
-                        Side.CLIENT);
-        controlNetwork
-                .registerMessage(MessageStopPilotingHandler.class, MessageStopPiloting.class, 2,
-                        Side.CLIENT);
+        controlNetwork.registerMessage(PilotControlsMessageHandler.class,
+                PilotControlsMessage.class, 0, Side.SERVER);
+        controlNetwork.registerMessage(MessageStartPilotingHandler.class,
+                MessageStartPiloting.class, 1, Side.CLIENT);
+        controlNetwork.registerMessage(MessageStopPilotingHandler.class,
+                MessageStopPiloting.class, 2, Side.CLIENT);
         controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class,
                 MessagePlayerStoppedPiloting.class, 3, Side.SERVER);
     }

@@ -27,7 +27,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.valkyrienskies.mixin.MixinLoaderForge;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
-import org.valkyrienskies.mod.common.block.*;
+import org.valkyrienskies.mod.common.block.BlockCaptainsChair;
+import org.valkyrienskies.mod.common.block.BlockPassengerChair;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
@@ -170,6 +171,8 @@ public class ValkyrienSkiesMod {
     }
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+        if (!VSConfig.chairRecipes) return;
+
         registerRecipe(event, "recipe_captains_chair", new ItemStack(captainsChair),
                     "SLS",
                     "VWV",

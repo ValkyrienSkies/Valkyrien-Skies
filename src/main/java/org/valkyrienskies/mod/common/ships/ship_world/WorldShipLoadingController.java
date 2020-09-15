@@ -8,10 +8,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 
 import java.util.*;
 
@@ -41,12 +41,14 @@ class WorldShipLoadingController {
                 if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, VSConfig.SHIP_LOADING_SETTINGS.loadDistance)) {
                     shipManager.queueShipLoad(data.getUuid());
                 } else {
-                    if (existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, VSConfig.SHIP_LOADING_SETTINGS.loadBackgroundDistance)) {
+                    if (VSConfig.SHIP_LOADING_SETTINGS.permanentlyLoaded ||
+                        existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, VSConfig.SHIP_LOADING_SETTINGS.loadBackgroundDistance)) {
                         shipManager.queueShipLoadBackground(data.getUuid());
                     }
                 }
             } else {
-                if (!existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, VSConfig.SHIP_LOADING_SETTINGS.unloadDistance)) {
+                if (!VSConfig.SHIP_LOADING_SETTINGS.permanentlyLoaded &&
+                    !existsPlayerWithinDistanceXZ(shipManager.getWorld(), shipPos, VSConfig.SHIP_LOADING_SETTINGS.unloadDistance)) {
                     shipManager.queueShipUnload(data.getUuid());
                 }
             }

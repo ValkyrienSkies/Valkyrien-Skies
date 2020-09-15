@@ -85,7 +85,13 @@ public class VSConfig extends VSConfigTemplate {
     @Comment({
         "Enabled minecarts on ships. WARNING: This will derail normal minecarts within a ship's AABB",
     })
-    public static boolean minecartsOnShips = true;
+    public static boolean minecartsOnShips = false;
+
+    @Name("Chair Recipes")
+    @Comment({
+        "Enable recipes for captain's chair/passenger's chair"
+    })
+    public static boolean chairRecipes = true;
 
     @Name("Ship Loading Settings")
     @ShortName("shipLoadingSettings")
@@ -96,6 +102,10 @@ public class VSConfig extends VSConfigTemplate {
     })
     @LangKey("valkyrienskies.general.ship_loading_settings")
     public static final VSConfig.ShipLoadingSettings SHIP_LOADING_SETTINGS = new VSConfig.ShipLoadingSettings();
+
+    @Name("Accurate Rain")
+    @Comment("Prevents rain from going inside ships. Warning: laggy")
+    public static boolean accurateRain = false;
 
     public static class ShipLoadingSettings {
 
@@ -118,6 +128,10 @@ public class VSConfig extends VSConfigTemplate {
         @Name("Ship Unload Distance")
         @Comment("If there are no players within this XZ distance of a ship, then if that ship is currently loaded, it will unload itself.")
         public double unloadDistance = 192;
+
+        @Name("Permanently loaded")
+        @Comment("If ships should be permanently. Warning: may have unforseen consequences")
+        public boolean permanentlyLoaded = false;
 
     }
 

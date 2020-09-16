@@ -73,7 +73,9 @@ public class VSConfigCommandBase extends CommandBase {
 
     // TODO: allow usage of arrays
     private static void processFields(Class<?> configClass, ConfigCommandParentNode root) {
-        List<Class<?>> subcategories = Arrays.asList(configClass.getDeclaredClasses());
+        List<Class<?>> subcategories = Arrays.stream(configClass.getDeclaredClasses())
+            .filter(c -> !c.isEnum())
+            .collect(Collectors.toList());
 
         for (Field field : configClass.getFields()) {
             // Ensure the field is public static and supported
@@ -85,9 +87,7 @@ public class VSConfigCommandBase extends CommandBase {
                     processFieldForSubcategory(field.getType(), field, root);
                 } else if (ConfigCommandUtils.isSupportedType(field.getType())) {
                     // Or its a normal field
-                    root.addChild(new ConfigCommandEndNode(field.getName(),
-                        str -> ConfigCommandUtils.setFieldFromString(str, field),
-                        () -> ConfigCommandUtils.getStringFromField(field)));
+                    root.addChild(new ConfigCommandEndNode(field, null));
                 } // Ignore fields that aren't supported or a subcategory
             }
         }
@@ -109,18 +109,12 @@ public class VSConfigCommandBase extends CommandBase {
         root.addChild(subcategoryNode);
 
         for (Field field : subcategory.getFields()) {
-            ShortName fieldShortName = field.getAnnotation(ShortName.class);
-            String fieldDisplayName = fieldShortName == null ?
-                field.getName() : fieldShortName.value();
-
             // Ensure field is public NOT static and supported
             if (!Modifier.isStatic(field.getModifiers()) &&
                 Modifier.isPublic(field.getModifiers()) &&
                 ConfigCommandUtils.isSupportedType(field.getType())) {
 
-                subcategoryNode.addChild(new ConfigCommandEndNode(fieldDisplayName,
-                    str -> ConfigCommandUtils.setFieldFromString(str, field, subcategoryObj),
-                    () -> ConfigCommandUtils.getStringFromField(field, subcategoryObj)));
+                subcategoryNode.addChild(new ConfigCommandEndNode(field, subcategoryObj));
             }
         }
     }
@@ -206,11 +200,13 @@ public class VSConfigCommandBase extends CommandBase {
                         .stream()
                         .map(ConfigCommandNode::getName)
                         .collect(Collectors.toList());
-                } else if (i == args.length - 1 && nextNode instanceof ConfigCommandParentNode) {
-                    // We have reached the last argument, so the user must be looking for all the
-                    // values of this subcategory
-
-                    return ((ConfigCommandParentNode) nextNode).childrenNames();
+                } else if (i == args.length - 1) {
+                    // We have reached the last argument
+                    if (nextNode instanceof ConfigCommandParentNode) {
+                        return ((ConfigCommandParentNode) nextNode).childrenNames();
+                    } else if (nextNode instanceof ConfigCommandEndNode) {
+                        return ((ConfigCommandEndNode) nextNode).getAutocompletions();
+                    }
                 } else {
                     currentNode = nextNode;
                 }

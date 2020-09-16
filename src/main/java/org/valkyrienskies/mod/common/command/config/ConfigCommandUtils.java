@@ -1,7 +1,14 @@
 package org.valkyrienskies.mod.common.command.config;
 
-import java.lang.reflect.Field;
+import com.google.common.collect.ImmutableList;
+
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 class ConfigCommandUtils {
 
@@ -47,6 +54,9 @@ class ConfigCommandUtils {
                 field.setChar(object, string.charAt(0));
             } else if (field.getType() == String.class) {
                 field.set(object, string);
+            } else if (field.getType().isEnum()) {
+                Method valueOf = field.getType().getMethod("valueOf", String.class);
+                field.set(object, valueOf.invoke(null, string));
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -62,7 +72,32 @@ class ConfigCommandUtils {
     public static boolean isSupportedType(Class<?> type) {
         return type == int.class || type == double.class || type == float.class
             || type == boolean.class || type == byte.class || type == long.class
-            || type == short.class || type == char.class || type == String.class;
+            || type == short.class || type == char.class || type == String.class
+            || type.isEnum();
+    }
+
+    private static final ImmutableList<String> booleanCompletions = ImmutableList.of("true", "false");
+
+    public static List<String> getAutocompletions(Field field) {
+        return Optional.ofNullable(field.getAnnotation(Autocompletions.class))
+            .map(a -> Arrays.asList(a.value()))
+            .orElseGet(() -> getAutocompletions(field.getType()));
+    }
+
+    public static List<String> getAutocompletions(Class<?> type) {
+        try {
+            if (type == boolean.class) {
+                return booleanCompletions;
+            } else if (type.isEnum()) {
+                Method values = type.getMethod("values");
+                return Arrays.stream((Enum<?>[]) values.invoke(null))
+                    .map(Enum::toString)
+                    .collect(Collectors.toList());
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return ImmutableList.of();
     }
 
     /**

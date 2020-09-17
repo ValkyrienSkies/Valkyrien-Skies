@@ -470,7 +470,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
 
         java.util.function.Predicate<BlockPos> canCollide = pos -> {
             IBlockState blockState = world.getBlockState(pos);
-            return blockState.getBlock().canCollideCheck(blockState, true);
+            return blockState.getBlock().canCollideCheck(blockState, false);
         };
 
         // Get all the blocks between start and end

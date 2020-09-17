@@ -430,7 +430,6 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
     }
 
 
-
     @Override
     public IPhysObjectWorld getManager() {
         if (manager == null) {
@@ -445,27 +444,18 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
         manager = managerSupplier.apply(World.class.cast(this));
     }
 
-    /**
-     * Fixes World.getBlockDensity() creating huge amounts of lag by telling it not to look for
-     * ships when ray-tracing.
-     */
-//    @Redirect(method = "getBlockDensity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
-//    private RayTraceResult rayTraceBlocksForGetBlockDensity(World world, Vec3d start, Vec3d end) {
-//        // Don't look for ships when ray tracing.
-//        this.shouldInterceptRayTrace = false;
-//        RayTraceResult result = rayTraceBlocks(start, end);
-//        // Ok, now we can look for ships again.
-//        this.shouldInterceptRayTrace = true;
-//        return result;
-//    }
-
-
     private static final RayTraceResult DUMMY_RAYTRACE_RESULT = new RayTraceResult(Vec3d.ZERO, EnumFacing.DOWN);
 
     /**
-     * Use Bresenham's tracing algorithm instead when raytracing entities, makes it way faster
+     * Use Bresenham's tracing algorithm instead of raytracing for getBlockDensity, makes it way faster
      */
-    @Redirect(method = "getBlockDensity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
+    @Redirect(
+        method = "getBlockDensity",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/World;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"
+        )
+    )
     private RayTraceResult rayTraceBlocksForGetBlockDensity(World world, Vec3d start, Vec3d end) {
         if (VSConfig.explosionMode == ExplosionMode.VANILLA) {
             this.shouldInterceptRayTrace = false;

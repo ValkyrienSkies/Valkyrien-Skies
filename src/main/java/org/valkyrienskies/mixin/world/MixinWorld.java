@@ -458,20 +458,24 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
     )
     private RayTraceResult rayTraceBlocksForGetBlockDensity(World world, Vec3d start, Vec3d end) {
         if (VSConfig.explosionMode == ExplosionMode.VANILLA) {
+            // Vanilla raytrace, ignore ships and perform the function like normal
             this.shouldInterceptRayTrace = false;
             RayTraceResult result = rayTraceBlocks(start, end);
             this.shouldInterceptRayTrace = true;
             return result;
         } else if (VSConfig.explosionMode == ExplosionMode.SLOW_VANILLA) {
+            // Vanilla raytrace, include ships and perform the function like normal
             return rayTraceBlocks(start, end);
         }
 
         java.util.function.Predicate<BlockPos> canCollide = pos -> {
             IBlockState blockState = world.getBlockState(pos);
-            return blockState.getBlock().canCollideCheck(blockState, false);
+            return blockState.getBlock().canCollideCheck(blockState, true);
         };
 
+        // Get all the blocks between start and end
         List<BlockPos> blocks = VSMath.generateLineBetween(start, end, BlockPos::new);
+        // Whether or not this ray trace hit a block that was collidable.
         boolean collided = blocks.stream().anyMatch(canCollide);
 
         IPhysObjectWorld physObjectWorld = ((IHasShipManager) (this)).getManager();
@@ -482,14 +486,16 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
 
             for (PhysicsObject obj : nearbyShips) {
                 Vec3d transformedStart = obj.transformVector(start, TransformType.GLOBAL_TO_SUBSPACE);
-                Vec3d transformedEnd = obj.transformVector(start, TransformType.GLOBAL_TO_SUBSPACE);
+                Vec3d transformedEnd = obj.transformVector(end, TransformType.GLOBAL_TO_SUBSPACE);
 
+                // Transform the raytrace into ship space and check whether or not it hit a block
                 List<BlockPos> physoBlocks = VSMath.generateLineBetween(transformedStart, transformedEnd, BlockPos::new);
-
                 collided |= physoBlocks.stream().anyMatch(canCollide);
             }
         }
 
+        // The method only checks if the return object is null, so we don't need any
+        // important information in the ray trace result.
         return collided ? DUMMY_RAYTRACE_RESULT : null;
     }
 

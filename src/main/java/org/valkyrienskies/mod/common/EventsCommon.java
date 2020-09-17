@@ -37,9 +37,9 @@ import org.apache.logging.log4j.Logger;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
-import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.ships.ship_world.*;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -235,7 +235,7 @@ public class EventsCommon {
                 center.x() + radius, center.y() + radius, center.z() + radius);
             // Find nearby ships, we will check if the explosion effects them
             List<PhysicsObject> shipsNear = ((IHasShipManager) event.getWorld()).getManager()
-                    .getNearbyPhysObjects(toCheck);
+                    .getPhysObjectsInAABB(toCheck);
             // Process the explosion on the nearby ships
             for (PhysicsObject ship : shipsNear) {
                 Vector3d inLocal = new Vector3d(center);

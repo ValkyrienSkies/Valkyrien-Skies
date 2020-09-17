@@ -93,6 +93,18 @@ public class VSConfig extends VSConfigTemplate {
     })
     public static boolean chairRecipes = true;
 
+
+    @Name("Use Vanilla Explosions")
+    @Comment({
+        "If CUSTOM, vanilla explosions are replaced with a custom implementation which supports ships blocking",
+        "explosion damage and is also faster. May have slightly different semantics for things like TNT cannons"
+    })
+    public static ExplosionMode explosionMode = ExplosionMode.CUSTOM;
+
+    public enum ExplosionMode {
+        VANILLA, SLOW_VANILLA, CUSTOM
+    }
+
     @Name("Ship Loading Settings")
     @ShortName("shipLoadingSettings")
     @Comment({

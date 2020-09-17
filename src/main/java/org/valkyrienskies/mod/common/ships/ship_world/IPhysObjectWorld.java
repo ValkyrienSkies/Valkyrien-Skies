@@ -37,7 +37,7 @@ public interface IPhysObjectWorld {
      * @return A list of all the physics objects whose AABB intersect with toCheck.
      */
     @Nonnull
-    List<PhysicsObject> getNearbyPhysObjects(@Nonnull AxisAlignedBB toCheck) throws CalledFromWrongThreadException;
+    List<PhysicsObject> getPhysObjectsInAABB(@Nonnull AxisAlignedBB toCheck) throws CalledFromWrongThreadException;
 
     @Nonnull
     Iterable<PhysicsObject> getAllLoadedPhysObj() throws CalledFromWrongThreadException;

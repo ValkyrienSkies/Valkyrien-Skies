@@ -79,7 +79,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     @Nonnull
     @Override
-    public List<PhysicsObject> getNearbyPhysObjects(@Nonnull AxisAlignedBB toCheck) throws CalledFromWrongThreadException {
+    public List<PhysicsObject> getPhysObjectsInAABB(@Nonnull AxisAlignedBB toCheck) throws CalledFromWrongThreadException {
         enforceGameThread();
         List<PhysicsObject> nearby = new ArrayList<>();
         for (PhysicsObject ship : getAllLoadedPhysObj()) {

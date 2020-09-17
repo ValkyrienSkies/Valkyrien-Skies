@@ -1,7 +1,10 @@
 package org.valkyrienskies.mod.common.ships.entity_interaction;
 
 import lombok.Value;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.BlockSlime;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -25,10 +28,10 @@ import org.valkyrienskies.mod.common.collision.*;
 import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
-import org.valkyrienskies.mod.common.util.JOML;
-import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.util.JOML;
+import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
@@ -75,7 +78,7 @@ public class EntityCollisionInjector {
         if (entity instanceof EntityLivingBase) {
             final EntityLivingBase base = (EntityLivingBase) entity;
             final List<PhysicsObject> collidingShips = ((IHasShipManager) entity.getEntityWorld()).getManager()
-                    .getNearbyPhysObjects(base.getEntityBoundingBox());
+                    .getPhysObjectsInAABB(base.getEntityBoundingBox());
             final Iterable<Triple<PhysicsObject, BlockPos, IBlockState>> ladderCollisions = getLadderCollisions(base, collidingShips);
             // For now, just ignore the y component. I may or may not use it later.
 
@@ -441,7 +444,7 @@ public class EntityCollisionInjector {
                 1);
 
         List<PhysicsObject> ships = ((IHasShipManager) entity.getEntityWorld()).getManager()
-            .getNearbyPhysObjects(entityBB);
+            .getPhysObjectsInAABB(entityBB);
         // If a player is riding a Ship, don't process any collision between that Ship
         // and the Player
         for (PhysicsObject wrapper : ships) {

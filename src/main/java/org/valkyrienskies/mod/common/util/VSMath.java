@@ -8,6 +8,7 @@ import net.minecraft.util.math.Vec3i;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +28,102 @@ public class VSMath {
 
     public Vector3d toVector3d(Vec3d vec) {
         return new Vector3d(vec.x, vec.y, vec.z);
+    }
+
+
+    /**
+     * @see #generateLineBetween(int, int, int, int, int, int, IntTernaryFunction)
+     */
+    public <T> List<T> generateLineBetween(Vec3d start, Vec3d end, IntTernaryFunction<T> constructor) {
+        return VSMath.generateLineBetween(
+            (int) start.x, (int) start.y, (int) start.z,
+            (int) end.x, (int) end.y, (int) end.z,
+            constructor
+        );
+    }
+
+    /**
+     * Implementation of Bresenham's algorithm.
+     *
+     * @param constructor The constructor for points
+     * @return List of points
+     *
+     * @see <a href="https://www.geeksforgeeks.org/bresenhams-algorithm-for-3-d-line-drawing/">Reference</a>
+     */
+    public <T> List<T> generateLineBetween(int x1, int y1, int z1, int x2, int y2, int z2, IntTernaryFunction<T> constructor) {
+        List<T> points = new ArrayList<>();
+        points.add(constructor.apply(x1, y1, z1));
+
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+        int dz = Math.abs(z2 - z1);
+
+        int xs = x2 > x1 ? 1 : -1;
+        int ys = y2 > y1 ? 1 : -1;
+        int zs = z2 > z1 ? 1 : -1;
+
+        if (dx >= dy && dx >= dz) {
+            int p1 = 2 * dy - dx;
+            int p2 = 2 * dz - dx;
+            while (x1 != x2) {
+                x1 += xs;
+
+                if (p1 >= 0) {
+                    y1 += ys;
+                    p1 -= 2 * dx;
+                }
+
+                if (p2 >= 0) {
+                    z1 += zs;
+                    p2 -= 2 * dx;
+                }
+
+                p1 += 2 * dy;
+                p2 += 2 * dz;
+                points.add(constructor.apply(x1, y1, z1));
+            }
+        } else if (dy >= dx && dy >= dz) {
+            int p1 = 2 * dx - dy;
+            int p2 = 2 * dz - dy;
+            while (y1 != y2) {
+                y1 += ys;
+
+                if (p1 >= 0) {
+                    x1 += xs;
+                    p1 -= 2 * dy;
+                }
+
+                if (p2 >= 0) {
+                    z1 += zs;
+                    p2 -= 2 * dy;
+                }
+
+                p1 += 2 * dx;
+                p2 += 2 * dz;
+                points.add(constructor.apply(x1, y1, z1));
+            }
+        } else {
+            int p1 = 2 * dy - dz;
+            int p2 = 2 * dx - dz;
+            while (z1 != z2) {
+                z1 += zs;
+                if (p1 >= 0) {
+                    y1 += ys;
+                    p1 -= 2 * dz;
+                }
+
+                if (p2 >= 0) {
+                    x1 += xs;
+                    p2 -= 2 * dz;
+                }
+
+                p1 += 2 * dy;
+                p2 += 2 * dx;
+                points.add(constructor.apply(x1, y1, z1));
+            }
+        }
+
+        return points;
     }
 
     public Tuple<Double, Double> getPitchYawFromVector(final Vector3dc vector3dc) {
@@ -224,5 +321,9 @@ public class VSMath {
         double rollRadians) {
         return createRotationMatrix(pitchRadians, yawRadians, rollRadians)
             .getNormalizedRotation(new Quaterniond());
+    }
+
+    public interface IntTernaryFunction<T> {
+        T apply(int x, int y, int z);
     }
 }

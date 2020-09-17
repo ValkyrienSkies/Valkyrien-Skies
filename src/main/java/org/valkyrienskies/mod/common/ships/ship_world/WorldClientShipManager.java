@@ -12,7 +12,6 @@ import org.valkyrienskies.mod.common.util.multithreaded.CalledFromWrongThreadExc
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WorldClientShipManager implements IPhysObjectWorld {
 
@@ -97,7 +96,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     @Nonnull
     @Override
-    public List<PhysicsObject> getNearbyPhysObjects(@Nonnull AxisAlignedBB toCheck) throws CalledFromWrongThreadException {
+    public List<PhysicsObject> getPhysObjectsInAABB(@Nonnull AxisAlignedBB toCheck) throws CalledFromWrongThreadException {
         enforceGameThread();
         List<PhysicsObject> nearby = new ArrayList<>();
         for (PhysicsObject physicsObject : getAllLoadedPhysObj()) {

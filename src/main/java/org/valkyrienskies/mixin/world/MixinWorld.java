@@ -5,7 +5,9 @@ import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -21,11 +23,14 @@ import org.valkyrienskies.mod.common.collision.EntityPolygon;
 import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.collision.Polygon;
 import org.valkyrienskies.mod.common.collision.ShipPolygon;
+import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.config.VSConfig.ExplosionMode;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ships.ship_world.IWorldVS;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.fixes.MixinWorldIntrinsicMethods;
 import valkyrienwarfare.api.TransformType;
@@ -163,7 +168,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
         if (entityIn instanceof EntityPlayer && entityIn.isSneaking()) {
             // Add at most once ship block AABB that is colliding with the player. This is ONLY to properly allow
             // players to sneak while on ships.
-            List<PhysicsObject> ships = getManager().getNearbyPhysObjects(aabb);
+            List<PhysicsObject> ships = getManager().getPhysObjectsInAABB(aabb);
             for (PhysicsObject wrapper : ships) {
                 Polygon playerInLocal = new Polygon(aabb,
                         wrapper.getShipTransformationManager()
@@ -380,7 +385,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
         AxisAlignedBB playerRangeBB = new AxisAlignedBB(vec31.x, vec31.y, vec31.z, vec32.x, vec32.y,
             vec32.z);
 
-        List<PhysicsObject> nearbyShips = physObjectWorld.getNearbyPhysObjects(playerRangeBB);
+        List<PhysicsObject> nearbyShips = physObjectWorld.getPhysObjectsInAABB(playerRangeBB);
         // Get rid of the Ship that we're not supposed to be RayTracing for
         nearbyShips.remove(toIgnore);
 
@@ -408,7 +413,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
                 .rayTraceBlocks(playerEyesPos, playerEyesReachAdded,
                     stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
             if (resultInShip != null && resultInShip.hitVec != null
-                && resultInShip.typeOfHit == RayTraceResult.Type.BLOCK) {
+                && resultInShip.typeOfHit == Type.BLOCK) {
                 double shipResultDistFromPlayer = resultInShip.hitVec.distanceTo(playerEyesPos);
                 if (shipResultDistFromPlayer < worldResultDistFromPlayer) {
                     worldResultDistFromPlayer = shipResultDistFromPlayer;
@@ -444,14 +449,58 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
      * Fixes World.getBlockDensity() creating huge amounts of lag by telling it not to look for
      * ships when ray-tracing.
      */
+//    @Redirect(method = "getBlockDensity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
+//    private RayTraceResult rayTraceBlocksForGetBlockDensity(World world, Vec3d start, Vec3d end) {
+//        // Don't look for ships when ray tracing.
+//        this.shouldInterceptRayTrace = false;
+//        RayTraceResult result = rayTraceBlocks(start, end);
+//        // Ok, now we can look for ships again.
+//        this.shouldInterceptRayTrace = true;
+//        return result;
+//    }
+
+
+    private static final RayTraceResult DUMMY_RAYTRACE_RESULT = new RayTraceResult(Vec3d.ZERO, EnumFacing.DOWN);
+
+    /**
+     * Use Bresenham's tracing algorithm instead when raytracing entities, makes it way faster
+     */
     @Redirect(method = "getBlockDensity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
     private RayTraceResult rayTraceBlocksForGetBlockDensity(World world, Vec3d start, Vec3d end) {
-        // Don't look for ships when ray tracing.
-        this.shouldInterceptRayTrace = false;
-        RayTraceResult result = rayTraceBlocks(start, end);
-        // Ok, now we can look for ships again.
-        this.shouldInterceptRayTrace = true;
-        return result;
+        if (VSConfig.explosionMode == ExplosionMode.VANILLA) {
+            this.shouldInterceptRayTrace = false;
+            RayTraceResult result = rayTraceBlocks(start, end);
+            this.shouldInterceptRayTrace = true;
+            return result;
+        } else if (VSConfig.explosionMode == ExplosionMode.SLOW_VANILLA) {
+            return rayTraceBlocks(start, end);
+        }
+
+        java.util.function.Predicate<BlockPos> canCollide = pos -> {
+            IBlockState blockState = world.getBlockState(pos);
+            return blockState.getBlock().canCollideCheck(blockState, false);
+        };
+
+        List<BlockPos> blocks = VSMath.generateLineBetween(start, end, BlockPos::new);
+        boolean collided = blocks.stream().anyMatch(canCollide);
+
+        IPhysObjectWorld physObjectWorld = ((IHasShipManager) (this)).getManager();
+
+        if (physObjectWorld != null) {
+            List<PhysicsObject> nearbyShips = physObjectWorld.getPhysObjectsInAABB(
+                new AxisAlignedBB(start.x, start.y, start.z, end.x, end.y, end.z));
+
+            for (PhysicsObject obj : nearbyShips) {
+                Vec3d transformedStart = obj.transformVector(start, TransformType.GLOBAL_TO_SUBSPACE);
+                Vec3d transformedEnd = obj.transformVector(start, TransformType.GLOBAL_TO_SUBSPACE);
+
+                List<BlockPos> physoBlocks = VSMath.generateLineBetween(transformedStart, transformedEnd, BlockPos::new);
+
+                collided |= physoBlocks.stream().anyMatch(canCollide);
+            }
+        }
+
+        return collided ? DUMMY_RAYTRACE_RESULT : null;
     }
 
     /**

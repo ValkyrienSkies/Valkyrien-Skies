@@ -3,6 +3,7 @@ package org.valkyrienskies.mod.common.ships.entity_interaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -14,6 +15,7 @@ import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
 import java.util.List;
@@ -78,24 +80,24 @@ public class EntityDraggable {
                 }
             }
         } else {
-            float rotYaw = entity.rotationYaw;
-            float rotPitch = entity.rotationPitch;
-            float prevYaw = entity.prevRotationYaw;
-            float prevPitch = entity.prevRotationPitch;
+            final float rotYaw = entity.rotationYaw;
+            final float rotPitch = entity.rotationPitch;
+            final float prevYaw = entity.prevRotationYaw;
+            final float prevPitch = entity.prevRotationPitch;
 
-            Vector3dc oldPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
+            final Vector3dc oldPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
 
-            Matrix4d betweenTransform = ShipTransform.createTransform(
+            final Matrix4d betweenTransform = ShipTransform.createTransform(
                     lastShipTouchedPlayer.getPrevTickShipTransform(), lastShipTouchedPlayer.getShipTransform());
 
             ValkyrienUtils.transformEntity(betweenTransform, entity);
 
-            Vector3dc newPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
+            final Vector3dc newPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
 
             // Move the entity back to its old position, the added velocity will be used
             // afterwards
             entity.setPosition(oldPos.x(), oldPos.y(), oldPos.z());
-            Vector3dc addedVel = newPos.sub(oldPos, new Vector3d());
+            final Vector3dc addedVel = newPos.sub(oldPos, new Vector3d());
 
             // Now compute the added yaw velocity
             entity.rotationYaw = rotYaw;
@@ -103,48 +105,50 @@ public class EntityDraggable {
             entity.prevRotationYaw = prevYaw;
             entity.prevRotationPitch = prevPitch;
 
-            Vec3d oldLookingVecMc = entity.getLook(1.0f);
+            // Ignore the pitch, calculate the look vector using only the yaw
+            final Vector3d newLookYawVec;
+            if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer)) {
+                newLookYawVec = new Vector3d(
+                        -MathHelper.sin(-entity.getRotationYawHead() * 0.017453292F - (float) Math.PI),
+                        0,
+                        -MathHelper.cos(-entity.getRotationYawHead() * 0.017453292F - (float) Math.PI));
+            } else {
+                newLookYawVec = new Vector3d(
+                        -MathHelper.sin(-entity.rotationYaw * 0.017453292F - (float) Math.PI),
+                        0,
+                        -MathHelper.cos(-entity.rotationYaw * 0.017453292F - (float) Math.PI));
+            }
 
-            Vector3d oldLookingPos = new Vector3d(oldLookingVecMc.x, oldLookingVecMc.y, oldLookingVecMc.z);
-            //            coordTransform.getPrevTickTransform().rotate(oldLookingPos, TransformType.GLOBAL_TO_SUBSPACE);
-            //            coordTransform.getCurrentTickTransform().rotate(oldLookingPos, TransformType.SUBSPACE_TO_GLOBAL);
-            betweenTransform.transformDirection(oldLookingPos);
+            // Transform the player look vector
+            betweenTransform.transformDirection(newLookYawVec);
 
-            double newPitch = Math.asin(oldLookingPos.y) * -180D / Math.PI;
-            double f4 = -Math.cos(-newPitch * 0.017453292D);
-            double radianYaw = Math.atan2((oldLookingPos.x / f4), (oldLookingPos.z / f4));
-            radianYaw += Math.PI;
-            radianYaw *= -180D / Math.PI;
+            // Calculate the yaw of the transformed player look vector
+            final Tuple<Double, Double> newPlayerLookYawOnly = VSMath.getPitchYawFromVector(newLookYawVec);
 
+            final double wrappedYaw = MathHelper.wrapDegrees(newPlayerLookYawOnly.getSecond());
+            final double wrappedRotYaw;
+            // We do this because entity.getLook() is calculated differently for EntityLivingBase, it uses
+            // rotationYawHead instead of just rotationYaw.
 
-            double yawDif = oldYawVelocityAdded * .99;
-
-            if (!(Double.isNaN(radianYaw) || Math.abs(newPitch) > 85)) {
-                double wrappedYaw = MathHelper.wrapDegrees(radianYaw);
-                double wrappedRotYaw;
-                // We do this because entity.getLook() is calculated differently for EntityLivingBase, it uses
-                // rotationYawHead instead of just rotationYaw.
-
-                // if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
-                // [Changed because EntityPlayerSP is a 'client' class]
-                if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer)) {
-                    wrappedRotYaw = MathHelper.wrapDegrees(entity.getRotationYawHead());
+            // if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayerSP)) {
+            // [Changed because EntityPlayerSP is a 'client' class]
+            if (entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer)) {
+                wrappedRotYaw = MathHelper.wrapDegrees(entity.getRotationYawHead());
+            } else {
+                wrappedRotYaw = MathHelper.wrapDegrees(entity.rotationYaw);
+            }
+            double yawDif = wrappedYaw - wrappedRotYaw;
+            if (Math.abs(yawDif) > 180D) {
+                if (yawDif < 0) {
+                    yawDif += 360D;
                 } else {
-                    wrappedRotYaw = MathHelper.wrapDegrees(entity.rotationYaw);
+                    yawDif -= 360D;
                 }
-                yawDif = wrappedYaw - wrappedRotYaw;
-                if (Math.abs(yawDif) > 180D) {
-                    if (yawDif < 0) {
-                        yawDif += 360D;
-                    } else {
-                        yawDif -= 360D;
-                    }
-                }
-                yawDif %= 360D;
-                final double threshold = .1D;
-                if (Math.abs(yawDif) < threshold) {
-                    yawDif = 0D;
-                }
+            }
+            yawDif %= 360D;
+            final double threshold = .1D;
+            if (Math.abs(yawDif) < threshold) {
+                yawDif = 0D;
             }
             draggable.setEntityShipMovementData(oldEntityShipMovementData.withAddedLinearVelocity(addedVel.mul(1, new Vector3d())).withAddedYawVelocity(yawDif));
         }

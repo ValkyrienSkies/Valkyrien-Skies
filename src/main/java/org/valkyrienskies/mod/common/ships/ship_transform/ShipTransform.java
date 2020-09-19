@@ -155,8 +155,7 @@ public class ShipTransform {
         }
     }
 
-    @Deprecated
-    public void transform(Entity player, TransformType globalToSubspace) {
-        ValkyrienUtils.transformEntity(getTransformMatrix(globalToSubspace), player);
+    public void transform(final Entity player, final TransformType globalToSubspace, final boolean transformEntityBoundingBox) {
+        ValkyrienUtils.transformEntity(getTransformMatrix(globalToSubspace), player, transformEntityBoundingBox);
     }
 }

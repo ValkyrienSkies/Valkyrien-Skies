@@ -44,7 +44,7 @@ public interface ITransformablePacket {
                 entityBackup.backupEntityPosition(player);
                 // Then put the player into ship coordinates.
                 physicsObject.getShipTransform()
-                        .transform(player, TransformType.GLOBAL_TO_SUBSPACE);
+                        .transform(player, TransformType.GLOBAL_TO_SUBSPACE, true);
             }
         }
     }

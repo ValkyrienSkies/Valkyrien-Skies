@@ -91,7 +91,7 @@ public class VSWorldEventListener implements IWorldEventListener {
             physicsObject.get()
                 .getShipTransformationManager()
                 .getCurrentTickTransform().transform(entity,
-                TransformType.SUBSPACE_TO_GLOBAL);
+                TransformType.SUBSPACE_TO_GLOBAL, false);
             world.getChunk(entity.getPosition().getX() >> 4, entity.getPosition().getZ() >> 4)
                 .addEntity(entity);
         }

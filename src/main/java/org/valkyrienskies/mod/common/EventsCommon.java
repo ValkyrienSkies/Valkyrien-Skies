@@ -92,7 +92,7 @@ public class EventsCommon {
             physicsObject.get()
                 .getShipTransformationManager()
                 .getCurrentTickTransform().transform(entity,
-                TransformType.SUBSPACE_TO_GLOBAL);
+                TransformType.SUBSPACE_TO_GLOBAL, false);
             // TODO: This should work but it doesn't because of sponge. Instead we have to rely on MixinChunk.preAddEntity() to fix this
             // event.setCanceled(true);
             // event.getWorld().spawnEntity(entity);

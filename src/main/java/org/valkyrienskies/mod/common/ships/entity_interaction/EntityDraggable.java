@@ -90,7 +90,7 @@ public class EntityDraggable {
             final Matrix4d betweenTransform = ShipTransform.createTransform(
                     lastShipTouchedPlayer.getPrevTickShipTransform(), lastShipTouchedPlayer.getShipTransform());
 
-            ValkyrienUtils.transformEntity(betweenTransform, entity);
+            ValkyrienUtils.transformEntity(betweenTransform, entity, false);
 
             final Vector3dc newPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
 

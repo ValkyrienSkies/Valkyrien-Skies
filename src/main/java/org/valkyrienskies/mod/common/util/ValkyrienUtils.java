@@ -203,7 +203,7 @@ public class ValkyrienUtils {
      * @param transform The transform matrix to be applied.
      * @param entity The entity that will be transformed.
      */
-    public void transformEntity(Matrix4dc transform, Entity entity) {
+    public void transformEntity(final Matrix4dc transform, final Entity entity, final boolean transformEntityBoundingBox) {
         Vec3d entityLookMc = entity.getLook(1.0F);
 
         Vector3d entityPos = new Vector3d(entity.posX, entity.posY, entity.posZ);
@@ -246,25 +246,29 @@ public class ValkyrienUtils {
         entity.motionY = entityMotion.y;
         entity.motionZ = entityMotion.z;
 
+        if (transformEntityBoundingBox) {
+            // Transform the bounding box too
+            final AxisAlignedBB oldBB = entity.getEntityBoundingBox();
+            final Polygon newBBPoly = new Polygon(oldBB, transform);
+            final AxisAlignedBB newBB = newBBPoly.getEnclosedAABB();
 
-        // Transform the bounding box too
-        final AxisAlignedBB oldBB = entity.getEntityBoundingBox();
-        final Polygon newBBPoly = new Polygon(oldBB, transform);
-        final AxisAlignedBB newBB = newBBPoly.getEnclosedAABB();
+            final double oldBBSize = (oldBB.maxX - oldBB.minX) * (oldBB.maxY - oldBB.minY) * (oldBB.maxZ - oldBB.minZ);
+            final double newBBSize = (newBB.maxX - newBB.minX) * (newBB.maxY - newBB.minY) * (newBB.maxZ - newBB.minZ);
+            final double scaleFactor = Math.pow(oldBBSize / newBBSize, 1.0 / 3.0);
 
-        final double oldBBSize = (oldBB.maxX - oldBB.minX) * (oldBB.maxY - oldBB.minY) * (oldBB.maxZ - oldBB.minZ);
-        final double newBBSize = (newBB.maxX - newBB.minX) * (newBB.maxY - newBB.minY) * (newBB.maxZ - newBB.minZ);
-        final double scaleFactor = Math.pow(oldBBSize / newBBSize, 1.0 / 3.0);
+            // Scale the bounding box such that the new bounding box is the same size as the old bounding box.
+            final AxisAlignedBB newBBScaled = newBB.grow(
+                    (scaleFactor - 1) * (newBB.maxX - newBB.minX) / 2.0,
+                    (scaleFactor - 1) * (newBB.maxY - newBB.minY) / 2.0,
+                    (scaleFactor - 1) * (newBB.maxZ - newBB.minZ) / 2.0
+            );
 
-        // Scale the bounding box such that the new bounding box is the same size as the old bounding box.
-        final AxisAlignedBB newBBScaled = newBB.contract(
-                scaleFactor * (newBB.maxX - newBB.minX) / 2.0,
-                scaleFactor * (newBB.maxY - newBB.minY) / 2.0,
-                scaleFactor * (newBB.maxZ - newBB.minZ) / 2.0
-        );
-
-        entity.setPosition(entityPos.x, entityPos.y, entityPos.z);
-        entity.setEntityBoundingBox(newBBScaled);
+            entity.setPosition(entityPos.x, entityPos.y, entityPos.z);
+            entity.setEntityBoundingBox(newBBScaled);
+        } else {
+            // Just use the regular bounding box
+            entity.setPosition(entityPos.x, entityPos.y, entityPos.z);
+        }
     }
 
     /**

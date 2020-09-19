@@ -141,7 +141,7 @@ public abstract class MixinNetHandlerPlayServer {
 
             // This should fix the player not having fall damage, but it doesn't.
             final double originalPlayerY = this.player.posY;
-            this.player.handleFalling(originalPlayerY - playerPosInShip.y(), packetPlayer.isOnGround());
+            this.player.handleFalling(playerPosInShip.y() - originalPlayerY, packetPlayer.isOnGround());
             // Update the player position values.
             this.player.setPosition(playerPosInShip.x(), playerPosInShip.y(), playerPosInShip.z());
 

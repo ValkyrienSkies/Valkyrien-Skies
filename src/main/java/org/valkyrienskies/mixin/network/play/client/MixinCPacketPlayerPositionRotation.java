@@ -13,7 +13,7 @@ import org.valkyrienskies.mod.common.network.PlayerMovementDataGenerator;
 public class MixinCPacketPlayerPositionRotation {
 
     @Inject(method = "<init>(DDDFFZ)V", at = @At(value = "RETURN"))
-    private void preClientConstructor(final double x, final double y, final double z, final float yawIn, final float pitchIn, final boolean onGround, final CallbackInfo info) {
+    private void postConstructor(final double x, final double y, final double z, final float yawIn, final float pitchIn, final boolean onGround, final CallbackInfo info) {
         final PlayerMovementData playerMovementData = PlayerMovementDataGenerator.generatePlayerMovementDataForClient();
         IHasPlayerMovementData.class.cast(this).setPlayerMovementData(playerMovementData);
     }

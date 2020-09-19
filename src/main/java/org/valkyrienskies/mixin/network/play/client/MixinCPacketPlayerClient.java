@@ -13,7 +13,7 @@ import org.valkyrienskies.mod.common.network.PlayerMovementDataGenerator;
 public class MixinCPacketPlayerClient {
 
     @Inject(method = "<init>(Z)V", at = @At(value = "RETURN"))
-    private void preClientConstructor(final boolean onGround, final CallbackInfo info) {
+    private void postConstructor(final boolean onGround, final CallbackInfo info) {
         final PlayerMovementData playerMovementData = PlayerMovementDataGenerator.generatePlayerMovementDataForClient();
         IHasPlayerMovementData.class.cast(this).setPlayerMovementData(playerMovementData);
     }

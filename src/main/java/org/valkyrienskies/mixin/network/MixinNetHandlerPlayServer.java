@@ -139,11 +139,13 @@ public abstract class MixinNetHandlerPlayServer {
             final double playerPitchInGlobal = pitchYawTuple.getFirst();
             final double playerYawInGlobal = pitchYawTuple.getSecond();
 
-            // This should fix the player not having fall damage, but it doesn't.
+            // Update the player position and rotation.
             final double originalPlayerY = this.player.posY;
             this.player.handleFalling(playerPosInShip.y() - originalPlayerY, packetPlayer.isOnGround());
-            // Update the player position values.
-            this.player.setPosition(playerPosInShip.x(), playerPosInShip.y(), playerPosInShip.z());
+            this.player.setPositionAndRotation(playerPosInShip.x(), playerPosInShip.y(), playerPosInShip.z(),
+                    (float) playerYawInGlobal, (float) playerPitchInGlobal);
+            // We need this otherwise the players head rotation doesn't update
+            this.player.rotationYawHead = (float) playerYawInGlobal;
 
             // Then update the packet values to match the ones above.
             packetPlayer.x = playerPosInShip.x();

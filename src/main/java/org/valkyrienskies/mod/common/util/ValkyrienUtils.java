@@ -246,7 +246,25 @@ public class ValkyrienUtils {
         entity.motionY = entityMotion.y;
         entity.motionZ = entityMotion.z;
 
+
+        // Transform the bounding box too
+        final AxisAlignedBB oldBB = entity.getEntityBoundingBox();
+        final Polygon newBBPoly = new Polygon(oldBB, transform);
+        final AxisAlignedBB newBB = newBBPoly.getEnclosedAABB();
+
+        final double oldBBSize = (oldBB.maxX - oldBB.minX) * (oldBB.maxY - oldBB.minY) * (oldBB.maxZ - oldBB.minZ);
+        final double newBBSize = (newBB.maxX - newBB.minX) * (newBB.maxY - newBB.minY) * (newBB.maxZ - newBB.minZ);
+        final double scaleFactor = Math.pow(oldBBSize / newBBSize, 1.0 / 3.0);
+
+        // Scale the bounding box such that the new bounding box is the same size as the old bounding box.
+        final AxisAlignedBB newBBScaled = newBB.contract(
+                scaleFactor * (newBB.maxX - newBB.minX) / 2.0,
+                scaleFactor * (newBB.maxY - newBB.minY) / 2.0,
+                scaleFactor * (newBB.maxZ - newBB.minZ) / 2.0
+        );
+
         entity.setPosition(entityPos.x, entityPos.y, entityPos.z);
+        entity.setEntityBoundingBox(newBBScaled);
     }
 
     /**

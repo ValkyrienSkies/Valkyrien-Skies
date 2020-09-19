@@ -39,6 +39,7 @@
     "network.play.client.MixinCPacketPlayerClient",
     "network.play.client.MixinCPacketPlayerPosition",
     "network.play.client.MixinCPacketPlayerPositionRotation",
-    "network.play.client.MixinCPacketPlayerRotation"
+    "network.play.client.MixinCPacketPlayerRotation",
+    "client.MixinMinecraft"
   ]
 }

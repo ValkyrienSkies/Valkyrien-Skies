@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
@@ -16,6 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -91,6 +93,14 @@ public class ValkyrienSkiesMod {
     public static SimpleNetworkWrapper controlNetwork;
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
 
+    private static final List<String> MODULES = ImmutableList.of("vs_control", "vs_world");
+
+    /**
+     * Whether or not any known dependent mods are loaded.
+     */
+    @Getter
+    private static boolean isAnyModuleLoaded = false;
+
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         if (MixinLoaderForge.isObfuscatedEnvironment) { //only print signature warning in obf
@@ -141,6 +151,8 @@ public class ValkyrienSkiesMod {
         log.info("Valkyrien Skies Initialization: We are running on {} threads; 4 or more "
             + "is recommended!", Runtime.getRuntime().availableProcessors());
         proxy.init(event);
+
+        isAnyModuleLoaded = MODULES.stream().anyMatch(Loader::isModLoaded);
     }
 
     @EventHandler

@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -37,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
@@ -179,16 +181,21 @@ public class EventsCommon {
         }
     }
 
+    private static final List<String> MEMED = ImmutableList.of("Drake_Eldridge", "thebest108", "DaPorkChop_");
+
     @SubscribeEvent
     public static void onJoin(PlayerLoggedInEvent event) {
+        if (VSConfig.warnNoModules && !ValkyrienSkiesMod.isAnyModuleLoaded()) {
+            event.player.sendMessage(new TextComponentString("Neither Valkyrien Skies Control nor " +
+                "Valkyrien Skies World are loaded. It's recommended you install them. You can disable this message " +
+                "by typing the command '/vsc warnNoModules false'"));
+        }
+
         if (!event.player.world.isRemote) {
             EntityPlayerMP player = (EntityPlayerMP) event.player;
             lastPositions.put(player, new double[]{0D, 256D, 0D});
 
-            if (player.getName()
-                .equals("Drake_Eldridge") || player.getName()
-                .equals("thebest108") || player.getName()
-                .equals("DaPorkChop_")) {
+            if (MEMED.contains(player.getName())) {
                 WorldServer server = (WorldServer) event.player.world;
 
                 // 20% chance of getting memed on!

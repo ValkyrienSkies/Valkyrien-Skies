@@ -93,6 +93,11 @@ public class VSConfig extends VSConfigTemplate {
     })
     public static boolean chairRecipes = true;
 
+    @Name("Warn If No Modules")
+    @Comment({
+        "Send a warning if no known modules are installed"
+    })
+    public static boolean warnNoModules = true;
 
     @Name("Use Vanilla Explosions")
     @Comment({

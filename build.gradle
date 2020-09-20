@@ -124,10 +124,10 @@ dependencies {
     shade "org.valkyrienskies:api:$vsApiVersion"
 
     // VS World and Control, for local testing only, not shaded in
-    deobfCompile("org.valkyrienskies:Valkyrien-Skies-World:9a02374b8c3ebe0f6ac6797e49ea04a04864a125:all") {
+    deobfCompile("org.valkyrienskies:Valkyrien-Skies-World:1d9df462f15c9125255ea086d7aeb75fe12e5877:all") {
         transitive = false
     }
-    deobfCompile("org.valkyrienskies:Valkyrien-Skies-Control:3d052546844d9b4bd844acdaa7992c3a588f9b6c:all") {
+    deobfCompile("org.valkyrienskies:Valkyrien-Skies-Control:f2ec780ffb1b2d6b1ab461135c4d6ad77ed174a2:all") {
         transitive = false
     }
 

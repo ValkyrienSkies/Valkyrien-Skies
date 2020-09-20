@@ -231,6 +231,18 @@ build.dependsOn(reobfShadowJar)
 
 publishing {
     repositories {
+        def ghpUser = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+        def ghpPassword = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        if (ghpUser != null && ghpPassword != null) {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/ValkyrienSkies/Valkyrien-Skies")
+                credentials {
+                    username = ghpUser
+                    password = ghpPassword
+                }
+            }
+        }
         if (project.hasProperty("daporkchopMavenUsername") && project.hasProperty("daporkchopMavenPassword")) {
             maven {
                 credentials {

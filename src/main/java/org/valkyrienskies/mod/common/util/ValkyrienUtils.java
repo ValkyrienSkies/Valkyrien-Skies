@@ -25,6 +25,7 @@ import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
+import org.valkyrienskies.mod.common.ships.block_relocation.BlockFinder;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.ships.chunk_claims.VSChunkClaim;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityShipMountData;
@@ -177,8 +178,8 @@ public class ValkyrienUtils {
         return ((IHasShipManager) world).getManager().getAllLoadedPhysObj();
     }
 
-    public void assembleShipAsOrderedByPlayer(World world,
-        @Nullable EntityPlayerMP creator, BlockPos physicsInfuserPos) {
+    public void assembleShipAsOrderedByPlayer(World world, @Nullable EntityPlayerMP creator,
+                                              BlockPos physicsInfuserPos, BlockFinder.BlockFinderType blockFinderType) {
         if (world.isRemote) {
             throw new IllegalStateException("This method cannot be invoked on client side!");
         }
@@ -191,7 +192,7 @@ public class ValkyrienUtils {
         ShipData shipData = createNewShip(world, physicsInfuserPos);
 
         // Queue the ship spawn operation
-        ((WorldServerShipManager) ValkyrienUtils.getPhysObjWorld(world)).queueShipSpawn(shipData, physicsInfuserPos);
+        ((WorldServerShipManager) ValkyrienUtils.getPhysObjWorld(world)).queueShipSpawn(shipData, physicsInfuserPos, blockFinderType);
     }
 
     public IPhysObjectWorld getPhysObjWorld(World world) {

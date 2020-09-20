@@ -7,7 +7,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -17,11 +16,12 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
-import org.valkyrienskies.mod.common.ships.block_relocation.DetectorManager;
+import org.valkyrienskies.mod.common.ships.block_relocation.BlockFinder;
 import org.valkyrienskies.mod.common.ships.block_relocation.IRelocationAwareTile;
 import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.ships.physics_data.BasicCenterOfMassProvider;
@@ -41,7 +41,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     private final WorldShipLoadingController loadingController;
     private final Map<UUID, PhysicsObject> loadedShips;
     // Use LinkedHashSet as a queue because it preserves order and doesn't allow duplicates
-    private final LinkedHashSet<Tuple<BlockPos, ShipData>> spawnQueue;
+    private final LinkedHashSet<ImmutableTriple<BlockPos, ShipData, BlockFinder.BlockFinderType>> spawnQueue;
     private final LinkedHashSet<UUID> loadQueue, unloadQueue, backgroundLoadQueue;
     private final Set<UUID> loadingInBackground;
     private ImmutableList<PhysicsObject> threadSafeLoadedShips;
@@ -126,17 +126,22 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     private void spawnNewShips() {
-        for (final Tuple<BlockPos, ShipData> spawnData : spawnQueue) {
-            BlockPos physicsInfuserPos = spawnData.getFirst();
-            ShipData toSpawn = spawnData.getSecond();
+        for (final ImmutableTriple<BlockPos, ShipData, BlockFinder.BlockFinderType> spawnData : spawnQueue) {
+            final BlockPos physicsInfuserPos = spawnData.getLeft();
+            final ShipData toSpawn = spawnData.getMiddle();
+            final BlockFinder.BlockFinderType blockBlockFinderType = spawnData.getRight();
 
             if (loadedShips.containsKey(toSpawn.getUuid())) {
                 throw new IllegalStateException("Tried spawning a ShipData that was already loaded?\n" + toSpawn);
             }
 
-            SpatialDetector detector =  DetectorManager.getDetectorFor(
-                    DetectorManager.DetectorIDs.ShipSpawnerGeneral, physicsInfuserPos, world,
-                    VSConfig.maxDetectedShipSize + 1, true);
+            final SpatialDetector detector = BlockFinder.getBlockFinderFor(
+                    blockBlockFinderType,
+                    physicsInfuserPos,
+                    world,
+                    VSConfig.maxDetectedShipSize + 1,
+                    true
+            );
 
             if (VSConfig.showAnnoyingDebugOutput) {
                 System.out.println("Attempting to spawn " + toSpawn + " on the thread " + Thread.currentThread().getName());
@@ -425,9 +430,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     /**
      * Thread safe way to queue a ship spawn. (Not the same as {@link #queueShipLoad(UUID)}.
      */
-    public void queueShipSpawn(@Nonnull ShipData data, @Nonnull BlockPos spawnPos) {
+    public void queueShipSpawn(@Nonnull ShipData data, @Nonnull BlockPos spawnPos, @Nonnull BlockFinder.BlockFinderType blockFinderType) {
         enforceGameThread();
-        this.spawnQueue.add(new Tuple<>(spawnPos, data));
+        this.spawnQueue.add(ImmutableTriple.of(spawnPos, data, blockFinderType));
     }
 
     @Override

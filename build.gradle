@@ -30,8 +30,8 @@ ext {
     javaVersion = "1.8"
 
     //determine the version
-    if (project.hasProperty('ReleaseVersion')) {
-        vsVersion = project.property('ReleaseVersion')
+    if (project.hasProperty('CustomReleaseVersion')) {
+        vsVersion = project.property('CustomReleaseVersion')
     } else {
         vsVersion = "1.0.0+" + ('git rev-parse HEAD'.execute().text.substring(0, 10))
     }

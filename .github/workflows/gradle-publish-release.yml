@@ -13,6 +13,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Set environment variables # Set the release version env variable, based off of https://stackoverflow.com/questions/58177786/get-the-current-pushed-tag-in-github-actions
         run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10}) # Strip out the first 10 characters of "refs/tags/"
       - name: Set up JDK 1.8
@@ -26,12 +28,12 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew setupDecompWorkspace build -PReleaseVersion=$RELEASE_VERSION
+        run: ./gradlew setupDecompWorkspace build -PCustomReleaseVersion=$RELEASE_VERSION
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
       - name: Publish to GitHub Packages
-        run: ./gradlew publish -PReleaseVersion=$RELEASE_VERSION
+        run: ./gradlew publish -PCustomReleaseVersion=$RELEASE_VERSION
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}

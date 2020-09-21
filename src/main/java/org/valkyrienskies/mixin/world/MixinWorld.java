@@ -25,6 +25,7 @@ import org.valkyrienskies.mod.common.collision.Polygon;
 import org.valkyrienskies.mod.common.collision.ShipPolygon;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.config.VSConfig.ExplosionMode;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
@@ -505,4 +506,24 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
     @Shadow
     public abstract RayTraceResult rayTraceBlocks(Vec3d start, Vec3d end);
 
+    @Shadow
+    public abstract boolean checkBlockCollision(AxisAlignedBB axisAlignedBB);
+
+    /**
+     * This mixin fixes players getting kicked for flying when they're standing on the ground.
+     */
+    @Inject(method = "checkBlockCollision", at = @At("HEAD"), cancellable = true)
+    public void postCheckBlockCollision(final AxisAlignedBB axisAlignedBB, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+        // If there wasn't a collision in the world, then check if there is a collision in ships
+        final List<PhysicsObject> physObjectsInAABB = getManager().getPhysObjectsInAABB(axisAlignedBB);
+        for (final PhysicsObject physicsObject : physObjectsInAABB) {
+            final ShipTransform shipTransform = physicsObject.getShipTransform();
+            final AxisAlignedBB aabbInShipSpace = new Polygon(axisAlignedBB, shipTransform.getGlobalToSubspace()).getEnclosedAABB();
+            final boolean collisionInShip = this.checkBlockCollision(aabbInShipSpace);
+            if (collisionInShip) {
+                callbackInfoReturnable.setReturnValue(true);
+                return;
+            }
+        }
+    }
 }

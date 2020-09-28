@@ -6,7 +6,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.valkyrienskies.mod.client.better_portals_compatibility.ClientWorldTracker;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ships.ShipData;
@@ -25,7 +24,7 @@ public class ShipIndexDataMessageHandler implements IMessageHandler<ShipIndexDat
         mainThread.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                World world = ClientWorldTracker.getWorldFor(message.dimensionID);
+                World world = Minecraft.getMinecraft().world;
                 IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(world);
                 QueryableShipData worldData = QueryableShipData.get(world);
                 for (ShipData shipData : message.indexedData) {

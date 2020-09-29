@@ -31,6 +31,7 @@ import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class WorldServerShipManager implements IPhysObjectWorld {
 
@@ -40,6 +41,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     private final VSThread physicsThread;
     private final WorldShipLoadingController loadingController;
     private final Map<UUID, PhysicsObject> loadedShips;
+    private final Map<UUID, CompletableFuture<PhysicsObject>> loadFutures;
     // Use LinkedHashSet as a queue because it preserves order and doesn't allow duplicates
     private final LinkedHashSet<ImmutableTriple<BlockPos, ShipData, BlockFinder.BlockFinderType>> spawnQueue;
     private final LinkedHashSet<UUID> loadQueue, unloadQueue, backgroundLoadQueue;
@@ -51,6 +53,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         this.physicsThread = new VSThread(world);
         this.loadingController = new WorldShipLoadingController(this);
         this.loadedShips = new HashMap<>();
+        this.loadFutures = new HashMap<>();
         this.spawnQueue = new LinkedHashSet<>();
         this.loadQueue = new LinkedHashSet<>();
         this.unloadQueue = new LinkedHashSet<>();
@@ -131,8 +134,14 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             final ShipData toSpawn = spawnData.getMiddle();
             final BlockFinder.BlockFinderType blockBlockFinderType = spawnData.getRight();
 
+            final CompletableFuture<PhysicsObject> future = loadFutures.get(toSpawn.getUuid());
+            loadFutures.remove(toSpawn.getUuid());
+
             if (loadedShips.containsKey(toSpawn.getUuid())) {
-                throw new IllegalStateException("Tried spawning a ShipData that was already loaded?\n" + toSpawn);
+                IllegalStateException e =
+                        new IllegalStateException("Tried spawning a ShipData that was already loaded?\n" + toSpawn);
+                future.completeExceptionally(e);
+                throw e;
             }
 
             final SpatialDetector detector = BlockFinder.getBlockFinderFor(
@@ -147,7 +156,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 System.out.println("Attempting to spawn " + toSpawn + " on the thread " + Thread.currentThread().getName());
             }
             if (detector.foundSet.size() > VSConfig.maxDetectedShipSize || detector.cleanHouse) {
-                System.err.println("Ship too big or bedrock detected!");
+                String error = "Ship too big or bedrock detected!";
+                System.err.println(error);
+                future.completeExceptionally(new IllegalStateException(error));
 
                 /*
                 if (creator != null) {
@@ -220,7 +231,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 // Check that we're placing the block in a valid position
                 if (storageIndex < 0 || storageIndex >= chunkToSet.storageArrays.length) {
                     // Invalid position, abort!
-                    throw new IllegalStateException("Incorrect block copy!\n" + srcLocationPos);
+                    IllegalStateException e = new IllegalStateException("Incorrect block copy!\n" + srcLocationPos);
+                    future.completeExceptionally(e);
+                    throw e;
                 }
 
                 IBlockState srcState = chunkToSet.storageArrays[storageIndex]
@@ -277,7 +290,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 // Check that we're placing the block in a valid position
                 if (storageIndex < 0 || storageIndex >= chunkToSet.storageArrays.length) {
                     // Invalid position, abort!
-                    throw new IllegalStateException("Incorrect block copy!\n" + srcLocationPos);
+                    IllegalStateException e = new IllegalStateException("Incorrect block copy!\n" + srcLocationPos);
+                    future.completeExceptionally(e);
+                    throw e;
                 }
 
                 IBlockState srcState = chunkToSet.storageArrays[storageIndex]
@@ -313,6 +328,9 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             // Finally, instantiate the PhysicsObject representation of this ShipData
             PhysicsObject physicsObject = new PhysicsObject(world, toSpawn);
             loadedShips.put(toSpawn.getUuid(), physicsObject);
+
+            // Complete future when ship is spawned
+            future.complete(physicsObject);
         }
         spawnQueue.clear();
     }
@@ -430,9 +448,12 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     /**
      * Thread safe way to queue a ship spawn. (Not the same as {@link #queueShipLoad(UUID)}.
      */
-    public void queueShipSpawn(@Nonnull ShipData data, @Nonnull BlockPos spawnPos, @Nonnull BlockFinder.BlockFinderType blockFinderType) {
+    public CompletableFuture<PhysicsObject> queueShipSpawn(@Nonnull ShipData data, @Nonnull BlockPos spawnPos, @Nonnull BlockFinder.BlockFinderType blockFinderType) {
         enforceGameThread();
+        CompletableFuture<PhysicsObject> future = new CompletableFuture<>();
         this.spawnQueue.add(ImmutableTriple.of(spawnPos, data, blockFinderType));
+        this.loadFutures.put(data.getUuid(), future);
+        return future;
     }
 
     @Override

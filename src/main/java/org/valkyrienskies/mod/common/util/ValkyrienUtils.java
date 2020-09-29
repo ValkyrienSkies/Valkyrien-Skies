@@ -43,6 +43,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This class contains various helper functions for Valkyrien Skies.
@@ -178,8 +179,9 @@ public class ValkyrienUtils {
         return ((IHasShipManager) world).getManager().getAllLoadedPhysObj();
     }
 
-    public void assembleShipAsOrderedByPlayer(World world, @Nullable EntityPlayerMP creator,
-                                              BlockPos physicsInfuserPos, BlockFinder.BlockFinderType blockFinderType) {
+    public CompletableFuture<PhysicsObject> assembleShipAsOrderedByPlayer(World world, @Nullable EntityPlayerMP creator,
+                                                                          BlockPos physicsInfuserPos,
+                                                                          BlockFinder.BlockFinderType blockFinderType) {
         if (world.isRemote) {
             throw new IllegalStateException("This method cannot be invoked on client side!");
         }
@@ -192,7 +194,7 @@ public class ValkyrienUtils {
         ShipData shipData = createNewShip(world, physicsInfuserPos);
 
         // Queue the ship spawn operation
-        ((WorldServerShipManager) ValkyrienUtils.getPhysObjWorld(world)).queueShipSpawn(shipData, physicsInfuserPos, blockFinderType);
+        return ((WorldServerShipManager) ValkyrienUtils.getPhysObjWorld(world)).queueShipSpawn(shipData, physicsInfuserPos, blockFinderType);
     }
 
     public IPhysObjectWorld getPhysObjWorld(World world) {

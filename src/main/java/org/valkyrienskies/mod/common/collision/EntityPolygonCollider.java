@@ -17,7 +17,7 @@ public class EntityPolygonCollider {
     private final Vector3dc[] collisionAxes;
     @Getter
     private final EntityCollisionObject[] collisions;
-    private final EntityPolygon entity;
+    private final Polygon entity;
     private final Polygon block;
     private final Vector3dc entityVelocity;
     private boolean separated = false;
@@ -25,7 +25,7 @@ public class EntityPolygonCollider {
     private int minDistanceIndex;
     private boolean originallySeparated;
 
-    public EntityPolygonCollider(EntityPolygon movable, Polygon stationary, Vector3dc[] axes,
+    public EntityPolygonCollider(Polygon movable, Polygon stationary, Vector3dc[] axes,
         Vector3dc entityVel) {
         collisionAxes = axes;
         entity = movable;

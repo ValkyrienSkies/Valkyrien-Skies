@@ -8,8 +8,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
-import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.collision.ShipCollisionTask;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Log4j2
 public class VSThread extends Thread {
 
-    private final static long NS_PER_TICK = 10000000;
     private final static long MAX_LOST_TIME_NS = 1000000000;
     // The number of physics ticks to be considered in the average tick time.
     private final static long TICK_TIME_QUEUE = 100;
@@ -36,24 +35,20 @@ public class VSThread extends Thread {
     private final Queue<Long> latestPhysicsTickTimes;
     // The ships we will be ticking physics for every tick, and sending those
     // updates to players.
-    private int physicsTicksCount;
     // Used by the game thread to mark this thread for death.
     private volatile boolean threadRunning;
 
-    private Queue<Runnable> taskQueue;
+    private final Queue<Runnable> taskQueue;
     private ImmutableList<PhysicsObject> immutableShipsList;
-    private final ConcurrentLinkedQueue<IPhysTimeTask> recurringTasks;
 
     public VSThread(World host) {
         super("VS World Thread " + threadID);
         threadID++;
         this.hostWorld = host;
-        this.physicsTicksCount = 0;
         this.threadRunning = true;
         this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<>();
         this.taskQueue = new ConcurrentLinkedQueue<>();
         this.immutableShipsList = ImmutableList.of();
-        this.recurringTasks = new ConcurrentLinkedQueue<>();
         log.trace(this.getName() + " thread created.");
     }
 
@@ -66,8 +61,8 @@ public class VSThread extends Thread {
         taskQueue.add(r);
     }
 
-    public void addRecurringTask(IPhysTimeTask physTask) {
-        recurringTasks.add(physTask);
+    private static long getNsPerTick() {
+        return (long) (1_000_000_000 / VSConfig.targetTps);
     }
 
     /*
@@ -79,6 +74,7 @@ public class VSThread extends Thread {
     public void run() {
         // Used to make up for any lost time when we tick
         long lostTickTime = 0;
+        long endOfPhysicsTickTimeNano = System.nanoTime() - 10_000_000;
         while (threadRunning) {
             long startOfPhysicsTickTimeNano = System.nanoTime();
             // Limit the tick smoothing to just one second (1000ms), if lostTickTime becomes
@@ -88,12 +84,12 @@ public class VSThread extends Thread {
                 lostTickTime %= MAX_LOST_TIME_NS;
             }
             // Run the physics code
-            runGameLoop();
-            long endOfPhysicsTickTimeNano = System.nanoTime();
+            runGameLoop((endOfPhysicsTickTimeNano - startOfPhysicsTickTimeNano) / 1e9);
+            endOfPhysicsTickTimeNano = System.nanoTime();
             long deltaPhysicsTickTimeNano = endOfPhysicsTickTimeNano - startOfPhysicsTickTimeNano;
 
             try {
-                long sleepTime = NS_PER_TICK - deltaPhysicsTickTimeNano;
+                long sleepTime = getNsPerTick() - deltaPhysicsTickTimeNano;
                 // Sending a negative sleepTime would crash the thread.
                 if (sleepTime > 0) {
                     // If our lostTickTime is greater than zero then we're behind a few ticks, try
@@ -128,12 +124,11 @@ public class VSThread extends Thread {
         log.trace(super.getName() + " killed");
     }
 
-    private void runGameLoop() {
+    private void runGameLoop(double delta) {
         // First update the references to ships from the thread
         immutableShipsList = ((IHasShipManager) hostWorld).getManager().getAllLoadedThreadSafe();
 
         // Run tasks queued to run on physics thread
-        recurringTasks.forEach(task -> task.runTask(VSConfig.timeSimulatedPerPhysicsTick));
         taskQueue.forEach(Runnable::run);
         taskQueue.clear();
 
@@ -142,11 +137,11 @@ public class VSThread extends Thread {
         if (mcServer.isServerRunning()) {
             if (mcServer.isDedicatedServer()) {
                 // Always tick the physics
-                physicsTick();
+                physicsTick(delta);
             } else {
                 // Only tick the physics if the game isn't paused
                 if (!isSinglePlayerPaused()) {
-                    physicsTick();
+                    physicsTick(delta);
                 }
             }
         }
@@ -154,8 +149,7 @@ public class VSThread extends Thread {
 
     // The whole time need to be careful the game thread isn't messing with these
     // values.
-    private void physicsTick() {
-
+    private void physicsTick(double delta) {
         // Make a sublist of physics objects to process physics on.
         List<PhysicsObject> physicsEntitiesToDoPhysics = new ArrayList<>();
         for (PhysicsObject physicsObject : immutableShipsList) {
@@ -164,21 +158,21 @@ public class VSThread extends Thread {
             }
         }
 
+        double newPhysSpeed = VSConfig.useDynamicSteps ? delta * VSConfig.physSpeedMultiplier : VSConfig.getTimeSimulatedPerTick();
         // Tick ship physics here
-        tickThePhysicsAndCollision(physicsEntitiesToDoPhysics);
+        tickThePhysicsAndCollision(physicsEntitiesToDoPhysics, newPhysSpeed);
     }
 
     /**
      * Ticks physics and collision for the List of PhysicsWrapperEntity passed in.
      */
-    private void tickThePhysicsAndCollision(List<PhysicsObject> shipsWithPhysics) {
-        double newPhysSpeed = VSConfig.timeSimulatedPerPhysicsTick;
+    private void tickThePhysicsAndCollision(List<PhysicsObject> shipsWithPhysics, double timeStep) {
         List<ShipCollisionTask> collisionTasks = new ArrayList<>(
             shipsWithPhysics.size() * 2);
         for (PhysicsObject wrapper : shipsWithPhysics) {
             // Update the physics simulation
             try {
-                wrapper.getPhysicsCalculations().rawPhysTickPreCol(newPhysSpeed);
+                wrapper.getPhysicsCalculations().rawPhysTickPreCol(timeStep);
                 // Update the collision task if necessary
                 wrapper.getPhysicsCalculations().getWorldCollision()
                         .tickUpdatingTheCollisionCache();
@@ -193,8 +187,8 @@ public class VSThread extends Thread {
         try {
             // The individual collision tasks will sort through a lot of data to find
             // collision points
-            ValkyrienSkiesMod.getPHYSICS_THREADS_EXECUTOR().invokeAll(collisionTasks);
-        } catch (InterruptedException e) {
+            ValkyrienSkiesMod.getPhysicsThreadPool().invokeAll(collisionTasks);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -235,6 +229,6 @@ public class VSThread extends Thread {
         }
         // If we don't have enough data to get an average, just assume its the ideal
         // tick time.
-        return NS_PER_TICK;
+        return getNsPerTick();
     }
 }

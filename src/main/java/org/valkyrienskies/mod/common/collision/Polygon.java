@@ -23,17 +23,13 @@ public class Polygon {
 
     @Getter
     private final Vector3dc[] vertices;
-    @Getter
-    private final Vector3dc[] normals;
 
     public Polygon(@Nonnull AxisAlignedBB bb, @Nullable ShipTransform transformation, @Nullable TransformType transformType) {
         Vector3d[] verticesMutable = getCornersForAABB(bb);
-        Vector3d[] normalsMutable = generateAxisAlignedNorms();
         if (transformation != null && transformType != null) {
-            transform(verticesMutable, normalsMutable, transformation, transformType);
+            transform(verticesMutable, transformation, transformType);
         }
         this.vertices = verticesMutable;
-        this.normals = normalsMutable;
     }
 
     public Polygon(@Nonnull AxisAlignedBB bb) {
@@ -42,10 +38,8 @@ public class Polygon {
 
     public Polygon(@Nonnull AxisAlignedBB aabb, @Nonnull Matrix4dc transform) {
         Vector3d[] verticesMutable = getCornersForAABB(aabb);
-        Vector3d[] normalsMutable = generateAxisAlignedNorms();
-        transform(verticesMutable, normalsMutable, transform);
+        transform(verticesMutable, transform);
         this.vertices = verticesMutable;
-        this.normals = normalsMutable;
     }
 
     public static Vector3d[] generateAxisAlignedNorms() {
@@ -86,21 +80,15 @@ public class Polygon {
         return center;
     }
 
-    private static void transform(Vector3d[] vertices, Vector3d[] normals, ShipTransform transformation, TransformType transformType) {
+    private static void transform(Vector3d[] vertices, ShipTransform transformation, TransformType transformType) {
         for (Vector3d vertex : vertices) {
             transformation.transformPosition(vertex, transformType);
         }
-        for (Vector3d normal : normals) {
-            transformation.transformDirection(normal, transformType);
-        }
     }
 
-    private static void transform(Vector3d[] vertices, Vector3d[] normals, Matrix4dc transform) {
+    private static void transform(Vector3d[] vertices, Matrix4dc transform) {
         for (Vector3d vertex : vertices) {
             transform.transformPosition(vertex);
-        }
-        for (Vector3d normal : normals) {
-            transform.transformDirection(normal);
         }
     }
 

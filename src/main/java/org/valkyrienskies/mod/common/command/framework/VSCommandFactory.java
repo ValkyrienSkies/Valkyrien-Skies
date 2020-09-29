@@ -1,11 +1,13 @@
 package org.valkyrienskies.mod.common.command.framework;
 
+import net.minecraft.command.ICommandSender;
+import org.valkyrienskies.mod.common.config.VSConfig;
+import picocli.CommandLine;
+
+import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import javax.inject.Inject;
-import net.minecraft.command.ICommandSender;
-import picocli.CommandLine;
 
 public class VSCommandFactory implements CommandLine.IFactory {
     private ICommandSender sender;
@@ -18,6 +20,10 @@ public class VSCommandFactory implements CommandLine.IFactory {
     public <K> K create(Class<K> aClass) {
         try {
             K instance;
+
+            if (VSConfig.showAnnoyingDebugOutput) {
+                System.out.println("PicoCLI is instantiating " + aClass.getName());
+            }
 
             // Instantiate constructor with ICommandSender if applicable
             try {

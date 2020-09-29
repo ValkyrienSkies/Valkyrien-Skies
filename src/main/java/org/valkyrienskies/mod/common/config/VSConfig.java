@@ -41,10 +41,23 @@ public class VSConfig extends VSConfigTemplate {
 
     @Name("Time Simulated Each Physics Tick")
     @Comment({
-            "The amount of seconds simulated every physics tick.",
-            "There are 100 physics ticks per second by default, so the default value is 1/100th of a second."
+            "The amount of seconds simulated every physics tick is equal to this divided by the target tps"
     })
-    public static double timeSimulatedPerPhysicsTick = 0.01;
+    public static double physSpeedMultiplier = 1;
+
+    @Name("Target TPS")
+    @Comment({
+        "Target TPS to run the physics world at"
+    })
+    public static double targetTps = 100;
+
+    @Name("Use dynamic steps")
+    @Comment("Step physics by time since last tick instead of a fixed number")
+    public static boolean useDynamicSteps = false;
+
+    public static double getTimeSimulatedPerTick() {
+        return physSpeedMultiplier / targetTps;
+    }
 
     @Name("Number of Physics Threads")
     @Comment({
@@ -123,6 +136,17 @@ public class VSConfig extends VSConfigTemplate {
     @Name("Accurate Rain")
     @Comment("Prevents rain from going inside ships. Warning: laggy")
     public static boolean accurateRain = false;
+
+    @Name("Multithreading Settings")
+    @ShortName("multithreadingSettings")
+    @Comment("For advanced users only")
+    public static final MultithreadingSettings MULTITHREADING_SETTINGS = new MultithreadingSettings();
+
+    public static class MultithreadingSettings {
+
+        public boolean multithreadCollisionCacheUpdate = true;
+
+    }
 
     public static class ShipLoadingSettings {
 

@@ -16,9 +16,7 @@ public class EntityCollisionObject {
     private final Polygon movable, fixed;
     private double penetrationDistance;
     private boolean separated;
-    private double[] playerMinMax;
-    private double[] blockMinMax;
-    private Vector3dc entityVelocity;
+    private final Vector3dc entityVelocity;
     private boolean originallyCollided;
     private double velDot;
 

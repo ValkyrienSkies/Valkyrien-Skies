@@ -1,10 +1,8 @@
 package org.valkyrienskies.mod.common.collision;
 
-import gnu.trove.TCollections;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -17,15 +15,20 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
+import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
+import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.datastructures.IBitOctree;
 import org.valkyrienskies.mod.common.util.datastructures.IBitOctreeProvider;
-import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
@@ -362,7 +365,9 @@ public class WorldPhysicsCollider {
         int maxZ = max.getZ();
 
         // More multithreading!
-        if (parent.getBlockPositions().size() > 100) {
+        if (VSConfig.MULTITHREADING_SETTINGS.multithreadCollisionCacheUpdate &&
+            parent.getBlockPositions().size() > 100) {
+
             List<Triple<Integer, Integer, TIntList>> tasks = new ArrayList<>();
 
             for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
@@ -378,11 +383,9 @@ public class WorldPhysicsCollider {
                     maxX, maxY, maxZ,
                     shipBB, i.getRight());
             };
-            try {
-                tasks.parallelStream().forEach(consumer);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            ValkyrienSkiesMod.getPhysicsThreadPool().submit(
+                () -> tasks.parallelStream().forEach(consumer))
+            .join();
 
             tasks.forEach(task -> cachedPotentialHits.addAll(task.getRight()));
         } else {
@@ -626,11 +629,7 @@ public class WorldPhysicsCollider {
                 int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
                 // Sometimes we end up adding to the hits array in multiple threads at once,
                 // crashing the physics.
-                try {
-                    output.add(hash);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                output.add(hash);
                 return true;
                 // break outermostloop;
             }

@@ -24,7 +24,10 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.valkyrienskies.mod.common.collision.*;
+import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
+import org.valkyrienskies.mod.common.collision.PhysPolygonCollider;
+import org.valkyrienskies.mod.common.collision.Polygon;
+import org.valkyrienskies.mod.common.collision.ShipPolygon;
 import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
@@ -56,7 +59,7 @@ public class EntityCollisionInjector {
         final double origPosZ = entity.posZ;
         boolean isLiving = entity instanceof EntityLivingBase;
         Vec3d velocity = new Vec3d(dx, dy, dz);
-        EntityPolygon playerBeforeMove = new EntityPolygon(entity.getEntityBoundingBox(), entity);
+        Polygon playerBeforeMove = new Polygon(entity.getEntityBoundingBox());
         List<Polygon> colPolys = getCollidingPolygonsAndDoBlockCols(entity, velocity);
 
         PhysicsObject worldBelow = null;

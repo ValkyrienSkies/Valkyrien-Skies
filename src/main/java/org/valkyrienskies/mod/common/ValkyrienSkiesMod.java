@@ -47,8 +47,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
 @Mod(
     modid = ValkyrienSkiesMod.MOD_ID,
@@ -81,7 +80,7 @@ public class ValkyrienSkiesMod {
      * This service is directly responsible for running collision tasks.
      */
     @Getter
-    private static ExecutorService PHYSICS_THREADS_EXECUTOR = null;
+    private static ForkJoinPool physicsThreadPool = null;
 
     public Block captainsChair;
     public Block passengerChair;
@@ -113,8 +112,7 @@ public class ValkyrienSkiesMod {
         runConfiguration();
 
         log.debug("Instantiating the physics thread executor.");
-        ValkyrienSkiesMod.PHYSICS_THREADS_EXECUTOR = Executors
-            .newFixedThreadPool(VSConfig.threadCount);
+        ValkyrienSkiesMod.physicsThreadPool = new ForkJoinPool(VSConfig.threadCount);
 
         log.debug("Initializing networks.");
         registerNetworks(event);

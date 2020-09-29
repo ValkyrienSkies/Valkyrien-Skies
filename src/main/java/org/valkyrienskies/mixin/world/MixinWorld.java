@@ -19,13 +19,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.common.collision.EntityPolygon;
 import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.collision.Polygon;
 import org.valkyrienskies.mod.common.collision.ShipPolygon;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.config.VSConfig.ExplosionMode;
-import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
@@ -186,7 +184,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
                 }
 
                 List<AxisAlignedBB> collidingBBs = getCollisionBoxes(null, bb);
-                EntityPolygon entityPoly = new EntityPolygon(aabb.grow(-.2, 0, -.2), entityIn);
+                Polygon entityPoly = new Polygon(aabb.grow(-.2, 0, -.2));
                 for (AxisAlignedBB inLocal : collidingBBs) {
                     ShipPolygon poly = new ShipPolygon(inLocal,
                             wrapper.getShipTransformationManager()

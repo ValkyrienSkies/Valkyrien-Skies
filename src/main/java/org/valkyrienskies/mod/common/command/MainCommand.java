@@ -90,7 +90,7 @@ public class MainCommand implements Runnable {
             if (obj != null) {
                 obj.setDeconstructState(PhysicsObject.DeconstructState.DECONSTRUCT_IMMEDIATE_NO_COPY);
 
-                sender.sendMessage(new TextComponentString("That ship is being deconstructed"));
+                sender.sendMessage(new TextComponentString("That ship will be deleted in the next tick."));
             } else {
                 sender.sendMessage(new TextComponentString("That ship is not loaded"));
             }

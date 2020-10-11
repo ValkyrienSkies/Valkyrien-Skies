@@ -49,6 +49,7 @@ public class VSThread extends Thread {
         this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<>();
         this.taskQueue = new ConcurrentLinkedQueue<>();
         this.immutableShipsList = ImmutableList.of();
+        this.recurringTasks = new ConcurrentLinkedQueue<>();
         log.trace(this.getName() + " thread created.");
     }
 
@@ -65,6 +66,9 @@ public class VSThread extends Thread {
         return (long) (1_000_000_000 / VSConfig.targetTps);
     }
 
+    public void addRecurringTask(IPhysTimeTask physTask) {
+        recurringTasks.add(physTask);
+    }
     /*
      * (non-Javadoc)
      *
@@ -125,10 +129,12 @@ public class VSThread extends Thread {
     }
 
     private void runGameLoop(double delta) {
+        double newPhysSpeed = VSConfig.useDynamicSteps ? delta * VSConfig.physSpeedMultiplier : VSConfig.getTimeSimulatedPerTick();
         // First update the references to ships from the thread
         immutableShipsList = ((IHasShipManager) hostWorld).getManager().getAllLoadedThreadSafe();
 
         // Run tasks queued to run on physics thread
+        recurringTasks.forEach(t -> t.runTask(newPhysSpeed));
         taskQueue.forEach(Runnable::run);
         taskQueue.clear();
 
@@ -137,11 +143,11 @@ public class VSThread extends Thread {
         if (mcServer.isServerRunning()) {
             if (mcServer.isDedicatedServer()) {
                 // Always tick the physics
-                physicsTick(delta);
+                physicsTick(newPhysSpeed);
             } else {
                 // Only tick the physics if the game isn't paused
                 if (!isSinglePlayerPaused()) {
-                    physicsTick(delta);
+                    physicsTick(newPhysSpeed);
                 }
             }
         }
@@ -158,9 +164,8 @@ public class VSThread extends Thread {
             }
         }
 
-        double newPhysSpeed = VSConfig.useDynamicSteps ? delta * VSConfig.physSpeedMultiplier : VSConfig.getTimeSimulatedPerTick();
         // Tick ship physics here
-        tickThePhysicsAndCollision(physicsEntitiesToDoPhysics, newPhysSpeed);
+        tickThePhysicsAndCollision(physicsEntitiesToDoPhysics, delta);
     }
 
     /**

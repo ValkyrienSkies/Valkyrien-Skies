@@ -16,7 +16,7 @@ import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject.DeconstructState;
 import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
-import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
+import org.valkyrienskies.mod.common.util.multithreaded.VSWorldPhysicsLoop;
 import picocli.CommandLine.*;
 import picocli.CommandLine.Model.CommandSpec;
 
@@ -149,8 +149,8 @@ public class MainCommand implements Runnable {
                 world = sender.getEntityWorld();
             }
 
-            VSThread worldPhysicsThread = ((WorldServerShipManager) ((IHasShipManager) world)
-                .getManager()).getPhysicsThread();
+            VSWorldPhysicsLoop worldPhysicsThread = ((WorldServerShipManager) ((IHasShipManager) world)
+                .getManager()).getPhysicsLoop();
 
             if (worldPhysicsThread != null) {
                 long averagePhysTickTimeNano = worldPhysicsThread.getAveragePhysicsTickTimeNano();

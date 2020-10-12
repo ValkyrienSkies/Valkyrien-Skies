@@ -18,7 +18,7 @@ public class VSExecutors {
      */
     public static Executor physics(WorldServer world) {
         return ((WorldServerShipManager) ((IHasShipManager) world).getManager())
-            .getPhysicsThread()::addScheduledTask;
+            .getPhysicsLoop()::addScheduledTask;
     }
 
     /**

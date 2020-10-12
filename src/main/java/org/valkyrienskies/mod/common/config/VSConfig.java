@@ -39,9 +39,9 @@ public class VSConfig extends VSConfigTemplate {
     })
     public static boolean showAnnoyingDebugOutput = false;
 
-    @Name("Time Simulated Each Physics Tick")
+    @Name("Physics Speed Multiplier")
     @Comment({
-            "The amount of seconds simulated every physics tick is equal to this divided by the target tps"
+            "Default is 1 for 100% speed. Lower values cause slow motion physics, higher values cause high speed physics."
     })
     public static double physSpeedMultiplier = 1;
 

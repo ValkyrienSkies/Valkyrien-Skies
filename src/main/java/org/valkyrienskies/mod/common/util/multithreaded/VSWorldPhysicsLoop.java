@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.util.multithreaded;
 
 import com.google.common.collect.ImmutableList;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -19,18 +20,15 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Handles all the physics processing for a world separate from the game tick.
- *
- * @author thebest108
+ * Handles the physics for a given world. This is run on a separate thread, not on the game tick.
  */
 @Log4j2
-public class VSThread extends Thread {
+public class VSWorldPhysicsLoop implements Runnable {
 
-    private final static long MAX_LOST_TIME_NS = 1000000000;
     // The number of physics ticks to be considered in the average tick time.
     private final static long TICK_TIME_QUEUE = 100;
     // Used to give each VS thread a unique name
-    private static int threadID = 0;
+    private static int worldPhysicsLoopId = 0;
     private final World hostWorld;
     private final Queue<Long> latestPhysicsTickTimes;
     // The ships we will be ticking physics for every tick, and sending those
@@ -40,17 +38,21 @@ public class VSThread extends Thread {
 
     private final Queue<Runnable> taskQueue;
     private ImmutableList<PhysicsObject> immutableShipsList;
+    private final ConcurrentLinkedQueue<IPhysTimeTask> recurringTasks;
 
-    public VSThread(World host) {
-        super("VS World Thread " + threadID);
-        threadID++;
+    @Getter
+    private final String name;
+
+    public VSWorldPhysicsLoop(World host) {
+        name = "VS World Physics Task " + worldPhysicsLoopId;
+        worldPhysicsLoopId++;
         this.hostWorld = host;
         this.threadRunning = true;
         this.latestPhysicsTickTimes = new ConcurrentLinkedQueue<>();
         this.taskQueue = new ConcurrentLinkedQueue<>();
         this.immutableShipsList = ImmutableList.of();
         this.recurringTasks = new ConcurrentLinkedQueue<>();
-        log.trace(this.getName() + " thread created.");
+        log.trace(name + " created.");
     }
 
     @SideOnly(Side.CLIENT)
@@ -76,86 +78,58 @@ public class VSThread extends Thread {
      */
     @Override
     public void run() {
-        // Used to make up for any lost time when we tick
-        long lostTickTime = 0;
-        long endOfPhysicsTickTimeNano = System.nanoTime() - 10_000_000;
         while (threadRunning) {
-            long startOfPhysicsTickTimeNano = System.nanoTime();
-            // Limit the tick smoothing to just one second (1000ms), if lostTickTime becomes
-            // too large then physics would move too quickly after the lag source was
-            // removed.
-            if (lostTickTime > MAX_LOST_TIME_NS) {
-                lostTickTime %= MAX_LOST_TIME_NS;
-            }
-            // Run the physics code
-            runGameLoop((endOfPhysicsTickTimeNano - startOfPhysicsTickTimeNano) / 1e9);
-            endOfPhysicsTickTimeNano = System.nanoTime();
-            long deltaPhysicsTickTimeNano = endOfPhysicsTickTimeNano - startOfPhysicsTickTimeNano;
+            final MinecraftServer mcServer = hostWorld.getMinecraftServer();
+            assert mcServer != null;
+            // If server then always tick physics, if single-player then only tick when not paused.
+            final boolean tickPhysics = mcServer.isServerRunning() && (mcServer.isDedicatedServer() || !isSinglePlayerPaused());
 
-            try {
-                long sleepTime = getNsPerTick() - deltaPhysicsTickTimeNano;
-                // Sending a negative sleepTime would crash the thread.
-                if (sleepTime > 0) {
-                    // If our lostTickTime is greater than zero then we're behind a few ticks, try
-                    // to make up for it by skipping sleep() time.
-                    if (sleepTime > lostTickTime) {
-                        sleepTime -= lostTickTime;
-                        lostTickTime = 0;
-                        sleep(sleepTime / 1000000L);
-                    } else {
-                        lostTickTime -= sleepTime;
+            if (tickPhysics) {
+                // The number of seconds the physics engine will move forward
+                final double timeToSimulate = VSConfig.getTimeSimulatedPerTick();
+                // The number of nanoseconds we want our physics engine tick to take
+                final long idealTickTime = (long) (1E9 / VSConfig.targetTps);
+
+                final long physTickStartTime = System.nanoTime();
+                // Run the physics engine tick
+                physicsTick(timeToSimulate);
+                final long physTickEndTime = System.nanoTime();
+                final long physTickDuration = physTickEndTime - physTickStartTime;
+
+                // If the physics tick ran faster than the ideal tick time, then pretend it took the ideal tick time by
+                // waiting.
+                if (physTickDuration < idealTickTime) {
+                    final long sleepMillis = (idealTickTime - physTickDuration) / 1_000_000L;
+                    try {
+                        Thread.sleep(sleepMillis);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                } else {
-                    // We were late in processing this tick, add it to the lost tick time.
-                    lostTickTime -= sleepTime;
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
-            long endOfTickTimeFullNano = System.nanoTime();
-            long deltaTickTimeFullNano = endOfTickTimeFullNano - startOfPhysicsTickTimeNano;
-
-            // Update the average tick time here:
-            latestPhysicsTickTimes.add(deltaTickTimeFullNano);
-            if (latestPhysicsTickTimes.size() > TICK_TIME_QUEUE) {
-                // Remove the head of this queue.
-                latestPhysicsTickTimes.poll();
+                // Keep track of the time it took to run the physics tick, including the time we spent sleeping.
+                final long physTickDurationIncludingSleep = System.nanoTime() - physTickStartTime;
+                latestPhysicsTickTimes.add(physTickDurationIncludingSleep);
+                // Ensure that latestPhysicsTickTimes only has TICK_TIME_QUEUE # of elements
+                if (latestPhysicsTickTimes.size() > TICK_TIME_QUEUE) {
+                    latestPhysicsTickTimes.remove();
+                }
             }
         }
         // If we get to this point of run(), then we are about to return and this thread
         // will terminate soon.
-        log.trace(super.getName() + " killed");
+        log.trace(name + " killed");
     }
 
-    private void runGameLoop(double delta) {
-        double newPhysSpeed = VSConfig.useDynamicSteps ? delta * VSConfig.physSpeedMultiplier : VSConfig.getTimeSimulatedPerTick();
-        // First update the references to ships from the thread
+    private void physicsTick(double delta) {
+        // Update the immutable ship list.
         immutableShipsList = ((IHasShipManager) hostWorld).getManager().getAllLoadedThreadSafe();
 
         // Run tasks queued to run on physics thread
-        recurringTasks.forEach(t -> t.runTask(newPhysSpeed));
+        recurringTasks.forEach(t -> t.runTask(delta));
         taskQueue.forEach(Runnable::run);
         taskQueue.clear();
 
-        MinecraftServer mcServer = hostWorld.getMinecraftServer();
-        assert mcServer != null;
-        if (mcServer.isServerRunning()) {
-            if (mcServer.isDedicatedServer()) {
-                // Always tick the physics
-                physicsTick(newPhysSpeed);
-            } else {
-                // Only tick the physics if the game isn't paused
-                if (!isSinglePlayerPaused()) {
-                    physicsTick(newPhysSpeed);
-                }
-            }
-        }
-    }
-
-    // The whole time need to be careful the game thread isn't messing with these
-    // values.
-    private void physicsTick(double delta) {
         // Make a sublist of physics objects to process physics on.
         List<PhysicsObject> physicsEntitiesToDoPhysics = new ArrayList<>();
         for (PhysicsObject physicsObject : immutableShipsList) {
@@ -164,7 +138,7 @@ public class VSThread extends Thread {
             }
         }
 
-        // Tick ship physics here
+        // Finally, actually process the physics tick
         tickThePhysicsAndCollision(physicsEntitiesToDoPhysics, delta);
     }
 
@@ -217,7 +191,7 @@ public class VSThread extends Thread {
      * the thread will die after the current running physics tick is finished.
      */
     public void kill() {
-        log.trace(super.getName() + " marked for death.");
+        log.trace(name + " marked for death.");
         threadRunning = false;
     }
 

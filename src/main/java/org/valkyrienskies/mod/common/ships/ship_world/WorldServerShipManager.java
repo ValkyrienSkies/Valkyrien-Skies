@@ -27,7 +27,7 @@ import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.ships.physics_data.BasicCenterOfMassProvider;
 import org.valkyrienskies.mod.common.ships.physics_data.IPhysicsObjectCenterOfMassProvider;
 import org.valkyrienskies.mod.common.util.multithreaded.CalledFromWrongThreadException;
-import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
+import org.valkyrienskies.mod.common.util.multithreaded.VSWorldPhysicsLoop;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -37,7 +37,8 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     @Getter
     private final WorldServer world;
     @Getter
-    private final VSThread physicsThread;
+    private final VSWorldPhysicsLoop physicsLoop;
+    private final Thread physicsThread;
     private final WorldShipLoadingController loadingController;
     private final Map<UUID, PhysicsObject> loadedShips;
     // Use LinkedHashSet as a queue because it preserves order and doesn't allow duplicates
@@ -48,7 +49,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     public WorldServerShipManager(World world) {
         this.world = (WorldServer) world;
-        this.physicsThread = new VSThread(world);
+        this.physicsLoop = new VSWorldPhysicsLoop(world);
         this.loadingController = new WorldShipLoadingController(this);
         this.loadedShips = new HashMap<>();
         this.spawnQueue = new LinkedHashSet<>();
@@ -57,6 +58,8 @@ public class WorldServerShipManager implements IPhysObjectWorld {
         this.backgroundLoadQueue = new LinkedHashSet<>();
         this.loadingInBackground = new HashSet<>();
         this.threadSafeLoadedShips = ImmutableList.of();
+
+        this.physicsThread = new Thread(physicsLoop);
         this.physicsThread.start();
     }
 
@@ -68,7 +71,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     @Override
     public void onWorldUnload() {
-        this.physicsThread.kill();
+        this.physicsLoop.kill();
     }
 
     @Override

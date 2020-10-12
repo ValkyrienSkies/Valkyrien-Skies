@@ -13,6 +13,7 @@ import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject.DeconstructState;
 import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.common.util.multithreaded.VSThread;
@@ -56,21 +57,12 @@ public class MainCommand implements Runnable {
         @Inject
         ICommandSender sender;
 
-        @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
+        @Parameters(paramLabel = "name", index = "0", completionCandidates = ShipNameAutocompleter.class)
         ShipData shipData;
 
         @Override
         public void run() {
-            WorldServerShipManager world = ValkyrienUtils.getServerShipManager(sender.getEntityWorld());
-            PhysicsObject obj = world.getPhysObjectFromUUID(shipData.getUuid());
-            if (obj != null) {
-                obj.setDeconstructState(PhysicsObject.DeconstructState.DECONSTRUCT_NORMAL);
-                obj.setShipAligningToGrid(true);
-
-                sender.sendMessage(new TextComponentString("That ship is being deconstructed"));
-            } else {
-                sender.sendMessage(new TextComponentString("That ship is not loaded"));
-            }
+            deletePhyso(sender, shipData, DeconstructState.DECONSTRUCT_NORMAL);
         }
     }
 
@@ -80,20 +72,31 @@ public class MainCommand implements Runnable {
         @Inject
         ICommandSender sender;
 
-        @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
+        @Parameters(paramLabel = "name", index = "0", completionCandidates = ShipNameAutocompleter.class)
         ShipData shipData;
 
         @Override
         public void run() {
-            final WorldServerShipManager world = ValkyrienUtils.getServerShipManager(sender.getEntityWorld());
-            final PhysicsObject obj = world.getPhysObjectFromUUID(shipData.getUuid());
-            if (obj != null) {
-                obj.setDeconstructState(PhysicsObject.DeconstructState.DECONSTRUCT_IMMEDIATE_NO_COPY);
+            deletePhyso(sender, shipData, DeconstructState.DECONSTRUCT_IMMEDIATE_NO_COPY);
+        }
+    }
 
-                sender.sendMessage(new TextComponentString("That ship will be deleted in the next tick."));
-            } else {
-                sender.sendMessage(new TextComponentString("That ship is not loaded"));
+    private static void deletePhyso(ICommandSender sender, ShipData shipData, DeconstructState state) {
+        final WorldServerShipManager world = ValkyrienUtils.getServerShipManager(sender.getEntityWorld());
+        final PhysicsObject obj = world.getPhysObjectFromUUID(shipData.getUuid());
+        if (obj != null) {
+            obj.setDeconstructState(state);
+
+            switch (state) {
+                case DECONSTRUCT_NORMAL:
+                    sender.sendMessage(new TextComponentString("That ship is being deconstructed"));
+                    break;
+                case DECONSTRUCT_IMMEDIATE_NO_COPY:
+                    sender.sendMessage(new TextComponentString("That ship will be deleted in the next tick."));
+                    break;
             }
+        } else {
+            sender.sendMessage(new TextComponentString("That ship is not loaded"));
         }
     }
 
@@ -103,7 +106,7 @@ public class MainCommand implements Runnable {
         @Inject
         ICommandSender sender;
 
-        @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
+        @Parameters(paramLabel = "name", index = "0", completionCandidates = ShipNameAutocompleter.class)
         ShipData shipData;
 
         public void run() {
@@ -168,7 +171,7 @@ public class MainCommand implements Runnable {
         @Spec
         CommandSpec spec;
 
-        @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
+        @Parameters(paramLabel = "name", index = "0", completionCandidates = ShipNameAutocompleter.class)
         ShipData shipData;
 
         @Parameters(index = "1", arity = "0..1")

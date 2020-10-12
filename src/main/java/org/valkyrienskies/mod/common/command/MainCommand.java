@@ -32,7 +32,9 @@ import java.util.stream.Collectors;
         GC.class,
         TPS.class,
         TeleportTo.class,
-        DeconstructShip.class})
+        DeconstructShip.class,
+        DeleteShip.class
+    })
 public class MainCommand implements Runnable {
 
     @Spec
@@ -62,10 +64,33 @@ public class MainCommand implements Runnable {
             WorldServerShipManager world = ValkyrienUtils.getServerShipManager(sender.getEntityWorld());
             PhysicsObject obj = world.getPhysObjectFromUUID(shipData.getUuid());
             if (obj != null) {
-                obj.setAttemptToDeconstructShip(true);
+                obj.setDeconstructState(PhysicsObject.DeconstructState.DECONSTRUCT_NORMAL);
                 obj.setShipAligningToGrid(true);
 
                 sender.sendMessage(new TextComponentString("That ship is being deconstructed"));
+            } else {
+                sender.sendMessage(new TextComponentString("That ship is not loaded"));
+            }
+        }
+    }
+
+    @Command(name = "delete-ship", aliases = "delete")
+    static class DeleteShip implements Runnable {
+
+        @Inject
+        ICommandSender sender;
+
+        @Parameters(index = "0", completionCandidates = ShipNameAutocompleter.class)
+        ShipData shipData;
+
+        @Override
+        public void run() {
+            final WorldServerShipManager world = ValkyrienUtils.getServerShipManager(sender.getEntityWorld());
+            final PhysicsObject obj = world.getPhysObjectFromUUID(shipData.getUuid());
+            if (obj != null) {
+                obj.setDeconstructState(PhysicsObject.DeconstructState.DECONSTRUCT_IMMEDIATE_NO_COPY);
+
+                sender.sendMessage(new TextComponentString("That ship will be deleted in the next tick."));
             } else {
                 sender.sendMessage(new TextComponentString("That ship is not loaded"));
             }

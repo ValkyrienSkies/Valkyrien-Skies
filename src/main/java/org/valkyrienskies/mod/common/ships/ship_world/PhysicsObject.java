@@ -109,12 +109,12 @@ public class PhysicsObject implements IPhysicsEntity {
     private boolean shipAligningToGrid;
 
     /**
-     * If true, this ship will attempt to destroy itself every tick, and will succeed if its rotation transform angle is
-     * less than 2 degrees.
+     * This determines if a ship is trying to deconstruct, and how it will deconstruct.
      */
     @Setter
     @Getter
-    private boolean attemptToDeconstructShip;
+    @Nonnull
+    private DeconstructState deconstructState;
 
     // endregion
 
@@ -140,7 +140,7 @@ public class PhysicsObject implements IPhysicsEntity {
             getShipData().getShipTransform());
         this.physicsCalculations = new PhysicsCalculations(this);
         this.shipAligningToGrid = false;
-        this.attemptToDeconstructShip = false;
+        this.deconstructState = DeconstructState.NOT_DECONSTRUCTING;
         this.needsCollisionCacheUpdate = true;
         // Note how this is last.
         if (world.isRemote) {
@@ -220,7 +220,17 @@ public class PhysicsObject implements IPhysicsEntity {
      * deconstruct back to the world.
      */
     boolean shouldShipBeDestroyed() {
-        return attemptToDeconstructShip && isShipAlignedToWorld() || getBlockPositions().isEmpty();
+        if (getBlockPositions().isEmpty()) {
+            return true;
+        }
+        if (deconstructState.deconstructShip) {
+            if (deconstructState.mustBeAlignedBeforeDeconstruct) {
+                return isShipAlignedToWorld();
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isShipAlignedToWorld() {
@@ -233,7 +243,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
     void destroyShip() {
         // Then tell the game to stop tracking/loading the chunks
-        List<EntityPlayerMP> watchersCopy = new ArrayList<EntityPlayerMP>(getWatchingPlayers());
+        List<EntityPlayerMP> watchersCopy = new ArrayList<>(getWatchingPlayers());
         for (ChunkPos chunkPos : getChunkClaim()) {
             SPacketUnloadChunk unloadPacket = new SPacketUnloadChunk(chunkPos.x, chunkPos.z);
             for (EntityPlayerMP wachingPlayer : watchersCopy) {
@@ -247,21 +257,23 @@ public class PhysicsObject implements IPhysicsEntity {
 
         // Finally, copy all the blocks from the ship to the world
         if (!getBlockPositions().isEmpty()) {
-            MutableBlockPos newPos = new MutableBlockPos();
+            if (deconstructState.copyBlocks) {
+                MutableBlockPos newPos = new MutableBlockPos();
 
-            ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
-            Vector3dc position = new Vector3d(currentTransform.getPosX(), currentTransform.getPosY(),
-                    currentTransform.getPosZ());
+                ShipTransform currentTransform = getShipTransformationManager().getCurrentTickTransform();
+                Vector3dc position = new Vector3d(currentTransform.getPosX(), currentTransform.getPosY(),
+                        currentTransform.getPosZ());
 
-            BlockPos centerDifference = new BlockPos(
-                    Math.round(getCenterCoord().x() - position.x()),
-                    Math.round(getCenterCoord().y() - position.y()),
-                    Math.round(getCenterCoord().z() - position.z()));
+                BlockPos centerDifference = new BlockPos(
+                        Math.round(getCenterCoord().x() - position.x()),
+                        Math.round(getCenterCoord().y() - position.y()),
+                        Math.round(getCenterCoord().z() - position.z()));
 
-            for (BlockPos oldPos : this.getBlockPositions()) {
-                newPos.setPos(oldPos.getX() - centerDifference.getX(),
-                        oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
-                MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, null);
+                for (BlockPos oldPos : this.getBlockPositions()) {
+                    newPos.setPos(oldPos.getX() - centerDifference.getX(),
+                            oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
+                    MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, null);
+                }
             }
 
             // Just delete the tile entities in ship to prevent any dupe bugs.
@@ -356,6 +368,23 @@ public class PhysicsObject implements IPhysicsEntity {
             return chunk.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
         } else {
             return null;
+        }
+    }
+
+    @Getter
+    public enum DeconstructState {
+        NOT_DECONSTRUCTING(false, false, false),
+        DECONSTRUCT_NORMAL(true, true, true),
+        DECONSTRUCT_IMMEDIATE_NO_COPY(true, false, false);
+
+        private final boolean deconstructShip;
+        private final boolean copyBlocks;
+        private final boolean mustBeAlignedBeforeDeconstruct;
+
+        DeconstructState(final boolean deconstructShip, final boolean copyBlocks, final boolean mustBeAlignedBeforeDeconstruct) {
+            this.deconstructShip = deconstructShip;
+            this.copyBlocks = copyBlocks;
+            this.mustBeAlignedBeforeDeconstruct = mustBeAlignedBeforeDeconstruct;
         }
     }
 }

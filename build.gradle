@@ -133,7 +133,7 @@ dependencies {
     deobfCompile("org.valkyrienskies:Valkyrien-Skies-World:1d9df462f15c9125255ea086d7aeb75fe12e5877:all") {
         transitive = false
     }
-    deobfCompile("org.valkyrienskies:Valkyrien-Skies-Control:f2ec780ffb1b2d6b1ab461135c4d6ad77ed174a2:all") {
+    deobfCompile("org.valkyrienskies:Valkyrien-Skies-Control:bc55aa179d643fd30d4c49a48a2491633033c5f3:all") {
         transitive = false
     }
 

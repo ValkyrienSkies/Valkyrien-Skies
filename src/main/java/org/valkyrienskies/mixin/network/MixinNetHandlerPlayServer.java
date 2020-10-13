@@ -109,6 +109,10 @@ public abstract class MixinNetHandlerPlayServer {
     private void preProcessPlayer(final CPacketPlayer packetPlayer, final CallbackInfo info) {
         // Don't run any of this code on the network thread!
         if (this.player.getServerWorld().isCallingFromMinecraftThread()) {
+            // This fixes players dying of fall damage when changing dimensions
+            if (this.player.isInvulnerableDimensionChange()) {
+                return;
+            }
             final PlayerMovementData addedPlayerMovementData = IHasPlayerMovementData.class.cast(packetPlayer).getPlayerMovementData();
             final World world = player.world;
 

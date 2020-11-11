@@ -165,7 +165,7 @@ public class EntityDraggable {
 
         final double addedYawVelocity = newEntityShipMovementData.getAddedYawVelocity();
 
-        if (!mountData.isMounted()) {
+        if (!mountData.isMounted() && addedYawVelocity != 0) {
             entity.setRotationYawHead((float) (entity.getRotationYawHead() + addedYawVelocity));
             entity.rotationYaw += addedYawVelocity;
         }

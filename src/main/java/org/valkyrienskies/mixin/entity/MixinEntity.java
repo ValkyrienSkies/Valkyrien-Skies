@@ -86,7 +86,7 @@ public abstract class MixinEntity implements IDraggable {
     }
 
     /**
-     * fix a warning
+     * This is public in order to fix #437
      *
      * @author asdf
      */

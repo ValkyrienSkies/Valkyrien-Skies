@@ -86,12 +86,12 @@ public abstract class MixinEntity implements IDraggable {
     }
 
     /**
-     * fix a warning
+     * This is public in order to fix #437
      *
      * @author asdf
      */
     @Overwrite
-    protected final Vec3d getVectorForRotation(float pitch, float yaw) {
+    public final Vec3d getVectorForRotation(float pitch, float yaw) {
         // BEGIN VANILLA CODE
         float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
         float f1 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);

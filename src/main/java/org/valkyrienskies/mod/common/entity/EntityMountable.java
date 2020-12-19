@@ -190,7 +190,7 @@ public class EntityMountable extends Entity implements IEntityAdditionalSpawnDat
         }
     }
 
-    Optional<BlockPos> getReferencePos() {
+    public Optional<BlockPos> getReferencePosOptional() {
         return Optional.ofNullable(referencePos);
     }
 

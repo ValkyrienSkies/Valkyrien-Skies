@@ -28,6 +28,7 @@ import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.collision.PhysPolygonCollider;
 import org.valkyrienskies.mod.common.collision.Polygon;
 import org.valkyrienskies.mod.common.collision.ShipPolygon;
+import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
@@ -42,6 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class EntityCollisionInjector {
 
@@ -258,6 +260,19 @@ public class EntityCollisionInjector {
             .offset(-posOffestX, -posOffestY, -posOffestZ);
         entity.setEntityBoundingBox(axisalignedbb);
         entity.resetPositionToBB();
+
+        // We are on the ship that we are riding
+        if (entity.ridingEntity instanceof EntityMountable) {
+            final EntityMountable entityMountable = (EntityMountable) entity.ridingEntity;
+            if (entityMountable.getReferencePosOptional().isPresent()) {
+                final Optional<PhysicsObject> physicsObjectOptional = ValkyrienUtils.getPhysoManagingBlock(
+                        entity.world, entityMountable.getReferencePosOptional().get()
+                );
+                if (physicsObjectOptional.isPresent()) {
+                    worldBelow = physicsObjectOptional.get();
+                }
+            }
+        }
 
         if (worldBelow == null) {
             return null;

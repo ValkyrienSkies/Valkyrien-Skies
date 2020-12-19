@@ -20,7 +20,7 @@ public class EntityMountableChair extends EntityMountable {
 
     @Override
     public void onUpdate() {
-        if (!getReferencePos().isPresent()) {
+        if (!getReferencePosOptional().isPresent()) {
             // Some error occurred, kill this chair.
             new IllegalStateException("Chair mountable entity has no reference position.")
                 .printStackTrace();

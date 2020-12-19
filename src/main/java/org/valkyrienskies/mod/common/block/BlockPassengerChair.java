@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.IBlockAccess;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
 
 import mcp.MethodsReturnNonnullByDefault;
@@ -145,6 +147,12 @@ public class BlockPassengerChair extends BaseBlock {
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
+    }
+
+    @Override
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+        return null;
     }
 
 }

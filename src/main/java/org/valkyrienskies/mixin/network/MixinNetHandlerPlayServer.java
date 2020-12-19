@@ -145,9 +145,9 @@ public abstract class MixinNetHandlerPlayServer {
 
             // Update the player position and rotation.
             final double originalPlayerY = this.player.posY;
-            this.player.handleFalling(playerPosInShip.y() - originalPlayerY, packetPlayer.isOnGround());
             this.player.setPositionAndRotation(playerPosInShip.x(), playerPosInShip.y(), playerPosInShip.z(),
                     (float) playerYawInGlobal, (float) playerPitchInGlobal);
+            this.player.handleFalling(playerPosInShip.y() - originalPlayerY, packetPlayer.isOnGround());
             // We need this otherwise the players head rotation doesn't update
             this.player.rotationYawHead = (float) playerYawInGlobal;
 

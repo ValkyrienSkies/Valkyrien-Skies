@@ -48,8 +48,12 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     // We keep track of these so we can quickly update the tile entities that need rendering.
     private List<TileEntity>[] tileEntitiesByExtendedData = new List[16];
 
-    public List<TileEntity> getTileEntitiesToRender(int chunkExtendedDataIndex) {
-        return tileEntitiesByExtendedData[chunkExtendedDataIndex];
+    public List<TileEntity> getTileEntitiesToRender(int chunkExtendedDataIndex){
+    	List<TileEntity> r = null;
+    	synchronized(tileEntitiesByExtendedData) {
+    		r = tileEntitiesByExtendedData[chunkExtendedDataIndex];
+    	}
+    	return r;
     }
 
     @Inject(method = "addTileEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", at = @At("TAIL"))
@@ -70,11 +74,28 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     }
 
     private void removeTileEntityFromIndex(BlockPos pos, int yIndex) {
-        if (tileEntitiesByExtendedData[yIndex] == null) {
-            tileEntitiesByExtendedData[yIndex] = new ArrayList<>();
-        }
-        tileEntitiesByExtendedData[yIndex]
-            .removeIf(tile -> tile.getPos().equals(pos) || tile.isInvalid());
+    	
+    	synchronized(tileEntitiesByExtendedData) {
+
+	        if (tileEntitiesByExtendedData[yIndex] == null) {
+	            tileEntitiesByExtendedData[yIndex] = new ArrayList<>();
+	        }
+	        
+	        List<TileEntity> current_list = tileEntitiesByExtendedData[yIndex];
+	        for(int i = 0; i < current_list.size(); i++) {
+	        	TileEntity tile = current_list.get(i);
+	        	if(tile == null || tile.getPos().equals(pos) || tile.isInvalid()) {
+	        		List<TileEntity> new_list = new ArrayList<>(current_list);
+	        		new_list.remove(i);
+	        		tileEntitiesByExtendedData[yIndex] = new_list;
+	        		/*I am replacing the sub-list altogether, so that if another thread has
+	        		a pointer to the original one, I cannot trigger a CME.*/
+	        		break;
+	        	}
+	        }
+    	}
+        
+       
     }
 
     /**

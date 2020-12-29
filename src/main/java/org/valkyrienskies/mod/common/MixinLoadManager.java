@@ -3,7 +3,7 @@ package org.valkyrienskies.mod.common;
 import java.util.List;
 import java.util.Set;
 import net.minecraftforge.fml.common.FMLLog;
-import org.spongepowered.asm.lib.tree.ClassNode;
+import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -47,7 +47,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
 
     private boolean isSpongeEnabledSlow() {
         try {
-            if (Class.forName("org.spongepowered.common.interfaces.IMixinChunk") != null) {
+            if (Class.forName("org.spongepowered.common.bridge.world.chunk.ChunkBridge") != null) {
                 return true;
             }
         } catch (ClassNotFoundException e) {
@@ -66,13 +66,13 @@ public class MixinLoadManager implements IMixinConfigPlugin {
     }
 
     @Override
-    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName,
-        IMixinInfo mixinInfo) {
+    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+
     }
 
     @Override
-    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName,
-        IMixinInfo mixinInfo) {
+    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+
     }
 
 }

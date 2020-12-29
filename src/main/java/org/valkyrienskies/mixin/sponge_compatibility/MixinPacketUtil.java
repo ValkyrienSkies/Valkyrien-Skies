@@ -1,4 +1,4 @@
-package org.valkyrienskies.mixin.spongepowered.common.network;
+package org.valkyrienskies.mixin.sponge_compatibility;
 
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;

@@ -35,7 +35,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (!isSpongeEnabled()) {
-            if (mixinClassName.contains("spongepowered")) {
+            if (mixinClassName.contains("sponge_compatibility")) {
                 FMLLog
                     .bigWarning("Not applying" + mixinClassName + " because Sponge isn't loaded!");
                 return false;
@@ -47,7 +47,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
 
     private boolean isSpongeEnabledSlow() {
         try {
-            if (Class.forName("org.spongepowered.common.mixin.core.world.MixinExplosion") != null) {
+            if (Class.forName("org.spongepowered.common.interfaces.IMixinChunk") != null) {
                 return true;
             }
         } catch (ClassNotFoundException e) {

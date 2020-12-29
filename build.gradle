@@ -123,7 +123,7 @@ dependencies {
     // Needs to be present at compile-time because we mix in to spongeforge, however marking it as
     // compile makes forge load it as a mod in a dev environment, which is very annoying
     compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
-        transitive = false
+        transitive = true
     }
 
     // The VS API, just shade it into core no need to make it a standalone mod

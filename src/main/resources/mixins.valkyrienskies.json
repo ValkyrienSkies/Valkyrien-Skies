@@ -15,7 +15,8 @@
     "network.play.client.MixinCPacketPlayerTryUseItemOnBlock",
     "network.play.client.MixinCPacketUpdateSign",
     "server.management.MixinPlayerList",
-    "spongepowered.common.network.MixinPacketUtil",
+    "sponge_compatibility.MixinChunkSponge",
+    "sponge_compatibility.MixinPacketUtil",
     "tileentity.MixinTileEntity",
     "util.math.MixinChunkPos",
     "world.MixinWorld",
@@ -25,6 +26,7 @@
     "world.gen.MixinChunkProviderServer"
   ],
   "client": [
+    "client.MixinMinecraft",
     "client.entity.MixinEntityPlayerSP",
     "client.entity.MixinsAbstractClientPlayer",
     "client.particle.MixinParticleManager",
@@ -34,12 +36,11 @@
     "client.renderer.culling.MixinFrustum",
     "client.renderer.entity.MixinRenderManager",
     "client.renderer.tileentity.MixinTileEntityRendererDispatcher",
-    "util.MixinMovementInputFromOptions",
-    "world.MixinClientWorld",
     "network.play.client.MixinCPacketPlayerClient",
     "network.play.client.MixinCPacketPlayerPosition",
     "network.play.client.MixinCPacketPlayerPositionRotation",
     "network.play.client.MixinCPacketPlayerRotation",
-    "client.MixinMinecraft"
+    "util.MixinMovementInputFromOptions",
+    "world.MixinClientWorld"
   ]
 }

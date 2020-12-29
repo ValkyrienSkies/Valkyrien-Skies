@@ -153,27 +153,29 @@ public class EntityDraggable {
             draggable.setEntityShipMovementData(oldEntityShipMovementData.withAddedLinearVelocity(addedVel.mul(1, new Vector3d())).withAddedYawVelocity(yawDif));
         }
 
-        // Now that we've determined the added velocity, move the entity forward by that amount
-        final boolean originallySneaking = entity.isSneaking();
-        entity.setSneaking(false);
-
         final EntityShipMovementData newEntityShipMovementData = draggable.getEntityShipMovementData();
-        // The added velocity vector of the player, except we have made sure that it won't push the player inside of a
-        // solid block.
-        final Vector3dc addedVelocityNoNoClip = applyAddedVelocity(newEntityShipMovementData.getAddedLinearVelocity(), entity);
-        draggable.setEntityShipMovementData(oldEntityShipMovementData.withAddedLinearVelocity(addedVelocityNoNoClip));
 
+        // Only run this code if we are adding extra velocity. This code is relatively expensive, so we don't want to run
+        // it unless we have to.
+        if (newEntityShipMovementData.getAddedLinearVelocity().lengthSquared() > 0) {
+            // Now that we've determined the added velocity, move the entity forward by that amount
+            final boolean originallySneaking = entity.isSneaking();
+            entity.setSneaking(false);
+
+            // The added velocity vector of the player, except we have made sure that it won't push the player inside of a
+            // solid block.
+            final Vector3dc addedVelocityNoNoClip = applyAddedVelocity(newEntityShipMovementData.getAddedLinearVelocity(), entity);
+            draggable.setEntityShipMovementData(oldEntityShipMovementData.withAddedLinearVelocity(addedVelocityNoNoClip));
+
+            entity.setSneaking(originallySneaking);
+        }
+
+        // Add the yaw velocity to the player as well, because its possible for addedVelocity=0 and yawVel != 0
         final double addedYawVelocity = newEntityShipMovementData.getAddedYawVelocity();
-
         if (!mountData.isMounted() && addedYawVelocity != 0) {
             entity.setRotationYawHead((float) (entity.getRotationYawHead() + addedYawVelocity));
             entity.rotationYaw += addedYawVelocity;
         }
-
-        // Do not add this movement as if the entity were walking it
-        // entity.distanceWalkedModified = originalWalked;
-        // entity.distanceWalkedOnStepModified = originalWalkedOnStep;
-        entity.setSneaking(originallySneaking);
     }
 
     public static IDraggable getDraggableFromEntity(Entity entity) {

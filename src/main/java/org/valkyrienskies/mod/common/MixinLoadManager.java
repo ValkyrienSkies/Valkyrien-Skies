@@ -47,7 +47,7 @@ public class MixinLoadManager implements IMixinConfigPlugin {
 
     private boolean isSpongeEnabledSlow() {
         try {
-            if (Class.forName("org.spongepowered.common.interfaces.IMixinChunk") != null) {
+            if (Class.forName("org.spongepowered.common.bridge.world.chunk.ChunkBridge") != null) {
                 return true;
             }
         } catch (ClassNotFoundException e) {

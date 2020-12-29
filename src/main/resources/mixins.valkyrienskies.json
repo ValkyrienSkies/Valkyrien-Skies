@@ -15,8 +15,6 @@
     "network.play.client.MixinCPacketPlayerTryUseItemOnBlock",
     "network.play.client.MixinCPacketUpdateSign",
     "server.management.MixinPlayerList",
-    "sponge_compatibility.MixinChunkSponge",
-    "sponge_compatibility.MixinPacketUtil",
     "tileentity.MixinTileEntity",
     "util.math.MixinChunkPos",
     "world.MixinWorld",

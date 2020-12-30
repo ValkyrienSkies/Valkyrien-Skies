@@ -22,7 +22,7 @@ import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.datastructures.IBitOctree;
-import org.valkyrienskies.mod.common.util.datastructures.IBitOctreeProvider;
+import org.valkyrienskies.mod.common.util.datastructures.ITerrainOctreeProvider;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.ArrayList;
@@ -431,8 +431,8 @@ public class WorldPhysicsCollider {
                     int maxStorageY = minStorageY + 16;
                     int maxStorageZ = minStorageZ + 16;
 
-                    IBitOctreeProvider provider = (IBitOctreeProvider) extendedblockstorage.data;
-                    IBitOctree octree = provider.getBitOctree();
+                    ITerrainOctreeProvider provider = (ITerrainOctreeProvider) extendedblockstorage.data;
+                    IBitOctree octree = provider.getSolidOctree();
 
                     if (USE_OCTREE_COLLISION) {
                         for (int levelThree = 0; levelThree < 8; levelThree++) {
@@ -622,9 +622,9 @@ public class WorldPhysicsCollider {
         final int localZ,
         final int x, final int y, final int z, final TIntList output) {
         if (chunk.storageArrays[localY >> 4] != null) {
-            IBitOctreeProvider provider = (IBitOctreeProvider) chunk.storageArrays[localY >> 4]
+            ITerrainOctreeProvider provider = (ITerrainOctreeProvider) chunk.storageArrays[localY >> 4]
                 .getData();
-            IBitOctree octreeInLocal = provider.getBitOctree();
+            IBitOctree octreeInLocal = provider.getSolidOctree();
             if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
                 int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
                 // Sometimes we end up adding to the hits array in multiple threads at once,

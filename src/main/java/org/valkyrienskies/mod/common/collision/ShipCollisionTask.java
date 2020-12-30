@@ -10,7 +10,7 @@ import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
 import org.valkyrienskies.mod.common.util.datastructures.IBitOctree;
-import org.valkyrienskies.mod.common.util.datastructures.IBitOctreeProvider;
+import org.valkyrienskies.mod.common.util.datastructures.ITerrainOctreeProvider;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.ArrayList;
@@ -102,8 +102,8 @@ public class ShipCollisionTask implements Callable<Void> {
 
         ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];
         if (storage != null) {
-            IBitOctreeProvider provider = (IBitOctreeProvider) storage.data;
-            IBitOctree octree = provider.getBitOctree();
+            ITerrainOctreeProvider provider = (ITerrainOctreeProvider) storage.data;
+            IBitOctree octree = provider.getSolidOctree();
 
             if (octree.get(x & 15, y & 15, z & 15)) {
                 IBlockState inLocalState = chunkIn.getBlockState(x, y, z);

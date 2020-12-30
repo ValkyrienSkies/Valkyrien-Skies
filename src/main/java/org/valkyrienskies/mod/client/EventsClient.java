@@ -29,6 +29,7 @@ import org.valkyrienskies.mod.common.entity.EntityShipMovementData;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
@@ -199,7 +200,8 @@ public class EventsClient {
                             entityShipMovementData.getLastTouchedShip().getUuid()
                     );
                     if (shipPhysicsObject == null) {
-                        System.err.println("shipPhysicsObject was null?");
+                        // This ship doesn't exist anymore, just remove it.
+                        IDraggable.class.cast(entity).setEntityShipMovementData(entityShipMovementData.withLastTouchedShip(null));
                         continue;
                     }
                     final ShipTransform prevTickTransform = shipPhysicsObject.getPrevTickShipTransform();

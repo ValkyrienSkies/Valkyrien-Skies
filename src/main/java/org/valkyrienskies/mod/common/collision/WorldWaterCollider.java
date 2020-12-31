@@ -100,7 +100,7 @@ public class WorldWaterCollider {
             final int hash = cachedPotentialHits.get(i);
             SpatialDetector.setPosWithRespectTo(hash, centerPotentialHit, currentPos);
 
-            final Vector3dc waterPosInShipSpace = physicsTransform.transformPosition(JOML.convertDouble(currentPos, temp0).add(.5, .5, .5), TransformType.GLOBAL_TO_SUBSPACE);
+            final Vector3dc waterPosInShipSpace = physicsTransform.transformPositionNew(JOML.convertDouble(currentPos, temp0).add(.5, .5, .5), TransformType.GLOBAL_TO_SUBSPACE);
 
             final int minX = (int) Math.floor(waterPosInShipSpace.x() - .5);
             final int minY = (int) Math.floor(waterPosInShipSpace.y() - .5);
@@ -124,7 +124,7 @@ public class WorldWaterCollider {
                             if (terrainOctree.get(x & 15, y & 15, z & 15)) {
                                 // Assume both the water block and terrain block are spheres, then compute the volume
                                 // that overlaps
-                                final Vector3dc shipSolidBlockPosInWorld = physicsTransform.transformPosition(temp2.set(x + .5, y + .5, z + .5), TransformType.SUBSPACE_TO_GLOBAL);
+                                final Vector3dc shipSolidBlockPosInWorld = physicsTransform.transformPositionNew(temp2.set(x + .5, y + .5, z + .5), TransformType.SUBSPACE_TO_GLOBAL);
 
                                 final double volumeDisplaced = calculateAABBOverlap(
                                         waterPosInWorld.x() - shipSolidBlockPosInWorld.x(),

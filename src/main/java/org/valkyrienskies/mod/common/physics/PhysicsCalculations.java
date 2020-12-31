@@ -31,6 +31,7 @@ public class PhysicsCalculations {
     public boolean actAsArchimedes = false;
     private Vector3dc physCenterOfMass;
     private Vector3d torque;
+    private Vector3d force;
     private double physTickMass;
     // TODO: Get this in one day
     // private double physMass;
@@ -59,6 +60,7 @@ public class PhysicsCalculations {
 
         this.physCenterOfMass = new Vector3d();
         this.torque = new Vector3d();
+        this.force = new Vector3d();
 
         generatePhysicsTransform();
     }
@@ -333,7 +335,7 @@ public class PhysicsCalculations {
                                 Vector3d crossVector) {
         inBodyWO.cross(forceToApply, crossVector);
         torque.add(crossVector);
-        getLinearVelocity().add(forceToApply.x() * getInvMass(), forceToApply.y() * getInvMass(), forceToApply.z() * getInvMass());
+        force.add(forceToApply);
     }
 
     private void updatePhysSpeedAndIters(double newPhysSpeed) {
@@ -367,6 +369,9 @@ public class PhysicsCalculations {
      * Only run ONCE per phys tick!
      */
     private void integrateLinearVelocity() {
+        linearVelocity.add(force.x() * getInvMass(), force.y() * getInvMass(), force.z() * getInvMass());
+        force.zero();
+
         physX += getLinearVelocity().x() * getPhysicsTimeDeltaPerPhysTick();
         physY += getLinearVelocity().y() * getPhysicsTimeDeltaPerPhysTick();
         physZ += getLinearVelocity().z() * getPhysicsTimeDeltaPerPhysTick();

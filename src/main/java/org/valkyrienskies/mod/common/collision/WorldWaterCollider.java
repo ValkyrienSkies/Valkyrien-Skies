@@ -12,6 +12,7 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
@@ -134,6 +135,26 @@ public class WorldWaterCollider {
                                         .sub(physicsTransform.getPosX(), physicsTransform.getPosY(), physicsTransform.getPosZ());
 
                                 calculator.addForceAtPoint(inBody, collisionImpulseForce);
+
+                                {
+                                    // Compute water damping force
+                                    final Vector3dc velocity = calculator.getVelocityAtPoint(inBody);
+
+                                    if (velocity.lengthSquared() > .01) {
+                                        final double density = 1000;
+                                        final double dragCoefficient = .1;
+                                        // TODO: This is WRONG, but it'll do for now
+                                        final double area = Math.PI * (SPHERE_RADIUS - distance) * (SPHERE_RADIUS - distance);
+                                        final double velocitySquared = velocity.lengthSquared();
+
+                                        // Drag formula from https://en.wikipedia.org/wiki/Drag_(physics)
+                                        final double forceMagnitude = (.5) * density * velocitySquared * dragCoefficient * area;
+
+                                        final Vector3d dragForce = new Vector3d(velocity).normalize().mul(-forceMagnitude * calculator.getPhysicsTimeDeltaPerPhysTick());
+
+                                        calculator.addForceAtPoint(inBody, dragForce);
+                                    }
+                                }
                             }
                         }
                     }
@@ -415,27 +436,9 @@ public class WorldWaterCollider {
                 // crashing the physics.
                 output.add(hash);
                 return true;
-                // break outermostloop;
             }
-            // }
         }
         return false;
-    }
-
-    public BlockPos getCenterPotentialHit() {
-        return centerPotentialHit;
-    }
-
-    public int getCachedPotentialHit(int offset) {
-        return cachedPotentialHits.get(offset);
-    }
-
-    public int getCachedPotentialHitSize() {
-        return cachedPotentialHits.size();
-    }
-
-    public PhysicsObject getParent() {
-        return parent;
     }
 
 }

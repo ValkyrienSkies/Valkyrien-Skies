@@ -152,6 +152,9 @@ public class VSWorldPhysicsLoop implements Runnable {
             // Update the physics simulation
             try {
                 wrapper.getPhysicsCalculations().rawPhysTickPreCol(timeStep);
+                // Do water collision and buoyancy
+                wrapper.getPhysicsCalculations().getWorldWaterCollider().tickUpdatingTheCollisionCache();
+                wrapper.getPhysicsCalculations().getWorldWaterCollider().addBuoyancyForces();
                 // Update the collision task if necessary
                 wrapper.getPhysicsCalculations().getWorldCollision()
                         .tickUpdatingTheCollisionCache();

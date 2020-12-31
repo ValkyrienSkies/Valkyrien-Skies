@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import org.joml.*;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
+import org.valkyrienskies.mod.common.collision.WorldWaterCollider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.collision.WorldPhysicsCollider;
@@ -24,6 +25,8 @@ public class PhysicsCalculations {
 
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;
+    @Getter
+    private final WorldWaterCollider worldWaterCollider;
 
     public boolean actAsArchimedes = false;
     private Vector3dc physCenterOfMass;
@@ -46,6 +49,7 @@ public class PhysicsCalculations {
     public PhysicsCalculations(PhysicsObject parent) {
         this.parent = parent;
         this.worldCollision = new WorldPhysicsCollider(this);
+        this.worldWaterCollider = new WorldWaterCollider(this);
 
         this.physMOITensor = null;
         this.physInvMOITensor = null;
@@ -324,7 +328,7 @@ public class PhysicsCalculations {
         addForceAtPoint(inBodyWO, forceToApply, new Vector3d());
     }
 
-    private void addForceAtPoint(Vector3dc inBodyWO,
+    public void addForceAtPoint(Vector3dc inBodyWO,
                                 Vector3dc forceToApply,
                                 Vector3d crossVector) {
         inBodyWO.cross(forceToApply, crossVector);

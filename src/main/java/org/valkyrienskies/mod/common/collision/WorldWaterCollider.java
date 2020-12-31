@@ -7,7 +7,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ChunkCache;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -25,16 +24,11 @@ import org.valkyrienskies.mod.common.util.datastructures.ITerrainOctreeProvider;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 /**
- * Handles the task of finding and processing collisions between a PhysicsObject and the game
- * world.
- *
- * @author thebest108
+ * Bote
  */
 public class WorldWaterCollider {
 
@@ -57,6 +51,13 @@ public class WorldWaterCollider {
     // Ensures this always updates the first tick after creation
     private double ticksSinceCacheUpdate;
     private BlockPos centerPotentialHit;
+
+    // The radius of the sphere that represents each water block in meters.
+    public static final double SPHERE_RADIUS = .7;
+    // Acceleration in m/s^2
+    public static final double GRAVITY_ACCELERATION = 9.8;
+    // Mass in kg
+    public static final double MASS_OF_CUBIC_METER_OF_WATER = 1000;
 
     public WorldWaterCollider(PhysicsCalculations calculations) {
         this.calculator = calculations;
@@ -115,9 +116,10 @@ public class WorldWaterCollider {
                                 Vector3d terrainPos = new Vector3d(x + .5, y + .5, z + .5);
                                 physicsTransform.transformPosition(terrainPos, TransformType.SUBSPACE_TO_GLOBAL);
 
+                                // The distance between the water block and the solid block its pushing upwards
                                 double distance = waterPosInWorld.distance(terrainPos);
 
-                                if (distance >= 1) {
+                                if (distance >= SPHERE_RADIUS * 2) {
                                     // No volume displaced
                                     continue;
                                 }
@@ -125,11 +127,9 @@ public class WorldWaterCollider {
                                 // Collision position is average of terrain pos and water pos
                                 Vector3d collisionPos = terrainPos.add(waterPosInWorld, new Vector3d()).mul(.5);
 
-                                // TODO: Replace this with the volume overlap of 2 spheres with radius=.5, separated by
-                                //       a given distance
-                                double volumeDisplaced = 1 - distance;
+                                double volumeDisplaced = calculateVolumeOfSphereIntersection(distance);
 
-                                Vector3d collisionImpulseForce = new Vector3d(0, 1000 * 9.8 * volumeDisplaced * calculator.getPhysicsTimeDeltaPerPhysTick(), 0);
+                                Vector3d collisionImpulseForce = new Vector3d(0, GRAVITY_ACCELERATION * MASS_OF_CUBIC_METER_OF_WATER * volumeDisplaced * calculator.getPhysicsTimeDeltaPerPhysTick(), 0);
                                 Vector3d inBody = new Vector3d(collisionPos)
                                         .sub(physicsTransform.getPosX(), physicsTransform.getPosY(), physicsTransform.getPosZ());
 
@@ -140,6 +140,20 @@ public class WorldWaterCollider {
                 }
             }
         }
+    }
+
+    /**
+     * Computes the volume of the overlap of two spheres with radius @link{#SPHERE_RADIUS}.
+     *
+     * Given that both spheres are the same size, then the intersection volume is just the 2 * sphere cap volume.
+     *
+     * Uses sphere cap equation from https://en.wikipedia.org/wiki/Spherical_cap
+     */
+    private static double calculateVolumeOfSphereIntersection(final double distance) {
+        double sphereCapHeight = (distance / 2) - SPHERE_RADIUS;
+        double sphereCapVolume = (Math.PI / 3.0) * (sphereCapHeight * sphereCapHeight) * (3 * SPHERE_RADIUS - sphereCapHeight);
+
+        return 2 * sphereCapVolume;
     }
 
     private void updatePotentialCollisionCache() {
@@ -196,7 +210,6 @@ public class WorldWaterCollider {
         int chunkMaxX = (max.getX() >> 4) + 1;
         int chunkMinZ = min.getZ() >> 4;
         int chunkMaxZ = (max.getZ() >> 4) + 1;
-        // long startTime = System.nanoTime();
 
         int minX = min.getX();
         int minY = min.getY();

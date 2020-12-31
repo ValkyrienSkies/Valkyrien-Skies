@@ -54,7 +54,7 @@ public class WorldWaterCollider {
     private BlockPos centerPotentialHit;
 
     // The radius of the sphere that represents each water block in meters.
-    public static final double SPHERE_RADIUS = .7;
+    public static final double SPHERE_RADIUS = .5;
     // Acceleration in m/s^2
     public static final double GRAVITY_ACCELERATION = 9.8;
     // Mass in kg
@@ -122,13 +122,32 @@ public class WorldWaterCollider {
 
                                 if (distance >= SPHERE_RADIUS * 2) {
                                     // No volume displaced
-                                    continue;
+                                    // continue;
                                 }
 
                                 // Collision position is average of terrain pos and water pos
                                 Vector3d collisionPos = terrainPos.add(waterPosInWorld, new Vector3d()).mul(.5);
 
-                                double volumeDisplaced = calculateVolumeOfSphereIntersection(distance);
+                                // final double volumeDisplaced = 2 * calculateVolumeOfSphereIntersection(distance);
+
+                                AxisAlignedBB waterBB = new AxisAlignedBB(currentPos);
+                                AxisAlignedBB blockBB = new AxisAlignedBB(
+                                        terrainPos.x - .5, terrainPos.y - .5, terrainPos.z - .5,
+                                        terrainPos.x + .5, terrainPos.y + .5, terrainPos.z + .5
+                                );
+
+                                if (!waterBB.intersects(blockBB)) {
+                                    continue;
+                                }
+
+                                AxisAlignedBB intersection = waterBB.intersect(blockBB);
+
+                                final double volumeDisplaced = (intersection.maxX - intersection.minX) *
+                                        (intersection.maxY - intersection.minY) *
+                                        (intersection.maxZ - intersection.minZ);
+
+                                // final double volumeDisplaced = ;
+
 
                                 Vector3d collisionImpulseForce = new Vector3d(0, GRAVITY_ACCELERATION * MASS_OF_CUBIC_METER_OF_WATER * volumeDisplaced * calculator.getPhysicsTimeDeltaPerPhysTick(), 0);
                                 Vector3d inBody = new Vector3d(collisionPos)
@@ -142,9 +161,9 @@ public class WorldWaterCollider {
 
                                     if (velocity.lengthSquared() > .01) {
                                         final double density = 1000;
-                                        final double dragCoefficient = .1;
+                                        final double dragCoefficient = .3;
                                         // TODO: This is WRONG, but it'll do for now
-                                        final double area = Math.PI * (SPHERE_RADIUS - distance) * (SPHERE_RADIUS - distance);
+                                        final double area = Math.PI * (SPHERE_RADIUS - (distance * .5)) * (SPHERE_RADIUS - (distance * .5));
                                         final double velocitySquared = velocity.lengthSquared();
 
                                         // Drag formula from https://en.wikipedia.org/wiki/Drag_(physics)

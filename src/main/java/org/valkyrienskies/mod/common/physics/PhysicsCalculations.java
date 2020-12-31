@@ -96,6 +96,13 @@ public class PhysicsCalculations {
             // We are trying to deconstruct, try to rotate the ship to grid to align with the grid.
             calculateForcesDeconstruction(physTickTimeDelta);
         }
+        addForceAndTorqueToVelocity();
+    }
+
+    private void addForceAndTorqueToVelocity() {
+        linearVelocity.add(force.x() * getInvMass(), force.y() * getInvMass(), force.z() * getInvMass());
+        force.zero();
+        convertTorqueToVelocity();
     }
 
     public void rawPhysTickPostCol() {

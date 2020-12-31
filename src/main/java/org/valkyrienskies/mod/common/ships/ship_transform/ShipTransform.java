@@ -88,12 +88,12 @@ public class ShipTransform {
         return current.subspaceToGlobal.mul(prev.globalToSubspace, new Matrix4d());
     }
 
-    public void transformPosition(Vector3d position, TransformType transformType) {
-        getTransformMatrix(transformType).transformPosition(position);
+    public Vector3d transformPosition(Vector3d position, TransformType transformType) {
+        return getTransformMatrix(transformType).transformPosition(position);
     }
 
-    public void transformDirection(Vector3d direction, TransformType transformType) {
-        getTransformMatrix(transformType).transformDirection(direction);
+    public Vector3d transformDirection(Vector3d direction, TransformType transformType) {
+        return getTransformMatrix(transformType).transformDirection(direction);
     }
 
     public Vec3d transform(Vec3d vec3d, TransformType transformType) {

@@ -85,22 +85,31 @@ public class WorldWaterCollider {
     public void addBuoyancyForces() {
         final MutableBlockPos currentPos = new MutableBlockPos();
         final ShipTransform physicsTransform = parent.getShipTransformationManager().getCurrentPhysicsTransform();
+
+        // Vector objects reused in this method.
+        final Vector3d temp0 = new Vector3d();
+        final Vector3d temp1 = new Vector3d();
+        final Vector3d temp2 = new Vector3d();
+        final Vector3d temp3 = new Vector3d();
+        final Vector3d temp4 = new Vector3d();
+        final Vector3d temp5 = new Vector3d();
+        final Vector3d temp6 = new Vector3d();
+
         for (int i = 0; i < cachedPotentialHits.size(); i++) {
             final int hash = cachedPotentialHits.get(i);
             SpatialDetector.setPosWithRespectTo(hash, centerPotentialHit, currentPos);
 
-            final Vector3d inLocal = JOML.convertDouble(currentPos).add(.5, .5, .5);
-            physicsTransform.transformPosition(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
+            final Vector3dc waterPosInShipSpace = physicsTransform.transformPosition(JOML.convertDouble(currentPos, temp0).add(.5, .5, .5), TransformType.GLOBAL_TO_SUBSPACE);
 
-            final int minX = (int) Math.floor(inLocal.x() - .5);
-            final int minY = (int) Math.floor(inLocal.y() - .5);
-            final int minZ = (int) Math.floor(inLocal.z() - .5);
+            final int minX = (int) Math.floor(waterPosInShipSpace.x() - .5);
+            final int minY = (int) Math.floor(waterPosInShipSpace.y() - .5);
+            final int minZ = (int) Math.floor(waterPosInShipSpace.z() - .5);
 
-            final int maxX = (int) Math.ceil(inLocal.x() + .5);
-            final int maxY = (int) Math.ceil(inLocal.y() + .5);
-            final int maxZ = (int) Math.ceil(inLocal.z() + .5);
+            final int maxX = (int) Math.ceil(waterPosInShipSpace.x() + .5);
+            final int maxY = (int) Math.ceil(waterPosInShipSpace.y() + .5);
+            final int maxZ = (int) Math.ceil(waterPosInShipSpace.z() + .5);
 
-            Vector3d waterPosInWorld = JOML.convertDouble(currentPos).add(.5, .5, .5);
+            final Vector3dc waterPosInWorld = JOML.convertDouble(currentPos, temp1).add(.5, .5, .5);
 
             for (int x = minX; x <= maxX; x++) {
                 for (int z = minZ; z <= maxZ; z++) {
@@ -114,13 +123,12 @@ public class WorldWaterCollider {
                             if (terrainOctree.get(x & 15, y & 15, z & 15)) {
                                 // Assume both the water block and terrain block are spheres, then compute the volume
                                 // that overlaps
-                                Vector3d terrainPos = new Vector3d(x + .5, y + .5, z + .5);
-                                physicsTransform.transformPosition(terrainPos, TransformType.SUBSPACE_TO_GLOBAL);
+                                final Vector3dc shipSolidBlockPosInWorld = physicsTransform.transformPosition(temp2.set(x + .5, y + .5, z + .5), TransformType.SUBSPACE_TO_GLOBAL);
 
                                 final double volumeDisplaced = calculateAABBOverlap(
-                                        waterPosInWorld.x() - terrainPos.x(),
-                                        waterPosInWorld.y() - terrainPos.y(),
-                                        waterPosInWorld.z() - terrainPos.z()
+                                        waterPosInWorld.x() - shipSolidBlockPosInWorld.x(),
+                                        waterPosInWorld.y() - shipSolidBlockPosInWorld.y(),
+                                        waterPosInWorld.z() - shipSolidBlockPosInWorld.z()
                                 );
 
                                 if (volumeDisplaced <= 0) {
@@ -128,35 +136,33 @@ public class WorldWaterCollider {
                                     continue;
                                 }
 
-                                // The distance between the water block and the solid block its pushing upwards
-                                double distance = waterPosInWorld.distance(terrainPos);
+                                // Collision position is average of ship solid block pos and water pos
+                                final Vector3dc collisionPosInWorld = shipSolidBlockPosInWorld.add(waterPosInWorld, temp3).mul(.5);
 
-                                // Collision position is average of terrain pos and water pos
-                                Vector3d collisionPos = terrainPos.add(waterPosInWorld, new Vector3d()).mul(.5);
+                                final Vector3dc buoyancyForce = temp4.set(0, GRAVITY_ACCELERATION * MASS_OF_CUBIC_METER_OF_WATER * volumeDisplaced * calculator.getPhysicsTimeDeltaPerPhysTick(), 0);
+                                final Vector3dc collisionPosRelativeToShipCenterInWorld = temp5.set(collisionPosInWorld).sub(physicsTransform.getPosX(), physicsTransform.getPosY(), physicsTransform.getPosZ());
 
-                                Vector3d collisionImpulseForce = new Vector3d(0, GRAVITY_ACCELERATION * MASS_OF_CUBIC_METER_OF_WATER * volumeDisplaced * calculator.getPhysicsTimeDeltaPerPhysTick(), 0);
-                                Vector3d inBody = new Vector3d(collisionPos)
-                                        .sub(physicsTransform.getPosX(), physicsTransform.getPosY(), physicsTransform.getPosZ());
-
-                                calculator.addForceAtPoint(inBody, collisionImpulseForce);
+                                calculator.addForceAtPoint(collisionPosRelativeToShipCenterInWorld, buoyancyForce);
 
                                 {
                                     // Compute water damping force
-                                    final Vector3dc velocity = calculator.getVelocityAtPoint(inBody);
+                                    final Vector3dc velocity = calculator.getVelocityAtPoint(collisionPosRelativeToShipCenterInWorld);
 
                                     if (velocity.lengthSquared() > .01) {
                                         final double density = 1000;
                                         final double dragCoefficient = .3;
                                         // TODO: This is WRONG, but it'll do for now
+                                        // The distance between the water block and the solid block its pushing upwards
+                                        double distance = waterPosInWorld.distance(shipSolidBlockPosInWorld);
                                         final double area = Math.PI * (SPHERE_RADIUS - (distance * .5)) * (SPHERE_RADIUS - (distance * .5));
                                         final double velocitySquared = velocity.lengthSquared();
 
                                         // Drag formula from https://en.wikipedia.org/wiki/Drag_(physics)
                                         final double forceMagnitude = (.5) * density * velocitySquared * dragCoefficient * area;
 
-                                        final Vector3d dragForce = new Vector3d(velocity).normalize().mul(-forceMagnitude * calculator.getPhysicsTimeDeltaPerPhysTick());
+                                        final Vector3dc dragForce = temp6.set(velocity).normalize().mul(-forceMagnitude * calculator.getPhysicsTimeDeltaPerPhysTick());
 
-                                        calculator.addForceAtPoint(inBody, dragForce);
+                                        calculator.addForceAtPoint(collisionPosRelativeToShipCenterInWorld, dragForce);
                                     }
                                 }
                             }

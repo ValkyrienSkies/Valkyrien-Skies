@@ -37,10 +37,10 @@ public class WorldWaterCollider {
     // ships ghosting through blocks
     private static final double AABB_EXPANSION = 2;
     // The radius of the range we check when considering adding a water block to the collision cache
-    private static final double RANGE_CHECK = 1.8;
+    private static final double RANGE_CHECK = 2;
     // Time in seconds between collision cache updates. A value of .1D means we
     // update the collision cache every 1/10th of a second.
-    private static final double CACHE_UPDATE_FREQUENCY = .075;
+    private static final double CACHE_UPDATE_PERIOD = .5;
 
     private final PhysicsCalculations calculator;
     private final PhysicsObject parent;
@@ -65,18 +65,21 @@ public class WorldWaterCollider {
         this.calculator = calculations;
         this.parent = calculations.getParent();
         this.cachedPotentialHits = new TIntArrayList();
-        this.secondsSinceCollisionCacheUpdate = 2500; // Any number large than CACHE_UPDATE_FREQUENCY works
+        this.secondsSinceCollisionCacheUpdate = 2500; // Any number large than CACHE_UPDATE_PERIOD works
         this.centerPotentialHit = null;
     }
 
     public void tickUpdatingTheCollisionCache() {
         secondsSinceCollisionCacheUpdate += calculator.getPhysicsTimeDeltaPerPhysTick();
-        if (secondsSinceCollisionCacheUpdate > CACHE_UPDATE_FREQUENCY || parent
+        if (secondsSinceCollisionCacheUpdate > CACHE_UPDATE_PERIOD || parent
             .isNeedsCollisionCacheUpdate()) {
             updatePotentialCollisionCache();
         }
     }
 
+    /**
+     * Adds the water buoyancy and water drag forces to the ship.
+     */
     public void addBuoyancyForces() {
         final MutableBlockPos currentPos = new MutableBlockPos();
         final ShipTransform physicsTransform = parent.getShipTransformationManager().getCurrentPhysicsTransform();
@@ -193,45 +196,36 @@ public class WorldWaterCollider {
     }
 
     private void updatePotentialCollisionCache() {
-        ShipTransform currentPhysicsTransform = parent
-            .getShipTransformationManager()
-            .getCurrentPhysicsTransform();
-
+        // We are using grow(3) because its good.
         AxisAlignedBB shipBB = parent.getShipBB().grow(3);
 
-        // Use the physics tick collision box instead of the game tick collision box.
-        // We are using grow(3) on both because for some reason if we don't then ships start
-        // jiggling through the ground. God I can't wait for a new physics engine.
         final AxisAlignedBB collisionBB = shipBB
             .grow(AABB_EXPANSION).grow(2 * Math.ceil(RANGE_CHECK));
 
         secondsSinceCollisionCacheUpdate = 0;
-        // This is being used to occasionally offset the collision cache update, in the
-        // hopes this will prevent multiple ships from all updating
-        // in the same tick
+        // This is being used to occasionally offset the collision cache update, in the hopes this will prevent multiple
+        // ships from all updating in the same tick
         if (Math.random() > .5) {
-            secondsSinceCollisionCacheUpdate -= .05;
+            secondsSinceCollisionCacheUpdate -= .01;
         }
-        int oldSize = cachedPotentialHits.size();
-        // Resets the potential hits array in O(1) time! Isn't that something.
-        // cachedPotentialHits.resetQuick();
+
         cachedPotentialHits.clear();
-        // Ship is outside of world blockSpace, just skip this all togvalkyrium
+        // Ship is outside of world blockSpace, just skip this
         if (collisionBB.maxY < 0 || collisionBB.minY > 255) {
             return;
         }
 
         // Has a -1 on the minY value, I hope this helps with preventing things from
         // falling through the floor
-        BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY - 1, 0),
+        final BlockPos min = new BlockPos(collisionBB.minX, Math.max(collisionBB.minY - 1, 0),
             collisionBB.minZ);
-        BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255),
+        final BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255),
             collisionBB.maxZ);
         centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2.0,
             (min.getY() + max.getY()) / 2.0,
             (min.getZ() + max.getZ()) / 2.0);
 
-        ChunkCache cache = parent.getCachedSurroundingChunks();
+        final ChunkCache cache = parent.getCachedSurroundingChunks();
 
         if (cache == null) {
             System.err.println(
@@ -239,23 +233,23 @@ public class WorldWaterCollider {
             return;
         }
 
-        int chunkMinX = min.getX() >> 4;
-        int chunkMaxX = (max.getX() >> 4) + 1;
-        int chunkMinZ = min.getZ() >> 4;
-        int chunkMaxZ = (max.getZ() >> 4) + 1;
+        final int chunkMinX = min.getX() >> 4;
+        final int chunkMaxX = (max.getX() >> 4) + 1;
+        final int chunkMinZ = min.getZ() >> 4;
+        final int chunkMaxZ = (max.getZ() >> 4) + 1;
 
-        int minX = min.getX();
-        int minY = min.getY();
-        int minZ = min.getZ();
-        int maxX = max.getX();
-        int maxY = max.getY();
-        int maxZ = max.getZ();
+        final int minX = min.getX();
+        final int minY = min.getY();
+        final int minZ = min.getZ();
+        final int maxX = max.getX();
+        final int maxY = max.getY();
+        final int maxZ = max.getZ();
 
         // More multithreading!
         if (VSConfig.MULTITHREADING_SETTINGS.multithreadCollisionCacheUpdate &&
             parent.getBlockPositions().size() > 100) {
 
-            List<Triple<Integer, Integer, TIntList>> tasks = new ArrayList<>();
+            final List<Triple<Integer, Integer, TIntList>> tasks = new ArrayList<>();
 
             for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
                 for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
@@ -273,7 +267,7 @@ public class WorldWaterCollider {
             tasks.forEach(task -> cachedPotentialHits.addAll(task.getRight()));
         } else {
             // Cast to double to avoid overflow errors
-            double size = ((double) (chunkMaxX - chunkMinX)) * ((double) (chunkMaxZ - chunkMinZ));
+            final double size = ((double) (chunkMaxX - chunkMinX)) * ((double) (chunkMaxZ - chunkMinZ));
             if (size > 300000) {
                 // Sanity check; don't execute the rest of the code because we'll just freeze the physics thread.
                 return;

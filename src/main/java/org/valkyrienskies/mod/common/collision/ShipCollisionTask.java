@@ -10,7 +10,7 @@ import org.joml.Vector3d;
 import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
 import org.valkyrienskies.mod.common.util.datastructures.IBitOctree;
-import org.valkyrienskies.mod.common.util.datastructures.IBitOctreeProvider;
+import org.valkyrienskies.mod.common.util.datastructures.ITerrainOctreeProvider;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.ArrayList;
@@ -102,8 +102,8 @@ public class ShipCollisionTask implements Callable<Void> {
 
         ExtendedBlockStorage storage = chunkIn.storageArrays[y >> 4];
         if (storage != null) {
-            IBitOctreeProvider provider = (IBitOctreeProvider) storage.data;
-            IBitOctree octree = provider.getBitOctree();
+            ITerrainOctreeProvider provider = (ITerrainOctreeProvider) storage.data;
+            IBitOctree octree = provider.getSolidOctree();
 
             if (octree.get(x & 15, y & 15, z & 15)) {
                 IBlockState inLocalState = chunkIn.getBlockState(x, y, z);
@@ -152,63 +152,6 @@ public class ShipCollisionTask implements Callable<Void> {
 
     public WorldPhysicsCollider getToTask() {
         return toTask;
-    }
-
-    /**
-     * Quasi-Random Iterator that uses a linear congruential generator to generate the order of
-     * iteration.
-     *
-     * @param <E>
-     * @author thebest108
-     */
-    private static class QuasiRandomIterator<E> implements Iterator<E> {
-
-        // Any large prime number works here.
-        private static final int c = 65537;
-        private final List<E> internalList;
-        private final int startIndex;
-        private int index;
-        private boolean isFinished;
-
-        /**
-         * Creates a new quasi random iterator for the given list, the list passed must not be empty
-         * otherwise an IllegalArgumentException is thrown.
-         */
-        QuasiRandomIterator(List<E> list) {
-            if (list.size() == 0) {
-                throw new IllegalArgumentException();
-            }
-            this.internalList = list;
-            this.isFinished = false;
-            // Start the index at a random value between 0 <= x < list.size()
-            this.startIndex = (int) (Math.random() * list.size());
-            this.index = startIndex;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return !isFinished;
-        }
-
-        @Override
-        public E next() {
-            int oldIndex = index;
-            advanceIndex();
-            return internalList.get(oldIndex);
-        }
-
-        /**
-         * Sets index to be the next value in the linear congruential generator. Also marks the
-         * iterator as finished once a full period has occured.
-         */
-        private void advanceIndex() {
-            index = (index + c) % internalList.size();
-            // Stop the iterator after we've been over every element.
-            if (index == startIndex) {
-                isFinished = true;
-            }
-        }
-
     }
 
 }

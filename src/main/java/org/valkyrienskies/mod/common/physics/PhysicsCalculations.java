@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import org.joml.*;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
+import org.valkyrienskies.mod.common.collision.WorldWaterCollider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.collision.WorldPhysicsCollider;
@@ -24,10 +25,13 @@ public class PhysicsCalculations {
 
     private final PhysicsObject parent;
     private final WorldPhysicsCollider worldCollision;
+    @Getter
+    private final WorldWaterCollider worldWaterCollider;
 
     public boolean actAsArchimedes = false;
     private Vector3dc physCenterOfMass;
     private Vector3d torque;
+    private Vector3d force;
     private double physTickMass;
     // TODO: Get this in one day
     // private double physMass;
@@ -46,6 +50,7 @@ public class PhysicsCalculations {
     public PhysicsCalculations(PhysicsObject parent) {
         this.parent = parent;
         this.worldCollision = new WorldPhysicsCollider(this);
+        this.worldWaterCollider = new WorldWaterCollider(this);
 
         this.physMOITensor = null;
         this.physInvMOITensor = null;
@@ -55,6 +60,7 @@ public class PhysicsCalculations {
 
         this.physCenterOfMass = new Vector3d();
         this.torque = new Vector3d();
+        this.force = new Vector3d();
 
         generatePhysicsTransform();
     }
@@ -90,6 +96,13 @@ public class PhysicsCalculations {
             // We are trying to deconstruct, try to rotate the ship to grid to align with the grid.
             calculateForcesDeconstruction(physTickTimeDelta);
         }
+        addForceAndTorqueToVelocity();
+    }
+
+    private void addForceAndTorqueToVelocity() {
+        linearVelocity.add(force.x() * getInvMass(), force.y() * getInvMass(), force.z() * getInvMass());
+        force.zero();
+        convertTorqueToVelocity();
     }
 
     public void rawPhysTickPostCol() {
@@ -319,17 +332,34 @@ public class PhysicsCalculations {
         torque.zero();
     }
 
+    /**
+     *  Use {@link #addForceAtPointNew(Vector3dc, Vector3dc, Vector3d)} please :)
+     */
+    @Deprecated
     public void addForceAtPoint(Vector3dc inBodyWO,
                                 Vector3dc forceToApply) {
         addForceAtPoint(inBodyWO, forceToApply, new Vector3d());
     }
 
-    private void addForceAtPoint(Vector3dc inBodyWO,
+    /**
+     *  Use {@link #addForceAtPointNew(Vector3dc, Vector3dc, Vector3d)} please :)
+     */
+    @Deprecated
+    public void addForceAtPoint(Vector3dc inBodyWO,
                                 Vector3dc forceToApply,
                                 Vector3d crossVector) {
         inBodyWO.cross(forceToApply, crossVector);
         torque.add(crossVector);
-        getLinearVelocity().add(forceToApply.x() * getInvMass(), forceToApply.y() * getInvMass(), forceToApply.z() * getInvMass());
+        force.add(forceToApply);
+    }
+
+    public void addForceAtPointNew(Vector3dc posRelToShipCenter,
+                                   Vector3dc forceToApply,
+                                   Vector3d tempStorage) {
+        final double timeStep = getPhysicsTimeDeltaPerPhysTick();
+        posRelToShipCenter.cross(forceToApply, tempStorage);
+        torque.add(tempStorage.x() * timeStep, tempStorage.y() * timeStep, tempStorage.z() * timeStep);
+        force.add(forceToApply.x() * timeStep, forceToApply.y() * timeStep, forceToApply.z() * timeStep);
     }
 
     private void updatePhysSpeedAndIters(double newPhysSpeed) {
@@ -363,19 +393,31 @@ public class PhysicsCalculations {
      * Only run ONCE per phys tick!
      */
     private void integrateLinearVelocity() {
+        linearVelocity.add(force.x() * getInvMass(), force.y() * getInvMass(), force.z() * getInvMass());
+        force.zero();
+
         physX += getLinearVelocity().x() * getPhysicsTimeDeltaPerPhysTick();
         physY += getLinearVelocity().y() * getPhysicsTimeDeltaPerPhysTick();
         physZ += getLinearVelocity().z() * getPhysicsTimeDeltaPerPhysTick();
         physY = Math.min(Math.max(physY, VSConfig.shipLowerLimit), VSConfig.shipUpperLimit);
     }
 
-    public Vector3d getVelocityAtPoint(
-            Vector3dc inBodyWO) {
-        Vector3d speed = getAngularVelocity().cross(inBodyWO, new Vector3d());
+    /**
+     *  Use {@link #getVelocityAtPoint(Vector3dc, Vector3d)} please :)
+     */
+    @Deprecated
+    public Vector3d getVelocityAtPoint(Vector3dc posRelativeToShipCenter) {
+        Vector3d speed = getAngularVelocity().cross(posRelativeToShipCenter, new Vector3d());
         speed.x += getLinearVelocity().x();
         speed.y += getLinearVelocity().y();
         speed.z += getLinearVelocity().z();
         return speed;
+    }
+
+    public Vector3d getVelocityAtPoint(Vector3dc posRelativeToShipCenter, Vector3d dest) {
+        Vector3d velocityAtPoint = getAngularVelocity().cross(posRelativeToShipCenter, dest);
+        velocityAtPoint.add(getLinearVelocity());
+        return velocityAtPoint;
     }
 
     // These getter methods guarantee that only code within this class can modify

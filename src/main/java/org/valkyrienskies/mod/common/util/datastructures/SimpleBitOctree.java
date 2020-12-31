@@ -52,7 +52,7 @@ public class SimpleBitOctree implements IBitOctree {
         }
     }
 
-    private void updateOctrees(int x, int y, int z, boolean bit) {
+    protected void updateOctrees(int x, int y, int z, boolean bit) {
         int levelThreeIndex = getOctreeLevelThreeIndex(x, y, z);
         int levelTwoIndex = getOctreeLevelTwoIndex(x, y, z, levelThreeIndex);
         int levelOneIndex = getOctreeLevelOneIndex(x, y, z, levelTwoIndex);
@@ -119,21 +119,21 @@ public class SimpleBitOctree implements IBitOctree {
         return false;
     }
 
-    private int getOctreeLevelOneIndex(int x, int y, int z, int levelTwoIndex) {
+    protected int getOctreeLevelOneIndex(int x, int y, int z, int levelTwoIndex) {
         x = (x & 0x02) >> 1;
         y = (y & 0x02);
         z = (z & 0x02) << 1;
         return getOctreeLevelOneIndex(levelTwoIndex, x | y | z);
     }
 
-    private int getOctreeLevelTwoIndex(int x, int y, int z, int levelThreeIndex) {
+    protected int getOctreeLevelTwoIndex(int x, int y, int z, int levelThreeIndex) {
         x = (x & 0x04) >> 2;
         y = (y & 0x04) >> 1;
         z = (z & 0x04);
         return getOctreeLevelTwoIndex(levelThreeIndex, x | y | z);
     }
 
-    private int getOctreeLevelThreeIndex(int x, int y, int z) {
+    protected int getOctreeLevelThreeIndex(int x, int y, int z) {
         x = (x & 0x08) >> 3;
         y = (y & 0x08) >> 2;
         z = (z & 0x08) >> 1;

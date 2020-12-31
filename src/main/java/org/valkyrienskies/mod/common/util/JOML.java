@@ -32,7 +32,11 @@ public class JOML {
     }
 
     public static Vector3d convertDouble(Vec3i v) {
-        return new Vector3d(v.getX(), v.getY(), v.getZ());
+        return convertDouble(v, new Vector3d());
+    }
+
+    public static Vector3d convertDouble(Vec3i v, Vector3d dest) {
+        return dest.set(v.getX(), v.getY(), v.getZ());
     }
 
     public static Vector3d convert(Vec3d v) {

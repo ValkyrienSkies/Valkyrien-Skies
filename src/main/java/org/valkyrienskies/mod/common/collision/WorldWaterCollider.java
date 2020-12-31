@@ -29,28 +29,23 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Bote
+ * This collider adds the water buoyancy and drag forces to a ship.
  */
 public class WorldWaterCollider {
 
     // Used to expand the AABB used to check for potential collisions; helps prevent
     // ships ghosting through blocks
-    public static final double AABB_EXPANSION = 2D;
-    // The range we check for possible collisions with a block.
-    public static final double RANGE_CHECK = 1.8D;
-    // The minimum depth a collision projection must have, to not use the default
-    // collision normal of <0, 1, 0>
-    public static final double AXIS_TOLERANCE = .3D;
+    private static final double AABB_EXPANSION = 2;
+    // The radius of the range we check when considering adding a water block to the collision cache
+    private static final double RANGE_CHECK = 1.8;
     // Time in seconds between collision cache updates. A value of .1D means we
     // update the collision cache every 1/10th of a second.
-    public static final double CACHE_UPDATE_FREQUENCY = .075D;
+    private static final double CACHE_UPDATE_FREQUENCY = .075;
 
     private final PhysicsCalculations calculator;
     private final PhysicsObject parent;
     private final TIntList cachedPotentialHits;
-    private final TIntArrayList cachedHitsToRemove;
-    // Ensures this always updates the first tick after creation
-    private double ticksSinceCacheUpdate;
+    private double secondsSinceCollisionCacheUpdate;
     private BlockPos centerPotentialHit;
 
     // The radius of the sphere that represents each water block in meters.
@@ -70,19 +65,13 @@ public class WorldWaterCollider {
         this.calculator = calculations;
         this.parent = calculations.getParent();
         this.cachedPotentialHits = new TIntArrayList();
-        this.cachedHitsToRemove = new TIntArrayList();
-        this.ticksSinceCacheUpdate = 25D;
+        this.secondsSinceCollisionCacheUpdate = 2500; // Any number large than CACHE_UPDATE_FREQUENCY works
         this.centerPotentialHit = null;
     }
 
     public void tickUpdatingTheCollisionCache() {
-        // Multiply by 20 to convert seconds (physTickSpeed) into ticks
-        ticksSinceCacheUpdate += calculator.getPhysicsTimeDeltaPerPhysTick();
-        for (int i = 0; i < cachedHitsToRemove.size(); i++) {
-            cachedPotentialHits.remove(cachedHitsToRemove.get(i));
-        }
-        cachedHitsToRemove.resetQuick();
-        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent
+        secondsSinceCollisionCacheUpdate += calculator.getPhysicsTimeDeltaPerPhysTick();
+        if (secondsSinceCollisionCacheUpdate > CACHE_UPDATE_FREQUENCY || parent
             .isNeedsCollisionCacheUpdate()) {
             updatePotentialCollisionCache();
         }
@@ -214,17 +203,14 @@ public class WorldWaterCollider {
         // We are using grow(3) on both because for some reason if we don't then ships start
         // jiggling through the ground. God I can't wait for a new physics engine.
         final AxisAlignedBB collisionBB = shipBB
-            .grow(AABB_EXPANSION).expand(
-                calculator.getLinearVelocity().x * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.getLinearVelocity().y * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.getLinearVelocity().z * calculator.getPhysicsTimeDeltaPerPhysTick() * 5);
+            .grow(AABB_EXPANSION).grow(2 * Math.ceil(RANGE_CHECK));
 
-        ticksSinceCacheUpdate = 0D;
+        secondsSinceCollisionCacheUpdate = 0;
         // This is being used to occasionally offset the collision cache update, in the
         // hopes this will prevent multiple ships from all updating
         // in the same tick
         if (Math.random() > .5) {
-            ticksSinceCacheUpdate -= .05D;
+            secondsSinceCollisionCacheUpdate -= .05;
         }
         int oldSize = cachedPotentialHits.size();
         // Resets the potential hits array in O(1) time! Isn't that something.
@@ -241,9 +227,9 @@ public class WorldWaterCollider {
             collisionBB.minZ);
         BlockPos max = new BlockPos(collisionBB.maxX, Math.min(collisionBB.maxY, 255),
             collisionBB.maxZ);
-        centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2D,
-            (min.getY() + max.getY()) / 2D,
-            (min.getZ() + max.getZ()) / 2D);
+        centerPotentialHit = new BlockPos((min.getX() + max.getX()) / 2.0,
+            (min.getY() + max.getY()) / 2.0,
+            (min.getZ() + max.getZ()) / 2.0);
 
         ChunkCache cache = parent.getCachedSurroundingChunks();
 
@@ -277,13 +263,9 @@ public class WorldWaterCollider {
                 }
             }
 
-            Consumer<Triple<Integer, Integer, TIntList>> consumer = i -> { // i is a Tuple<Integer, Integer>
-                // updateCollisionCacheParrallel(cache, cachedPotentialHits, i.getFirst(),
-                // i.getSecond(), minX, minY, minZ, maxX, maxY, maxZ);
-                updateCollisionCacheSequential(cache, i.getLeft(), i.getMiddle(), minX, minY, minZ,
-                    maxX, maxY, maxZ,
-                    shipBB, i.getRight());
-            };
+            Consumer<Triple<Integer, Integer, TIntList>> consumer = i -> updateCollisionCacheSequential(cache, i.getLeft(), i.getMiddle(), minX, minY, minZ,
+                maxX, maxY, maxZ,
+                shipBB, i.getRight());
             ValkyrienSkiesMod.getPhysicsThreadPool().submit(
                 () -> tasks.parallelStream().forEach(consumer))
             .join();
@@ -296,7 +278,6 @@ public class WorldWaterCollider {
                 // Sanity check; don't execute the rest of the code because we'll just freeze the physics thread.
                 return;
             }
-            // TODO: VS thread freezes here.
             for (int chunkX = chunkMinX; chunkX < chunkMaxX; chunkX++) {
                 for (int chunkZ = chunkMinZ; chunkZ < chunkMaxZ; chunkZ++) {
                     updateCollisionCacheSequential(cache, chunkX, chunkZ, minX, minY, minZ, maxX,
@@ -316,9 +297,8 @@ public class WorldWaterCollider {
             || arrayChunkZ > cache.chunkArray[0].length - 1)
             && cache.chunkArray[arrayChunkX][arrayChunkZ] != null) {
 
-            Vector3d temp1 = new Vector3d();
-            Vector3d temp2 = new Vector3d();
-            Vector3d temp3 = new Vector3d();
+            final Vector3d temp1 = new Vector3d();
+            final Vector3d temp2 = new Vector3d();
 
             Chunk chunk = cache.chunkArray[arrayChunkX][arrayChunkZ];
             for (int storageY = minY >> 4; storageY <= maxY >> 4; storageY++) {
@@ -328,18 +308,16 @@ public class WorldWaterCollider {
                     int minStorageY = storageY << 4;
                     int minStorageZ = chunkZ << 4;
 
-                    int maxStorageX = minStorageX + 16;
-                    int maxStorageY = minStorageY + 16;
-                    int maxStorageZ = minStorageZ + 16;
+                    int maxStorageX = minStorageX + 15;
+                    int maxStorageY = Math.min(maxY, minStorageY + 15);
+                    int maxStorageZ = minStorageZ + 15;
 
                     ITerrainOctreeProvider provider = (ITerrainOctreeProvider) extendedblockstorage.data;
                     IBitOctree octree = provider.getLiquidOctree();
-                    for (int x = minStorageX; x < maxStorageX; x++) {
-                        for (int y = minStorageY; y < maxStorageY; y++) {
-                            for (int z = minStorageZ; z < maxStorageZ; z++) {
-                                checkForCollision(x, y, z, extendedblockstorage, octree, temp1,
-                                    temp2, temp3,
-                                    shipBB, output);
+                    for (int x = minStorageX; x <= maxStorageX; x++) {
+                        for (int y = minStorageY; y <= maxStorageY; y++) {
+                            for (int z = minStorageZ; z <= maxStorageZ; z++) {
+                                checkIfCollidesWithinRangeCheckRadius(x, y, z, octree, temp1, temp2, shipBB, output);
                             }
                         }
                     }
@@ -348,16 +326,17 @@ public class WorldWaterCollider {
         }
     }
 
-    private void checkForCollision(int x, int y, int z, ExtendedBlockStorage storage,
-        IBitOctree octree, Vector3d inLocal,
-        Vector3d inBody,
-        Vector3d speedInBody, AxisAlignedBB shipBB, TIntList output) {
+    /**
+     * If there is a block within a radius of {@link #RANGE_CHECK}
+     */
+    private void checkIfCollidesWithinRangeCheckRadius(final int x, final int y, final int z,
+                                                       final IBitOctree octree, final Vector3d inLocal, final Vector3d inBody,
+                                                       final AxisAlignedBB shipBB, final TIntList output) {
         if (octree.get(x & 15, y & 15, z & 15)) {
-            inLocal.x = x + .5D;
-            inLocal.y = y + .5D;
-            inLocal.z = z + .5D;
-            // TODO: Something
-            // parent.coordTransform.fromGlobalToLocal(inLocal);
+            inLocal.x = x + .5;
+            inLocal.y = y + .5;
+            inLocal.z = z + .5;
+
             if (inLocal.x > shipBB.minX && inLocal.x < shipBB.maxX && inLocal.y > shipBB.minY
                 && inLocal.y < shipBB.maxY
                 && inLocal.z > shipBB.minZ && inLocal.z < shipBB.maxZ) {
@@ -365,55 +344,27 @@ public class WorldWaterCollider {
                     .transformPosition(inLocal, TransformType.GLOBAL_TO_SUBSPACE);
 
                 inLocal.sub(parent.getCenterCoord(), inBody);
-                // parent.physicsProcessor.setVectorToVelocityAtPoint(inBody, speedInBody);
-                // speedInBody.multiply(-parent.physicsProcessor.getPhysicsTimeDeltaPerGameTick());
-
-                // TODO: This isnt ideal, but we do gain a lot of performance.
-                speedInBody.zero();
-
-                // double RANGE_CHECK = 1;
 
                 int minX, minY, minZ, maxX, maxY, maxZ;
-                if (speedInBody.x > 0) {
-                    minX = MathHelper.floor(inLocal.x - RANGE_CHECK);
-                    maxX = MathHelper.floor(inLocal.x + RANGE_CHECK + speedInBody.x);
-                } else {
-                    minX = MathHelper.floor(inLocal.x - RANGE_CHECK + speedInBody.x);
-                    maxX = MathHelper.floor(inLocal.x + RANGE_CHECK);
-                }
 
-                if (speedInBody.y > 0) {
-                    minY = MathHelper.floor(inLocal.y - RANGE_CHECK);
-                    maxY = MathHelper.floor(inLocal.y + RANGE_CHECK + speedInBody.y);
-                } else {
-                    minY = MathHelper.floor(inLocal.y - RANGE_CHECK + speedInBody.y);
-                    maxY = MathHelper.floor(inLocal.y + RANGE_CHECK);
-                }
+                minX = MathHelper.floor(inLocal.x - RANGE_CHECK);
+                maxX = MathHelper.floor(inLocal.x + RANGE_CHECK);
 
-                if (speedInBody.z > 0) {
-                    minZ = MathHelper.floor(inLocal.z - RANGE_CHECK);
-                    maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK + speedInBody.z);
-                } else {
-                    minZ = MathHelper.floor(inLocal.z - RANGE_CHECK + speedInBody.z);
-                    maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK);
-                }
+                minY = MathHelper.floor(inLocal.y - RANGE_CHECK);
+                maxY = MathHelper.floor(inLocal.y + RANGE_CHECK);
+
+                minZ = MathHelper.floor(inLocal.z - RANGE_CHECK);
+                maxZ = MathHelper.floor(inLocal.z + RANGE_CHECK);
+
 
                 minY = Math.min(255, Math.max(minY, 0));
                 maxY = Math.min(255, Math.max(maxY, 0));
 
-                // int localX = MathHelper.floor(inLocal.X);
-                // int localY = MathHelper.floor(inLocal.Y);
-                // int localZ = MathHelper.floor(inLocal.Z);
-
-                // tooTiredToName(localX, localY, localZ, x, y, z);
-                // if (false)
-                // maxX = Math.min(maxX, minX << 4);
-                // maxZ = Math.min(maxZ, minZ << 4);
-
-                Chunk chunkIn00 = parent.getChunkClaim().containsChunk(minX >> 4, minZ >> 4) ? parent.getChunkAt(minX >> 4, minZ >> 4) : null;
-                Chunk chunkIn01 = parent.getChunkClaim().containsChunk(minX >> 4, maxZ >> 4) ? parent.getChunkAt(minX >> 4, maxZ >> 4) : null;
-                Chunk chunkIn10 = parent.getChunkClaim().containsChunk(maxX >> 4, minZ >> 4) ? parent.getChunkAt(maxX >> 4, minZ >> 4) : null;
-                Chunk chunkIn11 = parent.getChunkClaim().containsChunk(maxX >> 4, maxZ >> 4) ? parent.getChunkAt(maxX >> 4, maxZ >> 4) : null;
+                // TODO: This loop is crap. Come up with a better way. Please :(
+                final Chunk chunkIn00 = parent.getChunkClaim().containsChunk(minX >> 4, minZ >> 4) ? parent.getChunkAt(minX >> 4, minZ >> 4) : null;
+                final Chunk chunkIn01 = parent.getChunkClaim().containsChunk(minX >> 4, maxZ >> 4) ? parent.getChunkAt(minX >> 4, maxZ >> 4) : null;
+                final Chunk chunkIn10 = parent.getChunkClaim().containsChunk(maxX >> 4, minZ >> 4) ? parent.getChunkAt(maxX >> 4, minZ >> 4) : null;
+                final Chunk chunkIn11 = parent.getChunkClaim().containsChunk(maxX >> 4, maxZ >> 4) ? parent.getChunkAt(maxX >> 4, maxZ >> 4) : null;
 
                 breakThisLoop:
                 for (int localX = minX; localX < maxX; localX++) {

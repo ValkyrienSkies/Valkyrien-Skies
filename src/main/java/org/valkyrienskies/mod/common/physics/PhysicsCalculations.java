@@ -332,17 +332,34 @@ public class PhysicsCalculations {
         torque.zero();
     }
 
+    /**
+     *  Use {@link #addForceAtPointNew(Vector3dc, Vector3dc, Vector3d)} please :)
+     */
+    @Deprecated
     public void addForceAtPoint(Vector3dc inBodyWO,
                                 Vector3dc forceToApply) {
         addForceAtPoint(inBodyWO, forceToApply, new Vector3d());
     }
 
+    /**
+     *  Use {@link #addForceAtPointNew(Vector3dc, Vector3dc, Vector3d)} please :)
+     */
+    @Deprecated
     public void addForceAtPoint(Vector3dc inBodyWO,
                                 Vector3dc forceToApply,
                                 Vector3d crossVector) {
         inBodyWO.cross(forceToApply, crossVector);
         torque.add(crossVector);
         force.add(forceToApply);
+    }
+
+    public void addForceAtPointNew(Vector3dc posRelToShipCenter,
+                                   Vector3dc forceToApply,
+                                   Vector3d tempStorage) {
+        final double timeStep = getPhysicsTimeDeltaPerPhysTick();
+        posRelToShipCenter.cross(forceToApply, tempStorage);
+        torque.add(tempStorage.x() * timeStep, tempStorage.y() * timeStep, tempStorage.z() * timeStep);
+        force.add(forceToApply.x() * timeStep, forceToApply.y() * timeStep, forceToApply.z() * timeStep);
     }
 
     private void updatePhysSpeedAndIters(double newPhysSpeed) {
@@ -385,13 +402,22 @@ public class PhysicsCalculations {
         physY = Math.min(Math.max(physY, VSConfig.shipLowerLimit), VSConfig.shipUpperLimit);
     }
 
-    public Vector3d getVelocityAtPoint(
-            Vector3dc inBodyWO) {
-        Vector3d speed = getAngularVelocity().cross(inBodyWO, new Vector3d());
+    /**
+     *  Use {@link #getVelocityAtPoint(Vector3dc, Vector3d)} please :)
+     */
+    @Deprecated
+    public Vector3d getVelocityAtPoint(Vector3dc posRelativeToShipCenter) {
+        Vector3d speed = getAngularVelocity().cross(posRelativeToShipCenter, new Vector3d());
         speed.x += getLinearVelocity().x();
         speed.y += getLinearVelocity().y();
         speed.z += getLinearVelocity().z();
         return speed;
+    }
+
+    public Vector3d getVelocityAtPoint(Vector3dc posRelativeToShipCenter, Vector3d dest) {
+        Vector3d velocityAtPoint = getAngularVelocity().cross(posRelativeToShipCenter, dest);
+        velocityAtPoint.add(getLinearVelocity());
+        return velocityAtPoint;
     }
 
     // These getter methods guarantee that only code within this class can modify

@@ -54,11 +54,17 @@ public class WorldWaterCollider {
     private BlockPos centerPotentialHit;
 
     // The radius of the sphere that represents each water block in meters.
-    public static final double SPHERE_RADIUS = .5;
+    private static final double SPHERE_RADIUS = .5;
     // Acceleration in m/s^2
-    public static final double GRAVITY_ACCELERATION = 9.8;
+    private static final double GRAVITY_ACCELERATION = 9.8;
     // Mass in kg
-    public static final double MASS_OF_CUBIC_METER_OF_WATER = 1000;
+    private static final double MASS_OF_CUBIC_METER_OF_WATER = 1000;
+    // Density in kg/m^3
+    private static final double DENSITY_OF_WATER = 1000;
+    // Dimensionless constant. Higher values mean more damping force from water.
+    private static final double DRAG_COEFFICIENT_OF_WATER = .3;
+    // The radius, in meters, of the AABB of water blocks and terrain blocks.
+    private static final double AABB_RADIUS = .5;
 
     public WorldWaterCollider(PhysicsCalculations calculations) {
         this.calculator = calculations;
@@ -94,6 +100,9 @@ public class WorldWaterCollider {
         final Vector3d temp4 = new Vector3d();
         final Vector3d temp5 = new Vector3d();
         final Vector3d temp6 = new Vector3d();
+        final Vector3d temp7 = new Vector3d();
+        final Vector3d temp8 = new Vector3d();
+        final Vector3d temp9 = new Vector3d();
 
         for (int i = 0; i < cachedPotentialHits.size(); i++) {
             final int hash = cachedPotentialHits.get(i);
@@ -139,18 +148,16 @@ public class WorldWaterCollider {
                                 // Collision position is average of ship solid block pos and water pos
                                 final Vector3dc collisionPosInWorld = shipSolidBlockPosInWorld.add(waterPosInWorld, temp3).mul(.5);
 
-                                final Vector3dc buoyancyForce = temp4.set(0, GRAVITY_ACCELERATION * MASS_OF_CUBIC_METER_OF_WATER * volumeDisplaced * calculator.getPhysicsTimeDeltaPerPhysTick(), 0);
+                                final Vector3dc buoyancyForce = temp4.set(0, volumeDisplaced * GRAVITY_ACCELERATION * MASS_OF_CUBIC_METER_OF_WATER, 0);
                                 final Vector3dc collisionPosRelativeToShipCenterInWorld = temp5.set(collisionPosInWorld).sub(physicsTransform.getPosX(), physicsTransform.getPosY(), physicsTransform.getPosZ());
 
-                                calculator.addForceAtPoint(collisionPosRelativeToShipCenterInWorld, buoyancyForce);
+                                calculator.addForceAtPointNew(collisionPosRelativeToShipCenterInWorld, buoyancyForce, temp7);
 
                                 {
                                     // Compute water damping force
-                                    final Vector3dc velocity = calculator.getVelocityAtPoint(collisionPosRelativeToShipCenterInWorld);
+                                    final Vector3dc velocity = calculator.getVelocityAtPoint(collisionPosRelativeToShipCenterInWorld, temp9);
 
-                                    if (velocity.lengthSquared() > .01) {
-                                        final double density = 1000;
-                                        final double dragCoefficient = .3;
+                                    if (!isVectorLengthZero(velocity)) {
                                         // TODO: This is WRONG, but it'll do for now
                                         // The distance between the water block and the solid block its pushing upwards
                                         double distance = waterPosInWorld.distance(shipSolidBlockPosInWorld);
@@ -158,11 +165,11 @@ public class WorldWaterCollider {
                                         final double velocitySquared = velocity.lengthSquared();
 
                                         // Drag formula from https://en.wikipedia.org/wiki/Drag_(physics)
-                                        final double forceMagnitude = (.5) * density * velocitySquared * dragCoefficient * area;
+                                        final double forceMagnitude = (.5) * DENSITY_OF_WATER * velocitySquared * DRAG_COEFFICIENT_OF_WATER * area;
 
-                                        final Vector3dc dragForce = temp6.set(velocity).normalize().mul(-forceMagnitude * calculator.getPhysicsTimeDeltaPerPhysTick());
+                                        final Vector3dc dragForce = temp6.set(velocity).normalize().mul(-forceMagnitude);
 
-                                        calculator.addForceAtPoint(collisionPosRelativeToShipCenterInWorld, dragForce);
+                                        calculator.addForceAtPointNew(collisionPosRelativeToShipCenterInWorld, dragForce, temp8);
                                     }
                                 }
                             }
@@ -172,22 +179,6 @@ public class WorldWaterCollider {
             }
         }
     }
-
-    /**
-     * Computes the volume of the overlap of two spheres with radius @link{#SPHERE_RADIUS}.
-     *
-     * Given that both spheres are the same size, then the intersection volume is just the 2 * sphere cap volume.
-     *
-     * Uses sphere cap equation from https://en.wikipedia.org/wiki/Spherical_cap
-     */
-    private static double calculateVolumeOfSphereIntersection(final double distance) {
-        double sphereCapHeight = (distance / 2) - SPHERE_RADIUS;
-        double sphereCapVolume = (Math.PI / 3.0) * (sphereCapHeight * sphereCapHeight) * (3 * SPHERE_RADIUS - sphereCapHeight);
-
-        return 2 * sphereCapVolume;
-    }
-
-    private static final double AABB_RADIUS = .5;
 
     /**
      * Computes the volume of the overlap of two AABB with radius {@link #AABB_RADIUS}.
@@ -204,6 +195,12 @@ public class WorldWaterCollider {
             return 0;
         }
         return (AABB_RADIUS * 2 - xOffset) * (AABB_RADIUS * 2 - yOffset) * (AABB_RADIUS * 2 - zOffset);
+    }
+
+    private static final double VECTOR_LENGTH_SQUARED_ZERO_THRESHOLD = .01;
+
+    private static boolean isVectorLengthZero(Vector3dc vector) {
+        return vector.lengthSquared() < VECTOR_LENGTH_SQUARED_ZERO_THRESHOLD;
     }
 
     private void updatePotentialCollisionCache() {

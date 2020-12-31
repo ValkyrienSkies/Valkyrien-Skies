@@ -117,37 +117,22 @@ public class WorldWaterCollider {
                                 Vector3d terrainPos = new Vector3d(x + .5, y + .5, z + .5);
                                 physicsTransform.transformPosition(terrainPos, TransformType.SUBSPACE_TO_GLOBAL);
 
-                                // The distance between the water block and the solid block its pushing upwards
-                                double distance = waterPosInWorld.distance(terrainPos);
-
-                                if (distance >= SPHERE_RADIUS * 2) {
-                                    // No volume displaced
-                                    // continue;
-                                }
-
-                                // Collision position is average of terrain pos and water pos
-                                Vector3d collisionPos = terrainPos.add(waterPosInWorld, new Vector3d()).mul(.5);
-
-                                // final double volumeDisplaced = 2 * calculateVolumeOfSphereIntersection(distance);
-
-                                AxisAlignedBB waterBB = new AxisAlignedBB(currentPos);
-                                AxisAlignedBB blockBB = new AxisAlignedBB(
-                                        terrainPos.x - .5, terrainPos.y - .5, terrainPos.z - .5,
-                                        terrainPos.x + .5, terrainPos.y + .5, terrainPos.z + .5
+                                final double volumeDisplaced = calculateAABBOverlap(
+                                        waterPosInWorld.x() - terrainPos.x(),
+                                        waterPosInWorld.y() - terrainPos.y(),
+                                        waterPosInWorld.z() - terrainPos.z()
                                 );
 
-                                if (!waterBB.intersects(blockBB)) {
+                                if (volumeDisplaced <= 0) {
+                                    // No intersection
                                     continue;
                                 }
 
-                                AxisAlignedBB intersection = waterBB.intersect(blockBB);
+                                // The distance between the water block and the solid block its pushing upwards
+                                double distance = waterPosInWorld.distance(terrainPos);
 
-                                final double volumeDisplaced = (intersection.maxX - intersection.minX) *
-                                        (intersection.maxY - intersection.minY) *
-                                        (intersection.maxZ - intersection.minZ);
-
-                                // final double volumeDisplaced = ;
-
+                                // Collision position is average of terrain pos and water pos
+                                Vector3d collisionPos = terrainPos.add(waterPosInWorld, new Vector3d()).mul(.5);
 
                                 Vector3d collisionImpulseForce = new Vector3d(0, GRAVITY_ACCELERATION * MASS_OF_CUBIC_METER_OF_WATER * volumeDisplaced * calculator.getPhysicsTimeDeltaPerPhysTick(), 0);
                                 Vector3d inBody = new Vector3d(collisionPos)
@@ -194,6 +179,25 @@ public class WorldWaterCollider {
         double sphereCapVolume = (Math.PI / 3.0) * (sphereCapHeight * sphereCapHeight) * (3 * SPHERE_RADIUS - sphereCapHeight);
 
         return 2 * sphereCapVolume;
+    }
+
+    private static final double AABB_RADIUS = .5;
+
+    /**
+     * Computes the volume of the overlap of two AABB with radius {@link #AABB_RADIUS}.
+     * @param xOffset The offset between the two AABBs in the x direction
+     * @param yOffset The offset between the two AABBs in the y direction
+     * @param zOffset The offset between the two AABBs in the z direction
+     * @return The volume of overlap between both AABBs
+     */
+    private static double calculateAABBOverlap(double xOffset, double yOffset, double zOffset) {
+        xOffset = Math.abs(xOffset);
+        yOffset = Math.abs(yOffset);
+        zOffset = Math.abs(zOffset);
+        if (xOffset >= AABB_RADIUS * 2 || yOffset >= AABB_RADIUS * 2 || zOffset >= AABB_RADIUS * 2) {
+            return 0;
+        }
+        return (AABB_RADIUS * 2 - xOffset) * (AABB_RADIUS * 2 - yOffset) * (AABB_RADIUS * 2 - zOffset);
     }
 
     private void updatePotentialCollisionCache() {

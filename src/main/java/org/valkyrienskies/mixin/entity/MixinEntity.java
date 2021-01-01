@@ -298,4 +298,14 @@ public abstract class MixinEntity implements IDraggable {
             cir.setReturnValue(false);
         }
     }
+
+    /**
+     * This mixin removes the effect lava has on movement.
+     */
+    @Inject(method = "isInLava", at = @At("HEAD"), cancellable = true)
+    private void onPreIsInLava(CallbackInfoReturnable<Boolean> cir) {
+        if (getInAirPocket()) {
+            cir.setReturnValue(false);
+        }
+    }
 }

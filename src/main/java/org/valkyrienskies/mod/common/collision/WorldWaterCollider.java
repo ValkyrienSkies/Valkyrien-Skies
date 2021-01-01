@@ -71,8 +71,7 @@ public class WorldWaterCollider {
 
     public void tickUpdatingTheCollisionCache() {
         secondsSinceCollisionCacheUpdate += calculator.getPhysicsTimeDeltaPerPhysTick();
-        if (secondsSinceCollisionCacheUpdate > CACHE_UPDATE_PERIOD || parent
-            .isNeedsCollisionCacheUpdate()) {
+        if (secondsSinceCollisionCacheUpdate > CACHE_UPDATE_PERIOD) {
             updatePotentialCollisionCache();
         }
     }

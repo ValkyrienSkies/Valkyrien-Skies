@@ -77,12 +77,6 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     @Getter
     private final ClaimedChunkCacheController claimedChunkCache;
-    /**
-     * If this PhysicsObject needs to update the collision cache immediately
-     */
-    @Setter
-    @Getter
-    private boolean needsCollisionCacheUpdate;
 
     @Getter
     private final World world;
@@ -141,7 +135,6 @@ public class PhysicsObject implements IPhysicsEntity {
         this.physicsCalculations = new PhysicsCalculations(this);
         this.shipAligningToGrid = false;
         this.deconstructState = DeconstructState.NOT_DECONSTRUCTING;
-        this.needsCollisionCacheUpdate = true;
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
@@ -157,7 +150,7 @@ public class PhysicsObject implements IPhysicsEntity {
     void onTick() {
         if (!world.isRemote) {
             cachedSurroundingChunks.updateChunkCache();
-            this.setNeedsCollisionCacheUpdate(true);
+            // this.setNeedsCollisionCacheUpdate(true);
 
             ShipTransform physicsTransform = getShipTransformationManager()
                 .getCurrentPhysicsTransform();
@@ -189,7 +182,7 @@ public class PhysicsObject implements IPhysicsEntity {
      * Sets the consecutive tick counter to 0.
      */
     public void resetConsecutiveProperTicks() {
-        this.setNeedsCollisionCacheUpdate(true);
+        // this.setNeedsCollisionCacheUpdate(true);
     }
 
     /**

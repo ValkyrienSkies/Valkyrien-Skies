@@ -29,7 +29,10 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
     private final PhysicsObject parent;
     private final World world;
 
-    private final Map<Long, Chunk> claimedChunks;
+    // private final Map<Long, Chunk> claimedChunks;
+    private final Chunk[][] claimedChunks;
+    private final int chunkBottomX, chunkBottomZ;
+    private final int radius;
 
     /**
      * This constructor is expensive; it loads all the chunks when it's called. Be warned.
@@ -39,7 +42,11 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
     public ClaimedChunkCacheController(PhysicsObject parent) {
         this.world = parent.getWorld();
         this.parent = parent;
-        this.claimedChunks = new HashMap<>();
+        // TODO: Bad :(
+        this.radius = 7;
+        this.claimedChunks = new Chunk[radius * 2 + 1][radius * 2 + 1];
+        this.chunkBottomX = parent.getChunkClaim().getCenterPos().x - radius;
+        this.chunkBottomZ = parent.getChunkClaim().getCenterPos().z - radius;
         loadChunksIntoCache();
     }
 
@@ -51,13 +58,9 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      * @return The chunk from the cache
      */
     public Chunk getChunkAt(int chunkX, int chunkZ) {
-        VSChunkClaim claim = parent.getShipData().getChunkClaim();
+        throwIfOutOfBounds(chunkX, chunkZ);
 
-        throwIfOutOfBounds(claim, chunkX, chunkZ);
-
-        long chunkPos = ChunkPos.asLong(chunkX, chunkZ);
-
-        return claimedChunks.get(chunkPos);
+        return claimedChunks[chunkX - chunkBottomX][chunkZ - chunkBottomZ];
     }
 
     /**
@@ -68,20 +71,25 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
      * @param chunk  The chunk to cache.
      */
     private void setChunkAt(int chunkX, int chunkZ, Chunk chunk) {
-        VSChunkClaim claim = parent.getShipData().getChunkClaim();
+        throwIfOutOfBounds(chunkX, chunkZ);
 
-        throwIfOutOfBounds(claim, chunkX, chunkZ);
+        final int relativeChunkX = chunkX - chunkBottomX;
+        final int relativeChunkZ = chunkZ - chunkBottomZ;
 
-        long chunkPos = ChunkPos.asLong(chunkX, chunkZ);
-
-        claimedChunks.put(chunkPos, chunk);
+        claimedChunks[relativeChunkX][relativeChunkZ] = chunk;
     }
 
     /**
      * Throws a ChunkNotInClaimException if (chunkX, chunkZ) isn't a part of the given VSChunkClaim.
      */
-    private static void throwIfOutOfBounds(VSChunkClaim claim, int chunkX, int chunkZ) {
-        if (!claim.containsChunk(chunkX, chunkZ)) {
+    private void throwIfOutOfBounds(int chunkX, int chunkZ) {
+        // if (!claim.containsChunk(chunkX, chunkZ)) {
+        //     throw new ChunkNotInClaimException(chunkX, chunkZ);
+        // }
+        final int relativeChunkX = chunkX - chunkBottomX;
+        final int relativeChunkZ = chunkZ - chunkBottomZ;
+
+        if (relativeChunkX < 0 || relativeChunkX >= radius * 2 + 1 || relativeChunkZ < 0 || relativeChunkZ >= radius * 2 + 1) {
             throw new ChunkNotInClaimException(chunkX, chunkZ);
         }
     }
@@ -130,8 +138,9 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
     public void deleteShipChunksFromWorld() {
         PlayerChunkMap map = ((WorldServer) world).getPlayerChunkMap();
 
-        // Delete all claimed chunks.
-        claimedChunks.forEach((posLong, chunk) -> {
+        final Iterator<Chunk> chunkIterator = iterator();
+        while (chunkIterator.hasNext()) {
+            final Chunk chunk = chunkIterator.next();
             // First delete all the TileEntities in the chunk
             List<BlockPos> chunkTilesPos = new ArrayList<>(chunk.tileEntities.keySet());
             for (BlockPos tilePos : chunkTilesPos) {
@@ -150,13 +159,19 @@ public class ClaimedChunkCacheController implements Iterable<Chunk> {
                 throw new IllegalStateException("How did the entry at " + chunk.x + " : " + chunk.z + " return as null?");
             }
             map.removeEntry(entry);
-        });
+        }
     }
 
     @Nonnull
     @Override
     public Iterator<Chunk> iterator() {
-        return claimedChunks.values().iterator();
+        final List<Chunk> chunksList = new ArrayList<>();
+        for (Chunk[] chunks : claimedChunks) {
+            for (Chunk chunk : chunks) {
+                if (chunk != null) chunksList.add(chunk);
+            }
+        }
+        return chunksList.iterator();
     }
 
     /**

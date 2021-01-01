@@ -64,8 +64,18 @@ public final class VSChunkClaim implements Iterable<ChunkPos> {
      * @return True if the specified chunk is contained within this {@link VSChunkClaim}
      */
     public boolean containsChunk(int chunkX, int chunkZ) {
-        long chunkLong = getChunkPos(chunkX, chunkZ);
-        return claimedChunks.contains(chunkLong);
+        // long chunkLong = getChunkPos(chunkX, chunkZ);
+        // return claimedChunks.contains(chunkLong);
+        // Bad :(
+        final int radius = 7;
+
+        final int relativeChunkX = chunkX - centerPos.x + radius;
+        final int relativeChunkZ = chunkZ - centerPos.z + radius;
+
+        if (relativeChunkX < 0 || relativeChunkX >= radius * 2 + 1 || relativeChunkZ < 0 || relativeChunkZ >= radius * 2 + 1) {
+            return false;
+        }
+        return true;
     }
 
     public boolean containsChunk(ChunkPos pos) {

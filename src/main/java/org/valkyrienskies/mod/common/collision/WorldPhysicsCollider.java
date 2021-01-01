@@ -99,8 +99,7 @@ public class WorldPhysicsCollider {
             cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
         cachedHitsToRemove.resetQuick();
-        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY || parent
-            .isNeedsCollisionCacheUpdate()) {
+        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY) {
             updatePotentialCollisionCache();
             updateCollisionTasksCache = true;
         }

@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.tileentity;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -24,6 +25,7 @@ public class TileEntityWaterPump extends TileEntity implements ITickable {
         for (final Entity entity : entitiesInPumpRadius) {
             final IDraggable draggable = (IDraggable) entity;
             draggable.setTicksAirPocket(2);
+            entity.setAir(300);
         }
     }
 }

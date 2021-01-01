@@ -278,10 +278,23 @@ public abstract class MixinEntity implements IDraggable {
         this.ticksInAirPocket--;
     }
 
+    /**
+     * This mixin removes the water slowdown effect when the player is in an air bubble.
+     */
     @Inject(method = "handleWaterMovement", at = @At("HEAD"), cancellable = true)
     private void handleWaterMovement(CallbackInfoReturnable<Boolean> cir) {
         if (getInAirPocket()) {
             this.inWater = false;
+            cir.setReturnValue(false);
+        }
+    }
+
+    /**
+     * This mixin removes the rendering effect when under water, and removes the drown bar on the gui.
+     */
+    @Inject(method = "isInsideOfMaterial", at = @At("HEAD"), cancellable = true)
+    private void onPreIsInsideOfMaterial(Material materialIn, CallbackInfoReturnable<Boolean> cir) {
+        if (materialIn == Material.WATER && getInAirPocket()) {
             cir.setReturnValue(false);
         }
     }

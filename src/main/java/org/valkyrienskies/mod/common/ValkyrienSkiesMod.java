@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -42,6 +43,7 @@ import org.valkyrienskies.mod.common.ships.deprecated_api.VS_APIPhysicsEntityMan
 import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityWaterPump;
+import org.valkyrienskies.mod.common.util.VSDarknessLibAPILightProvider;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
 
@@ -50,6 +52,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Function;
 
 @Mod(
     modid = ValkyrienSkiesMod.MOD_ID,
@@ -141,6 +144,28 @@ public class ValkyrienSkiesMod {
 
         registerItems();
 		registerBlocks();
+
+		registerDarknessLib();
+    }
+
+    private void registerDarknessLib() {
+        // Register light provider with DarknessLib
+        try {
+            // Why yes, I am using some hacky reflection. I know theres an IMCEvent way to do it, but I can't get it to
+            // work no matter what I do! So reflection it is!
+            final Class clazz = Class.forName("com.shinoow.darknesslib.api.DarknessLibAPI");
+            final Field instanceField = clazz.getDeclaredField("INSTANCE");
+            final Field lightProvidersField = clazz.getDeclaredField("LIGHT_PROVIDERS");
+            // Remove private from the fields
+            instanceField.setAccessible(true);
+            lightProvidersField.setAccessible(true);
+            // Finally add the light provider
+            final Object instance = instanceField.get(null);
+            final List<Function<EntityPlayer, Integer>> lightProviders = (List<Function<EntityPlayer, Integer>>) lightProvidersField.get(instance);
+            lightProviders.add(new VSDarknessLibAPILightProvider());
+        } catch (Exception e) {
+
+        }
     }
 
     @EventHandler

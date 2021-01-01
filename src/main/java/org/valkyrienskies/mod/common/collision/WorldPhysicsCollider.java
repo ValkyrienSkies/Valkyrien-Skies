@@ -50,11 +50,10 @@ public class WorldPhysicsCollider {
     public static final double AXIS_TOLERANCE = .3D;
     // Time in seconds between collision cache updates. A value of .1D means we
     // update the collision cache every 1/10th of a second.
-    public static final double CACHE_UPDATE_FREQUENCY = .075D;
+    public static final double CACHE_UPDATE_PERIOD = .1;
     // Determines how 'bouncy' collisions are
     public static final double COEFFICIENT_OF_RESTITUTION = .52D;
-    // The radius which the algorithm will search for a nearby block to collide with
-    public static final double COLLISION_RANGE_CHECK = .65D;
+
     // If true, will use the octree assisted algorithm for finding collisions,
     // (Approx. O(log(n)^3)).
     // If false then this class uses the much slower iterative approach O(n^3).
@@ -99,7 +98,7 @@ public class WorldPhysicsCollider {
             cachedPotentialHits.remove(cachedHitsToRemove.get(i));
         }
         cachedHitsToRemove.resetQuick();
-        if (ticksSinceCacheUpdate > CACHE_UPDATE_FREQUENCY) {
+        if (ticksSinceCacheUpdate > CACHE_UPDATE_PERIOD) {
             updatePotentialCollisionCache();
             updateCollisionTasksCache = true;
         }

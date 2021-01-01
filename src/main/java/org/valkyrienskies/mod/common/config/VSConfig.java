@@ -49,11 +49,11 @@ public class VSConfig extends VSConfigTemplate {
     @Comment({
         "Target TPS to run the physics world at"
     })
-    public static double targetTps = 100;
+    public static double targetTps = 60;
 
-    @Name("Use dynamic steps")
-    @Comment("Step physics by time since last tick instead of a fixed number")
-    public static boolean useDynamicSteps = false;
+    // @Name("Use dynamic steps")
+    // @Comment("Step physics by time since last tick instead of a fixed number")
+    // public static boolean useDynamicSteps = false;
 
     public static double getTimeSimulatedPerTick() {
         return physSpeedMultiplier / targetTps;
@@ -192,7 +192,7 @@ public class VSConfig extends VSConfigTemplate {
             "Override the auto generated mass value of blocks.",
             "The units of mass are kg."
     })
-    public static String[] blockMass = {"minecraft:grass=1500"};
+    public static String[] blockMass = {"minecraft:grass=1500", "minecraft:obsidian=20000"};
 
     public static Vector3dc gravity() {
         return new Vector3d(gravityVecX, gravityVecY, gravityVecZ);

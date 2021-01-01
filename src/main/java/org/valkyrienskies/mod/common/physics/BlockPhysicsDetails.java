@@ -55,52 +55,52 @@ public class BlockPhysicsDetails {
     }
 
     private static void generateMaterialMasses() {
-        materialMass.put(Material.AIR, 0D);
-        materialMass.put(Material.ANVIL, 8000D);
-        materialMass.put(Material.BARRIER, 0D);
-        materialMass.put(Material.CACTUS, 400D);
-        materialMass.put(Material.CAKE, 100D);
-        materialMass.put(Material.CARPET, 100D);
-        materialMass.put(Material.CIRCUITS, 200D);
-        materialMass.put(Material.CLAY, 2000D);
-        materialMass.put(Material.CLOTH, 300D);
-        materialMass.put(Material.CORAL, 2000D);
-        materialMass.put(Material.CRAFTED_SNOW, 500D);
-        materialMass.put(Material.DRAGON_EGG, 500D);
-        materialMass.put(Material.FIRE, 0D);
-        materialMass.put(Material.GLASS, 2000D);
-        materialMass.put(Material.GOURD, 1500D);
-        materialMass.put(Material.GRASS, 1500D);
-        materialMass.put(Material.GROUND, 1500D);
-        materialMass.put(Material.ICE, 500D);
-        materialMass.put(Material.IRON, 8000D);
-        materialMass.put(Material.LAVA, 2500D);
-        materialMass.put(Material.LEAVES, 100D);
-        materialMass.put(Material.PACKED_ICE, 500D);
-        materialMass.put(Material.PISTON, 3000D);
-        materialMass.put(Material.PLANTS, 300D);
-        materialMass.put(Material.PORTAL, 0D);
-        materialMass.put(Material.REDSTONE_LIGHT, 100D);
-        materialMass.put(Material.ROCK, 3000D);
-        materialMass.put(Material.SAND, 2000D);
-        materialMass.put(Material.SNOW, 500D);
-        materialMass.put(Material.SPONGE, 100D);
-        materialMass.put(Material.STRUCTURE_VOID, 0D);
-        materialMass.put(Material.TNT, 2000D);
-        materialMass.put(Material.VINE, 300D);
-        materialMass.put(Material.WATER, 1000D);
-        materialMass.put(Material.WEB, 100D);
-        materialMass.put(Material.WOOD, 500D);
+        materialMass.put(Material.AIR, 0.0);
+        materialMass.put(Material.ANVIL, 8000.0);
+        materialMass.put(Material.BARRIER, 0.0);
+        materialMass.put(Material.CACTUS, 400.0);
+        materialMass.put(Material.CAKE, 100.0);
+        materialMass.put(Material.CARPET, 100.0);
+        materialMass.put(Material.CIRCUITS, 200.0);
+        materialMass.put(Material.CLAY, 2000.0);
+        materialMass.put(Material.CLOTH, 100.0);
+        materialMass.put(Material.CORAL, 2000.0);
+        materialMass.put(Material.CRAFTED_SNOW, 500.0);
+        materialMass.put(Material.DRAGON_EGG, 500.0);
+        materialMass.put(Material.FIRE, 0.0);
+        materialMass.put(Material.GLASS, 2000.0);
+        materialMass.put(Material.GOURD, 1500.0);
+        materialMass.put(Material.GRASS, 1500.0);
+        materialMass.put(Material.GROUND, 1500.0);
+        materialMass.put(Material.ICE, 500.0);
+        materialMass.put(Material.IRON, 8000.0);
+        materialMass.put(Material.LAVA, 2500.0);
+        materialMass.put(Material.LEAVES, 100.0);
+        materialMass.put(Material.PACKED_ICE, 500.0);
+        materialMass.put(Material.PISTON, 3000.0);
+        materialMass.put(Material.PLANTS, 300.0);
+        materialMass.put(Material.PORTAL, 0.0);
+        materialMass.put(Material.REDSTONE_LIGHT, 100.0);
+        materialMass.put(Material.ROCK, 3000.0);
+        materialMass.put(Material.SAND, 2000.0);
+        materialMass.put(Material.SNOW, 500.0);
+        materialMass.put(Material.SPONGE, 100.0);
+        materialMass.put(Material.STRUCTURE_VOID, 0.0);
+        materialMass.put(Material.TNT, 2000.0);
+        materialMass.put(Material.VINE, 300.0);
+        materialMass.put(Material.WATER, 1000.0);
+        materialMass.put(Material.WEB, 100.0);
+        materialMass.put(Material.WOOD, 500.0);
     }
 
     private static void generateBlockMasses() {
-        blockToMass.put(Blocks.AIR, 0D);
-        blockToMass.put(Blocks.FIRE, 0D);
-        blockToMass.put(Blocks.FLOWING_WATER, 0D);
-        blockToMass.put(Blocks.FLOWING_LAVA, 0D);
-        blockToMass.put(Blocks.WATER, 0D);
-        blockToMass.put(Blocks.LAVA, 0D);
-        blockToMass.put(Blocks.BEDROCK, 50000D);
+        blockToMass.put(Blocks.AIR, 0.0);
+        blockToMass.put(Blocks.FIRE, 0.0);
+        blockToMass.put(Blocks.FLOWING_WATER, 0.0);
+        blockToMass.put(Blocks.FLOWING_LAVA, 0.0);
+        blockToMass.put(Blocks.WATER, 0.0);
+        blockToMass.put(Blocks.LAVA, 0.0);
+        blockToMass.put(Blocks.BEDROCK, 50000.0);
     }
 
     private static void generateBlocksToNotPhysicsInfuse() {

@@ -40,6 +40,7 @@ import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.entity.EntityMountable;
 import org.valkyrienskies.mod.common.ships.entity_interaction.EntityDraggable;
+import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.ships.ship_world.*;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -111,6 +112,11 @@ public class EventsCommon {
         IPhysObjectWorld physObjectWorld = ValkyrienUtils.getPhysObjWorld(world);
         switch (event.phase) {
             case START:
+                // Reset the air pocket status of all entities
+                for (final Entity entity : world.loadedEntityList) {
+                    final IDraggable draggable = (IDraggable) entity;
+                    draggable.setInAirPocket(false);
+                }
                 break;
             case END:
                 physObjectWorld.tick();

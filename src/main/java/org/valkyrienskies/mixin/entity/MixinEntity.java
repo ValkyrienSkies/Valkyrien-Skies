@@ -53,6 +53,8 @@ public abstract class MixinEntity implements IDraggable {
     
     private EntityShipMovementData entityShipMovementData = new EntityShipMovementData(null, 0, 0, new Vector3d(), 0);
 
+    private boolean inAirPocket = false;
+
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
      *
@@ -253,5 +255,15 @@ public abstract class MixinEntity implements IDraggable {
     @Override
     public void setEntityShipMovementData(EntityShipMovementData entityShipMovementData) {
         this.entityShipMovementData = entityShipMovementData;
+    }
+
+    @Override
+    public boolean getInAirPocket() {
+        return inAirPocket;
+    }
+
+    @Override
+    public void setInAirPocket(boolean inAirPocket) {
+        this.inAirPocket = inAirPocket;
     }
 }

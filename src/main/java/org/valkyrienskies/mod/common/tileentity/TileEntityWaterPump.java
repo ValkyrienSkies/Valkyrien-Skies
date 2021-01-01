@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 
 import java.util.List;
 
@@ -21,7 +22,8 @@ public class TileEntityWaterPump extends TileEntity implements ITickable {
         final List<Entity> entitiesInPumpRadius = world.getEntitiesWithinAABBExcludingEntity(null, pumpRangeBB);
 
         for (final Entity entity : entitiesInPumpRadius) {
-            // System.out.println("entity " + entity.getClass() + " in pump range!");
+            final IDraggable draggable = (IDraggable) entity;
+            draggable.setInAirPocket(true);
         }
     }
 }

@@ -10,4 +10,8 @@ public interface IDraggable {
     EntityShipMovementData getEntityShipMovementData();
 
     void setEntityShipMovementData(@Nullable EntityShipMovementData entityShipMovementData);
+
+    boolean getInAirPocket();
+
+    void setInAirPocket(boolean inAirPocket);
 }

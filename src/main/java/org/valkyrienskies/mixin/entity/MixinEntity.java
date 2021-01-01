@@ -1,7 +1,9 @@
 package org.valkyrienskies.mixin.entity;
 
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -53,7 +55,7 @@ public abstract class MixinEntity implements IDraggable {
     
     private EntityShipMovementData entityShipMovementData = new EntityShipMovementData(null, 0, 0, new Vector3d(), 0);
 
-    private boolean inAirPocket = false;
+    private int ticksInAirPocket = 0;
 
     /**
      * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
@@ -218,6 +220,10 @@ public abstract class MixinEntity implements IDraggable {
 
     @Shadow public abstract World getEntityWorld();
 
+    @Shadow public abstract boolean isInWater();
+
+    @Shadow public boolean inWater;
+
     @Inject(method = "getPositionEyes(F)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
     private void getPositionEyesInject(float partialTicks,
         CallbackInfoReturnable<Vec3d> callbackInfo) {
@@ -259,11 +265,24 @@ public abstract class MixinEntity implements IDraggable {
 
     @Override
     public boolean getInAirPocket() {
-        return inAirPocket;
+        return ticksInAirPocket > 0;
     }
 
     @Override
-    public void setInAirPocket(boolean inAirPocket) {
-        this.inAirPocket = inAirPocket;
+    public void setTicksAirPocket(int ticksInAirPocket) {
+        this.ticksInAirPocket = ticksInAirPocket;
+    }
+
+    @Override
+    public void decrementTicksAirPocket() {
+        this.ticksInAirPocket--;
+    }
+
+    @Inject(method = "handleWaterMovement", at = @At("HEAD"), cancellable = true)
+    private void handleWaterMovement(CallbackInfoReturnable<Boolean> cir) {
+        if (getInAirPocket()) {
+            this.inWater = false;
+            cir.setReturnValue(false);
+        }
     }
 }

@@ -23,7 +23,7 @@ public class TileEntityWaterPump extends TileEntity implements ITickable {
 
         for (final Entity entity : entitiesInPumpRadius) {
             final IDraggable draggable = (IDraggable) entity;
-            draggable.setInAirPocket(true);
+            draggable.setTicksAirPocket(2);
         }
     }
 }

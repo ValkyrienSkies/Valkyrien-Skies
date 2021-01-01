@@ -72,7 +72,7 @@ public class EventsClient {
                 // Reset the air pocket status of all entities
                 for (final Entity entity : world.loadedEntityList) {
                     final IDraggable draggable = (IDraggable) entity;
-                    draggable.setInAirPocket(false);
+                    draggable.decrementTicksAirPocket();
                 }
 
                 break;

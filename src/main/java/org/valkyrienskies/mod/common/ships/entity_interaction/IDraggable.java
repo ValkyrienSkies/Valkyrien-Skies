@@ -13,5 +13,7 @@ public interface IDraggable {
 
     boolean getInAirPocket();
 
-    void setInAirPocket(boolean inAirPocket);
+    void setTicksAirPocket(int ticksInAirPocket);
+
+    void decrementTicksAirPocket();
 }

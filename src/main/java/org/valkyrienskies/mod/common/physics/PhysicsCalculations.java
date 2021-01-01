@@ -482,4 +482,9 @@ public class PhysicsCalculations {
         return rotationAxis.length();
     }
 
+    public void addForceAndTorque(final Vector3dc addedForce, final Vector3dc addedTorque) {
+        final double timeStep = getPhysicsTimeDeltaPerPhysTick();
+        this.force.add(addedForce.x() * timeStep, addedForce.y() * timeStep, addedForce.z() * timeStep);
+        this.torque.add(addedTorque.x() * timeStep, addedTorque.y() * timeStep, addedTorque.z() * timeStep);
+    }
 }

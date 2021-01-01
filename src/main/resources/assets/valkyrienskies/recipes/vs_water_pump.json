@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "GBG",
+    "BEB",
+    "GBG"
+  ],
+
+  "key":
+  {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "B": {
+      "item": "minecraft:bucket"
+    },
+    "E": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+
+  "result":
+  {
+    "item": "valkyrienskies:vs_water_pump",
+    "count": 1
+  }
+}

@@ -31,6 +31,7 @@ import org.valkyrienskies.mixin.MixinLoaderForge;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
 import org.valkyrienskies.mod.common.block.BlockCaptainsChair;
 import org.valkyrienskies.mod.common.block.BlockPassengerChair;
+import org.valkyrienskies.mod.common.block.BlockWaterPump;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
@@ -40,6 +41,7 @@ import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
 import org.valkyrienskies.mod.common.ships.deprecated_api.VS_APIPhysicsEntityManager;
 import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
+import org.valkyrienskies.mod.common.tileentity.TileEntityWaterPump;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
 
@@ -84,6 +86,7 @@ public class ValkyrienSkiesMod {
 
     public Block captainsChair;
     public Block passengerChair;
+    public Block waterPump;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static SimpleNetworkWrapper controlNetwork;
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
@@ -219,11 +222,15 @@ public class ValkyrienSkiesMod {
                 new ResourceLocation(MOD_ID, "tile_captains_chair"));
         GameRegistry.registerTileEntity(TileEntityPassengerChair.class,
                 new ResourceLocation(MOD_ID, "tile_passenger_chair"));
+        GameRegistry.registerTileEntity(TileEntityWaterPump.class,
+                new ResourceLocation(MOD_ID, "tile_water_pump"));
     }
 
     private void registerBlocks() {
         this.captainsChair = registerBlock(new BlockCaptainsChair());
         this.passengerChair = registerBlock(new BlockPassengerChair());
+        this.waterPump = registerBlock(new BlockWaterPump());
+
 
         this.registerTileEntities();
     }

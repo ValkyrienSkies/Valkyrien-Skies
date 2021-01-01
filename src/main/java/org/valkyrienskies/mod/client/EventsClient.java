@@ -69,6 +69,12 @@ public class EventsClient {
                             .updateRenderTransform(1.0);
                 }
 
+                // Reset the air pocket status of all entities
+                for (final Entity entity : world.loadedEntityList) {
+                    final IDraggable draggable = (IDraggable) entity;
+                    draggable.decrementTicksAirPocket();
+                }
+
                 break;
             case END:
                 if (!Minecraft.getMinecraft().isGamePaused()) {

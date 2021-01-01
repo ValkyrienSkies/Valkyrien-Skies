@@ -23,7 +23,8 @@
     "world.border.MixinWorldBorder",
     "world.chunk.MixinBlockStateContainer",
     "world.chunk.MixinChunk",
-    "world.gen.MixinChunkProviderServer"
+    "world.gen.MixinChunkProviderServer",
+    "entity.MixinEntityLivingBase"
   ],
   "client": [
     "client.MixinMinecraft",
@@ -41,6 +42,7 @@
     "network.play.client.MixinCPacketPlayerPositionRotation",
     "network.play.client.MixinCPacketPlayerRotation",
     "util.MixinMovementInputFromOptions",
-    "world.MixinClientWorld"
+    "world.MixinClientWorld",
+    "client.renderer.MixinActiveRenderInfo"
   ]
 }

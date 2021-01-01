@@ -24,4 +24,8 @@ public interface IWorldVS {
     RayTraceResult rayTraceBlocksIgnoreShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
                                             boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
                                             PhysicsObject toIgnore);
+
+    RayTraceResult rayTraceBlocksInShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
+                                            boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
+                                            PhysicsObject toUse);
 }

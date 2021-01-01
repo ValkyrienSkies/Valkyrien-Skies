@@ -428,6 +428,35 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
         return vanillaTrace;
     }
 
+    @Override
+    public RayTraceResult rayTraceBlocksInShip(Vec3d vec31, Vec3d vec32, boolean stopOnLiquid,
+                                               boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock,
+                                               PhysicsObject toUse) {
+        this.shouldInterceptRayTrace = false;
+
+        final ShipTransform shipTransform = toUse.getShipTransformationManager()
+                .getRenderTransform();
+
+        final Vec3d traceStart = shipTransform.transform(vec31,
+                TransformType.GLOBAL_TO_SUBSPACE);
+        final Vec3d traceEnd = shipTransform.transform(vec32,
+                TransformType.GLOBAL_TO_SUBSPACE);
+
+        final RayTraceResult resultInShip = World.class.cast(this)
+                .rayTraceBlocks(traceStart, traceEnd,
+                        stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
+        if (resultInShip != null && resultInShip.hitVec != null && resultInShip.typeOfHit == Type.BLOCK) {
+            // The hitVec must ALWAYS be in global coordinates.
+            resultInShip.hitVec = shipTransform
+                    .transform(resultInShip.hitVec, TransformType.SUBSPACE_TO_GLOBAL);
+            this.shouldInterceptRayTrace = true;
+            return resultInShip;
+        }
+
+        this.shouldInterceptRayTrace = true;
+        return null;
+    }
+
 
     @Override
     public IPhysObjectWorld getManager() {

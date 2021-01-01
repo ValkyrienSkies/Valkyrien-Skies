@@ -1,18 +1,28 @@
 package org.valkyrienskies.mixin.world;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.ships.ship_world.IWorldVS;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+import valkyrienwarfare.api.TransformType;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -30,80 +40,71 @@ public class MixinClientWorld {
      */
     @Overwrite
     public BlockPos getPrecipitationHeight(BlockPos input) {
-        BlockPos pos = thisAsWorld.getChunk(input).getPrecipitationHeight(input);
+        final BlockPos originalHeight = thisAsWorld.getChunk(input).getPrecipitationHeight(input);
 
         if (VSConfig.accurateRain && Minecraft.getMinecraft().player != null) {
-            Vec3d traceStart = new Vec3d(pos.getX() + .5D, Minecraft.getMinecraft().player.posY + 50D, pos.getZ() + .5D);
-            Vec3d traceEnd = new Vec3d(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+            final AxisAlignedBB boundingBox = new AxisAlignedBB(input.getX() - .5, 0, input.getZ() - .5, input.getX() + .5, 255, input.getZ() + .5);
+            final List<PhysicsObject> physicsObjectList = ValkyrienUtils.getPhysObjWorld(thisAsWorld).getPhysObjectsInAABB(boundingBox);
 
-            RayTraceResult result = thisAsWorld.rayTraceBlocks(traceStart, traceEnd, true, true, false);
+            final Vec3d traceStart = new Vec3d(originalHeight.getX() + .5, Minecraft.getMinecraft().player.posY + 50, originalHeight.getZ() + .5);
+            final Vec3d traceEnd = new Vec3d(originalHeight.getX() + .5, originalHeight.getY() + .5, originalHeight.getZ() + .5);
 
-            //noinspection ConstantConditions
-            if (result != null && result.getBlockPos() != null && result.typeOfHit != RayTraceResult.Type.MISS) {
-                Optional<PhysicsObject> physicsObject = ValkyrienUtils.getPhysoManagingBlock(thisAsWorld, result.getBlockPos());
+            for (final PhysicsObject physicsObject : physicsObjectList) {
+                final RayTraceResult result = ((IWorldVS) thisAsWorld).rayTraceBlocksInShip(traceStart, traceEnd, true, true, false, physicsObject);
 
-                if (physicsObject.isPresent()) {
+                //noinspection ConstantConditions
+                if (result != null && result.getBlockPos() != null && result.typeOfHit != RayTraceResult.Type.MISS) {
                     Vector3d blockPosVector = JOML.convertDouble(result.getBlockPos())
-                        .add(0.5, 0.5, 0.5);
+                            .add(.5, .5, .5);
 
-                    physicsObject.get()
-                        .getShipTransformationManager()
-                        .getCurrentTickTransform()
-                        .getSubspaceToGlobal()
-                        .transformPosition(blockPosVector);
+                    physicsObject
+                            .getShipTransformationManager()
+                            .getCurrentTickTransform()
+                            .getSubspaceToGlobal()
+                            .transformPosition(blockPosVector);
 
-                    return new BlockPos(pos.getX(), blockPosVector.y() + .5D, pos.getZ());
+                    return new BlockPos(originalHeight.getX(), blockPosVector.y(), originalHeight.getZ());
                 }
             }
         }
-        return pos;
+        return originalHeight;
     }
 
-    /*
     @Inject(method = "getCombinedLight(Lnet/minecraft/util/math/BlockPos;I)I", at = @At("HEAD"),
         cancellable = true)
     private void preGetCombinedLight(BlockPos pos, int lightValue,
         CallbackInfoReturnable<Integer> callbackInfoReturnable) {
+
+        final World world = thisAsWorld;
         try {
             int i = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, pos);
             int j = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, pos);
             AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2,
                 pos.getZ() - 2, pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2);
-            List<PhysicsWrapperEntity> physEnts = ValkyrienSkiesMod.VS_PHYSICS_MANAGER
-                .getManagerForWorld(world).getNearbyPhysObjects(lightBB);
 
-            for (PhysicsWrapperEntity physEnt : physEnts) {
-                BlockPos posInLocal = physEnt.getPhysicsObject().getShipTransformationManager()
-                    .getCurrentTickTransform().transform(pos, TransformType.GLOBAL_TO_SUBSPACE);
-                int localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal);
-                int localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal);
-                if (localI == 0 && localJ == 0) {
-                    localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal.up());
-                    localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.up());
-                }
-                if (localI == 0 && localJ == 0) {
-                    localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal.down());
-                    localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.down());
-                }
-                if (localI == 0 && localJ == 0) {
-                    localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal.north());
-                    localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.north());
-                }
-                if (localI == 0 && localJ == 0) {
-                    localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal.south());
-                    localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.south());
-                }
-                if (localI == 0 && localJ == 0) {
-                    localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal.east());
-                    localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.east());
-                }
-                if (localI == 0 && localJ == 0) {
-                    localI = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, posInLocal.west());
-                    localJ = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, posInLocal.west());
-                }
+            final List<PhysicsObject> physicsObjectList = ValkyrienUtils.getPhysObjWorld(world).getPhysObjectsInAABB(lightBB);
 
-                i = Math.min(localI, i);
-                j = Math.max(localJ, j);
+            final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+
+            for (final PhysicsObject physicsObject : physicsObjectList) {
+                final Vector3dc posInLocal = physicsObject.getShipTransformationManager().getRenderTransform()
+                        .transformPositionNew(JOML.convertTo3d(pos).add(.5, .5, .5), TransformType.GLOBAL_TO_SUBSPACE);
+
+                final int minX = (int) Math.floor(posInLocal.x());
+                final int minY = (int) Math.floor(posInLocal.y());
+                final int minZ = (int) Math.floor(posInLocal.z());
+
+                for (int x = minX; x <= minX + 1; x++) {
+                    for (int y = minY; y <= minY + 1; y++) {
+                        for (int z = minZ; z <= minZ + 1; z++) {
+                            mutableBlockPos.setPos(x, y, z);
+
+                            final int localBlockLight = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, mutableBlockPos);
+
+                            j = Math.max(j, localBlockLight);
+                        }
+                    }
+                }
             }
 
             if (j < lightValue) {
@@ -117,5 +118,5 @@ public class MixinClientWorld {
             e.printStackTrace();
         }
     }
-    */
+
 }

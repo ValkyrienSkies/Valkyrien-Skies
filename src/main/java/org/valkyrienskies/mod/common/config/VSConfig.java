@@ -134,8 +134,8 @@ public class VSConfig extends VSConfigTemplate {
     public static final VSConfig.ShipLoadingSettings SHIP_LOADING_SETTINGS = new VSConfig.ShipLoadingSettings();
 
     @Name("Accurate Rain")
-    @Comment("Prevents rain from going inside ships. Warning: laggy")
-    public static boolean accurateRain = false;
+    @Comment("Prevents rain from going inside ships. Warning: mildly laggy")
+    public static boolean accurateRain = true;
 
     @Name("Multithreading Settings")
     @ShortName("multithreadingSettings")

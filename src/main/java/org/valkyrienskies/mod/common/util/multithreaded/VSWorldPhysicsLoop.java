@@ -10,6 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.collision.ShipCollisionTask;
+import org.valkyrienskies.mod.common.collision.WaterForcesTask;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
@@ -17,6 +18,7 @@ import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -146,15 +148,17 @@ public class VSWorldPhysicsLoop implements Runnable {
      * Ticks physics and collision for the List of PhysicsWrapperEntity passed in.
      */
     private void tickThePhysicsAndCollision(List<PhysicsObject> shipsWithPhysics, double timeStep) {
-        List<ShipCollisionTask> collisionTasks = new ArrayList<>(
+        final List<ShipCollisionTask> collisionTasks = new ArrayList<>(
             shipsWithPhysics.size() * 2);
+        final List<WaterForcesTask> waterForcesTasks = new ArrayList<>();
         for (PhysicsObject wrapper : shipsWithPhysics) {
             // Update the physics simulation
             try {
                 wrapper.getPhysicsCalculations().rawPhysTickPreCol(timeStep);
                 // Do water collision and buoyancy
                 wrapper.getPhysicsCalculations().getWorldWaterCollider().tickUpdatingTheCollisionCache();
-                wrapper.getPhysicsCalculations().getWorldWaterCollider().addBuoyancyForces();
+                // Add water forces tasks to be processed in parallel
+                waterForcesTasks.addAll(wrapper.getPhysicsCalculations().getWorldWaterCollider().generateWaterForceTasks());
                 // Update the collision task if necessary
                 wrapper.getPhysicsCalculations().getWorldCollision()
                         .tickUpdatingTheCollisionCache();
@@ -166,12 +170,20 @@ public class VSWorldPhysicsLoop implements Runnable {
             }
         }
 
+        final List<Callable<Void>> allTasks = new ArrayList<>();
+        allTasks.addAll(collisionTasks);
+        allTasks.addAll(waterForcesTasks);
+
         try {
-            // The individual collision tasks will sort through a lot of data to find
-            // collision points
-            ValkyrienSkiesMod.getPhysicsThreadPool().invokeAll(collisionTasks);
+            // Run all the block collision and water physics tasks
+            ValkyrienSkiesMod.getPhysicsThreadPool().invokeAll(allTasks);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        // Handle the results of water force tasks
+        for (final WaterForcesTask waterForcesTask : waterForcesTasks) {
+            waterForcesTask.addForcesToShip();
         }
 
         // Then those collision points have to be processed sequentially afterwards, all in

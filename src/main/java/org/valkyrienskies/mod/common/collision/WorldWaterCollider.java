@@ -2,10 +2,8 @@ package org.valkyrienskies.mod.common.collision;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.chunk.Chunk;
@@ -13,23 +11,17 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Vector3d;
-import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
-import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
-import org.valkyrienskies.mod.common.util.JOML;
-import org.valkyrienskies.mod.common.util.VSIterationUtils;
 import org.valkyrienskies.mod.common.util.datastructures.IBitOctree;
 import org.valkyrienskies.mod.common.util.datastructures.ITerrainOctreeProvider;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 /**
@@ -46,13 +38,13 @@ public class WorldWaterCollider {
     // update the collision cache every 1/10th of a second.
     private static final double CACHE_UPDATE_PERIOD = .5;
 
+    private static final int MAX_HITS_PER_TASK = 500;
+
     private final PhysicsCalculations calculator;
     private final PhysicsObject parent;
     private final TIntList cachedPotentialHits;
     private double secondsSinceCollisionCacheUpdate;
     private BlockPos centerPotentialHit;
-
-
 
     public WorldWaterCollider(PhysicsCalculations calculations) {
         this.calculator = calculations;
@@ -72,14 +64,17 @@ public class WorldWaterCollider {
     /**
      * Adds the water buoyancy and water drag forces to the ship.
      */
-    public void addBuoyancyForces() {
-        final int minHitIndex = 0;
-        final int maxHitIndex = cachedPotentialHits.size() - 1;
-        WaterForcesTask waterForcesTask = new WaterForcesTask(parent, centerPotentialHit, cachedPotentialHits, minHitIndex, maxHitIndex);
-        waterForcesTask.call();
+    public List<WaterForcesTask> generateWaterForceTasks() {
+        final List<WaterForcesTask> waterForcesTasks = new ArrayList<>();
 
-        final PhysicsCalculations physicsEngine = parent.getPhysicsCalculations();
-        physicsEngine.addForceAndTorque(waterForcesTask.getAddForce(), waterForcesTask.getAddedTorque());
+        for (int i = 0; i < cachedPotentialHits.size(); i += MAX_HITS_PER_TASK) {
+            final int minHitIndex = i;
+            final int maxHitIndex = Math.min(minHitIndex + MAX_HITS_PER_TASK, cachedPotentialHits.size() - 1);
+            final WaterForcesTask waterForcesTask = new WaterForcesTask(parent, centerPotentialHit, cachedPotentialHits, minHitIndex, maxHitIndex);
+            waterForcesTasks.add(waterForcesTask);
+        }
+
+        return waterForcesTasks;
     }
 
     private void updatePotentialCollisionCache() {

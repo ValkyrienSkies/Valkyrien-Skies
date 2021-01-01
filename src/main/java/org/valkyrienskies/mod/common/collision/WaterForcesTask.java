@@ -51,14 +51,17 @@ public class WaterForcesTask implements Callable<Void> {
         this.addedTorque = new Vector3d();
     }
 
-    public Vector3dc getAddForce() {
-        return addedForce;
+    /**
+     * Adds the computed force and torque to the parent ship
+     */
+    public void addForcesToShip() {
+        final PhysicsCalculations physicsEngine = parent.getPhysicsCalculations();
+        physicsEngine.addForceAndTorque(addedForce, addedTorque);
     }
 
-    public Vector3dc getAddedTorque() {
-        return addedTorque;
-    }
-
+    /**
+     * Computes the force and torque resulting from the water collisions handled by this task.
+     */
     @Override
     public Void call() {
         final BlockPos.MutableBlockPos currentPos = new BlockPos.MutableBlockPos();

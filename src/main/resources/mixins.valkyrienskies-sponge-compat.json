@@ -1,0 +1,11 @@
+{
+  "required": false,
+  "compatibilityLevel": "JAVA_8",
+  "package": "org.valkyrienskies.mixin",
+  "refmap": "mixins.valkyrienskies.refmap.json",
+  "minVersion": "0.6",
+  "mixins": [
+    "sponge_compatibility.MixinChunkSponge",
+    "sponge_compatibility.MixinPacketUtil"
+  ]
+}

@@ -16,6 +16,7 @@ public class MixinLoaderForge implements IFMLLoadingPlugin {
         System.out.println("\n\n\nValkyrien Skies mixin init\n\n");
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.valkyrienskies.json");
+        Mixins.addConfiguration("mixins.valkyrienskies-sponge-compat.json");
         MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
         System.out.println(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
     }

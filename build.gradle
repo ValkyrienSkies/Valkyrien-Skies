@@ -46,7 +46,7 @@ ext {
     jacksonVersion = "2.10.0"
     javaxInjectVersion = "1"
     lombokVersion = "1.18.10"
-    mixinVersion = "0.8-20191109.200033-1"
+    mixinVersion = "0.8.2"
     spongeVersion = "1.12.2-2838-7.3.0"
     vsApiVersion = "1.0.0.9"
 }
@@ -126,8 +126,9 @@ dependencies {
         exclude module: "gson"
         exclude module: "launchwrapper"
     }
-    // mixin as annotation processor
-    annotationProcessor("org.spongepowered:mixin:$mixinVersion")
+    // This doesn't use $mixinVersion because for some reason the newer versions don't like being used as annotation processors!!
+    // Why??? Who knows! But as long as it works this should be fine XD.
+    annotationProcessor("org.spongepowered:mixin:0.8-20191109.200033-1")
     annotationProcessor("org.apache.logging.log4j:log4j-core:2.11.2")
     
     // Needs to be present at compile-time because we mix in to spongeforge, however marking it as
@@ -214,12 +215,10 @@ mixin {
 jar {
     classifier = 'unshaded' // this is probably not the one you want
     manifest.attributes(
-            "MixinConfigs": "mixins.valkyrienskies.json",
+            "MixinConfigs": "mixins.valkyrienskies.json,mixins.valkyrienskies-sponge-compat.json",
             "tweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            "TweakOrder": 0,
             "FMLCorePluginContainsFMLMod": "true",
             "FMLCorePlugin": "org.valkyrienskies.mixin.MixinLoaderForge",
-            "ForceLoadAsMod": "true",
             "FMLAT": "valkyrienskies_at.cfg"
     )
 }

@@ -175,6 +175,7 @@ public class ValkyrienSkiesMod {
         proxy.init(event);
 
         isAnyModuleLoaded = MODULES.stream().anyMatch(Loader::isModLoaded);
+        isSpongePresent = Loader.isModLoaded("spongeforge");
     }
 
     @EventHandler
@@ -268,5 +269,8 @@ public class ValkyrienSkiesMod {
 
     private void registerItems() {
     }
+
+    @Getter
+    private static boolean isSpongePresent = false;
 
 }

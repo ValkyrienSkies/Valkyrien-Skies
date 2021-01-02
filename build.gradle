@@ -309,3 +309,22 @@ publishing {
 test {
     useJUnitPlatform()
 }
+
+/*
+// Based on this tutorial https://darkhax.net/2017/10/jar-signing
+task signJar(type: SignJar, dependsOn: reobfShadowJar) {
+    onlyIf {
+        project.hasProperty('keyStore')
+    }
+
+    keyStore = project.findProperty('keyStore')
+    alias = project.findProperty('keyStoreAlias')
+    storePass = project.findProperty('keyStorePass')
+    keyPass = project.findProperty('keyStoreKeyPass')
+
+    inputFile = new File(shadowJar.getDestinationDir(), shadowJar.getArchiveName().replaceAll(".jar", "-all.jar"));
+    outputFile = inputFile
+}
+
+build.dependsOn signJar
+ */

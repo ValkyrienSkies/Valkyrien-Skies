@@ -43,7 +43,7 @@ import org.valkyrienskies.mod.common.ships.deprecated_api.VS_APIPhysicsEntityMan
 import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityWaterPump;
-import org.valkyrienskies.mod.common.util.VSDarknessLibAPILightProvider;
+import org.valkyrienskies.mod.fixes.darkness_lib_fix.VSDarknessLibAPILightProvider;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
 
@@ -175,6 +175,7 @@ public class ValkyrienSkiesMod {
         proxy.init(event);
 
         isAnyModuleLoaded = MODULES.stream().anyMatch(Loader::isModLoaded);
+        isSpongePresent = Loader.isModLoaded("spongeforge");
     }
 
     @EventHandler
@@ -268,5 +269,8 @@ public class ValkyrienSkiesMod {
 
     private void registerItems() {
     }
+
+    @Getter
+    private static boolean isSpongePresent = false;
 
 }

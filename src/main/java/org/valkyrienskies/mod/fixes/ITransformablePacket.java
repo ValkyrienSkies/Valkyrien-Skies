@@ -3,11 +3,10 @@ package org.valkyrienskies.mod.fixes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.INetHandlerPlayServer;
-import org.valkyrienskies.mod.common.MixinLoadManager;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.capability.entity_backup.ICapabilityEntityBackup;
 import org.valkyrienskies.mod.common.ships.ShipData;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
 /**
@@ -20,7 +19,7 @@ import valkyrienwarfare.api.TransformType;
 public interface ITransformablePacket {
 
     default boolean isPacketOnMainThread(INetHandlerPlayServer server, boolean callingFromSponge) {
-        if (!MixinLoadManager.isSpongeEnabled() || callingFromSponge) {
+        if (!ValkyrienSkiesMod.isSpongePresent() || callingFromSponge) {
             NetHandlerPlayServer serverHandler = (NetHandlerPlayServer) server;
             EntityPlayerMP player = serverHandler.player;
             return player.getServerWorld().isCallingFromMinecraftThread();

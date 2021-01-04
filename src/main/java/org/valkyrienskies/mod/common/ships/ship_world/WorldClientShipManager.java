@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.valkyrienskies.mod.common.config.VSConfig;
@@ -64,7 +65,13 @@ public class WorldClientShipManager implements IPhysObjectWorld {
                 continue;
             }
             ShipData shipData = toLoadOptional.get();
+
             PhysicsObject physicsObject = new PhysicsObject(world, shipData);
+
+            for (final Chunk chunk : physicsObject.getClaimedChunkCache()) {
+                chunk.loaded = true;
+            }
+
             loadedShips.put(toLoadID, physicsObject);
             if (VSConfig.showAnnoyingDebugOutput) {
                 System.out.println("Successfully loaded " + shipData);

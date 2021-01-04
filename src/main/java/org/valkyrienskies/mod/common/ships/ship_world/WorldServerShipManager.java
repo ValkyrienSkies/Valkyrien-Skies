@@ -267,6 +267,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 }
             }
 
+            for (final Chunk chunk : copiedChunksMap.values()) {
+                chunk.generateSkylightMap();
+            }
+
             // Then delete the copied blocks from the old chunks
             blocksIterator = detector.foundSet.iterator();
             while (blocksIterator.hasNext()) {
@@ -322,12 +326,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     private void injectChunkIntoWorldServer(@Nonnull Chunk chunk, int x, int z) {
         ChunkProviderServer provider = world.getChunkProvider();
-        chunk.dirty = true;
-        chunk.setTerrainPopulated(true);
-        chunk.setLightPopulated(true);
-        chunk.onLoad();
-
         provider.loadedChunks.put(ChunkPos.asLong(x, z), chunk);
+        chunk.onLoad();
+        chunk.checkLight();
+        chunk.markDirty();
     }
 
     private void loadAndUnloadShips() {

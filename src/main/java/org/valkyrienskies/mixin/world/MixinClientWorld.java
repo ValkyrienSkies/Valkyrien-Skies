@@ -1,5 +1,6 @@
 package org.valkyrienskies.mixin.world;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -94,16 +95,31 @@ public class MixinClientWorld {
                 final int minY = (int) Math.floor(posInLocal.y());
                 final int minZ = (int) Math.floor(posInLocal.z());
 
+                int shipSkyLight = 0;
+
                 for (int x = minX; x <= minX + 1; x++) {
                     for (int y = minY; y <= minY + 1; y++) {
                         for (int z = minZ; z <= minZ + 1; z++) {
                             mutableBlockPos.setPos(x, y, z);
 
+                            final IBlockState blockState = world.getBlockState(mutableBlockPos);
+
+                            // Ignore the light of full blocks
+                            if (blockState.isFullBlock()) {
+                                continue;
+                            }
+
                             final int localBlockLight = world.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, mutableBlockPos);
+                            final int localSkyLight = world.getLightFromNeighborsFor(EnumSkyBlock.SKY, mutableBlockPos);
 
                             j = Math.max(j, localBlockLight);
+                            shipSkyLight = Math.max(shipSkyLight, localSkyLight);
                         }
                     }
+                }
+
+                if (i > shipSkyLight) {
+                    i = shipSkyLight;
                 }
             }
 

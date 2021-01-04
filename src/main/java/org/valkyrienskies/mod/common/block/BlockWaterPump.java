@@ -20,6 +20,7 @@ public class BlockWaterPump extends BaseBlock implements ITileEntityProvider {
 
     public BlockWaterPump() {
         super("vs_water_pump", Material.IRON, 0, true);
+        this.setHardness(3);
     }
 
     @Override

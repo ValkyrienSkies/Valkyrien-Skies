@@ -68,7 +68,7 @@ public class EventsCommon {
         if (physicsObject.isPresent()) {
             if (player instanceof EntityPlayerMP) {
                 player.sendMessage(new TextComponentString("Spawn Point Set!"));
-                player.setSpawnPoint(pos, true);
+                player.setSpawnPoint(pos, false);
                 event.setResult(SleepResult.NOT_POSSIBLE_HERE);
             }
         }

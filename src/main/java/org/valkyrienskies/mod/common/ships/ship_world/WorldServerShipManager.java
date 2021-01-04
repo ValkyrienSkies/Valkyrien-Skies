@@ -304,6 +304,29 @@ public class WorldServerShipManager implements IPhysObjectWorld {
                 chunkToSet.markDirty();
             }
 
+            // Then relight the original chunks
+            {
+                Set<Long> chunksRelit = new HashSet<>();
+                blocksIterator = detector.foundSet.iterator();
+                while (blocksIterator.hasNext()) {
+                    int hashedPos = blocksIterator.next();
+                    SpatialDetector.setPosWithRespectTo(hashedPos, detector.firstBlock, srcLocationPos);
+
+                    int changedChunkX = pasteLocationPos.getX() >> 4;
+                    int changedChunkZ = pasteLocationPos.getZ() >> 4;
+                    long changedChunkPos = ChunkPos.asLong(changedChunkX, changedChunkZ);
+
+                    if (chunksRelit.contains(changedChunkPos)) {
+                        continue;
+                    }
+                    final Chunk chunk = world.getChunk(changedChunkX, changedChunkZ);
+                    chunk.generateSkylightMap();
+                    chunk.checkLight();
+                    chunk.markDirty();
+                    chunksRelit.add(changedChunkPos);
+                }
+            }
+
             // Then inject the ship chunks into the world
             toSpawn.getChunkClaim().forEach((x, z) -> {
                 long chunkLong = ChunkPos.asLong(x, z);

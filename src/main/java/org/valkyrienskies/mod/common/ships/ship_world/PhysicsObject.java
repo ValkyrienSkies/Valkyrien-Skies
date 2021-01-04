@@ -26,6 +26,7 @@ import org.valkyrienskies.mod.common.physics.IPhysicsBlockController;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.block_relocation.MoveBlocks;
+import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.ships.chunk_claims.SurroundingChunkCacheController;
 import org.valkyrienskies.mod.common.ships.interpolation.ITransformInterpolator;
@@ -37,10 +38,7 @@ import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -266,6 +264,25 @@ public class PhysicsObject implements IPhysicsEntity {
                     newPos.setPos(oldPos.getX() - centerDifference.getX(),
                             oldPos.getY() - centerDifference.getY(), oldPos.getZ() - centerDifference.getZ());
                     MoveBlocks.copyBlockToPos(getWorld(), oldPos, newPos, null);
+                }
+
+                // Then relight the chunks we just copied the blocks to
+                {
+                    Set<Long> chunksRelit = new HashSet<>();
+                    for (BlockPos changedPos : this.getBlockPositions()) {
+                        int changedChunkX = (changedPos.getX() - centerDifference.getX()) >> 4;
+                        int changedChunkZ = (changedPos.getZ() - centerDifference.getZ()) >> 4;
+                        long changedChunkPos = ChunkPos.asLong(changedChunkX, changedChunkZ);
+
+                        if (chunksRelit.contains(changedChunkPos)) {
+                            continue;
+                        }
+                        final Chunk chunk = world.getChunk(changedChunkX, changedChunkZ);
+                        chunk.generateSkylightMap();
+                        chunk.checkLight();
+                        chunk.markDirty();
+                        chunksRelit.add(changedChunkPos);
+                    }
                 }
             }
 

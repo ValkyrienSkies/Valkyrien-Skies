@@ -126,9 +126,8 @@ dependencies {
         exclude module: "gson"
         exclude module: "launchwrapper"
     }
-    // This doesn't use $mixinVersion because for some reason the newer versions don't like being used as annotation processors!!
-    // Why??? Who knows! But as long as it works this should be fine XD.
-    annotationProcessor("org.spongepowered:mixin:0.8-20191109.200033-1")
+    // Mixin annotation processor creates the mixin obfuscation refmap
+    annotationProcessor("org.spongepowered:mixin:$mixinVersion:processor")
     annotationProcessor("org.apache.logging.log4j:log4j-core:2.11.2")
     
     // Needs to be present at compile-time because we mix in to spongeforge, however marking it as

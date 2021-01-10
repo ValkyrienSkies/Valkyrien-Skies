@@ -22,6 +22,7 @@ import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.client.render.PhysObjectRenderManager;
+import org.valkyrienskies.mod.common.collision.Polygon;
 import org.valkyrienskies.mod.common.physics.IPhysicsBlockController;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.ShipData;
@@ -396,5 +397,21 @@ public class PhysicsObject implements IPhysicsEntity {
             this.copyBlocks = copyBlocks;
             this.mustBeAlignedBeforeDeconstruct = mustBeAlignedBeforeDeconstruct;
         }
+    }
+
+    public AxisAlignedBB getPhysicsTransformAABB() {
+        AxisAlignedBB subspaceBB = getBlockPositions().makeAABB();
+        if (subspaceBB == null) {
+            // The aabbMaker didn't know what the aabb was, just don't update the aabb for now.
+            return null;
+        }
+        // Expand subspaceBB by 1 to fit the block grid.
+        subspaceBB = subspaceBB.expand(1, 1, 1);
+        // Now transform the subspaceBB to world coordinates
+        Polygon largerPoly = new Polygon(subspaceBB, getShipTransformationManager().getCurrentPhysicsTransform(),
+                TransformType.SUBSPACE_TO_GLOBAL);
+        // Set the ship AABB to that of the polygon.
+        AxisAlignedBB worldBB = largerPoly.getEnclosedAABB();
+        return worldBB;
     }
 }

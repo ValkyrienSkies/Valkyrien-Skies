@@ -78,12 +78,6 @@ public class WorldWaterCollider {
     }
 
     private void updatePotentialCollisionCache() {
-        // We are using grow(3) because its good.
-        AxisAlignedBB shipBB = parent.getShipBB().grow(3);
-
-        final AxisAlignedBB collisionBB = shipBB
-            .grow(AABB_EXPANSION).grow(2 * Math.ceil(RANGE_CHECK));
-
         secondsSinceCollisionCacheUpdate = 0;
         // This is being used to occasionally offset the collision cache update, in the hopes this will prevent multiple
         // ships from all updating in the same tick
@@ -92,6 +86,19 @@ public class WorldWaterCollider {
         }
 
         cachedPotentialHits.clear();
+
+        AxisAlignedBB shipBBOriginal = parent.getPhysicsTransformAABB();
+
+        if (shipBBOriginal == null) {
+            return;
+        }
+
+        // We are using grow(3) because its good.
+        final AxisAlignedBB shipBB = shipBBOriginal.grow(3);
+
+        final AxisAlignedBB collisionBB = shipBB
+            .grow(AABB_EXPANSION).grow(2 * Math.ceil(RANGE_CHECK));
+
         // Ship is outside of world blockSpace, just skip this
         if (collisionBB.maxY < 0 || collisionBB.minY > 255) {
             return;

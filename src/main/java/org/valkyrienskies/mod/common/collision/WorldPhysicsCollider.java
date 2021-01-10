@@ -300,21 +300,6 @@ public class WorldPhysicsCollider {
 
     // TODO: The greatest physics lag starts here.
     private void updatePotentialCollisionCache() {
-        ShipTransform currentPhysicsTransform = parent
-            .getShipTransformationManager()
-            .getCurrentPhysicsTransform();
-
-        AxisAlignedBB shipBB = parent.getShipBB().grow(3);
-
-        // Use the physics tick collision box instead of the game tick collision box.
-        // We are using grow(3) on both because for some reason if we don't then ships start
-        // jiggling through the ground. God I can't wait for a new physics engine.
-        final AxisAlignedBB collisionBB = shipBB
-            .grow(AABB_EXPANSION).expand(
-                calculator.getLinearVelocity().x * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.getLinearVelocity().y * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
-                calculator.getLinearVelocity().z * calculator.getPhysicsTimeDeltaPerPhysTick() * 5);
-
         ticksSinceCacheUpdate = 0D;
         // This is being used to occasionally offset the collision cache update, in the
         // hopes this will prevent multiple ships from all updating
@@ -326,6 +311,25 @@ public class WorldPhysicsCollider {
         // Resets the potential hits array in O(1) time! Isn't that something.
         // cachedPotentialHits.resetQuick();
         cachedPotentialHits.clear();
+
+        AxisAlignedBB shipBBOriginal = parent.getPhysicsTransformAABB();
+
+        if (shipBBOriginal == null) {
+            return;
+        }
+
+        final AxisAlignedBB shipBB = shipBBOriginal.grow(3);
+
+        // Use the physics tick collision box instead of the game tick collision box.
+        // We are using grow(3) on both because for some reason if we don't then ships start
+        // jiggling through the ground. God I can't wait for a new physics engine.
+        final AxisAlignedBB collisionBB = shipBB
+            .grow(AABB_EXPANSION).expand(
+                calculator.getLinearVelocity().x * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
+                calculator.getLinearVelocity().y * calculator.getPhysicsTimeDeltaPerPhysTick() * 5,
+                calculator.getLinearVelocity().z * calculator.getPhysicsTimeDeltaPerPhysTick() * 5);
+
+
         // Ship is outside of world blockSpace, just skip this all togvalkyrium
         if (collisionBB.maxY < 0 || collisionBB.minY > 255) {
             return;

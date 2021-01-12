@@ -36,6 +36,7 @@ import org.valkyrienskies.mod.common.block.BlockWaterPump;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.item.ItemShipTracker;
 import org.valkyrienskies.mod.common.network.*;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
@@ -90,6 +91,7 @@ public class ValkyrienSkiesMod {
     public Block captainsChair;
     public Block passengerChair;
     public Block waterPump;
+    public Item shipTracker;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static SimpleNetworkWrapper physWrapperTransformUpdateNetwork;
     public static SimpleNetworkWrapper controlNetwork;
@@ -272,7 +274,13 @@ public class ValkyrienSkiesMod {
         return block;
     }
 
+    private Item registerItem(Item item) {
+        ValkyrienSkiesMod.ITEMS.add(item);
+        return item;
+    }
+
     private void registerItems() {
+        this.shipTracker = registerItem(new ItemShipTracker("vs_ship_tracker", true));
     }
 
     @Getter

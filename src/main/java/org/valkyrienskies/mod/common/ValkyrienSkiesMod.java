@@ -91,6 +91,7 @@ public class ValkyrienSkiesMod {
     public Block passengerChair;
     public Block waterPump;
     public static SimpleNetworkWrapper physWrapperNetwork;
+    public static SimpleNetworkWrapper physWrapperTransformUpdateNetwork;
     public static SimpleNetworkWrapper controlNetwork;
     public static final CreativeTabs VS_CREATIVE_TAB = new TabValkyrienSkies(MOD_ID);
 
@@ -203,6 +204,10 @@ public class ValkyrienSkiesMod {
                 MessageStopPiloting.class, 2, Side.CLIENT);
         controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class,
                 MessagePlayerStoppedPiloting.class, 3, Side.SERVER);
+
+        physWrapperTransformUpdateNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies_ship_transforms");
+        physWrapperTransformUpdateNetwork.registerMessage(ShipTransformUpdateMessageHandler.class,
+                ShipTransformUpdateMessage.class, 0, Side.CLIENT);
     }
 
     void registerRecipes(RegistryEvent.Register<IRecipe> event) {

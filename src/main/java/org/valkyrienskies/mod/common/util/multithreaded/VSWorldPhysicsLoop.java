@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -12,12 +13,12 @@ import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.collision.ShipCollisionTask;
 import org.valkyrienskies.mod.common.collision.WaterForcesTask;
 import org.valkyrienskies.mod.common.config.VSConfig;
+import org.valkyrienskies.mod.common.network.ShipTransformUpdateMessage;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -123,6 +124,8 @@ public class VSWorldPhysicsLoop implements Runnable {
         log.trace(name + " killed");
     }
 
+    private long lastPacketSendTime = 0;
+
     private void physicsTick(double delta) {
         // Update the immutable ship list.
         immutableShipsList = ((IHasShipManager) hostWorld).getManager().getAllLoadedThreadSafe();
@@ -142,6 +145,34 @@ public class VSWorldPhysicsLoop implements Runnable {
 
         // Finally, actually process the physics tick
         tickThePhysicsAndCollision(physicsEntitiesToDoPhysics, delta);
+
+        // Send ship position update packets around 20 times a second
+        final long currentTimeMillis = System.currentTimeMillis();
+        final double secondsSinceLastPacket = (currentTimeMillis - lastPacketSendTime) / 1000.0;
+
+        // Use .04 to guarantee we're always sending at least 20 packets per second
+        if (secondsSinceLastPacket > .04) {
+            // Update the last update time
+            lastPacketSendTime = currentTimeMillis;
+
+            try {
+                // At the end, send the transform update packets
+                final ShipTransformUpdateMessage shipTransformUpdateMessage = new ShipTransformUpdateMessage();
+                final int dimensionID = hostWorld.provider.getDimension();
+
+                shipTransformUpdateMessage.setDimensionID(dimensionID);
+                for (final PhysicsObject physicsObject : immutableShipsList) {
+                    final UUID shipUUID = physicsObject.getUuid();
+                    final ShipTransform shipTransform = physicsObject.getShipTransformationManager().getCurrentPhysicsTransform();
+                    final AxisAlignedBB shipBB = physicsObject.getPhysicsTransformAABB();
+
+                    shipTransformUpdateMessage.addData(shipUUID, shipTransform, shipBB);
+                }
+                ValkyrienSkiesMod.physWrapperTransformUpdateNetwork.sendToDimension(shipTransformUpdateMessage, shipTransformUpdateMessage.getDimensionID());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

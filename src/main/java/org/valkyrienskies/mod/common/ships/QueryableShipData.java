@@ -167,9 +167,9 @@ public class QueryableShipData implements Iterable<ShipData> {
         if (old.isPresent()) {
             PhysicsObject physicsObject = ValkyrienUtils.getPhysObjWorld(world).getPhysObjectFromUUID(ship.getUuid());
             if (physicsObject != null) {
-                // Do not update the transform in ShipData, that will be done by PhysicsObject.tick()
-                ITransformInterpolator interpolator = physicsObject.getTransformInterpolator();
-                interpolator.onNewTransformPacket(ship.getShipTransform(), ship.getShipBB());
+                // Ship transform updates are now done by ShipTransformUpdateMessageHandler
+                // ITransformInterpolator interpolator = physicsObject.getTransformInterpolator();
+                // interpolator.onNewTransformPacket(ship.getShipTransform(), ship.getShipBB());
             } else {
                 old.get().setShipTransform(ship.getShipTransform());
                 old.get().setPrevTickShipTransform(ship.getPrevTickShipTransform());

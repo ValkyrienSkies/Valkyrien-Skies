@@ -1,6 +1,7 @@
 package org.valkyrienskies.mod.common.physics;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
@@ -15,6 +16,7 @@ import org.valkyrienskies.mod.common.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
+import javax.annotation.Nullable;
 import java.lang.Math;
 import java.util.*;
 
@@ -47,6 +49,10 @@ public class PhysicsCalculations {
     @Getter
     private final Vector3d angularVelocity;
 
+    // If (forceToUseGameTransform == true) then reset the physics transform to the ShipData transform.
+    @Setter
+    private boolean forceToUseGameTransform;
+
     public PhysicsCalculations(PhysicsObject parent) {
         this.parent = parent;
         this.worldCollision = new WorldPhysicsCollider(this);
@@ -61,6 +67,7 @@ public class PhysicsCalculations {
         this.physCenterOfMass = new Vector3d();
         this.torque = new Vector3d();
         this.force = new Vector3d();
+        this.forceToUseGameTransform = false;
 
         generatePhysicsTransform();
     }
@@ -115,6 +122,19 @@ public class PhysicsCalculations {
             getParent().getShipData().setPhysicsEnabled(false);
             getLinearVelocity().zero();
             getAngularVelocity().zero();
+        }
+
+        // Keep track of the forced transform, if there is one
+        final boolean forceToUseGameTransformLocalCopy = this.forceToUseGameTransform;
+        // Reset the forced transform
+        this.forceToUseGameTransform = false;
+
+        if (forceToUseGameTransformLocalCopy) {
+            // Reset the physics transform to be the game tick transform
+            generatePhysicsTransform();
+            // Reset angular and linear velocities
+            angularVelocity.zero();
+            linearVelocity.zero();
         }
 
         ShipTransform finalPhysTransform = new ShipTransform(physX, physY, physZ, physRotation, physCenterOfMass);

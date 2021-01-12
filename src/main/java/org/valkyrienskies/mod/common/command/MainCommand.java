@@ -2,12 +2,14 @@ package org.valkyrienskies.mod.common.command;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.command.MainCommand.*;
 import org.valkyrienskies.mod.common.command.autocompleters.ShipNameAutocompleter;
 import org.valkyrienskies.mod.common.command.autocompleters.WorldAutocompleter;
+import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
@@ -15,6 +17,7 @@ import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject.DeconstructState;
 import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.common.util.multithreaded.VSWorldPhysicsLoop;
 import picocli.CommandLine.*;
@@ -34,7 +37,9 @@ import java.util.stream.Collectors;
         TPS.class,
         TeleportTo.class,
         DeconstructShip.class,
-        DeleteShip.class
+        DeleteShip.class,
+        TeleportShipTo.class,
+        TeleportShipHere.class
     })
 public class MainCommand implements Runnable {
 
@@ -253,6 +258,74 @@ public class MainCommand implements Runnable {
                 "commands.vs.list-ships.ships", listOfShips));
         }
 
+    }
+
+    @Command(name = "teleport-ship-to", aliases = "tp-ship-to", customSynopsis = "/tp-ship-to ship-name <x,y,z>")
+    static class TeleportShipTo implements Runnable {
+
+        @Inject
+        ICommandSender sender;
+
+        @Parameters(paramLabel = "name", index = "0", completionCandidates = ShipNameAutocompleter.class)
+        ShipData shipData;
+
+        @Parameters(paramLabel = "position", index = "1")
+        Vec3d position;
+
+        @Override
+        public void run() {
+            teleportShipToPosition(shipData, position, sender);
+        }
+    }
+
+    @Command(name = "teleport-ship-here", aliases = "tp-ship-here", customSynopsis = "/tp-ship-here ship-name")
+    static class TeleportShipHere implements Runnable {
+
+        @Inject
+        ICommandSender sender;
+
+        @Parameters(paramLabel = "name", index = "0", completionCandidates = ShipNameAutocompleter.class)
+        ShipData shipData;
+
+        @Override
+        public void run() {
+            final Vec3d commandPosition = sender.getPositionVector();
+            if (commandPosition == Vec3d.ZERO) {
+                sender.sendMessage(new TextComponentString("The command sender doesn't have a position, ignoring the command."));
+                return;
+            }
+            teleportShipToPosition(shipData, commandPosition, sender);
+        }
+    }
+
+    private static void teleportShipToPosition(final ShipData ship, final Vec3d position, final ICommandSender sender) {
+        try {
+            final World world = sender.getEntityWorld();
+            final WorldServerShipManager shipManager = ValkyrienUtils.getServerShipManager(world);
+            final PhysicsObject shipObject = shipManager.getPhysObjectFromUUID(ship.getUuid());
+
+            // Create the new ship transform that moves the ship to this position
+            final ShipTransform shipTransform = ship.getShipTransform();
+            final ShipTransform newTransform = new ShipTransform(JOML.convert(position), shipTransform.getCenterCoord());
+
+            if (shipObject != null) {
+                // The ship already exists in the world, so we need to update the physics transform as well
+                final PhysicsCalculations physicsCalculations = shipObject.getPhysicsCalculations();
+                physicsCalculations.setForceToUseGameTransform(true);
+                // Also update the transform in the ShipTransformationManager
+                shipObject.setForceToUseShipDataTransform(true);
+                shipObject.setTicksSinceShipTeleport(0);
+            }
+
+            // Update the ship transform of the ship data.
+            ship.setPhysicsEnabled(false);
+            ship.setPrevTickShipTransform(newTransform);
+            ship.setShipTransform(newTransform);
+
+            System.out.println(String.format("Teleporting ship %s to %s", ship.getName(), position.toString()));
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

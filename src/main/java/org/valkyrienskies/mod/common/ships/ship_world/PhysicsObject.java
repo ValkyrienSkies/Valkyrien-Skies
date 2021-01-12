@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.tileentity.TileEntity;
@@ -30,10 +31,12 @@ import org.valkyrienskies.mod.common.ships.block_relocation.MoveBlocks;
 import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.ships.chunk_claims.SurroundingChunkCacheController;
+import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.interpolation.ITransformInterpolator;
 import org.valkyrienskies.mod.common.ships.interpolation.SimpleEMATransformInterpolator;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransformationManager;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
@@ -109,6 +112,16 @@ public class PhysicsObject implements IPhysicsEntity {
     @Nonnull
     private DeconstructState deconstructState;
 
+    // If (forceToUseShipDataTransform == true) then reset the physics transform to the ShipData transform.
+    @Setter
+    private boolean forceToUseShipDataTransform;
+
+    public static int TICKS_SINCE_TELEPORT_TO_START_DRAGGING = 50;
+
+    // Used to prevent players from thinking they're on a ship if this ship just got teleported.
+    @Setter @Getter
+    private int ticksSinceShipTeleport;
+
     // endregion
 
     // region Methods
@@ -134,6 +147,8 @@ public class PhysicsObject implements IPhysicsEntity {
         this.physicsCalculations = new PhysicsCalculations(this);
         this.shipAligningToGrid = false;
         this.deconstructState = DeconstructState.NOT_DECONSTRUCTING;
+        this.forceToUseShipDataTransform = false;
+        this.ticksSinceShipTeleport = TICKS_SINCE_TELEPORT_TO_START_DRAGGING + 1; // Anything larger than TICKS_SINCE_TELEPORT_TO_START_DRAGGING works
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
@@ -150,6 +165,20 @@ public class PhysicsObject implements IPhysicsEntity {
         if (!world.isRemote) {
             cachedSurroundingChunks.updateChunkCache();
             // this.setNeedsCollisionCacheUpdate(true);
+
+            final boolean forceToUseShipDataTransformLocalCopy = forceToUseShipDataTransform;
+            forceToUseShipDataTransform = false;
+            if (forceToUseShipDataTransformLocalCopy) {
+                final ShipTransform forcedTransform = shipData.getShipTransform();
+
+                // This is BAD! Race condition! But I don't think this will cause any problems (I hope).
+                getShipTransformationManager().setPrevPhysicsTransform(forcedTransform);
+                getShipTransformationManager().setCurrentPhysicsTransform(forcedTransform);
+                getShipTransformationManager().setPrevTickTransform(forcedTransform);
+                getShipTransformationManager().setCurrentTickTransform(forcedTransform);
+            }
+
+            ticksSinceShipTeleport++;
 
             ShipTransform physicsTransform = getShipTransformationManager()
                 .getCurrentPhysicsTransform();

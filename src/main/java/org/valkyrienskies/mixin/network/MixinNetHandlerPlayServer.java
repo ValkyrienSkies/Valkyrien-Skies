@@ -22,6 +22,7 @@ import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
@@ -128,9 +129,19 @@ public abstract class MixinNetHandlerPlayServer {
                 final Optional<ShipData> shipDataOptional = queryableShipData.getShip(lastTouchedShipId);
                 if (shipDataOptional.isPresent()) {
                     lastTouchedShip = shipDataOptional.get();
-                    final ShipTransform shipTransform = lastTouchedShip.getShipTransform();
-                    shipTransform.transformPosition(playerPosInShip, TransformType.SUBSPACE_TO_GLOBAL);
-                    shipTransform.transformDirection(playerLookInShip, TransformType.SUBSPACE_TO_GLOBAL);
+
+                    final PhysicsObject shipObject = ValkyrienUtils.getServerShipManager(world).getPhysObjectFromUUID(lastTouchedShip.getUuid());
+
+                    if (shipObject != null) {
+                        if (shipObject.getTicksSinceShipTeleport() > PhysicsObject.TICKS_SINCE_TELEPORT_TO_START_DRAGGING) {
+                            final ShipTransform shipTransform = lastTouchedShip.getShipTransform();
+                            shipTransform.transformPosition(playerPosInShip, TransformType.SUBSPACE_TO_GLOBAL);
+                            shipTransform.transformDirection(playerLookInShip, TransformType.SUBSPACE_TO_GLOBAL);
+                        } else {
+                            // Don't move the player relative to the ship until the TicksSinceShipTeleport timer expires.
+                            playerPosInShip.set(player.posX, player.posY, player.posZ);
+                        }
+                    }
                 } else {
                     // Rare case, just ignore this
                     // info.cancel();

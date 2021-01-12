@@ -6,10 +6,12 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import org.apache.commons.io.output.NullOutputStream;
 import org.valkyrienskies.mod.common.command.converters.ShipDataConverter;
+import org.valkyrienskies.mod.common.command.converters.Vec3dDataConverter;
 import org.valkyrienskies.mod.common.command.converters.WorldConverter;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import picocli.AutoComplete;
@@ -43,6 +45,7 @@ public class VSCommandBase<K> extends CommandBase {
 
     static {
         pureConverters.put(World.class, new WorldConverter());
+        pureConverters.put(Vec3d.class, new Vec3dDataConverter());
     }
 
     VSCommandBase(Class<K> cmdClass) {

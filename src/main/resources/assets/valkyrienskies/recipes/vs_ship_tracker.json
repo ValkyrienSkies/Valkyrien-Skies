@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "RER",
+    "ODO",
+    " O "
+  ],
+
+  "key":
+  {
+    "O": {
+      "item": "minecraft:obsidian"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "E": {
+      "item": "minecraft:ender_pearl"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    }
+  },
+
+  "result":
+  {
+    "item": "valkyrienskies:vs_ship_tracker",
+    "count": 1
+  }
+}

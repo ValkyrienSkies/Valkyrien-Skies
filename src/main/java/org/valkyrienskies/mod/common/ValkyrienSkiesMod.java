@@ -274,13 +274,8 @@ public class ValkyrienSkiesMod {
         return block;
     }
 
-    private Item registerItem(Item item) {
-        ValkyrienSkiesMod.ITEMS.add(item);
-        return item;
-    }
-
     private void registerItems() {
-        this.shipTracker = registerItem(new ItemShipTracker("vs_ship_tracker", true));
+        this.shipTracker = new ItemShipTracker("vs_ship_tracker", true);
     }
 
     @Getter

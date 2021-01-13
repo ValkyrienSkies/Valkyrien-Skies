@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.tuple.Triple;
+import org.joml.PolygonsIntersection;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
@@ -212,13 +213,39 @@ public class EntityCollisionInjector {
                                                 .getEntityBoundingBox()
                                                 .offset(tempResponse.x, tempResponse.y,
                                                     tempResponse.z);
-                                            entity.setEntityBoundingBox(axisalignedbb);
-                                            // I think this correct, but it may create more problems than it solves
-                                            response.zero();
-                                            entity.resetPositionToBB();
+
+                                            // Don't allow the player to step if the step will put them in another polygon.
+                                            boolean collidesWithAnything = false;
+                                            {
+                                                final AxisAlignedBB newEntityBBShrunk = axisalignedbb.shrink(.15);
+                                                final Polygon newEntityBBShrunkPolygon = new Polygon(newEntityBBShrunk);
+                                                for (Polygon potentialStepCollision : colPolys) {
+                                                    if (potentialStepCollision == poly) {
+                                                        continue; // Don't run this on ourself
+                                                    }
+                                                    if (potentialStepCollision.getEnclosedAABB().intersects(newEntityBBShrunk)) {
+                                                        // Finer check
+                                                        ShipPolygon potentialStepCollisionShipPoly = (ShipPolygon) potentialStepCollision;
+                                                        final EntityPolygonCollider checkIfStepCollidesWithBlock = new EntityPolygonCollider(newEntityBBShrunkPolygon,
+                                                                potentialStepCollisionShipPoly, potentialStepCollisionShipPoly.normals, new Vector3d());
+
+                                                        checkIfStepCollidesWithBlock.processData();
+
+                                                        if (!checkIfStepCollidesWithBlock.arePolygonsSeparated()) {
+                                                            collidesWithAnything = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            if (!collidesWithAnything) {
+                                                entity.setEntityBoundingBox(axisalignedbb);
+                                                // I think this correct, but it may create more problems than it solves
+                                                response.zero();
+                                                entity.resetPositionToBB();
+                                            }
                                         }
-                                        // entity.moveEntity(x, y, z);
-                                        // response = tempResponse;
                                     }
                                 }
                             }

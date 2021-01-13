@@ -23,6 +23,7 @@ public class Polygon {
 
     @Getter
     private final Vector3dc[] vertices;
+    private AxisAlignedBB enclosedBBCache;
 
     public Polygon(@Nonnull AxisAlignedBB bb, @Nullable ShipTransform transformation, @Nullable TransformType transformType) {
         Vector3d[] verticesMutable = getCornersForAABB(bb);
@@ -30,6 +31,7 @@ public class Polygon {
             transform(verticesMutable, transformation, transformType);
         }
         this.vertices = verticesMutable;
+        this.enclosedBBCache = null;
     }
 
     public Polygon(@Nonnull AxisAlignedBB bb) {
@@ -93,23 +95,26 @@ public class Polygon {
     }
 
     public AxisAlignedBB getEnclosedAABB() {
-        Vector3dc firstVertex = vertices[0];
-        double mnX = firstVertex.x();
-        double mnY = firstVertex.y();
-        double mnZ = firstVertex.z();
-        double mxX = firstVertex.x();
-        double mxY = firstVertex.y();
-        double mxZ = firstVertex.z();
-        for (int i = 1; i < vertices.length; i++) {
-            Vector3dc vertex = vertices[i];
-            mnX = Math.min(mnX, vertex.x());
-            mnY = Math.min(mnY, vertex.y());
-            mnZ = Math.min(mnZ, vertex.z());
-            mxX = Math.max(mxX, vertex.x());
-            mxY = Math.max(mxY, vertex.y());
-            mxZ = Math.max(mxZ, vertex.z());
+        if (enclosedBBCache == null) {
+            Vector3dc firstVertex = vertices[0];
+            double mnX = firstVertex.x();
+            double mnY = firstVertex.y();
+            double mnZ = firstVertex.z();
+            double mxX = firstVertex.x();
+            double mxY = firstVertex.y();
+            double mxZ = firstVertex.z();
+            for (int i = 1; i < vertices.length; i++) {
+                Vector3dc vertex = vertices[i];
+                mnX = Math.min(mnX, vertex.x());
+                mnY = Math.min(mnY, vertex.y());
+                mnZ = Math.min(mnZ, vertex.z());
+                mxX = Math.max(mxX, vertex.x());
+                mxY = Math.max(mxY, vertex.y());
+                mxZ = Math.max(mxZ, vertex.z());
+            }
+            enclosedBBCache = new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
         }
-        return new AxisAlignedBB(mnX, mnY, mnZ, mxX, mxY, mxZ);
+        return enclosedBBCache;
     }
 
 }

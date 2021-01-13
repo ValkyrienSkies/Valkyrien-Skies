@@ -1,18 +1,21 @@
 package org.valkyrienskies.mixin.network;
 
+import com.google.common.collect.ImmutableList;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.network.IHasPlayerMovementData;
@@ -27,9 +30,7 @@ import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Mixin(value = NetHandlerPlayServer.class)
 public abstract class MixinNetHandlerPlayServer {
@@ -101,6 +102,32 @@ public abstract class MixinNetHandlerPlayServer {
     }
 
     /**
+     * @reason This mixin prevents the server from thinking a player is stuck in blocks; which fixes some player moved wrongly errors.
+     */
+    @Redirect(
+            method = "processPlayer",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/WorldServer;getCollisionBoxes(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;)Ljava/util/List;"
+            ))
+    private List<AxisAlignedBB> removeStuckInBlockMovementCheck(WorldServer worldServer, Entity entityIn, AxisAlignedBB aabb) {
+        return ImmutableList.of();
+    }
+
+    /**
+     * @reason This mixin forces the condition (d11 > 0.0625D) to always be false; which fixes some player moved wrongly errors.
+     */
+    @ModifyConstant(
+            method = "processPlayer",
+            constant = @Constant(
+                    doubleValue = 0.0625D,
+                    ordinal = 1
+            ))
+    private double allowMovementToBeVeryWrong(double originalConstant) {
+        return 10;
+    }
+
+    /**
      * This mixin fixes "Player Moved Wrongly" errors.
      *
      * @param packetPlayer The packet the player sent us
@@ -154,13 +181,8 @@ public abstract class MixinNetHandlerPlayServer {
             final double playerPitchInGlobal = pitchYawTuple.getFirst();
             final double playerYawInGlobal = pitchYawTuple.getSecond();
 
-            // Update the player position and rotation.
-            final double originalPlayerY = this.player.posY;
-            this.player.setPositionAndRotation(playerPosInShip.x(), playerPosInShip.y(), playerPosInShip.z(),
-                    (float) playerYawInGlobal, (float) playerPitchInGlobal);
-            this.player.handleFalling(playerPosInShip.y() - originalPlayerY, packetPlayer.isOnGround());
-            // We need this otherwise the players head rotation doesn't update
-            this.player.rotationYawHead = (float) playerYawInGlobal;
+            // Idk if this is needed, but I'm too bothered to change it
+            packetPlayer.moving = true;
 
             // Then update the packet values to match the ones above.
             packetPlayer.x = playerPosInShip.x();
@@ -169,10 +191,10 @@ public abstract class MixinNetHandlerPlayServer {
             packetPlayer.yaw = (float) playerYawInGlobal;
             packetPlayer.pitch = (float) playerPitchInGlobal;
 
-            // Just set the values to be whats in the packet
-            this.firstGoodX = this.lastGoodX = packetPlayer.x;
-            this.firstGoodY = this.lastGoodY = packetPlayer.y;
-            this.firstGoodZ = this.lastGoodZ = packetPlayer.z;
+            // Set the player motion values to tell the NetHandlerPlayServer that the player is allowed to move this fast.
+            this.player.motionX = packetPlayer.x - this.firstGoodX;
+            this.player.motionY = packetPlayer.y - this.firstGoodY;
+            this.player.motionZ = packetPlayer.z - this.firstGoodZ;
 
             // Update the player draggable
             final IDraggable playerAsDraggable = IDraggable.class.cast(this.player);

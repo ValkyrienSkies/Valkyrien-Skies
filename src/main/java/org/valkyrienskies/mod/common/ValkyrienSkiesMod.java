@@ -207,7 +207,7 @@ public class ValkyrienSkiesMod {
         controlNetwork.registerMessage(MessagePlayerStoppedPilotingHandler.class,
                 MessagePlayerStoppedPiloting.class, 3, Side.SERVER);
 
-        physWrapperTransformUpdateNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("valkyrien_skies_ship_transforms");
+        physWrapperTransformUpdateNetwork = NetworkRegistry.INSTANCE.newSimpleChannel("vs_ship_transforms");
         physWrapperTransformUpdateNetwork.registerMessage(ShipTransformUpdateMessageHandler.class,
                 ShipTransformUpdateMessage.class, 0, Side.CLIENT);
     }

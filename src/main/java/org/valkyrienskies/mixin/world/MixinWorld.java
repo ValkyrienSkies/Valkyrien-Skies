@@ -3,6 +3,7 @@ package org.valkyrienskies.mixin.world;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.Interface.Remap;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.common.collision.EntityPolygonCollider;
 import org.valkyrienskies.mod.common.collision.Polygon;
@@ -29,19 +31,18 @@ import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ships.ship_world.IWorldVS;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import org.valkyrienskies.mod.fixes.MixinWorldIntrinsicMethods;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 // TODO: This class is horrible
+//       Who cares lol ~Tri0de
 @Mixin(value = World.class, priority = 2018)
 @Implements(@Interface(iface = MixinWorldIntrinsicMethods.class, prefix = "vs$", remap = Remap.NONE))
 public abstract class MixinWorld implements IWorldVS, IHasShipManager {
@@ -61,6 +62,67 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
 
     @Shadow
     public abstract Biome getBiomeForCoordsBody(BlockPos pos);
+
+    /**
+     * Cache to fix lag from the {@link VSConfig#accurateRain} setting.
+     */
+    private final Map<BlockPos, BlockPos> precipitationHeightCache = new HashMap<>();
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void onPreTick(CallbackInfo ci) {
+        precipitationHeightCache.clear();
+    }
+
+    /**
+     * This is easier to have as an overwrite because there's less laggy hackery to be done then :P
+     *
+     * @author DaPorkchop_, rubydesic
+     */
+    @Overwrite
+    public BlockPos getPrecipitationHeight(BlockPos input) {
+        // Try to use the precipitationHeightCache
+        if (precipitationHeightCache.containsKey(input)) {
+            final BlockPos cached = precipitationHeightCache.get(input);
+            if (cached != null) {
+                return cached;
+            }
+        }
+
+        final World thisAsWorld = World.class.cast(this);
+
+        final BlockPos originalHeight = thisAsWorld.getChunk(input).getPrecipitationHeight(input);
+
+        if (VSConfig.accurateRain && Minecraft.getMinecraft().player != null) {
+            final AxisAlignedBB boundingBox = new AxisAlignedBB(input.getX() - .5, 0, input.getZ() - .5, input.getX() + .5, 255, input.getZ() + .5);
+            final List<PhysicsObject> physicsObjectList = ValkyrienUtils.getPhysObjWorld(thisAsWorld).getPhysObjectsInAABB(boundingBox);
+
+            final Vec3d traceStart = new Vec3d(originalHeight.getX() + .5, Minecraft.getMinecraft().player.posY + 50, originalHeight.getZ() + .5);
+            final Vec3d traceEnd = new Vec3d(originalHeight.getX() + .5, originalHeight.getY() + .5, originalHeight.getZ() + .5);
+
+            for (final PhysicsObject physicsObject : physicsObjectList) {
+                final RayTraceResult result = ((IWorldVS) thisAsWorld).rayTraceBlocksInShip(traceStart, traceEnd, true, true, false, physicsObject);
+
+                //noinspection ConstantConditions
+                if (result != null && result.getBlockPos() != null && result.typeOfHit != RayTraceResult.Type.MISS) {
+                    Vector3d blockPosVector = JOML.convertDouble(result.getBlockPos())
+                            .add(.5, .5, .5);
+
+                    physicsObject
+                            .getShipTransformationManager()
+                            .getCurrentTickTransform()
+                            .getSubspaceToGlobal()
+                            .transformPosition(blockPosVector);
+
+                    final BlockPos modifiedHeight = new BlockPos(originalHeight.getX(), blockPosVector.y(), originalHeight.getZ());
+                    precipitationHeightCache.put(input, modifiedHeight);
+                    return modifiedHeight;
+                }
+            }
+        }
+
+        precipitationHeightCache.put(input, originalHeight);
+        return originalHeight;
+    }
 
     /**
      * Enables the correct weather on ships depending on their position.

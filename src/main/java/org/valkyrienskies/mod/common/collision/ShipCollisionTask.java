@@ -7,7 +7,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
+import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.util.VSIterationUtils;
 import org.valkyrienskies.mod.common.util.datastructures.IBitOctree;
 import org.valkyrienskies.mod.common.util.datastructures.ITerrainOctreeProvider;
@@ -93,6 +95,9 @@ public class ShipCollisionTask implements Callable<Void> {
         VSIterationUtils.expand3d(midX, midY, midZ, (x, y, z) -> checkPosition(x, y, z, integer));
     }
 
+    // Temp variable used in checkPosition()
+    private final Vector3d temp0 = new Vector3d();
+
     public void checkPosition(int x, int y, int z, int positionHash) {
         if (!toTask.getParent().getChunkClaim().containsChunk(x >> 4, z >> 4)) {
             return;
@@ -107,39 +112,18 @@ public class ShipCollisionTask implements Callable<Void> {
 
             if (octree.get(x & 15, y & 15, z & 15)) {
                 IBlockState inLocalState = chunkIn.getBlockState(x, y, z);
-                // Only if you want to stop short
-                // foundPairs.add(positionHash);
-                // foundPairs.add(x);
-                // foundPairs.add(y);
-                // foundPairs.add(z);
 
                 inLocalPos.setPos(x, y, z);
 
-                AxisAlignedBB inLocalBB = new AxisAlignedBB(inLocalPos.getX(), inLocalPos.getY(),
-                    inLocalPos.getZ(),
-                    inLocalPos.getX() + 1, inLocalPos.getY() + 1, inLocalPos.getZ() + 1);
-                AxisAlignedBB inGlobalBB = new AxisAlignedBB(mutablePos.getX(), mutablePos.getY(),
-                    mutablePos.getZ(),
-                    mutablePos.getX() + 1, mutablePos.getY() + 1, mutablePos.getZ() + 1);
+                final ShipTransform shipTransform = toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform();
+                final Vector3dc shipBlockInGlobal = shipTransform.transformPositionNew(temp0.set(inLocalPos.getX() + .5, inLocalPos.getY() + .5, inLocalPos.getZ() + .5), TransformType.SUBSPACE_TO_GLOBAL);
 
-                // This changes the box bounding box to the real bounding box, not sure if this
-                // is better or worse for this mod
-                // List<AxisAlignedBB> colBB = worldObj.getCollisionBoxes(inLocalBB);
-                // inLocalBB = colBB.get(0);
+                final double distanceSq = shipBlockInGlobal.distanceSquared(mutablePos.getX() + .5, mutablePos.getY() + .5, mutablePos.getZ() + .5);
 
-                Polygon shipInWorld = new Polygon(inLocalBB,
-                    toTask.getParent().getShipTransformationManager().getCurrentPhysicsTransform(),
-                    TransformType.SUBSPACE_TO_GLOBAL);
-                Polygon worldPoly = new Polygon(inGlobalBB);
-
-                // TODO: Remove the normals crap
-                PhysPolygonCollider collider = new PhysPolygonCollider(shipInWorld, worldPoly,
-                    toTask.getParent().getShipTransformationManager().normals);
-
-                if (!collider.seperated) {
-                    // return handleActualCollision(collider, mutablePos, inLocalPos, inWorldState,
-                    // inLocalState);
-                    CollisionInformationHolder holder = new CollisionInformationHolder(collider,
+                // If the distance between the center of two cubes is greater than sqrt(3) then it is impossible for those cubes to touch.
+                // If it is less than sqrt(3) then collision is possible.
+                if (distanceSq < 3) {
+                    CollisionInformationHolder holder = new CollisionInformationHolder(
                         mutablePos.getX(),
                         mutablePos.getY(), mutablePos.getZ(), inLocalPos.getX(), inLocalPos.getY(),
                         inLocalPos.getZ(), inWorldState, inLocalState);

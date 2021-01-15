@@ -173,7 +173,7 @@ public class WorldPhysicsCollider {
             return false;
         }
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 8; i++) {
             final int xAxis = combinationsOfOnes[i * 3];
             final int yAxis = combinationsOfOnes[i * 3 + 1];
             final int zAxis = combinationsOfOnes[i * 3 + 2];

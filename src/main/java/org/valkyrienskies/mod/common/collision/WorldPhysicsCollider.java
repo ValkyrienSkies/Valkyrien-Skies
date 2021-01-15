@@ -8,7 +8,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ChunkCache;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -50,7 +49,7 @@ public class WorldPhysicsCollider {
     public static final double AXIS_TOLERANCE = .3D;
     // Time in seconds between collision cache updates. A value of .1D means we
     // update the collision cache every 1/10th of a second.
-    public static final double CACHE_UPDATE_PERIOD = .0000001;
+    public static final double CACHE_UPDATE_PERIOD = .01;
     // Determines how 'bouncy' collisions are
     public static final double COEFFICIENT_OF_RESTITUTION = .52D;
 
@@ -162,59 +161,131 @@ public class WorldPhysicsCollider {
 
         final ShipTransform parentTransform = parent.getShipTransformationManager().getCurrentPhysicsTransform();
 
+        final boolean isXUpSolid = isBlockInWorldSolidFast(inWorldPos.getX() + 1, inWorldPos.getY(), inWorldPos.getZ());
+        final boolean isXDownSolid = isBlockInWorldSolidFast(inWorldPos.getX() - 1, inWorldPos.getY(), inWorldPos.getZ());
+        final boolean isYUpSolid = isBlockInWorldSolidFast(inWorldPos.getX(), inWorldPos.getY() + 1, inWorldPos.getZ());
+        final boolean isYDownSolid = isBlockInWorldSolidFast(inWorldPos.getX(), inWorldPos.getY() - 1, inWorldPos.getZ());
+        final boolean isZUpSolid = isBlockInWorldSolidFast(inWorldPos.getX(), inWorldPos.getY(), inWorldPos.getZ() + 1);
+        final boolean isZDownSolid = isBlockInWorldSolidFast(inWorldPos.getX(), inWorldPos.getY(), inWorldPos.getZ() - 1);
+
+        if (isXUpSolid && isXDownSolid && isYUpSolid && isYDownSolid && isZUpSolid && isZDownSolid) {
+            // Interior block, skip
+            return false;
+        }
+
         for (int i = 0; i < 7; i++) {
             final int xAxis = combinationsOfOnes[i * 3];
             final int yAxis = combinationsOfOnes[i * 3 + 1];
             final int zAxis = combinationsOfOnes[i * 3 + 2];
 
             // Position of the World's block in global
-            final Vector3dc positionInGlobal = temp0.set(inWorldPos.getX() + .5 + xAxis * SPHERE_RADIUS, inWorldPos.getY() + .5 + yAxis * SPHERE_RADIUS, inWorldPos.getZ() + .5 + zAxis * SPHERE_RADIUS);
+            final Vector3dc shipBlockInLocal = temp0.set(inLocalPos.getX() + .5 + xAxis * SPHERE_RADIUS, inLocalPos.getY() + .5 + yAxis * SPHERE_RADIUS, inLocalPos.getZ() + .5 + zAxis * SPHERE_RADIUS);
             // Position of the World's block in local
-            final Vector3dc positionInLocal = parentTransform.transformPositionNew(temp1.set(positionInGlobal), TransformType.GLOBAL_TO_SUBSPACE);
+            final Vector3dc shipBlockInGlobal = parentTransform.transformPositionNew(temp1.set(shipBlockInLocal), TransformType.SUBSPACE_TO_GLOBAL);
 
-            final double xUpOffset = .5 - (positionInLocal.x() - (inLocalPos.getX() + .5)) + SPHERE_RADIUS;
-            final double xDownOffset = .5 - ((inLocalPos.getX() + .5) - positionInLocal.x()) + SPHERE_RADIUS;
+            double xUpOffset = .5 - (shipBlockInGlobal.x() - (inWorldPos.getX() + .5)) + SPHERE_RADIUS;
+            double xDownOffset = .5 - ((inWorldPos.getX() + .5) - shipBlockInGlobal.x()) + SPHERE_RADIUS;
 
-            final double yUpOffset = .5 - (positionInLocal.y() - (inLocalPos.getY() + .5)) + SPHERE_RADIUS;
-            final double yDownOffset = .5 - ((inLocalPos.getY() + .5) - positionInLocal.y()) + SPHERE_RADIUS;
+            double yUpOffset = .5 - (shipBlockInGlobal.y() - (inWorldPos.getY() + .5)) + SPHERE_RADIUS;
+            double yDownOffset = .5 - ((inWorldPos.getY() + .5) - shipBlockInGlobal.y()) + SPHERE_RADIUS;
 
-            final double zUpOffset = .5 - (positionInLocal.z() - (inLocalPos.getZ() + .5)) + SPHERE_RADIUS;
-            final double zDownOffset = .5 - ((inLocalPos.getZ() + .5) - positionInLocal.z()) + SPHERE_RADIUS;
+            double zUpOffset = .5 - (shipBlockInGlobal.z() - (inWorldPos.getZ() + .5)) + SPHERE_RADIUS;
+            double zDownOffset = .5 - ((inWorldPos.getZ() + .5) - shipBlockInGlobal.z()) + SPHERE_RADIUS;
+
+
+            if (isXUpSolid) {
+                xUpOffset = 1;
+            }
+            if (isXDownSolid) {
+                xDownOffset = 1;
+            }
+            if (isYUpSolid) {
+                yUpOffset = 1;
+            }
+            if (isYDownSolid) {
+                yDownOffset = 1;
+            }
+            if (isZUpSolid) {
+                zUpOffset = 1;
+            }
+            if (isZDownSolid) {
+                zDownOffset = 1;
+            }
 
             if (xUpOffset > 0 && xDownOffset > 0 && yUpOffset > 0 && yDownOffset > 0 && zUpOffset > 0 && zDownOffset > 0) {
                 // Intersection
                 final Vector3dc axis;
                 final Vector3dc response;
-                if (xUpOffset < xDownOffset && xUpOffset < yUpOffset && xUpOffset < yDownOffset && xUpOffset < zUpOffset && xUpOffset < zDownOffset) {
-                    // xUpOffset is minimum
-                    axis = parentTransform.transformDirectionNew(temp2.set(1, 0, 0), TransformType.SUBSPACE_TO_GLOBAL);
-                    response = axis.mul(xUpOffset, temp3);
-                } else if (xDownOffset < yUpOffset && xDownOffset < yDownOffset && xDownOffset < zUpOffset && xDownOffset < zDownOffset) {
-                    // xDownOffset is minimum
-                    axis = parentTransform.transformDirectionNew(temp2.set(-1, 0, 0), TransformType.SUBSPACE_TO_GLOBAL);
-                    response = axis.mul(xDownOffset, temp3);
-                } else if (yUpOffset < yDownOffset && yUpOffset < zUpOffset && yUpOffset < zDownOffset) {
-                    // yUpOffset is minimum
-                    axis = parentTransform.transformDirectionNew(temp2.set(0, 1, 0), TransformType.SUBSPACE_TO_GLOBAL);
-                    response = axis.mul(yUpOffset, temp3);
-                } else if (yDownOffset < zUpOffset && yDownOffset < zDownOffset) {
-                    // yDownOffset is minimum
-                    axis = parentTransform.transformDirectionNew(temp2.set(0, -1, 0), TransformType.SUBSPACE_TO_GLOBAL);
-                    response = axis.mul(yDownOffset, temp3);
-                } else if (zUpOffset < zDownOffset) {
-                    // zUpOffset is minimum
-                    axis = parentTransform.transformDirectionNew(temp2.set(0, 0, 1), TransformType.SUBSPACE_TO_GLOBAL);
-                    response = axis.mul(zUpOffset, temp3);
+
+                // If X and Z collision have less magnitude than this, then we only consider the Y axis.
+                final double THRESHOLD = .1;
+
+                if (Math.abs(xUpOffset) < THRESHOLD && Math.abs(xDownOffset) < THRESHOLD && Math.abs(zUpOffset) < THRESHOLD && Math.abs(zDownOffset) < THRESHOLD && (!isYUpSolid || !isYDownSolid)) {
+                    // Ignore other axes just use Y
+                    if (yUpOffset < yDownOffset) {
+                        // yUpOffset is minimum
+                        axis = temp2.set(0, -1, 0);
+                        response = axis.mul(yUpOffset, temp3);
+                    } else {
+                        // yDownOffset is minimum
+                        axis = temp2.set(0, 1, 0);
+                        response = axis.mul(yDownOffset, temp3);
+                    }
                 } else {
-                    // zDownOffset is minimum
-                    axis = parentTransform.transformDirectionNew(temp2.set(0, 0, -1), TransformType.SUBSPACE_TO_GLOBAL);
-                    response = axis.mul(zDownOffset, temp3);
+                    // Use the minimum overlapping axis
+                    if (xUpOffset < xDownOffset && xUpOffset < yUpOffset && xUpOffset < yDownOffset && xUpOffset < zUpOffset && xUpOffset < zDownOffset) {
+                        // xUpOffset is minimum
+                        axis = temp2.set(-1, 0, 0);
+                        response = axis.mul(xUpOffset, temp3);
+                    } else if (xDownOffset < yUpOffset && xDownOffset < yDownOffset && xDownOffset < zUpOffset && xDownOffset < zDownOffset) {
+                        // xDownOffset is minimum
+                        axis = temp2.set(1, 0, 0);
+                        response = axis.mul(xDownOffset, temp3);
+                    } else if (yUpOffset < yDownOffset && yUpOffset < zUpOffset && yUpOffset < zDownOffset) {
+                        // yUpOffset is minimum
+                        axis = temp2.set(0, -1, 0);
+                        response = axis.mul(yUpOffset, temp3);
+                    } else if (yDownOffset < zUpOffset && yDownOffset < zDownOffset) {
+                        // yDownOffset is minimum
+                        axis = temp2.set(0, 1, 0);
+                        response = axis.mul(yDownOffset, temp3);
+                    } else if (zUpOffset < zDownOffset) {
+                        // zUpOffset is minimum
+                        axis = temp2.set(0, 0, -1);
+                        response = axis.mul(zUpOffset, temp3);
+                    } else {
+                        // zDownOffset is minimum
+                        axis = temp2.set(0, 0, 1);
+                        response = axis.mul(zDownOffset, temp3);
+                    }
                 }
-                handleCollision(positionInGlobal, axis, response, 1);
+                handleCollision(shipBlockInGlobal, axis, response, 1);
             }
         }
 
         return false;
+    }
+
+    private boolean isBlockInWorldSolidFast(final int posX, final int posY, final int posZ) {
+        if (posY < 0 || posY >= 256) {
+            return false;
+        }
+        final ChunkCache surroundingChunks = parent.getCachedSurroundingChunks();
+        final int relativeChunkX = (posX >> 4) - surroundingChunks.chunkX;
+        final int relativeChunkZ = (posZ >> 4) - surroundingChunks.chunkZ;
+        if (relativeChunkX < 0 || relativeChunkX >= surroundingChunks.chunkArray.length || relativeChunkZ < 0 || relativeChunkZ >= surroundingChunks.chunkArray[relativeChunkX].length) {
+            return false;
+        }
+        final Chunk chunk = surroundingChunks.chunkArray[relativeChunkX][relativeChunkZ];
+        if (chunk == null) {
+            return false;
+        }
+        final ExtendedBlockStorage blockStorage = chunk.storageArrays[posY >> 4];
+        if (blockStorage == null) {
+            return false;
+        }
+        final IBitOctree octree = ITerrainOctreeProvider.class.cast(blockStorage.data).getSolidOctree();
+        return octree.get(posX & 15, posY & 15, posZ & 15);
     }
 
     private void handleCollision(final Vector3dc collisionPos, final Vector3dc axis, final Vector3dc offsetVector, final double impulseApplied) {
@@ -231,12 +302,17 @@ public class WorldPhysicsCollider {
     // Finally, the end of all this spaghetti code! This step takes all of the math
     // generated before, and it directly adds the result to Ship velocities
     private void calculateCollisionImpulseForce(Vector3dc inBody,
-                                                Vector3dc velocityAtPointOfCollision,
+                                                Vector3d velocityAtPointOfCollision,
                                                 Vector3dc axis,
                                                 Vector3dc offsetVector,
                                                 boolean didBlockBreakInShip,
                                                 boolean didBlockBreakInWorld,
                                                 double impulseApplied) {
+        // Our ideal velocity is to negate the velocity at the point, and the collision offset.
+        velocityAtPointOfCollision.sub(offsetVector);
+
+
+
         Vector3d firstCross = inBody.cross(axis, new Vector3d());
 
         calculator.getPhysInvMOITensor().transform(firstCross);

@@ -16,9 +16,11 @@ import org.valkyrienskies.mod.common.util.datastructures.ITerrainOctreeProvider;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ShipCollisionTask implements Callable<Void> {
 
@@ -57,6 +59,9 @@ public class ShipCollisionTask implements Callable<Void> {
             processNumber(integer);
         }
 
+        // Shuffle this so that WorldPhysicsCollider performs better
+        Collections.shuffle(collisionInformationGenerated, ThreadLocalRandom.current());
+
         return null;
     }
 
@@ -72,7 +77,6 @@ public class ShipCollisionTask implements Callable<Void> {
      * @return
      */
     public Iterator<CollisionInformationHolder> getCollisionInformationIterator() {
-        // Collections.shuffle(collisionInformationGenerated);
         return collisionInformationGenerated.iterator();
     }
 

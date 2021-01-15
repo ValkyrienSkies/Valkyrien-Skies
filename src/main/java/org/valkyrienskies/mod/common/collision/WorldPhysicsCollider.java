@@ -309,7 +309,9 @@ public class WorldPhysicsCollider {
                                                 boolean didBlockBreakInWorld,
                                                 double impulseApplied) {
         // Our ideal velocity is to negate the velocity at the point, and the collision offset.
-        velocityAtPointOfCollision.sub(offsetVector);
+        final double multiplier = 2;
+
+        velocityAtPointOfCollision.add(offsetVector.x() * multiplier, offsetVector.y() * multiplier, offsetVector.z() * multiplier);
 
 
 

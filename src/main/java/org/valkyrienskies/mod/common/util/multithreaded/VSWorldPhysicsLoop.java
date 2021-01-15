@@ -117,6 +117,14 @@ public class VSWorldPhysicsLoop implements Runnable {
                 if (latestPhysicsTickTimes.size() > TICK_TIME_QUEUE) {
                     latestPhysicsTickTimes.remove();
                 }
+            } else {
+                // If physics are disabled then sleep for 100 ms.
+                // If we don't sleep then we waste a ton of CPU just being in this while(true) loop.
+                try {
+                    Thread.sleep(100L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         // If we get to this point of run(), then we are about to return and this thread

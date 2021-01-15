@@ -36,7 +36,7 @@ pipeline {
                 tag "release-*"
             }
             steps {
-                sh "./gradlew build -PCustomReleaseVersion $TAG_NAME"
+                sh "./gradlew build -PCustomReleaseVersion=$TAG_NAME"
             }
             post {
                 success {

@@ -140,13 +140,21 @@ public class PhysRenderChunk {
 
         // TODO: There's probably a faster way of doing this.
         public void updateRenderTileEntities() {
-            ITileEntitiesToRenderProvider provider = (ITileEntitiesToRenderProvider) chunkToRender;
-            List<TileEntity> updatedRenderTiles = provider.getTileEntitiesToRender(yMin >> 4);
-            if (updatedRenderTiles != null) {
-                Minecraft.getMinecraft().renderGlobal
-                    .updateTileEntities(renderTiles, updatedRenderTiles);
-                renderTiles = new ArrayList<>(updatedRenderTiles);
+            final List<TileEntity> updatedRenderTiles = new ArrayList<>();
+
+            final BlockPos startPos = new BlockPos(chunkToRender.x << 4, yMin, chunkToRender.z << 4);
+            final BlockPos endPos = startPos.add(15, 15, 15);
+
+            for (final BlockPos.MutableBlockPos currentPos : BlockPos.getAllInBoxMutable(startPos, endPos)) {
+                final TileEntity tileEntity = chunkToRender.getTileEntity(currentPos, Chunk.EnumCreateEntityType.CHECK);
+                if (tileEntity != null) {
+                    updatedRenderTiles.add(tileEntity);
+                }
             }
+
+            Minecraft.getMinecraft().renderGlobal
+                .updateTileEntities(renderTiles, updatedRenderTiles);
+            renderTiles = new ArrayList<>(updatedRenderTiles);
         }
 
         public void deleteRenderChunk() {
@@ -336,13 +344,21 @@ public class PhysRenderChunk {
 
         // TODO: There's probably a faster way of doing this.
         public void updateRenderTileEntities() {
-            ITileEntitiesToRenderProvider provider = (ITileEntitiesToRenderProvider) chunkToRender;
-            List<TileEntity> updatedRenderTiles = provider.getTileEntitiesToRender(yMin >> 4);
-            if (updatedRenderTiles != null) {
-                Minecraft.getMinecraft().renderGlobal
-                        .updateTileEntities(renderTiles, updatedRenderTiles);
-                renderTiles = new ArrayList<>(updatedRenderTiles);
+            final List<TileEntity> updatedRenderTiles = new ArrayList<>();
+
+            final BlockPos startPos = new BlockPos(chunkToRender.x << 4, yMin, chunkToRender.z << 4);
+            final BlockPos endPos = startPos.add(15, 15, 15);
+
+            for (final BlockPos.MutableBlockPos currentPos : BlockPos.getAllInBoxMutable(startPos, endPos)) {
+                final TileEntity tileEntity = chunkToRender.getTileEntity(currentPos, Chunk.EnumCreateEntityType.CHECK);
+                if (tileEntity != null) {
+                    updatedRenderTiles.add(tileEntity);
+                }
             }
+
+            Minecraft.getMinecraft().renderGlobal
+                    .updateTileEntities(renderTiles, updatedRenderTiles);
+            renderTiles = new ArrayList<>(updatedRenderTiles);
         }
 
         public void deleteRenderChunk() {

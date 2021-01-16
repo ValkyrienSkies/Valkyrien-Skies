@@ -16,19 +16,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.mod.client.render.ITileEntitiesToRenderProvider;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ShipDataMethods;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Mixin(value = Chunk.class, priority = 1001)
-public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
+public abstract class MixinChunk {
 
     @Shadow
     @Final
@@ -45,36 +42,15 @@ public abstract class MixinChunk implements ITileEntitiesToRenderProvider {
     @Shadow
     public abstract IBlockState getBlockState(BlockPos pos);
 
-    // We keep track of these so we can quickly update the tile entities that need rendering.
-    private List<TileEntity>[] tileEntitiesByExtendedData = new List[16];
-
-    public List<TileEntity> getTileEntitiesToRender(int chunkExtendedDataIndex) {
-        return tileEntitiesByExtendedData[chunkExtendedDataIndex];
-    }
-
     @Inject(method = "addTileEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/tileentity/TileEntity;)V", at = @At("TAIL"))
     private void post_addTileEntity(BlockPos pos, TileEntity tileEntityIn,
         CallbackInfo callbackInfo) {
-        int yIndex = pos.getY() >> 4;
-        removeTileEntityFromIndex(pos, yIndex);
-        tileEntitiesByExtendedData[yIndex].add(tileEntityIn);
-
         ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onSetTileEntity(pos, tileEntityIn));
     }
 
     @Inject(method = "removeTileEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("TAIL"))
     private void post_removeTileEntity(BlockPos pos, CallbackInfo callbackInfo) {
-        int yIndex = pos.getY() >> 4;
-        removeTileEntityFromIndex(pos, yIndex);
         ValkyrienUtils.getPhysoManagingBlock(world, pos).ifPresent(physo -> physo.onRemoveTileEntity(pos));
-    }
-
-    private void removeTileEntityFromIndex(BlockPos pos, int yIndex) {
-        if (tileEntitiesByExtendedData[yIndex] == null) {
-            tileEntitiesByExtendedData[yIndex] = new ArrayList<>();
-        }
-        tileEntitiesByExtendedData[yIndex]
-            .removeIf(tile -> tile.getPos().equals(pos) || tile.isInvalid());
     }
 
     /**

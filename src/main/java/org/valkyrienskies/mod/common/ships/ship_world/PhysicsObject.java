@@ -52,7 +52,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PhysicsObject implements IPhysicsEntity {
 
     // region Fields
-
+    // The number of ticks we wait before enabling physics. I use 20 because I'm very paranoid of ships falling through the ground.
+    private static final int DISABLE_PHYSICS_FOR_X_INITIAL_TICKS = 20;
     @Getter
     private final List<EntityPlayerMP> watchingPlayers;
     private final Set<IPhysicsBlockController> physicsControllers;
@@ -122,6 +123,9 @@ public class PhysicsObject implements IPhysicsEntity {
     @Setter @Getter
     private int ticksSinceShipTeleport;
 
+    // Counts the number of ticks this PhysicsObject (not ShipData) has existed. Used to disable physics for the first DISABLE_PHYSICS_FOR_X_INITIAL_TICKS ticks.
+    private int ticksExisted;
+
     // endregion
 
     // region Methods
@@ -149,6 +153,7 @@ public class PhysicsObject implements IPhysicsEntity {
         this.deconstructState = DeconstructState.NOT_DECONSTRUCTING;
         this.forceToUseShipDataTransform = false;
         this.ticksSinceShipTeleport = TICKS_SINCE_TELEPORT_TO_START_DRAGGING + 1; // Anything larger than TICKS_SINCE_TELEPORT_TO_START_DRAGGING works
+        this.ticksExisted = 0;
         // Note how this is last.
         if (world.isRemote) {
             this.shipRenderer = new PhysObjectRenderManager(this, referenceBlockPos);
@@ -197,6 +202,7 @@ public class PhysicsObject implements IPhysicsEntity {
 
             shipTransformationManager.updateAllTransforms(newTransform, false, false);
         }
+        this.ticksExisted++;
     }
 
     // endregion
@@ -205,13 +211,6 @@ public class PhysicsObject implements IPhysicsEntity {
     /*
      * Encapsulation code past here.
      */
-
-    /**
-     * Sets the consecutive tick counter to 0.
-     */
-    public void resetConsecutiveProperTicks() {
-        // this.setNeedsCollisionCacheUpdate(true);
-    }
 
     /**
      * @return the cachedSurroundingChunks
@@ -442,5 +441,13 @@ public class PhysicsObject implements IPhysicsEntity {
         // Set the ship AABB to that of the polygon.
         AxisAlignedBB worldBB = largerPoly.getEnclosedAABB();
         return worldBB;
+    }
+
+    /**
+     * Not the same as "is physics enabled?", the idea here is to disable physics for the first few ticks this ship got
+     * loaded to prevent the ship from falling though the floor.
+     */
+    public boolean isPhysicsReady() {
+        return ticksExisted >= DISABLE_PHYSICS_FOR_X_INITIAL_TICKS;
     }
 }

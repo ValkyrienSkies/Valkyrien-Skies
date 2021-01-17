@@ -15,6 +15,7 @@ public class SurroundingChunkCacheController {
 
     public SurroundingChunkCacheController(PhysicsObject physicsObject) {
         this.physicsObject = physicsObject;
+        this.cachedChunks = null;
     }
 
     public void updateChunkCache() {
@@ -47,8 +48,6 @@ public class SurroundingChunkCacheController {
 
             if (areSurroundingChunksLoaded) {
                 cachedChunks = new ChunkCache(physicsObject.getWorld(), min, max, 0);
-            } else {
-                physicsObject.resetConsecutiveProperTicks();
             }
         } else {
             cachedChunks = new ChunkCache(physicsObject.getWorld(), min, max, 0);

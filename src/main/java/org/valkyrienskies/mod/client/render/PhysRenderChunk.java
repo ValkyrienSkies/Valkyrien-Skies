@@ -1,14 +1,16 @@
 package org.valkyrienskies.mod.client.render;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexBuffer;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -28,6 +30,7 @@ public class PhysRenderChunk {
     public IVSRenderChunk[] renderChunks = new IVSRenderChunk[16];
     public PhysicsObject toRender;
     public Chunk chunk;
+    private List<TileEntity> tileEntitiesToRender;
 
     public PhysRenderChunk(PhysicsObject toRender, Chunk chunk) {
         this.toRender = toRender;
@@ -45,6 +48,8 @@ public class PhysRenderChunk {
                 renderChunks[i] = renderChunk;
             }
         }
+        this.tileEntitiesToRender = new ArrayList<>(chunk.getTileEntityMap().values());
+        Minecraft.getMinecraft().renderGlobal.updateTileEntities(new ArrayList<>(), tileEntitiesToRender);
     }
 
     public void renderBlockLayer(BlockRenderLayer layerToRender, double partialTicks, int pass, ICamera iCamera) {
@@ -64,6 +69,12 @@ public class PhysRenderChunk {
     }
 
     public void updateLayers(int minLayer, int maxLayer) {
+        // Update tile entities
+        final List<TileEntity> newTilesToRender = new ArrayList<>(chunk.tileEntities.values());
+        Minecraft.getMinecraft().renderGlobal
+                .updateTileEntities(tileEntitiesToRender, newTilesToRender);
+        this.tileEntitiesToRender = newTilesToRender;
+
         for (int layerY = minLayer; layerY <= maxLayer; layerY++) {
             IVSRenderChunk renderChunk = renderChunks[layerY];
             if (renderChunk != null) {
@@ -108,7 +119,6 @@ public class PhysRenderChunk {
         VertexBuffer cutoutBuffer, cutoutMippedBuffer, solidBuffer, translucentBuffer;
         PhysRenderChunk parent;
         boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
-        List<TileEntity> renderTiles = new ArrayList<>();
 
         RenderLayerVBO(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
             chunkToRender = chunk;
@@ -135,32 +145,10 @@ public class PhysRenderChunk {
             needsCutoutMippedUpdate = true;
             needsSolidUpdate = true;
             needsTranslucentUpdate = true;
-            updateRenderTileEntities();
-        }
-
-        // TODO: There's probably a faster way of doing this.
-        public void updateRenderTileEntities() {
-            final List<TileEntity> updatedRenderTiles = new ArrayList<>();
-
-            final BlockPos startPos = new BlockPos(chunkToRender.x << 4, yMin, chunkToRender.z << 4);
-            final BlockPos endPos = startPos.add(15, 15, 15);
-
-            for (final BlockPos.MutableBlockPos currentPos : BlockPos.getAllInBoxMutable(startPos, endPos)) {
-                final TileEntity tileEntity = chunkToRender.getTileEntity(currentPos, Chunk.EnumCreateEntityType.CHECK);
-                if (tileEntity != null) {
-                    updatedRenderTiles.add(tileEntity);
-                }
-            }
-
-            Minecraft.getMinecraft().renderGlobal
-                .updateTileEntities(renderTiles, updatedRenderTiles);
-            renderTiles = new ArrayList<>(updatedRenderTiles);
         }
 
         public void deleteRenderChunk() {
             clearRenderLists();
-            Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, new ArrayList<>());
-            renderTiles.clear();
         }
 
         private void clearRenderLists() {
@@ -312,7 +300,6 @@ public class PhysRenderChunk {
         int glCallListCutout, glCallListCutoutMipped, glCallListSolid, glCallListTranslucent;
         PhysRenderChunk parent;
         boolean needsCutoutUpdate, needsCutoutMippedUpdate, needsSolidUpdate, needsTranslucentUpdate;
-        List<TileEntity> renderTiles = new ArrayList<>();
 
         RenderLayerDisplayList(Chunk chunk, int yMin, int yMax, PhysRenderChunk parent) {
             chunkToRender = chunk;
@@ -339,32 +326,10 @@ public class PhysRenderChunk {
             needsCutoutMippedUpdate = true;
             needsSolidUpdate = true;
             needsTranslucentUpdate = true;
-            updateRenderTileEntities();
-        }
-
-        // TODO: There's probably a faster way of doing this.
-        public void updateRenderTileEntities() {
-            final List<TileEntity> updatedRenderTiles = new ArrayList<>();
-
-            final BlockPos startPos = new BlockPos(chunkToRender.x << 4, yMin, chunkToRender.z << 4);
-            final BlockPos endPos = startPos.add(15, 15, 15);
-
-            for (final BlockPos.MutableBlockPos currentPos : BlockPos.getAllInBoxMutable(startPos, endPos)) {
-                final TileEntity tileEntity = chunkToRender.getTileEntity(currentPos, Chunk.EnumCreateEntityType.CHECK);
-                if (tileEntity != null) {
-                    updatedRenderTiles.add(tileEntity);
-                }
-            }
-
-            Minecraft.getMinecraft().renderGlobal
-                    .updateTileEntities(renderTiles, updatedRenderTiles);
-            renderTiles = new ArrayList<>(updatedRenderTiles);
         }
 
         public void deleteRenderChunk() {
             clearRenderLists();
-            Minecraft.getMinecraft().renderGlobal.updateTileEntities(renderTiles, new ArrayList<>());
-            renderTiles.clear();
         }
 
         private void clearRenderLists() {

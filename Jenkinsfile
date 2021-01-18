@@ -31,12 +31,9 @@ pipeline {
                 sh "./gradlew setupCiWorkspace"
             }
         }
-        stage("Build Release") {
-            when {
-                tag "release-*"
-            }
+        stage("Build") {
             steps {
-                sh "./gradlew build -PCustomReleaseVersion=$TAG_NAME"
+                sh "./gradlew build"
             }
             post {
                 success {
@@ -47,7 +44,7 @@ pipeline {
         }
         stage("Deploy") {
             when {
-                buildingTag()
+                branch "master"
             }
             steps {
                 sh "./gradlew publish"

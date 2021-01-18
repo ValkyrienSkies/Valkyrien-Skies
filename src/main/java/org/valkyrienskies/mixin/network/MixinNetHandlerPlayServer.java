@@ -146,6 +146,21 @@ public abstract class MixinNetHandlerPlayServer {
 
             final UUID lastTouchedShipId = addedPlayerMovementData.getLastTouchedShipId();
             final int ticksSinceTouchedLastShip = addedPlayerMovementData.getTicksSinceTouchedLastShip();
+
+            if (ticksSinceTouchedLastShip > 40) {
+                // If the player hasn't touched the ship in over 40 ticks, then ignore its coordinates relative to that ship.
+                final IDraggable playerAsDraggable = IDraggable.class.cast(this.player);
+                playerAsDraggable.setEntityShipMovementData(
+                        playerAsDraggable.getEntityShipMovementData()
+                                .withLastTouchedShip(null)
+                                .withAddedLinearVelocity(new Vector3d())
+                                .withAddedYawVelocity(0)
+                                .withTicksPartOfGround(addedPlayerMovementData.getTicksPartOfGround())
+                                .withTicksSinceTouchedShip(ticksSinceTouchedLastShip)
+                );
+                return;
+            }
+
             final int ticksPartOfGround = addedPlayerMovementData.getTicksPartOfGround();
             final Vector3d playerPosInShip = new Vector3d(addedPlayerMovementData.getPlayerPosInShip());
             final Vector3d playerLookInShip = new Vector3d(addedPlayerMovementData.getPlayerLookInShip());

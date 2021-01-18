@@ -51,14 +51,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PhysicsObject implements IPhysicsEntity {
 
-    // region Fields
     // The number of ticks we wait before enabling physics. I use 20 because I'm very paranoid of ships falling through the ground.
     private static final int DISABLE_PHYSICS_FOR_X_INITIAL_TICKS = 20;
+    // Before we start dragging entities with the ship, Wait this number of ticks after a ship has been teleported using "/vs tp-ship-to" commands.
+    public static int TICKS_SINCE_TELEPORT_TO_START_DRAGGING = 50;
+
+    // region Fields
     @Getter
     private final List<EntityPlayerMP> watchingPlayers;
     private final Set<IPhysicsBlockController> physicsControllers;
     private final Set<IPhysicsBlockController> physicsControllersImmutable;
-    // Used to iterate over the ship blocks extremely quickly by taking advantage of the cache
     @Getter
     private final PhysObjectRenderManager shipRenderer;
     /**
@@ -73,7 +75,7 @@ public class PhysicsObject implements IPhysicsEntity {
     private final PhysicsCalculations physicsCalculations;
 
     // The closest Chunks to the Ship cached in here
-    private SurroundingChunkCacheController cachedSurroundingChunks;
+    private final SurroundingChunkCacheController cachedSurroundingChunks;
 
     /**
      * Used for faster memory access to the Chunks this object 'owns'
@@ -116,8 +118,6 @@ public class PhysicsObject implements IPhysicsEntity {
     // If (forceToUseShipDataTransform == true) then reset the physics transform to the ShipData transform.
     @Setter
     private boolean forceToUseShipDataTransform;
-
-    public static int TICKS_SINCE_TELEPORT_TO_START_DRAGGING = 50;
 
     // Used to prevent players from thinking they're on a ship if this ship just got teleported.
     @Setter @Getter
@@ -169,7 +169,6 @@ public class PhysicsObject implements IPhysicsEntity {
     void onTick() {
         if (!world.isRemote) {
             cachedSurroundingChunks.updateChunkCache();
-            // this.setNeedsCollisionCacheUpdate(true);
 
             final boolean forceToUseShipDataTransformLocalCopy = forceToUseShipDataTransform;
             forceToUseShipDataTransform = false;
@@ -395,19 +394,6 @@ public class PhysicsObject implements IPhysicsEntity {
         }
         claimedChunkCache.updateChunk(chunk);
         shipRenderer.updateChunk(chunk);
-    }
-
-    /**
-     * A thread safe way of accessing tile entities within a ship. Not guaranteed to provide the most up to do tile.
-     */
-    @Nullable
-    public TileEntity getShipTile(@Nonnull BlockPos pos) {
-        Chunk chunk = claimedChunkCache.getChunkAt(pos.getX() >> 4, pos.getZ() >> 4);
-        if (chunk != null) {
-            return chunk.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
-        } else {
-            return null;
-        }
     }
 
     @Getter

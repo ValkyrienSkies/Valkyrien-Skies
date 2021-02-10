@@ -10,7 +10,6 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.RayTraceResult.Type;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.*;
@@ -59,25 +58,6 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
 
     @Shadow
     protected List<IWorldEventListener> eventListeners;
-
-    @Shadow
-    public abstract Biome getBiomeForCoordsBody(BlockPos pos);
-
-    /**
-     * Enables the correct weather on ships depending on their position.
-     */
-    @Intrinsic(displace = true)
-    public Biome vs$getBiomeForCoordsBody(BlockPos pos) {
-        Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysoManagingBlockThreadSafe(World.class.cast(this), pos);
-
-        if (physicsObject.isPresent()) {
-            pos = physicsObject.get()
-                .getShipTransformationManager()
-                .getCurrentTickTransform().transform(pos, TransformType.SUBSPACE_TO_GLOBAL);
-        }
-        return getBiomeForCoordsBody(pos);
-    }
 
     private static boolean isBoundingBoxTooLarge(AxisAlignedBB alignedBB) {
         if ((alignedBB.maxX - alignedBB.minX) * (alignedBB.maxY - alignedBB.minY) * (alignedBB.maxZ

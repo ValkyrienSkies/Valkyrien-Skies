@@ -9,14 +9,13 @@ import net.minecraft.world.World;
 import org.joml.*;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
+import org.valkyrienskies.mod.common.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.collision.WorldWaterCollider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
-import org.valkyrienskies.mod.common.collision.WorldPhysicsCollider;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import valkyrienwarfare.api.TransformType;
 
-import javax.annotation.Nullable;
 import java.lang.Math;
 import java.util.*;
 
@@ -262,7 +261,8 @@ public class PhysicsCalculations {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                } else if (blockAt instanceof IBlockTorqueProvider) {
+                }
+                if (blockAt instanceof IBlockTorqueProvider) {
                     // Add it to the torque sorted map; we do this so the torque dampeners can run
                     // after the gyroscope stabilizers.
                     IBlockTorqueProvider torqueProviderBlock = (IBlockTorqueProvider) blockAt;
@@ -506,5 +506,9 @@ public class PhysicsCalculations {
         final double timeStep = getPhysicsTimeDeltaPerPhysTick();
         this.force.add(addedForce.x() * timeStep, addedForce.y() * timeStep, addedForce.z() * timeStep);
         this.torque.add(addedTorque.x() * timeStep, addedTorque.y() * timeStep, addedTorque.z() * timeStep);
+    }
+
+    public Vector3dc getPhysCenterOfMass() {
+        return physCenterOfMass;
     }
 }

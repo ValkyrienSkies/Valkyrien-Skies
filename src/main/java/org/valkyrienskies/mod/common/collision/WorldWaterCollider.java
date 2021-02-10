@@ -34,9 +34,9 @@ public class WorldWaterCollider {
     private static final double AABB_EXPANSION = 2;
     // The radius of the range we check when considering adding a water block to the collision cache
     private static final double RANGE_CHECK = 2;
-    // Time in seconds between collision cache updates. A value of .1D means we
+    // Time in seconds between collision cache updates. A value of .1 means we
     // update the collision cache every 1/10th of a second.
-    private static final double CACHE_UPDATE_PERIOD = .5;
+    private static final double CACHE_UPDATE_PERIOD = .1;
 
     private static final int MAX_HITS_PER_TASK = 500;
 

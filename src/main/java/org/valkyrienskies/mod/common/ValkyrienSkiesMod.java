@@ -30,6 +30,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.valkyrienskies.mixin.MixinLoaderForge;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
+import org.valkyrienskies.mod.common.block.BlockBoatChair;
 import org.valkyrienskies.mod.common.block.BlockCaptainsChair;
 import org.valkyrienskies.mod.common.block.BlockPassengerChair;
 import org.valkyrienskies.mod.common.block.BlockWaterPump;
@@ -41,6 +42,7 @@ import org.valkyrienskies.mod.common.network.*;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
 import org.valkyrienskies.mod.common.ships.deprecated_api.VS_APIPhysicsEntityManager;
+import org.valkyrienskies.mod.common.tileentity.TileEntityBoatChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
 import org.valkyrienskies.mod.common.tileentity.TileEntityWaterPump;
@@ -91,6 +93,7 @@ public class ValkyrienSkiesMod {
     public Block captainsChair;
     public Block passengerChair;
     public Block waterPump;
+    public Block boatChair;
     public Item shipTracker;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static SimpleNetworkWrapper physWrapperTransformUpdateNetwork;
@@ -257,12 +260,15 @@ public class ValkyrienSkiesMod {
                 new ResourceLocation(MOD_ID, "tile_passenger_chair"));
         GameRegistry.registerTileEntity(TileEntityWaterPump.class,
                 new ResourceLocation(MOD_ID, "tile_water_pump"));
+        GameRegistry.registerTileEntity(TileEntityBoatChair.class,
+                new ResourceLocation(MOD_ID, "tile_boat_chair"));
     }
 
     private void registerBlocks() {
         this.captainsChair = registerBlock(new BlockCaptainsChair());
         this.passengerChair = registerBlock(new BlockPassengerChair());
         this.waterPump = registerBlock(new BlockWaterPump());
+        this.boatChair = registerBlock(new BlockBoatChair());
 
 
         this.registerTileEntities();

@@ -7,7 +7,7 @@ buildscript {
         }
         maven {
             name = "SpongePowered"
-            url = "http://repo.spongepowered.org/maven/"
+            url = "https://repo.spongepowered.org/maven/"
         }
     }
     dependencies {
@@ -99,7 +99,7 @@ configurations {
 repositories {
     maven {
         name = "SpongePowered"
-        url = "http://repo.spongepowered.org/maven/"
+        url = "https://repo.spongepowered.org/maven/"
     }
     maven {
         name = "DaPorkchop_"

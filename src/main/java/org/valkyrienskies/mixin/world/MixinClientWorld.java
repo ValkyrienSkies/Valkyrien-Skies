@@ -24,6 +24,7 @@ import valkyrienwarfare.api.TransformType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class contains the mixins for the World class that are client side only.
@@ -86,7 +87,7 @@ public class MixinClientWorld {
             AxisAlignedBB lightBB = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2,
                 pos.getZ() - 2, pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2);
 
-            final List<PhysicsObject> physicsObjectList = ValkyrienUtils.getPhysObjWorld(world).getPhysObjectsInAABB(lightBB);
+            final List<PhysicsObject> physicsObjectList = ValkyrienUtils.getPhysObjWorld(world).getAllLoadedThreadSafe().stream().filter((physicsObject -> lightBB.intersects(physicsObject.getShipBB()))).collect(Collectors.toList());
 
             final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 

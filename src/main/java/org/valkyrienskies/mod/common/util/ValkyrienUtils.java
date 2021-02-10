@@ -66,6 +66,15 @@ public class ValkyrienUtils {
             .map(shipData -> getPhysObjWorld(world).getPhysObjectFromUUID(shipData.getUuid()));
     }
 
+    public Optional<PhysicsObject> getPhysoManagingBlockThreadSafe(@Nullable World world, @Nullable BlockPos pos) {
+        for (PhysicsObject physicsObject : getPhysObjWorld(world).getAllLoadedThreadSafe()) {
+            if (physicsObject.getChunkClaim().containsBlock(pos)) {
+                return Optional.of(physicsObject);
+            }
+        }
+        return Optional.empty();
+    }
+
     public Optional<ShipData> getShipManagingBlock(@Nullable World world, @Nullable BlockPos pos) {
         if (world == null ||
             pos == null ||

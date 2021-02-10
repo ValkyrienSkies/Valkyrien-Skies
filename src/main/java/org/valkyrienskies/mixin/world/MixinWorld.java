@@ -69,7 +69,7 @@ public abstract class MixinWorld implements IWorldVS, IHasShipManager {
     @Intrinsic(displace = true)
     public Biome vs$getBiomeForCoordsBody(BlockPos pos) {
         Optional<PhysicsObject> physicsObject = ValkyrienUtils
-            .getPhysoManagingBlock(World.class.cast(this), pos);
+            .getPhysoManagingBlockThreadSafe(World.class.cast(this), pos);
 
         if (physicsObject.isPresent()) {
             pos = physicsObject.get()

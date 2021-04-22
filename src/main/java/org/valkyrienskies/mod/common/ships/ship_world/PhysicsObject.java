@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.tileentity.TileEntity;
@@ -28,21 +27,22 @@ import org.valkyrienskies.mod.common.physics.IPhysicsBlockController;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.block_relocation.MoveBlocks;
-import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.ships.chunk_claims.ClaimedChunkCacheController;
 import org.valkyrienskies.mod.common.ships.chunk_claims.SurroundingChunkCacheController;
-import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.interpolation.ITransformInterpolator;
 import org.valkyrienskies.mod.common.ships.interpolation.SimpleEMATransformInterpolator;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransformationManager;
-import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.IPhysicsEntity;
 import valkyrienwarfare.api.TransformType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -435,5 +435,19 @@ public class PhysicsObject implements IPhysicsEntity {
      */
     public boolean isPhysicsReady() {
         return ticksExisted >= DISABLE_PHYSICS_FOR_X_INITIAL_TICKS;
+    }
+
+    /**
+     * A thread safe way of accessing tile entities within a ship. Not guaranteed to provide the most up to do tile.
+     */
+    @SuppressWarnings("unused") // This is used by vs-control >.<
+    @Nullable
+    public TileEntity getShipTile(@Nonnull BlockPos pos) {
+        Chunk chunk = claimedChunkCache.getChunkAt(pos.getX() >> 4, pos.getZ() >> 4);
+        if (chunk != null) {
+            return chunk.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+        } else {
+            return null;
+        }
     }
 }

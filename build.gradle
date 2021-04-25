@@ -3,7 +3,7 @@ buildscript {
         jcenter()
         maven {
             name = "MinecraftForge"
-            url = "https://files.minecraftforge.net/maven/"
+            url = "https://maven.daporkchop.net/"
         }
         maven {
             name = "SpongePowered"

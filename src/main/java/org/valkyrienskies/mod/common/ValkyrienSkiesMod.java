@@ -23,7 +23,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -37,9 +42,17 @@ import org.valkyrienskies.mod.common.block.BlockWaterPump;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
-import org.valkyrienskies.mod.common.item.ItemShipOar;
 import org.valkyrienskies.mod.common.item.ItemShipTracker;
-import org.valkyrienskies.mod.common.network.*;
+import org.valkyrienskies.mod.common.network.MessagePlayerStoppedPiloting;
+import org.valkyrienskies.mod.common.network.MessagePlayerStoppedPilotingHandler;
+import org.valkyrienskies.mod.common.network.MessageStartPiloting;
+import org.valkyrienskies.mod.common.network.MessageStartPilotingHandler;
+import org.valkyrienskies.mod.common.network.MessageStopPiloting;
+import org.valkyrienskies.mod.common.network.MessageStopPilotingHandler;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessage;
+import org.valkyrienskies.mod.common.network.ShipIndexDataMessageHandler;
+import org.valkyrienskies.mod.common.network.ShipTransformUpdateMessage;
+import org.valkyrienskies.mod.common.network.ShipTransformUpdateMessageHandler;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
 import org.valkyrienskies.mod.common.ships.deprecated_api.VS_APIPhysicsEntityManager;
@@ -96,7 +109,6 @@ public class ValkyrienSkiesMod {
     public Block waterPump;
     public Block boatChair;
     public Item shipTracker;
-    public Item shipOar;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static SimpleNetworkWrapper physWrapperTransformUpdateNetwork;
     public static SimpleNetworkWrapper controlNetwork;
@@ -284,7 +296,6 @@ public class ValkyrienSkiesMod {
 
     private void registerItems() {
         this.shipTracker = new ItemShipTracker("vs_ship_tracker", true);
-        this.shipOar = new ItemShipOar("vs_ship_oar", true);
     }
 
     @Getter

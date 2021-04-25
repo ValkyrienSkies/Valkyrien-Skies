@@ -1,6 +1,5 @@
 package org.valkyrienskies.mixin.entity.player;
 
-import java.util.Optional;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -13,11 +12,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.mod.common.piloting.ControllerInputType;
 import org.valkyrienskies.mod.common.piloting.IShipPilot;
+import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
-import org.valkyrienskies.mod.common.ships.ShipData;
 import org.valkyrienskies.mod.common.util.JOML;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Todo: Delete preGetBedSpawnLocation and turn IShipPilot into a capability.
@@ -30,6 +32,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     private PhysicsObject pilotedShip;
     private BlockPos blockBeingControlled;
     private ControllerInputType controlInputType;
+    private UUID pilotedShipID;
 
     // Constructor doesn't do anything, just here because java wont compile if it
     // wasn't.
@@ -64,6 +67,16 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
     }
 
     @Override
+    public UUID getShipIDBeingControlled() {
+        return pilotedShipID;
+    }
+
+    @Override
+    public void setShipIDBeingControlled(UUID shipID) {
+        this.pilotedShipID = shipID;
+    }
+
+    @Override
     public PhysicsObject getPilotedShip() {
         return pilotedShip;
     }
@@ -75,7 +88,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
 
     @Override
     public boolean isPilotingShip() {
-        return pilotedShip != null;
+        return pilotedShip != null || pilotedShipID != null;
     }
 
     @Override
@@ -105,12 +118,13 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IShi
 
     @Override
     public boolean isPiloting() {
-        return isPilotingShip() || isPilotingATile();
+        return isPilotingATile();
     }
 
     @Override
     public void stopPilotingEverything() {
         setPilotedShip(null);
+        setShipIDBeingControlled(null);
         setPosBeingControlled(null);
         setControllerInputEnum(null);
     }

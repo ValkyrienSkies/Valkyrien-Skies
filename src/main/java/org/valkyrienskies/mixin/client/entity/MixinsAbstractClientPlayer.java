@@ -1,13 +1,13 @@
 package org.valkyrienskies.mixin.client.entity;
 
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.piloting.ControllerInputType;
 import org.valkyrienskies.mod.common.piloting.IShipPilotClient;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+
+import java.util.UUID;
 
 /**
  * Todo: Replace this with a capability
@@ -18,14 +18,19 @@ public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
 
     @Override
     public void onClientTick() {
-        if (isPiloting()) {
-            sendPilotKeysToServer(this.getControllerInputEnum(), getPilotedShip(),
-                getPosBeingControlled());
+        if (isPilotingShip() || isPilotingATile()) {
+            final UUID shipId;
+            if (getPilotedShip() != null) {
+                shipId = getPilotedShip().getUuid();
+            } else {
+                shipId = getShipIDBeingControlled();
+            }
+            sendPilotKeysToServer(this.getControllerInputEnum(), shipId, this);
         }
     }
 
-    private void sendPilotKeysToServer(ControllerInputType type, PhysicsObject shipPiloting,
-                                       BlockPos blockBeingControlled) {
+    private void sendPilotKeysToServer(ControllerInputType type, UUID shipPiloting,
+                                       IShipPilotClient shipPilotClient) {
         PilotControlsMessage keyMessage = new PilotControlsMessage();
         if (type == null) {
             System.out.println("This is totally wrong");
@@ -33,7 +38,7 @@ public abstract class MixinsAbstractClientPlayer implements IShipPilotClient {
         }
         // System.out.println(blockBeingControlled);
         keyMessage.assignKeyBooleans(shipPiloting, type);
-        keyMessage.controlBlockPos = blockBeingControlled;
+        keyMessage.controlBlockPos = shipPilotClient.getPosBeingControlled();
 
         ValkyrienSkiesMod.controlNetwork.sendToServer(keyMessage);
     }

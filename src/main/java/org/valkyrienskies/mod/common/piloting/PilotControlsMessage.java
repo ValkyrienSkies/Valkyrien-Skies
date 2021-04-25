@@ -1,14 +1,12 @@
 package org.valkyrienskies.mod.common.piloting;
 
-import java.util.UUID;
-
-import org.valkyrienskies.mod.client.VSKeyHandler;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import org.valkyrienskies.mod.client.VSKeyHandler;
+
+import java.util.UUID;
 
 public class PilotControlsMessage implements IMessage {
 
@@ -72,7 +70,9 @@ public class PilotControlsMessage implements IMessage {
 
         inputType = packetBuf.readEnumValue(ControllerInputType.class);
         shipFor = packetBuf.readUniqueId();
-        controlBlockPos = packetBuf.readBlockPos();
+
+        final boolean hasControlBlockPos = packetBuf.readBoolean();
+        if (hasControlBlockPos) controlBlockPos = packetBuf.readBlockPos();
     }
 
     @Override
@@ -106,14 +106,14 @@ public class PilotControlsMessage implements IMessage {
 
         packetBuf.writeEnumValue(inputType);
         packetBuf.writeUniqueId(shipFor);
-        if (controlBlockPos == null) {
-            System.out.println(":(");
-            controlBlockPos = BlockPos.ORIGIN;
+
+        packetBuf.writeBoolean(controlBlockPos != null);
+        if (controlBlockPos != null) {
+            packetBuf.writeBlockPos(controlBlockPos);
         }
-        packetBuf.writeBlockPos(controlBlockPos);
     }
 
-    public void assignKeyBooleans(PhysicsObject shipPiloting, Enum inputType) {
+    public void assignKeyBooleans(UUID shipPiloting, Enum inputType) {
         airshipUp_KeyDown = VSKeyHandler.airshipUp.isKeyDown();
         airshipDown_KeyDown = VSKeyHandler.airshipDown.isKeyDown();
         airshipForward_KeyDown = VSKeyHandler.airshipForward.isKeyDown();
@@ -133,7 +133,7 @@ public class PilotControlsMessage implements IMessage {
 
         if (shipPiloting != null) {
             // USED TO BE #getUniqueID
-            shipFor = shipPiloting.getShipData().getUuid();
+            shipFor = shipPiloting;
         }
         this.inputType = inputType;
         if (inputType == ControllerInputType.Zepplin) {

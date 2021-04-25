@@ -6,7 +6,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.*;
+import org.joml.AxisAngle4d;
+import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
+import org.joml.Quaterniond;
+import org.joml.Quaterniondc;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.valkyrienskies.mod.common.block.IBlockForceProvider;
 import org.valkyrienskies.mod.common.block.IBlockTorqueProvider;
 import org.valkyrienskies.mod.common.collision.WorldPhysicsCollider;
@@ -14,10 +20,15 @@ import org.valkyrienskies.mod.common.collision.WorldWaterCollider;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.ShipPilot;
 import valkyrienwarfare.api.TransformType;
 
-import java.lang.Math;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class PhysicsCalculations {
 
@@ -285,6 +296,16 @@ public class PhysicsCalculations {
                     }
                 }
             }
+        }
+
+        // Add pilot input
+        final ShipPilot parentPilot = parent.getShipPilot();
+        if (parentPilot != null) {
+            final Vector3dc pilotForce = parentPilot.getBlockForceInShipSpace(parent, physTickTimeDelta);
+            final Vector3dc pilotTorque = parentPilot.getTorqueInGlobal(this);
+
+            this.linearVelocity.fma(getInvMass(), pilotForce);
+            this.torque.add(pilotTorque);
         }
 
         convertTorqueToVelocity();

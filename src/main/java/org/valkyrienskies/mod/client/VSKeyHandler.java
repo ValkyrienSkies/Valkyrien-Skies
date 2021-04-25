@@ -88,6 +88,13 @@ public class VSKeyHandler {
                 ValkyrienSkiesMod.controlNetwork.sendToServer(stopPilotingMessage);
                 clientPilot.stopPilotingEverything();
             }
+
+            if (dismountKey.isKeyDown() && clientPilot.getShipIDBeingControlled() != null) {
+                MessagePlayerStoppedPiloting stopPilotingMessage = new MessagePlayerStoppedPiloting(
+                        clientPilot.getShipIDBeingControlled());
+                ValkyrienSkiesMod.controlNetwork.sendToServer(stopPilotingMessage);
+                clientPilot.stopPilotingEverything();
+            }
         }
     }
 }

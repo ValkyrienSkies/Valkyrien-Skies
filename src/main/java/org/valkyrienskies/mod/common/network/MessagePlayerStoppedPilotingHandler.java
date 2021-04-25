@@ -8,6 +8,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.valkyrienskies.mod.common.piloting.ITileEntityPilotable;
+import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.util.ValkyrienUtils;
+
+import java.util.UUID;
 
 public class MessagePlayerStoppedPilotingHandler implements
     IMessageHandler<MessagePlayerStoppedPiloting, IMessage> {
@@ -16,15 +20,23 @@ public class MessagePlayerStoppedPilotingHandler implements
     public IMessage onMessage(MessagePlayerStoppedPiloting message, MessageContext ctx) {
         IThreadListener mainThread = ctx.getServerHandler().server;
         mainThread.addScheduledTask(() -> {
-                BlockPos pos = message.posToStopPiloting;
-                EntityPlayerMP player = ctx.getServerHandler().player;
+                    if (message.posToStopPiloting != null) {
+                        BlockPos pos = message.posToStopPiloting;
+                        EntityPlayerMP player = ctx.getServerHandler().player;
 
-                TileEntity tileEntity = player.world.getTileEntity(pos);
+                        TileEntity tileEntity = player.world.getTileEntity(pos);
 
-                if (tileEntity instanceof ITileEntityPilotable) {
-                    ((ITileEntityPilotable) tileEntity).playerWantsToStopPiloting(player);
+                        if (tileEntity instanceof ITileEntityPilotable) {
+                            ((ITileEntityPilotable) tileEntity).playerWantsToStopPiloting(player);
+                        }
+                    } else {
+                        final UUID shipID = message.shipIDToStopPiloting;
+                        final PhysicsObject physicsObject = ValkyrienUtils.getPhysObjWorld(ctx.getServerHandler().player.world).getPhysObjectFromUUID(shipID);
+                        if (physicsObject != null && physicsObject.getShipPilot() != null && ctx.getServerHandler().player.getUniqueID().equals(physicsObject.getShipPilot().getPilot())) {
+                            physicsObject.setShipPilot(null);
+                        }
+                    }
                 }
-            }
         );
         return null;
     }

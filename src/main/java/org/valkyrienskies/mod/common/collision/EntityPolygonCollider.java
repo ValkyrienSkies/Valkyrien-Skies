@@ -53,10 +53,21 @@ public class EntityPolygonCollider {
         if (!separated) {
             double minDistance = 420;
             for (int i = 0; i < collisions.length; i++) {
-                // This is wrong
-                if (Math.abs(collisions[i].getCollisionPenetrationDistance()) < minDistance) {
-                    minDistanceIndex = i;
-                    minDistance = Math.abs(collisions[i].getCollisionPenetrationDistance());
+                if (originallySeparated) {
+                    if (Math.abs((collisions[i].getCollisionPenetrationDistance() - collisions[i]
+                        .getVelDot()) / collisions[i].getVelDot()) < minDistance && !collisions[i]
+                        .werePolygonsInitiallyColliding()) {
+                        minDistanceIndex = i;
+                        minDistance = Math.abs(
+                            (collisions[i].getCollisionPenetrationDistance() - collisions[i]
+                                .getVelDot()) / collisions[i].getVelDot());
+                    }
+                } else {
+                    // This is wrong
+                    if (Math.abs(collisions[i].getCollisionPenetrationDistance()) < minDistance) {
+                        minDistanceIndex = i;
+                        minDistance = Math.abs(collisions[i].getCollisionPenetrationDistance());
+                    }
                 }
             }
         }

@@ -182,7 +182,7 @@ public class EntityCollisionInjector {
                         // TODO: Add more potential yResponses
                         double stepSquared = entity.stepHeight * entity.stepHeight;
                         // Do not do stair stepping if the player is on a ladder.
-                        boolean isStep = false && isLiving && entity.onGround && !isPlayerOnLadder;
+                        boolean isStep = isLiving && entity.onGround && !isPlayerOnLadder;
                         if (response.y >= 0
                             && VSMath.canStandOnNormal(
                             fast.getCollisionAxes()[fast.getMinDistanceIndex()])) {
@@ -192,6 +192,62 @@ public class EntityCollisionInjector {
                                     .getCollisionAxes()[fast.getMinDistanceIndex()].y(), 0);
 
                             response = slowButStopped;
+                        }
+                        if (isStep) {
+                            EntityLivingBase living = (EntityLivingBase) entity;
+                            if (Math.abs(living.moveForward) > .01
+                                || Math.abs(living.moveStrafing) > .01) {
+                                for (int i = 3; i < 6; i++) {
+                                    Vector3d tempResponse = fast.getCollisions()[i].getResponse();
+                                    if (tempResponse.y > 0
+                                        && VSMath.canStandOnNormal(
+                                        fast.getCollisions()[i].getCollisionNormal())
+                                        && tempResponse.lengthSquared() < stepSquared) {
+                                        if (tempResponse.lengthSquared() < .1) {
+                                            // Too small to be a real step, let it through
+                                            response = tempResponse;
+                                        } else {
+                                            // System.out.println("Try Stepping!");
+                                            AxisAlignedBB axisalignedbb = entity
+                                                .getEntityBoundingBox()
+                                                .offset(tempResponse.x, tempResponse.y,
+                                                    tempResponse.z);
+
+                                            // Don't allow the player to step if the step will put them in another polygon.
+                                            boolean collidesWithAnything = false;
+                                            {
+                                                final AxisAlignedBB newEntityBBShrunk = axisalignedbb.shrink(.15);
+                                                final Polygon newEntityBBShrunkPolygon = new Polygon(newEntityBBShrunk);
+                                                for (Polygon potentialStepCollision : colPolys) {
+                                                    if (potentialStepCollision == poly) {
+                                                        continue; // Don't run this on ourself
+                                                    }
+                                                    if (potentialStepCollision.getEnclosedAABB().intersects(newEntityBBShrunk)) {
+                                                        // Finer check
+                                                        ShipPolygon potentialStepCollisionShipPoly = (ShipPolygon) potentialStepCollision;
+                                                        final EntityPolygonCollider checkIfStepCollidesWithBlock = new EntityPolygonCollider(newEntityBBShrunkPolygon,
+                                                                potentialStepCollisionShipPoly, potentialStepCollisionShipPoly.normals, new Vector3d());
+
+                                                        checkIfStepCollidesWithBlock.processData();
+
+                                                        if (!checkIfStepCollidesWithBlock.arePolygonsSeparated()) {
+                                                            collidesWithAnything = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            if (!collidesWithAnything) {
+                                                entity.setEntityBoundingBox(axisalignedbb);
+                                                // I think this correct, but it may create more problems than it solves
+                                                response.zero();
+                                                entity.resetPositionToBB();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         // total.add(response);
@@ -451,7 +507,7 @@ public class EntityCollisionInjector {
 
                 // TODO: Fix the performance of this!
                 if (entity.world.isRemote || entity instanceof EntityPlayer) {
-                    // VSMath.mergeAABBList(collidingBBs);
+                    VSMath.mergeAABBList(collidingBBs);
                 }
 
                 for (AxisAlignedBB inLocal : collidingBBs) {

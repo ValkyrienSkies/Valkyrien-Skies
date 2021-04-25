@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
         maven {
             name = "MinecraftForge"
             url = "https://maven.daporkchop.net/"
@@ -33,7 +34,10 @@ ext {
     if (project.hasProperty('CustomReleaseVersion')) {
         vsVersion = project.property('CustomReleaseVersion')
     } else {
-        vsVersion = "1.0.0+" + ('git rev-parse HEAD'.execute().text.substring(0, 10))
+        // Get the revision. Use `.execute([], file("."))`
+        // to always execute in the directory of build.gradle
+        def revision = "git rev-parse HEAD".execute([], file(".")).text
+        vsVersion = "1.0.0+" + revision.substring(0, 10)
     }
 
     //minecraft things
@@ -97,6 +101,7 @@ configurations {
 }
 
 repositories {
+    mavenCentral()
     maven {
         name = "SpongePowered"
         url = "https://repo.spongepowered.org/maven/"

@@ -1,18 +1,14 @@
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
+        jcenter()
         maven {
-            name = "MinecraftForge"
-            url = "https://maven.daporkchop.net/"
-        }
-        maven {
-            name = "SpongePowered"
-            url = "https://repo.spongepowered.org/maven/"
+            name = "Valkyrien Skies Internal"
+            url = "http://maven.valkyrienskies.org/repository/internal/"
         }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "com.github.GregTechCE:ForgeGradle:7e8e0b4c9d"
         classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
 }
@@ -102,16 +98,11 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven {
-        name = "SpongePowered"
-        url = "https://repo.spongepowered.org/maven/"
-    }
-    maven {
-        name = "DaPorkchop_"
-        url = "https://maven.daporkchop.net/"
-    }
-    maven { url 'https://jitpack.io' }
     jcenter()
+    maven {
+        name = "Valkyrien Skies Internal"
+        url = "http://maven.valkyrienskies.org/repository/internal/"
+    }
 }
 
 // This is included here because of this garbage https://github.com/SpongePowered/SpongeForge/blob/stable-7/build.gradle#L40-L52

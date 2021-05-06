@@ -2,6 +2,8 @@ package org.valkyrienskies.mod.common.ships.ship_world;
 
 import com.google.common.collect.ImmutableList;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import lombok.Getter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -17,6 +19,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.valkyrienskies.mod.common.config.VSConfig;
 import org.valkyrienskies.mod.common.physics.BlockPhysicsDetails;
 import org.valkyrienskies.mod.common.ships.QueryableShipData;
@@ -28,9 +31,21 @@ import org.valkyrienskies.mod.common.ships.physics_data.BasicCenterOfMassProvide
 import org.valkyrienskies.mod.common.ships.physics_data.IPhysicsObjectCenterOfMassProvider;
 import org.valkyrienskies.mod.common.util.multithreaded.CalledFromWrongThreadException;
 import org.valkyrienskies.mod.common.util.multithreaded.VSWorldPhysicsLoop;
+import scala.util.Either;
+import scala.util.Left;
+import scala.util.Right;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public class WorldServerShipManager implements IPhysObjectWorld {
 
@@ -42,7 +57,7 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     private final WorldShipLoadingController loadingController;
     private final Map<UUID, PhysicsObject> loadedShips;
     // Use LinkedHashSet as a queue because it preserves order and doesn't allow duplicates
-    private final LinkedHashSet<ImmutableTriple<BlockPos, ShipData, BlockFinder.BlockFinderType>> spawnQueue;
+    private final LinkedHashSet<ImmutableTriple<BlockPos, ShipData, Either<BlockFinder.BlockFinderType, Pair<BlockPos, List<BlockPos>>>>> spawnQueue;
     private final LinkedHashSet<UUID> loadQueue, unloadQueue, backgroundLoadQueue;
     private final Set<UUID> loadingInBackground;
     private ImmutableList<PhysicsObject> threadSafeLoadedShips;
@@ -129,41 +144,49 @@ public class WorldServerShipManager implements IPhysObjectWorld {
     }
 
     private void spawnNewShips() {
-        for (final ImmutableTriple<BlockPos, ShipData, BlockFinder.BlockFinderType> spawnData : spawnQueue) {
+        for (final ImmutableTriple<BlockPos, ShipData, Either<BlockFinder.BlockFinderType, Pair<BlockPos, List<BlockPos>>>> spawnData : spawnQueue) {
             final BlockPos physicsInfuserPos = spawnData.getLeft();
             final ShipData toSpawn = spawnData.getMiddle();
-            final BlockFinder.BlockFinderType blockBlockFinderType = spawnData.getRight();
 
-            if (loadedShips.containsKey(toSpawn.getUuid())) {
-                throw new IllegalStateException("Tried spawning a ShipData that was already loaded?\n" + toSpawn);
+            final TIntSet foundSet;
+            final BlockPos firstBlock;
+
+            if (spawnData.getRight().isLeft()) {
+                final BlockFinder.BlockFinderType blockBlockFinderType = spawnData.getRight().left().get();
+
+                if (loadedShips.containsKey(toSpawn.getUuid())) {
+                    throw new IllegalStateException("Tried spawning a ShipData that was already loaded?\n" + toSpawn);
+                }
+
+                final SpatialDetector detector = BlockFinder.getBlockFinderFor(
+                        blockBlockFinderType,
+                        physicsInfuserPos,
+                        world,
+                        VSConfig.maxDetectedShipSize + 1,
+                        true
+                );
+
+                if (detector.foundSet.size() > VSConfig.maxDetectedShipSize || detector.cleanHouse) {
+                    System.err.println("Ship too big or bedrock detected!");
+                    continue; // Skip ship construction
+                }
+
+                firstBlock = detector.firstBlock;
+                foundSet = detector.foundSet;
+            } else {
+                final Pair<BlockPos, List<BlockPos>> pair = spawnData.getRight().right().get();
+                firstBlock = pair.getLeft();
+
+                foundSet = new TIntHashSet();
+                for (BlockPos pos : pair.getRight()) {
+                    foundSet.add(SpatialDetector.getHashWithRespectTo(pos.getX(), pos.getY(), pos.getZ(), firstBlock));
+                }
             }
-
-            final SpatialDetector detector = BlockFinder.getBlockFinderFor(
-                    blockBlockFinderType,
-                    physicsInfuserPos,
-                    world,
-                    VSConfig.maxDetectedShipSize + 1,
-                    true
-            );
 
             if (VSConfig.showAnnoyingDebugOutput) {
                 System.out.println("Attempting to spawn " + toSpawn + " on the thread " + Thread.currentThread().getName());
             }
-            if (detector.foundSet.size() > VSConfig.maxDetectedShipSize || detector.cleanHouse) {
-                System.err.println("Ship too big or bedrock detected!");
 
-                /*
-                if (creator != null) {
-                    creator.sendMessage(new TextComponentString(
-                            "Ship construction canceled because its exceeding the ship size limit; "
-                                    +
-                                    "or because it's attached to bedrock. " +
-                                    "Raise it with /physsettings maxshipsize [number]"));
-                }
-
-                 */
-                continue; // Skip ship construction
-            }
 
             // Fill the chunk claims
             int radius = 7;
@@ -190,10 +213,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             Map<Long, Chunk> copiedChunksMap = new HashMap<>();
 
             // First, copy the blocks and tiles to the new chunks
-            TIntIterator blocksIterator = detector.foundSet.iterator();
+            TIntIterator blocksIterator = foundSet.iterator();
             while (blocksIterator.hasNext()) {
                 int hashedPos = blocksIterator.next();
-                SpatialDetector.setPosWithRespectTo(hashedPos, detector.firstBlock, srcLocationPos);
+                SpatialDetector.setPosWithRespectTo(hashedPos, firstBlock, srcLocationPos);
                 // Get the BlockPos from the hashedPos
                 pasteLocationPos.setPos(srcLocationPos.getX() + centerDifference.getX(), srcLocationPos.getY() + centerDifference.getY(), srcLocationPos.getZ() + centerDifference.getZ());
 
@@ -272,10 +295,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             }
 
             // Then delete the copied blocks from the old chunks
-            blocksIterator = detector.foundSet.iterator();
+            blocksIterator = foundSet.iterator();
             while (blocksIterator.hasNext()) {
                 int hashedPos = blocksIterator.next();
-                SpatialDetector.setPosWithRespectTo(hashedPos, detector.firstBlock, srcLocationPos);
+                SpatialDetector.setPosWithRespectTo(hashedPos, firstBlock, srcLocationPos);
 
                 Chunk chunkToSet = world.getChunk(srcLocationPos);
 
@@ -307,10 +330,10 @@ public class WorldServerShipManager implements IPhysObjectWorld {
             // Then relight the original chunks
             {
                 Set<Long> chunksRelit = new HashSet<>();
-                blocksIterator = detector.foundSet.iterator();
+                blocksIterator = foundSet.iterator();
                 while (blocksIterator.hasNext()) {
                     int hashedPos = blocksIterator.next();
-                    SpatialDetector.setPosWithRespectTo(hashedPos, detector.firstBlock, srcLocationPos);
+                    SpatialDetector.setPosWithRespectTo(hashedPos, firstBlock, srcLocationPos);
 
                     int changedChunkX = pasteLocationPos.getX() >> 4;
                     int changedChunkZ = pasteLocationPos.getZ() >> 4;
@@ -460,7 +483,12 @@ public class WorldServerShipManager implements IPhysObjectWorld {
      */
     public void queueShipSpawn(@Nonnull ShipData data, @Nonnull BlockPos spawnPos, @Nonnull BlockFinder.BlockFinderType blockFinderType) {
         enforceGameThread();
-        this.spawnQueue.add(ImmutableTriple.of(spawnPos, data, blockFinderType));
+        this.spawnQueue.add(ImmutableTriple.of(spawnPos, data, new Left<>(blockFinderType)));
+    }
+
+    public void queueShipSpawn(@Nonnull ShipData data, @Nonnull BlockPos spawnPos, @Nonnull Pair<BlockPos, List<BlockPos>> detected) {
+        enforceGameThread();
+        this.spawnQueue.add(ImmutableTriple.of(spawnPos, data, new Right<>(detected)));
     }
 
     @Override

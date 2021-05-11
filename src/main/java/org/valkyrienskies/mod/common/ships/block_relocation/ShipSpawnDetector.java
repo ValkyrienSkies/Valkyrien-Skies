@@ -1,8 +1,5 @@
 package org.valkyrienskies.mod.common.ships.block_relocation;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -10,6 +7,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.config.VSConfig;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ShipSpawnDetector extends SpatialDetector {
 
@@ -35,7 +36,7 @@ public class ShipSpawnDetector extends SpatialDetector {
 
     private final MutableBlockPos mutablePos = new MutableBlockPos();
 
-    ShipSpawnDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
+    public ShipSpawnDetector(BlockPos start, World worldIn, int maximum, boolean checkCorners) {
         super(start, worldIn, maximum, checkCorners);
         // syncWithConfig();
         startDetection();

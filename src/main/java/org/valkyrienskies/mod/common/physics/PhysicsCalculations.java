@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joml.AxisAngle4d;
 import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
@@ -24,12 +25,10 @@ import org.valkyrienskies.mod.common.ships.ship_world.ShipPilot;
 import valkyrienwarfare.api.TransformType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.TreeSet;
 
 public class PhysicsCalculations {
 
@@ -236,7 +235,7 @@ public class PhysicsCalculations {
                 controller.onPhysicsTick(parent, this, this.getPhysicsTimeDeltaPerPhysTick());
             }
 
-            final Map<Block, List<BlockPos>> torqueProviders = new HashMap<>();
+            final List<Pair<BlockPos, IBlockTorqueProvider>> torqueProviders = new ArrayList<>();
 
             BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
             // Note that iterating over "activeForcePositions" is not thread safe, so this could lead to problems.
@@ -275,24 +274,18 @@ public class PhysicsCalculations {
                     }
                 }
                 if (blockAt instanceof IBlockTorqueProvider) {
-                    // Add it to the torque sorted map; we do this so the torque dampeners can run
-                    // after the gyroscope stabilizers.
-                    if (!torqueProviders.containsKey(blockAt)) {
-                        torqueProviders.put(blockAt, new ArrayList<>());
-                    }
-                    torqueProviders.get(blockAt).add(new BlockPos(x, y, z));
+                    torqueProviders.add(Pair.of(new BlockPos(x, y, z), (IBlockTorqueProvider) blockAt));
                 }
             });
 
+            torqueProviders.sort(Comparator.comparing(Pair::getRight));
+
             // Now add the torque from the torque providers, in a sorted order!
-            for (final Block torqueProviderBlock : new TreeSet<>(torqueProviders.keySet())) {
-                List<BlockPos> blockPositions = torqueProviders.get(torqueProviderBlock);
-                for (BlockPos pos : blockPositions) {
-                    this.convertTorqueToVelocity();
-                    Vector3dc torqueVector = ((IBlockTorqueProvider) torqueProviderBlock).getTorqueInGlobal(this, pos);
-                    if (torqueVector != null) {
-                        torque.add(torqueVector);
-                    }
+            for (final Pair<BlockPos, IBlockTorqueProvider> pair : torqueProviders) {
+                this.convertTorqueToVelocity();
+                Vector3dc torqueVector = pair.getRight().getTorqueInGlobal(this, pair.getLeft());
+                if (torqueVector != null) {
+                    torque.add(torqueVector);
                 }
             }
         }

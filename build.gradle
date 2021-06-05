@@ -133,7 +133,7 @@ dependencies {
     }
 
     // The VS API, just shade it into core no need to make it a standalone mod
-    shade "org.valkyrienskies:api:$vsApiVersion"
+    shade "org.valkyrienskies:Valkyrien-Skies-API:19922bc37f590bb59c4979f1f5820097aa459ef0"
 
     // VS World and Control, for local testing only, not shaded in
     deobfCompile("org.valkyrienskies:Valkyrien-Skies-World:1d9df462f15c9125255ea086d7aeb75fe12e5877:all") {

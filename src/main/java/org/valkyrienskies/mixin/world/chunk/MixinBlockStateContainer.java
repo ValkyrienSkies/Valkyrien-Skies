@@ -20,6 +20,7 @@ public class MixinBlockStateContainer implements ITerrainOctreeProvider {
     public static IBlockState AIR_BLOCK_STATE;
     private final IBitOctree solidOctree = new SimpleBitOctree();
     private final IBitOctree liquidOctree = new SimpleBitOctree();
+    private final IBitOctree airPocketOctree = new SimpleBitOctree();
     @Shadow
     public IBlockStatePalette palette;
     @Shadow
@@ -54,5 +55,10 @@ public class MixinBlockStateContainer implements ITerrainOctreeProvider {
     @Override
     public IBitOctree getLiquidOctree() {
         return liquidOctree;
+    }
+
+    @Override
+    public IBitOctree getAirPocketOctree() {
+        return airPocketOctree;
     }
 }

@@ -215,6 +215,7 @@ public class WorldWaterCollider {
     private void checkIfCollidesWithinRangeCheckRadius(final int x, final int y, final int z,
                                                        final IBitOctree octree, final Vector3d inLocal, final Vector3d inBody,
                                                        final AxisAlignedBB shipBB, final TIntList output) {
+        // Check if world block at (x,y,z) is liquid
         if (octree.get(x & 15, y & 15, z & 15)) {
             inLocal.x = x + .5;
             inLocal.y = y + .5;
@@ -289,8 +290,10 @@ public class WorldWaterCollider {
         if (chunk.storageArrays[localY >> 4] != null) {
             ITerrainOctreeProvider provider = (ITerrainOctreeProvider) chunk.storageArrays[localY >> 4]
                 .getData();
-            IBitOctree octreeInLocal = provider.getSolidOctree();
-            if (octreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
+            final IBitOctree solidOctreeInLocal = provider.getSolidOctree();
+            final IBitOctree airPocketOctreeInLocal = provider.getAirPocketOctree();
+            // Check if the liquid intersects with a solid block or an air pocket.
+            if (solidOctreeInLocal.get(localX & 15, localY & 15, localZ & 15) || airPocketOctreeInLocal.get(localX & 15, localY & 15, localZ & 15)) {
                 int hash = SpatialDetector.getHashWithRespectTo(x, y, z, centerPotentialHit);
                 // Sometimes we end up adding to the hits array in multiple threads at once,
                 // crashing the physics.

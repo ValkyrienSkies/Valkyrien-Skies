@@ -26,8 +26,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew setupDecompWorkspace build
+      - name: Setup Gradle workspace
+        run: ./gradlew setupCiWorkspace
+
+      - name: Build mod jar
+        run: ./gradlew build
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle

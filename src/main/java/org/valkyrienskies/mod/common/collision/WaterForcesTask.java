@@ -27,8 +27,6 @@ public class WaterForcesTask implements Callable<Void> {
     private static final double GRAVITY_ACCELERATION = 9.8;
     // Density in kg/m^3
     public static double DENSITY_OF_WATER = 1000;
-    // Mass in kg
-    private static final double MASS_OF_CUBIC_METER_OF_WATER = DENSITY_OF_WATER;
     // Dimensionless constant. Higher values mean more damping force from water.
     private static final double DRAG_COEFFICIENT_OF_WATER = .3;
     // The radius, in meters, of the AABB of water blocks and terrain blocks.
@@ -126,7 +124,7 @@ public class WaterForcesTask implements Callable<Void> {
                                 // Collision position is average of ship solid block pos and water pos
                                 final Vector3dc collisionPosInWorld = shipSolidBlockPosInWorld.add(waterPosInWorld, temp3).mul(.5);
 
-                                final Vector3dc buoyancyForce = temp4.set(0, volumeDisplaced * GRAVITY_ACCELERATION * MASS_OF_CUBIC_METER_OF_WATER, 0);
+                                final Vector3dc buoyancyForce = temp4.set(0, volumeDisplaced * GRAVITY_ACCELERATION * DENSITY_OF_WATER, 0);
                                 final Vector3dc collisionPosRelativeToShipCenterInWorld = temp5.set(collisionPosInWorld).sub(physicsTransform.getPosX(), physicsTransform.getPosY(), physicsTransform.getPosZ());
 
                                 addForceAtPoint(collisionPosRelativeToShipCenterInWorld, buoyancyForce, temp7);

@@ -104,8 +104,10 @@ public class WaterForcesTask implements Callable<Void> {
                     for (int y = minY; y <= maxY; y++) {
                         final ExtendedBlockStorage blockStorage = chunk.storageArrays[y >> 4];
                         if (blockStorage != null) {
-                            final IBitOctree terrainOctree = ((ITerrainOctreeProvider) blockStorage.data).getSolidOctree();
-                            if (terrainOctree.get(x & 15, y & 15, z & 15)) {
+                            final IBitOctree solidBlockOctree = ((ITerrainOctreeProvider) blockStorage.data).getSolidOctree();
+                            final IBitOctree airPocketBlockOctree = ((ITerrainOctreeProvider) blockStorage.data).getSolidOctree();
+                            // Check if liquid is colliding with a solid block or an air pocket block
+                            if (solidBlockOctree.get(x & 15, y & 15, z & 15) || airPocketBlockOctree.get(x & 15, y & 15, z & 15)) {
                                 // Assume both the water block and terrain block are spheres, then compute the volume
                                 // that overlaps
                                 final Vector3dc shipSolidBlockPosInWorld = physicsTransform.transformPositionNew(temp2.set(x + .5, y + .5, z + .5), TransformType.SUBSPACE_TO_GLOBAL);

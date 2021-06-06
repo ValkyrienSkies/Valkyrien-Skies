@@ -25,10 +25,10 @@ public class WaterForcesTask implements Callable<Void> {
     private static final double SPHERE_RADIUS = .5;
     // Acceleration in m/s^2
     private static final double GRAVITY_ACCELERATION = 9.8;
-    // Mass in kg
-    private static final double MASS_OF_CUBIC_METER_OF_WATER = 1000;
     // Density in kg/m^3
-    private static final double DENSITY_OF_WATER = 1000;
+    public static double DENSITY_OF_WATER = 1000;
+    // Mass in kg
+    private static final double MASS_OF_CUBIC_METER_OF_WATER = DENSITY_OF_WATER;
     // Dimensionless constant. Higher values mean more damping force from water.
     private static final double DRAG_COEFFICIENT_OF_WATER = .3;
     // The radius, in meters, of the AABB of water blocks and terrain blocks.

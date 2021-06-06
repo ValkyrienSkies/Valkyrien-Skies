@@ -39,7 +39,8 @@ import java.util.stream.Collectors;
         DeconstructShip.class,
         DeleteShip.class,
         TeleportShipTo.class,
-        TeleportShipHere.class
+        TeleportShipHere.class,
+        Rename.class
     })
 public class MainCommand implements Runnable {
 
@@ -135,6 +136,26 @@ public class MainCommand implements Runnable {
         public void run() {
             System.gc();
             sender.sendMessage(new TextComponentTranslation("commands.vs.gc.success"));
+        }
+
+    }
+
+    @Command(name = "rename")
+    static class Rename implements Runnable {
+
+        @Inject
+        ICommandSender sender;
+
+        @Parameters(paramLabel = "oldName", index = "0", completionCandidates = ShipNameAutocompleter.class)
+        ShipData oldShip;
+
+        @Parameters(paramLabel = "newName", index = "1")
+        String newName;
+
+        public void run() {
+            String oldName = oldShip.getName();
+            oldShip.setName(newName);
+            sender.sendMessage(new TextComponentTranslation("commands.vs.rename.success", oldName, newName));
         }
 
     }

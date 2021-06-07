@@ -37,3 +37,9 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to VS Maven
+        run: ./gradlew publish -PCustomReleaseVersion=$RELEASE_VERSION
+        env:
+          VS_MAVEN_USERNAME: ${{ secrets.VS_MAVEN_USERNAME }}
+          VS_MAVEN_PASSWORD: ${{ secrets.VS_MAVEN_PASSWORD }}

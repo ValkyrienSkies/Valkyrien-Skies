@@ -103,9 +103,11 @@ public class WaterForcesTask implements Callable<Void> {
                         final ExtendedBlockStorage blockStorage = chunk.storageArrays[y >> 4];
                         if (blockStorage != null) {
                             final IBitOctree solidBlockOctree = ((ITerrainOctreeProvider) blockStorage.data).getSolidOctree();
-                            final IBitOctree airPocketBlockOctree = ((ITerrainOctreeProvider) blockStorage.data).getSolidOctree();
+                            final IBitOctree airPocketBlockOctree = ((ITerrainOctreeProvider) blockStorage.data).getAirPocketOctree();
+                            final boolean liquidCollidesWithSolidOctree = solidBlockOctree.get(x & 15, y & 15, z & 15);
+                            final boolean liquidCollidesWithAirPocketOctree = airPocketBlockOctree.get(x & 15, y & 15, z & 15);
                             // Check if liquid is colliding with a solid block or an air pocket block
-                            if (solidBlockOctree.get(x & 15, y & 15, z & 15) || airPocketBlockOctree.get(x & 15, y & 15, z & 15)) {
+                            if (liquidCollidesWithSolidOctree || liquidCollidesWithAirPocketOctree) {
                                 // Assume both the water block and terrain block are spheres, then compute the volume
                                 // that overlaps
                                 final Vector3dc shipSolidBlockPosInWorld = physicsTransform.transformPositionNew(temp2.set(x + .5, y + .5, z + .5), TransformType.SUBSPACE_TO_GLOBAL);
@@ -129,7 +131,8 @@ public class WaterForcesTask implements Callable<Void> {
 
                                 addForceAtPoint(collisionPosRelativeToShipCenterInWorld, buoyancyForce, temp7);
 
-                                {
+                                // Only add water damping force if the liquid collides with a solid. (Air pocket collisions don't add drag)
+                                if (liquidCollidesWithSolidOctree) {
                                     // Compute water damping force
                                     final Vector3dc velocity = physicsEngine.getVelocityAtPoint(collisionPosRelativeToShipCenterInWorld, temp9);
 

@@ -8,34 +8,34 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.github.GregTechCE:ForgeGradle:7e8e0b4c9d"
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
         classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
 }
 
 plugins {
-    id "com.github.johnrengelman.shadow" version "4.0.4"
-    id "maven-publish"
+    // Add the shadowjar plugin for fat jars, kotlin plugin for kotlin
+    // and the maven-publish plugin to publish shadowjar to jitpack/maven
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'maven-publish'
 }
 
-apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: "org.spongepowered.mixin"
-apply plugin: "java"
+
+// Determine the version
+if (project.hasProperty('CustomReleaseVersion')) {
+    version = project.property('CustomReleaseVersion')
+} else {
+    // Get the revision. Use `.execute([], file("."))`
+    // to always execute in the directory of build.gradle
+    def revision = "git rev-parse HEAD".execute([], file(".")).text
+    version = "1.0.0+" + revision.substring(0, 10)
+}
 
 ext {
     //general things
     javaVersion = "1.8"
-
-    //determine the version
-    if (project.hasProperty('CustomReleaseVersion')) {
-        vsVersion = project.property('CustomReleaseVersion')
-    } else {
-        // Get the revision. Use `.execute([], file("."))`
-        // to always execute in the directory of build.gradle
-        def revision = "git rev-parse HEAD".execute([], file(".")).text
-        vsVersion = "1.0.0+" + revision.substring(0, 10)
-    }
-
     //minecraft things
     mcpmappingsVersion = "stable_39"
     minecraftforgeVersion = "14.23.5.2838"
@@ -51,16 +51,12 @@ ext {
     vsApiVersion = "1.0.0.9"
 }
 
-version = "$vsVersion"
 group = "org.valkyrienskies"
 archivesBaseName = "valkyrien-skies"
 
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {
-    sourceCompatibility = targetCompatibility = "$javaVersion"
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+    sourceCompatibility = targetCompatibility = '1.8'
 }
 
 minecraft {
@@ -85,17 +81,6 @@ minecraft {
     serverJvmArgs += args
 }
 
-configurations {
-    shade
-    compile.extendsFrom shade
-
-    all { //hacky workaround
-        resolutionStrategy {
-            force("com.google.guava:guava:21.0")
-        }
-    }
-}
-
 repositories {
     mavenCentral()
     jcenter()
@@ -105,13 +90,11 @@ repositories {
     }
 }
 
-// This is included here because of this garbage https://github.com/SpongePowered/SpongeForge/blob/stable-7/build.gradle#L40-L52
-// Basically I can't add compatibility for the newest SpongeForge without this
-// Thanks Sponge team!!! >:(
-configurations.all {
-    resolutionStrategy {
-        force 'com.typesafe:config:1.3.1'
-    }
+// Create shade configuration to indicate to shadow
+// which dependencies should be shaded
+configurations {
+    shade
+    compile.extendsFrom shade
 }
 
 dependencies {
@@ -125,7 +108,7 @@ dependencies {
     // Mixin annotation processor creates the mixin obfuscation refmap
     annotationProcessor("org.spongepowered:mixin:$mixinVersion:processor")
     annotationProcessor("org.apache.logging.log4j:log4j-core:2.11.2")
-    
+
     // Needs to be present at compile-time because we mix in to spongeforge, however marking it as
     // compile makes forge load it as a mod in a dev environment, which is very annoying
     compileOnly("org.spongepowered:spongeforge:$spongeVersion:dev") {
@@ -180,28 +163,6 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest:2.2'
 }
 
-processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include "mcmod.info"
-
-        // replace version and mcversion
-        expand "version": project.version, "mcversion": project.minecraft.version
-    }
-
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "mcmod.info"
-    }
-
-    // move _at.cfg into META-INF
-    rename '(.+_at.cfg)', 'META-INF/$1'
-}
-
 mixin {
     defaultObfuscationEnv searge
     add sourceSets.main, "mixins.valkyrienskies.refmap.json"
@@ -221,7 +182,10 @@ jar {
 
 shadowJar {
     classifier = null // No -all classifier
+    // All 'shade' dependencies should be put in the fat jar
     configurations = [project.configurations.shade]
+    // Relocate all kotlin related libraries so as not to interfere with
+    // other mods that might use kotlin
     relocate 'com.fasterxml', 'org.valkyrienskies.deps.com.fasterxml'
     mergeServiceFiles() // https://github.com/johnrengelman/shadow/issues/304
 }
@@ -237,8 +201,8 @@ reobf {
     }
 }
 
-build.dependsOn(reobfJar)
-build.dependsOn(reobfShadowJar)
+tasks.jar.finalizedBy(reobfJar)
+tasks.shadowJar.finalizedBy(reobfShadowJar)
 
 publishing {
     repositories {
@@ -275,11 +239,9 @@ publishing {
             artifact jar {
                 classifier null
             }
-            
             artifact shadowJar {
                 classifier "all"
             }
-            
             artifact sourceJar {
                 classifier "sources"
             }
@@ -287,39 +249,24 @@ publishing {
     }
 }
 
-//sets additional JVM args for genIntellijRuns
-//task preIntellijRuns {
-//    doFirst {
-//        StreamSupport.stream(configurations.compile.spliterator(), false).filter({
-//            it.name.contains("mixin")
-//        }).findAny().ifPresent({
-//            minecraft.clientJvmArgs += "-javaagent:" + it.absolutePath
-//            minecraft.serverJvmArgs += "-javaagent:" + it.absolutePath
-//        })
-//    }
-//}
-//genIntellijRuns.dependsOn(preIntellijRuns)
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
 
-// Junit testing
-test {
-    useJUnitPlatform()
-}
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
 
-/*
-// Based on this tutorial https://darkhax.net/2017/10/jar-signing
-task signJar(type: SignJar, dependsOn: reobfShadowJar) {
-    onlyIf {
-        project.hasProperty('keyStore')
+        // replace version and mcversion
+        expand "version": project.version, "mcversion": project.minecraft.version
     }
 
-    keyStore = project.findProperty('keyStore')
-    alias = project.findProperty('keyStoreAlias')
-    storePass = project.findProperty('keyStorePass')
-    keyPass = project.findProperty('keyStoreKeyPass')
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
 
-    inputFile = new File(shadowJar.getDestinationDir(), shadowJar.getArchiveName().replaceAll(".jar", "-all.jar"));
-    outputFile = inputFile
+    // move _at.cfg into META-INF
+    rename '(.+_at.cfg)', 'META-INF/$1'
 }
-
-build.dependsOn signJar
- */

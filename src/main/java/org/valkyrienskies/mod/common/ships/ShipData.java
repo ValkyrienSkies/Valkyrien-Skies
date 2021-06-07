@@ -22,6 +22,8 @@ import org.valkyrienskies.mod.common.util.jackson.annotations.PacketIgnore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -100,6 +102,17 @@ public class ShipData {
      * The (unique) name of the physo as displayed to players
      */
     private String name;
+
+    /**
+     * Extra data stored by this ship, not sent to clients
+     */
+    @PacketIgnore
+    private final Map<String, Object> serverTags = new HashMap<>();
+
+    /**
+     * Extra data stored by this ship, sent to clients.
+     */
+    private final Map<String, Object> commonTags = new HashMap<>();
 
     // endregion
 

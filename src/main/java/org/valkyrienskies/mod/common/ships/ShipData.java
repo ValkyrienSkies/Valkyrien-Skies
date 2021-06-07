@@ -1,5 +1,6 @@
 package org.valkyrienskies.mod.common.ships;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.googlecode.cqengine.attribute.Attribute;
@@ -107,11 +108,13 @@ public class ShipData {
      * Extra data stored by this ship, not sent to clients
      */
     @PacketIgnore
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
     private final Map<String, Object> serverTags = new HashMap<>();
 
     /**
      * Extra data stored by this ship, sent to clients.
      */
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
     private final Map<String, Object> commonTags = new HashMap<>();
 
     // endregion

@@ -229,6 +229,19 @@ publishing {
                 url = "https://maven.daporkchop.net/release/"
             }
         }
+
+        // Publish to VS maven
+        if (System.getenv("VS_MAVEN_USERNAME") != null && System.getenv("VS_MAVEN_PASSWORD")) {
+            maven {
+                credentials {
+                    username = System.getenv("VS_MAVEN_USERNAME")
+                    password = System.getenv("VS_MAVEN_PASSWORD")
+                }
+
+                name = "Valkyrien Skies"
+                url = "http://maven.valkyrienskies.org/repository/internal/"
+            }
+        }
     }
     publications {
         maven(MavenPublication) {

@@ -44,18 +44,14 @@ jobs:
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
-      - name: Publish to GitHub Packages
+      - name: Publish to GitHub Packages and VS Maven
         run: ./gradlew publish
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish to VS Maven
-        run: ./gradlew publish
-        env:
           VS_MAVEN_USERNAME: ${{ secrets.VS_MAVEN_USERNAME }}
           VS_MAVEN_PASSWORD: ${{ secrets.VS_MAVEN_PASSWORD }}
-          
+
       - name: Cleanup Gradle Cache
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
         # Restoring these files from a GitHub Actions cache might cause problems for future builds.

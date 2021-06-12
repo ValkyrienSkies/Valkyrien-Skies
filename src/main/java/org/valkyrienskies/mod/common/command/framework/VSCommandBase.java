@@ -48,7 +48,7 @@ public class VSCommandBase<K> extends CommandBase {
         pureConverters.put(Vec3d.class, new Vec3dDataConverter());
     }
 
-    VSCommandBase(Class<K> cmdClass) {
+    public VSCommandBase(Class<K> cmdClass) {
         if (cmdClass.getAnnotation(Command.class) == null) {
             throw new IllegalArgumentException("Clazz must have the PicoCLI @Command annotation!");
         }

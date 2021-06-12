@@ -11,8 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.valkyrienskies.mod.common.config.VSConfig;
-
-import org.valkyrienskies.mod.common.ships.interpolation.ITransformInterpolator;
 import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
@@ -176,7 +174,8 @@ public class QueryableShipData implements Iterable<ShipData> {
                 old.get().setShipBB(ship.getShipBB());
             }
 
-            // old.get().setName(ship.getName());
+            old.get().setName(ship.getName());
+            old.get().setCommonTags(ship.getCommonTags());
             old.get().setPhysicsEnabled(ship.isPhysicsEnabled());
             // Update inertia data
             old.get().getInertiaData().setGameMoITensor(ship.getInertiaData().getGameMoITensor());

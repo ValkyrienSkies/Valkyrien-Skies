@@ -115,7 +115,8 @@ public class ShipData {
      * Extra data stored by this ship, sent to clients.
      */
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
-    private final Map<String, Object> commonTags = new HashMap<>();
+    @Setter(AccessLevel.PACKAGE)
+    private Map<String, Object> commonTags = new HashMap<>();
 
     // endregion
 

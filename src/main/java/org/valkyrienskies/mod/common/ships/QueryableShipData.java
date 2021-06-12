@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.resultset.ResultSet;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.BlockPos;
@@ -55,21 +56,29 @@ public class QueryableShipData implements Iterable<ShipData> {
         // For every ship data, set the 'owner' field to us -- kinda hacky but what can I do
         // I don't want to serialize a billion references to this
         // This probably only needs to be done once per world, so this is fine
-        this.allShips.forEach(data -> {
-            try {
-                Field owner = ShipData.class.getDeclaredField("owner");
-                owner.setAccessible(true);
-                owner.set(data, this.allShips);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        });
+        this.allShips.forEach(this::setOwnerToUs);
 
         this.allShips.addIndex(UpdatableHashIndex.onAttribute(ShipData.NAME));
         this.allShips.addIndex(UpdatableUniqueIndex.onAttribute(ShipData.UUID));
         this.allShips.addIndex(UpdatableUniqueIndex.onAttribute(ShipData.CHUNKS));
 
+    }
+
+    private static Field owner = null;
+
+    static {
+        try {
+            owner = ShipData.class.getDeclaredField("owner");
+            owner.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // I know this is a hack; i'm sorry
+    @SneakyThrows
+    private void setOwnerToUs(ShipData data) {
+        owner.set(data, this.allShips);
     }
 
     /**
@@ -152,6 +161,7 @@ public class QueryableShipData implements Iterable<ShipData> {
         if (VSConfig.showAnnoyingDebugOutput) {
             System.out.println(ship.getName());
         }
+        setOwnerToUs(ship);
         allShips.add(ship);
     }
 
@@ -183,7 +193,7 @@ public class QueryableShipData implements Iterable<ShipData> {
             old.get().getInertiaData().setGameTickCenterOfMass(ship.getInertiaData().getGameTickCenterOfMass());
             return old.get();
         } else {
-            this.allShips.add(ship);
+            this.addShip(ship);
             return ship;
         }
     }

@@ -6,6 +6,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.valkyrienskies.mod.common.compat.VSHooks;
 import org.valkyrienskies.mod.common.physics.PhysicsCalculations;
 import org.valkyrienskies.mod.common.ships.block_relocation.SpatialDetector;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
@@ -126,7 +127,9 @@ public class WaterForcesTask implements Callable<Void> {
                                 // Collision position is average of ship solid block pos and water pos
                                 final Vector3dc collisionPosInWorld = shipSolidBlockPosInWorld.add(waterPosInWorld, temp3).mul(.5);
 
-                                final Vector3dc buoyancyForce = temp4.set(0, volumeDisplaced * GRAVITY_ACCELERATION * DENSITY_OF_WATER, 0);
+                                Vector3d buoyancyForce = temp4.set(0, volumeDisplaced * GRAVITY_ACCELERATION * DENSITY_OF_WATER, 0);
+                                buoyancyForce = VSHooks.getBuoyantForceProvider().getBuoyantForce(parent, buoyancyForce);
+
                                 final Vector3dc collisionPosRelativeToShipCenterInWorld = temp5.set(collisionPosInWorld).sub(physicsTransform.getPosX(), physicsTransform.getPosY(), physicsTransform.getPosZ());
 
                                 addForceAtPoint(collisionPosRelativeToShipCenterInWorld, buoyancyForce, temp7);

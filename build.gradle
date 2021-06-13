@@ -239,7 +239,7 @@ publishing {
                 }
 
                 name = "Valkyrien Skies"
-                url = "http://maven.valkyrienskies.org/repository/internal/"
+                url = "https://maven.valkyrienskies.org/repository/internal/"
             }
         }
     }

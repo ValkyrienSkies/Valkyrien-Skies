@@ -493,7 +493,7 @@ public class WorldPhysicsCollider {
         int maxZ = max.getZ();
 
         // More multithreading!
-        if (VSConfig.MULTITHREADING_SETTINGS.multithreadCollisionCacheUpdate &&
+        if (VSConfig.ADVANCED_SETTINGS.multithreadCollisionCacheUpdate &&
             parent.getBlockPositions().size() > 100) {
 
             List<Triple<Integer, Integer, TIntList>> tasks = new ArrayList<>();

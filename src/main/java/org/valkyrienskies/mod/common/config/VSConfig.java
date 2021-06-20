@@ -137,12 +137,12 @@ public class VSConfig extends VSConfigTemplate {
     @Comment("Prevents rain from going inside ships. Warning: mildly laggy")
     public static boolean accurateRain = true;
 
-    @Name("Multithreading Settings")
-    @ShortName("multithreadingSettings")
+    @Name("Advanced Settings")
+    @ShortName("advancedSettings")
     @Comment("For advanced users only")
-    public static final MultithreadingSettings MULTITHREADING_SETTINGS = new MultithreadingSettings();
+    public static final AdvancedSettings ADVANCED_SETTINGS = new AdvancedSettings();
 
-    public static class MultithreadingSettings {
+    public static class AdvancedSettings {
 
         public boolean multithreadCollisionCacheUpdate = true;
 

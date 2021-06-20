@@ -32,10 +32,7 @@ import org.valkyrienskies.mod.common.ships.entity_interaction.EntityShipMountDat
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.CoordinateSpaceType;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
-import org.valkyrienskies.mod.common.ships.ship_world.IHasShipManager;
-import org.valkyrienskies.mod.common.ships.ship_world.IPhysObjectWorld;
-import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
-import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
+import org.valkyrienskies.mod.common.ships.ship_world.*;
 import org.valkyrienskies.mod.common.util.names.NounListNameGenerator;
 import valkyrienwarfare.api.TransformType;
 
@@ -52,6 +49,8 @@ import java.util.UUID;
 @ParametersAreNonnullByDefault
 public class ValkyrienUtils {
 
+    private static final VSWorldData EMPTY_WORLD_DATA = new VSWorldData();
+
     /**
      * The liver of this mod. Returns the PhysicsObject that managed the given pos in the given
      * world.
@@ -67,6 +66,10 @@ public class ValkyrienUtils {
     }
 
     public Optional<PhysicsObject> getPhysoManagingBlockThreadSafe(@Nullable World world, @Nullable BlockPos pos) {
+        if (world == null || pos == null) {
+            return Optional.empty();
+        }
+
         for (PhysicsObject physicsObject : getPhysObjWorld(world).getAllLoadedThreadSafe()) {
             if (physicsObject.getChunkClaim().containsBlock(pos)) {
                 return Optional.of(physicsObject);
@@ -126,18 +129,16 @@ public class ValkyrienUtils {
         toFix.startRiding(entityMountable);
     }
 
-    private VSWorldDataCapability getWorldDataCapability(World world) {
-        VSWorldDataCapability worldData = world
-                .getCapability(VSCapabilityRegistry.VS_WORLD_DATA, null);
-        if (worldData == null) {
-            // I hate it when other mods add their custom worlds without calling the forge world
-            // load events, so I don't feel bad crashing the game here. Although we could also get
-            // away with just adding the capability to world instead of crashing.
-            throw new IllegalStateException(
-                    "World " + world + " doesn't have an VSWorldDataCapability. This is wrong!");
+    private VSWorldData getWorldData(World world) {
+        VSWorldDataCapability cap = world.getCapability(VSCapabilityRegistry.VS_WORLD_DATA, null);
+        if (cap == null) {
+            System.err.printf("Valkyrien Skies: World %s doesn't have a VSWorldDataCapability. " +
+                "This is wrong and probably the result of another mod making a fake world. There may be " +
+                "unexpected issues.", world);
+            // This is a bad situation to be in, but maybe we can keep things running by returning an empty world data
+            return EMPTY_WORLD_DATA;
         }
-
-        return worldData;
+        return cap.get();
     }
 
     /**
@@ -148,7 +149,7 @@ public class ValkyrienUtils {
      * @return The QueryableShipData corresponding to the given world
      */
     public QueryableShipData getQueryableData(World world) {
-        return getWorldDataCapability(world).get().getQueryableShipData();
+        return getWorldData(world).getQueryableShipData();
     }
 
     /**
@@ -159,7 +160,7 @@ public class ValkyrienUtils {
      * @return The QueryableShipData corresponding to the given world
      */
     public ShipChunkAllocator getShipChunkAllocator(World world) {
-        return getWorldDataCapability(world).get().getShipChunkAllocator();
+        return getWorldData(world).getShipChunkAllocator();
     }
 
     public WorldServerShipManager getServerShipManager(World world) {

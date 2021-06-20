@@ -35,7 +35,7 @@ public class WorldClientShipManager implements IPhysObjectWorld {
 
     private void enforceGameThread() throws CalledFromWrongThreadException {
         if (!Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
-            if (VSConfig.MULTITHREADING_SETTINGS.enforceCorrectThread) {
+            if (VSConfig.ADVANCED_SETTINGS.enforceCorrectThread) {
                 throw new CalledFromWrongThreadException();
             } else {
                 System.err.println("Valkyrien Skies: suppressed CalledFromWrongThreadException. " +

@@ -146,6 +146,12 @@ public class VSConfig extends VSConfigTemplate {
 
         public boolean multithreadCollisionCacheUpdate = true;
 
+        @Name("Enforce Correct Thread")
+        @Comment("WARNING: May cause bugs, crashes, race conditions, and/or world corruption. " +
+            "If false, the CalledFromWrongThreadException is suppressed. This may make other mods compatible " +
+            "at the cost of stability")
+        public boolean enforceCorrectThread = true;
+
     }
 
     public static class ShipLoadingSettings {

@@ -36,16 +36,7 @@ import scala.util.Left;
 import scala.util.Right;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class WorldServerShipManager implements IPhysObjectWorld {
 
@@ -80,7 +71,12 @@ public class WorldServerShipManager implements IPhysObjectWorld {
 
     private void enforceGameThread() {
         if (!world.isCallingFromMinecraftThread()) {
-            throw new CalledFromWrongThreadException("Wrong thread calling code: " + Thread.currentThread());
+            if (VSConfig.MULTITHREADING_SETTINGS.enforceCorrectThread) {
+                throw new CalledFromWrongThreadException();
+            } else {
+                System.err.println("Valkyrien Skies: suppressed CalledFromWrongThreadException. " +
+                    "Any bugs are your own fault!");
+            }
         }
     }
 

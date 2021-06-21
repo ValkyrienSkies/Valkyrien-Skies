@@ -95,6 +95,13 @@ repositories {
 configurations {
     shade
     compile.extendsFrom shade
+
+    all {
+        resolutionStrategy {
+            // Use this version of Guava otherwise the game crashes
+            force("com.google.guava:guava:21.0")
+        }
+    }
 }
 
 dependencies {

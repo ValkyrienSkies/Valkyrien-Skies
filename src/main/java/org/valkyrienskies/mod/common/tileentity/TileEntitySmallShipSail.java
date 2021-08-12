@@ -6,6 +6,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 
 public class TileEntitySmallShipSail extends TileEntityBoatChair implements ITickable {
@@ -90,5 +93,11 @@ public class TileEntitySmallShipSail extends TileEntityBoatChair implements ITic
         if (message.airshipRight_KeyDown) {
             setRotationAngle(Math.max(currentRotation - 1, -90));
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
+        return new AxisAlignedBB(pos.add(-3, -3, -3), pos.add(3, 10, 3));
     }
 }

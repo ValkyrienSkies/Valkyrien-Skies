@@ -99,4 +99,14 @@ public abstract class MixinChunk {
         }
     }
 
+    /**
+     * Don't let Minecraft generate terrain near the ships, its a waste of time.
+     */
+    @Inject(method = "populate(Lnet/minecraft/world/gen/IChunkGenerator;)V", at = @At("HEAD"), cancellable = true)
+    private void prePopulate(IChunkGenerator generator, CallbackInfo callbackInfo) {
+        if (ShipChunkAllocator.isChunkInShipyard(this.x, this.z)) {
+            callbackInfo.cancel();
+        }
+    }
+
 }

@@ -295,3 +295,9 @@ processResources {
     // move _at.cfg into META-INF
     rename '(.+_at.cfg)', 'META-INF/$1'
 }
+
+// This fixes IntelliJ not loading any mod resources.
+// https://stackoverflow.com/questions/27623326/minecraft-forge-not-loading-textures
+sourceSets {
+    main { output.resourcesDir = output.classesDir }
+}

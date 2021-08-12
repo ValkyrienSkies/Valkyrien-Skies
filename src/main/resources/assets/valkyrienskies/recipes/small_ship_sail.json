@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern":
+  [
+    "SBS",
+    "DWD",
+    "CSC"
+  ],
+
+  "key":
+  {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "B": {
+      "item": "minecraft:water_bucket"
+    },
+    "W": {
+      "item": "minecraft:log"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "C": {
+      "item": "minecraft:wool"
+    }
+  },
+
+  "result":
+  {
+    "item": "valkyrienskies:boat_chair",
+    "count": 1
+  }
+}

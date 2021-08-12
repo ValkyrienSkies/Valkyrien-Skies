@@ -35,10 +35,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.valkyrienskies.mixin.MixinLoaderForge;
 import org.valkyrienskies.mod.client.gui.TabValkyrienSkies;
-import org.valkyrienskies.mod.common.block.BlockBoatChair;
-import org.valkyrienskies.mod.common.block.BlockCaptainsChair;
-import org.valkyrienskies.mod.common.block.BlockPassengerChair;
-import org.valkyrienskies.mod.common.block.BlockWaterPump;
+import org.valkyrienskies.mod.common.block.*;
 import org.valkyrienskies.mod.common.capability.VSCapabilityRegistry;
 import org.valkyrienskies.mod.common.command.framework.VSCommandRegistry;
 import org.valkyrienskies.mod.common.config.VSConfig;
@@ -56,10 +53,7 @@ import org.valkyrienskies.mod.common.network.ShipTransformUpdateMessageHandler;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessage;
 import org.valkyrienskies.mod.common.piloting.PilotControlsMessageHandler;
 import org.valkyrienskies.mod.common.ships.deprecated_api.VS_APIPhysicsEntityManager;
-import org.valkyrienskies.mod.common.tileentity.TileEntityBoatChair;
-import org.valkyrienskies.mod.common.tileentity.TileEntityCaptainsChair;
-import org.valkyrienskies.mod.common.tileentity.TileEntityPassengerChair;
-import org.valkyrienskies.mod.common.tileentity.TileEntityWaterPump;
+import org.valkyrienskies.mod.common.tileentity.*;
 import org.valkyrienskies.mod.fixes.darkness_lib_fix.VSDarknessLibAPILightProvider;
 import org.valkyrienskies.mod.proxy.CommonProxy;
 import valkyrienwarfare.api.IPhysicsEntityManager;
@@ -108,6 +102,7 @@ public class ValkyrienSkiesMod {
     public Block passengerChair;
     public Block waterPump;
     public Block boatChair;
+    public Block smallShipSail;
     public Item shipTracker;
     public static SimpleNetworkWrapper physWrapperNetwork;
     public static SimpleNetworkWrapper physWrapperTransformUpdateNetwork;
@@ -276,6 +271,8 @@ public class ValkyrienSkiesMod {
                 new ResourceLocation(MOD_ID, "tile_water_pump"));
         GameRegistry.registerTileEntity(TileEntityBoatChair.class,
                 new ResourceLocation(MOD_ID, "tile_boat_chair"));
+        GameRegistry.registerTileEntity(TileEntitySmallShipSail.class,
+                new ResourceLocation(MOD_ID, "tile_small_ship_sail"));
     }
 
     private void registerBlocks() {
@@ -283,6 +280,7 @@ public class ValkyrienSkiesMod {
         this.passengerChair = registerBlock(new BlockPassengerChair());
         this.waterPump = registerBlock(new BlockWaterPump());
         this.boatChair = registerBlock(new BlockBoatChair());
+        this.smallShipSail = registerBlock(new BlockSmallShipSail());
 
 
         this.registerTileEntities();

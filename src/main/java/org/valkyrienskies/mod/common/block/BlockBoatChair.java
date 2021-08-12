@@ -42,6 +42,9 @@ public class BlockBoatChair extends BlockPilotableBasic implements IBlockForcePr
         super("boat_chair", Material.WOOD, 4.0F);
     }
 
+    protected BlockBoatChair(String name, Material mat, float hardness) {
+        super(name, mat, hardness);
+    }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,

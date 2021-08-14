@@ -124,6 +124,9 @@ public abstract class MixinNetHandlerPlayServer {
                     ordinal = 1
             ))
     private double allowMovementToBeVeryWrong(double originalConstant) {
+        if (!VSConfig.enablePlayerMovementOnShipFix) {
+            return originalConstant;
+        }
         return 10;
     }
 
@@ -135,6 +138,9 @@ public abstract class MixinNetHandlerPlayServer {
      */
     @Inject(method = "processPlayer", at = @At("HEAD"))
     private void preProcessPlayer(final CPacketPlayer packetPlayer, final CallbackInfo info) {
+        if (!VSConfig.enablePlayerMovementOnShipFix) {
+            return;
+        }
         // Don't run any of this code on the network thread!
         if (this.player.getServerWorld().isCallingFromMinecraftThread()) {
             // This fixes players dying of fall damage when changing dimensions

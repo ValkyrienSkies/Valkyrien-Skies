@@ -16,6 +16,10 @@ import org.valkyrienskies.mod.common.command.config.ShortName;
 @Config(modid = ValkyrienSkiesMod.MOD_ID)
 public class VSConfig extends VSConfigTemplate {
 
+    // TODO: Remove this, probably. Currently just used for testing purposes.
+    @Name("Enables the fix that prevents 'player moved too fast' when a player is on a ship.")
+    public static boolean enablePlayerMovementOnShipFix = true;
+
     @Name("Ship Y Position Minimum")
     public static double shipLowerLimit = -30;
 

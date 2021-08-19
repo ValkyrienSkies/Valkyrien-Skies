@@ -412,10 +412,14 @@ public class PhysicsCalculations {
      */
     private void integrateAngularVelocity() {
         // The body angular velocity vector, in World coordinates
-        Vector3d angularVelocity = getAngularVelocity();
         if (angularVelocity.lengthSquared() < .001) {
             // Angular velocity is zero, so the rotation hasn't changed.
             return;
+        }
+
+        // If a ship is rotating too fast, then clamp its max rotational speed
+        if (angularVelocity.lengthSquared() > VSConfig.shipMaxAngularSpeed * VSConfig.shipMaxAngularSpeed) {
+            angularVelocity.normalize().mul(VSConfig.shipMaxAngularSpeed);
         }
 
         Vector3dc angularVelInBody = new Vector3d(angularVelocity);
@@ -436,6 +440,11 @@ public class PhysicsCalculations {
     private void integrateLinearVelocity() {
         linearVelocity.add(force.x() * getInvMass(), force.y() * getInvMass(), force.z() * getInvMass());
         force.zero();
+
+        // If a ship is going too fast, then clamp its max speed
+        if (linearVelocity.lengthSquared() > VSConfig.shipMaxSpeed * VSConfig.shipMaxSpeed) {
+            linearVelocity.normalize().mul(VSConfig.shipMaxSpeed);
+        }
 
         physX += getLinearVelocity().x() * getPhysicsTimeDeltaPerPhysTick();
         physY += getLinearVelocity().y() * getPhysicsTimeDeltaPerPhysTick();

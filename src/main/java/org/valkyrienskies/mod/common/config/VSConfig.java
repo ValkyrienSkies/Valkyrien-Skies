@@ -86,6 +86,14 @@ public class VSConfig extends VSConfigTemplate {
     @Name("Gravity Vector Z")
     public static double gravityVecZ = 0;
 
+    @Name("Ship max speed")
+    @Comment("The maximum speed a ship can move in blocks per second. If a ship tries going faster than this its linear velocity will be clamped.")
+    public static double shipMaxSpeed = 100.0;
+
+    @Name("Ship angular speed")
+    @Comment("The maximum speed a ship can rotate in radians per second. If a ship tries rotating faster than this its angular velocity will be clamped.")
+    public static double shipMaxAngularSpeed = 100.0;
+
     @Name("Number of Ticks Players Stick to Ships")
     @Comment({
             "If a player touches a ship, then unless they touch another ship (or the ground) they will move along with the ship for this many ticks.",

@@ -26,11 +26,15 @@ import org.valkyrienskies.mod.common.ships.chunk_claims.ShipChunkAllocator;
 import org.valkyrienskies.mod.common.ships.entity_interaction.IDraggable;
 import org.valkyrienskies.mod.common.ships.ship_transform.ShipTransform;
 import org.valkyrienskies.mod.common.ships.ship_world.PhysicsObject;
+import org.valkyrienskies.mod.common.ships.ship_world.WorldServerShipManager;
 import org.valkyrienskies.mod.common.util.VSMath;
 import org.valkyrienskies.mod.common.util.ValkyrienUtils;
 import valkyrienwarfare.api.TransformType;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Mixin(value = NetHandlerPlayServer.class)
 public abstract class MixinNetHandlerPlayServer {
@@ -137,90 +141,137 @@ public abstract class MixinNetHandlerPlayServer {
     private void preProcessPlayer(final CPacketPlayer packetPlayer, final CallbackInfo info) {
         // Don't run any of this code on the network thread!
         if (this.player.getServerWorld().isCallingFromMinecraftThread()) {
-            // This fixes players dying of fall damage when changing dimensions
-            if (this.player.isInvulnerableDimensionChange()) {
-                return;
-            }
-            final PlayerMovementData addedPlayerMovementData = IHasPlayerMovementData.class.cast(packetPlayer).getPlayerMovementData();
-            final World world = player.world;
+            try {
+                // This fixes players dying of fall damage when changing dimensions
+                if (this.player.isInvulnerableDimensionChange()) {
+                    return;
+                }
+                final PlayerMovementData addedPlayerMovementData = IHasPlayerMovementData.class.cast(packetPlayer).getPlayerMovementData();
+                final World world = player.world;
 
-            final UUID lastTouchedShipId = addedPlayerMovementData.getLastTouchedShipId();
-            final int ticksSinceTouchedLastShip = addedPlayerMovementData.getTicksSinceTouchedLastShip();
+                final UUID lastTouchedShipId = addedPlayerMovementData.getLastTouchedShipId();
+                final int ticksSinceTouchedLastShip = addedPlayerMovementData.getTicksSinceTouchedLastShip();
 
-            if (ticksSinceTouchedLastShip > 40) {
-                // If the player hasn't touched the ship in over 40 ticks, then ignore its coordinates relative to that ship.
+                if (ticksSinceTouchedLastShip > 40) {
+                    // If the player hasn't touched the ship in over 40 ticks, then ignore its coordinates relative to that ship.
+                    final IDraggable playerAsDraggable = IDraggable.class.cast(this.player);
+                    playerAsDraggable.setEntityShipMovementData(
+                            playerAsDraggable.getEntityShipMovementData()
+                                    .withLastTouchedShip(null)
+                                    .withAddedLinearVelocity(new Vector3d())
+                                    .withAddedYawVelocity(0)
+                                    .withTicksPartOfGround(addedPlayerMovementData.getTicksPartOfGround())
+                                    .withTicksSinceTouchedShip(ticksSinceTouchedLastShip)
+                    );
+                    return;
+                }
+
+                final int ticksPartOfGround = addedPlayerMovementData.getTicksPartOfGround();
+                final Vector3d playerPosInShip = new Vector3d(addedPlayerMovementData.getPlayerPosInShip());
+                final Vector3d playerLookInShip = new Vector3d(addedPlayerMovementData.getPlayerLookInShip());
+
+                ShipData lastTouchedShip = null;
+                if (lastTouchedShipId != null) {
+                    final QueryableShipData queryableShipData;
+                    final Optional<ShipData> shipDataOptional;
+
+                    try {
+                        queryableShipData = QueryableShipData.get(world);
+
+                        try {
+                            shipDataOptional = queryableShipData.getShip(lastTouchedShipId);
+
+                            try {
+                                if (shipDataOptional.isPresent()) {
+                                    lastTouchedShip = shipDataOptional.get();
+
+                                    final WorldServerShipManager worldServerShipManager = ValkyrienUtils.getServerShipManager(world);
+
+                                    try {
+                                        final UUID shipID = lastTouchedShip.getUuid();
+
+                                        try {
+                                            final PhysicsObject shipObject = worldServerShipManager.getPhysObjectFromUUID(shipID);
+
+                                            try {
+                                                if (shipObject != null) {
+                                                    if (shipObject.getTicksSinceShipTeleport() > PhysicsObject.TICKS_SINCE_TELEPORT_TO_START_DRAGGING) {
+                                                        final ShipTransform shipTransform = lastTouchedShip.getShipTransform();
+                                                        shipTransform.transformPosition(playerPosInShip, TransformType.SUBSPACE_TO_GLOBAL);
+                                                        shipTransform.transformDirection(playerLookInShip, TransformType.SUBSPACE_TO_GLOBAL);
+                                                    } else {
+                                                        // Don't move the player relative to the ship until the TicksSinceShipTeleport timer expires.
+                                                        playerPosInShip.set(player.posX, player.posY, player.posZ);
+                                                    }
+                                                }
+                                            } catch (Exception e) {
+                                                System.out.println("Test region 6");
+                                                e.printStackTrace();
+                                            }
+                                        } catch (Exception e) {
+                                            System.out.println("Test region 5");
+                                            e.printStackTrace();
+                                        }
+                                    } catch (Exception e) {
+                                        System.out.println("Test region 4");
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    // Rare case, just ignore this
+                                    // info.cancel();
+                                    return;
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Test region 3");
+                                e.printStackTrace();
+                            }
+
+                        } catch (Exception e) {
+                            System.out.println("Test region 2");
+                            e.printStackTrace();
+                        }
+
+
+                    } catch (Exception e) {
+                        System.out.println("Test region 1");
+                        e.printStackTrace();
+                    }
+                }
+
+                // Get the player pitch/yaw from the look vector
+                final Tuple<Double, Double> pitchYawTuple = VSMath.getPitchYawFromVector(playerLookInShip);
+                final double playerPitchInGlobal = pitchYawTuple.getFirst();
+                final double playerYawInGlobal = pitchYawTuple.getSecond();
+
+                // Idk if this is needed, but I'm too bothered to change it
+                packetPlayer.moving = true;
+
+                // Then update the packet values to match the ones above.
+                packetPlayer.x = playerPosInShip.x();
+                packetPlayer.y = playerPosInShip.y();
+                packetPlayer.z = playerPosInShip.z();
+                packetPlayer.yaw = (float) playerYawInGlobal;
+                packetPlayer.pitch = (float) playerPitchInGlobal;
+
+                // Set the player motion values to tell the NetHandlerPlayServer that the player is allowed to move this fast.
+                this.player.motionX = packetPlayer.x - this.firstGoodX;
+                this.player.motionY = packetPlayer.y - this.firstGoodY;
+                this.player.motionZ = packetPlayer.z - this.firstGoodZ;
+
+                // Update the player draggable
                 final IDraggable playerAsDraggable = IDraggable.class.cast(this.player);
                 playerAsDraggable.setEntityShipMovementData(
                         playerAsDraggable.getEntityShipMovementData()
-                                .withLastTouchedShip(null)
+                                .withLastTouchedShip(lastTouchedShip)
                                 .withAddedLinearVelocity(new Vector3d())
                                 .withAddedYawVelocity(0)
-                                .withTicksPartOfGround(addedPlayerMovementData.getTicksPartOfGround())
+                                .withTicksPartOfGround(ticksPartOfGround)
                                 .withTicksSinceTouchedShip(ticksSinceTouchedLastShip)
                 );
-                return;
+            } catch (Exception e) {
+                System.out.println("Found VS error in MixinNetHandlerPlayServer.preProcessPlayer()!");
+                e.printStackTrace();
             }
-
-            final int ticksPartOfGround = addedPlayerMovementData.getTicksPartOfGround();
-            final Vector3d playerPosInShip = new Vector3d(addedPlayerMovementData.getPlayerPosInShip());
-            final Vector3d playerLookInShip = new Vector3d(addedPlayerMovementData.getPlayerLookInShip());
-
-            ShipData lastTouchedShip = null;
-            if (lastTouchedShipId != null) {
-                final QueryableShipData queryableShipData = QueryableShipData.get(world);
-                final Optional<ShipData> shipDataOptional = queryableShipData.getShip(lastTouchedShipId);
-                if (shipDataOptional.isPresent()) {
-                    lastTouchedShip = shipDataOptional.get();
-
-                    final PhysicsObject shipObject = ValkyrienUtils.getServerShipManager(world).getPhysObjectFromUUID(lastTouchedShip.getUuid());
-
-                    if (shipObject != null) {
-                        if (shipObject.getTicksSinceShipTeleport() > PhysicsObject.TICKS_SINCE_TELEPORT_TO_START_DRAGGING) {
-                            final ShipTransform shipTransform = lastTouchedShip.getShipTransform();
-                            shipTransform.transformPosition(playerPosInShip, TransformType.SUBSPACE_TO_GLOBAL);
-                            shipTransform.transformDirection(playerLookInShip, TransformType.SUBSPACE_TO_GLOBAL);
-                        } else {
-                            // Don't move the player relative to the ship until the TicksSinceShipTeleport timer expires.
-                            playerPosInShip.set(player.posX, player.posY, player.posZ);
-                        }
-                    }
-                } else {
-                    // Rare case, just ignore this
-                    // info.cancel();
-                    return;
-                }
-            }
-
-            // Get the player pitch/yaw from the look vector
-            final Tuple<Double, Double> pitchYawTuple = VSMath.getPitchYawFromVector(playerLookInShip);
-            final double playerPitchInGlobal = pitchYawTuple.getFirst();
-            final double playerYawInGlobal = pitchYawTuple.getSecond();
-
-            // Idk if this is needed, but I'm too bothered to change it
-            packetPlayer.moving = true;
-
-            // Then update the packet values to match the ones above.
-            packetPlayer.x = playerPosInShip.x();
-            packetPlayer.y = playerPosInShip.y();
-            packetPlayer.z = playerPosInShip.z();
-            packetPlayer.yaw = (float) playerYawInGlobal;
-            packetPlayer.pitch = (float) playerPitchInGlobal;
-
-            // Set the player motion values to tell the NetHandlerPlayServer that the player is allowed to move this fast.
-            this.player.motionX = packetPlayer.x - this.firstGoodX;
-            this.player.motionY = packetPlayer.y - this.firstGoodY;
-            this.player.motionZ = packetPlayer.z - this.firstGoodZ;
-
-            // Update the player draggable
-            final IDraggable playerAsDraggable = IDraggable.class.cast(this.player);
-            playerAsDraggable.setEntityShipMovementData(
-                    playerAsDraggable.getEntityShipMovementData()
-                            .withLastTouchedShip(lastTouchedShip)
-                            .withAddedLinearVelocity(new Vector3d())
-                            .withAddedYawVelocity(0)
-                            .withTicksPartOfGround(ticksPartOfGround)
-                            .withTicksSinceTouchedShip(ticksSinceTouchedLastShip)
-            );
         }
     }
 

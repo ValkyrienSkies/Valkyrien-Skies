@@ -1,3 +1,5 @@
+**Valkyrien Skies 1 is now EOL, but it lives on with a superior engine and better quality, performance, and features in the [Valkyrien Skies 2](https://github.com/ValkyrienSkies/Valkyrien-Skies-2) repository.** Join the discord if interested in backporting VS2 to 1.12.
+
 
 # <img src="vs_logo.png" width="48" height="48">alkyrien Skies
 [![CircleCI](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies.svg?style=svg)](https://circleci.com/gh/ValkyrienSkies/Valkyrien-Skies)
